@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_C_EXCEPT_PLAN_SqlMap" >
+  <resultMap id="resultMap" class="jp.co.takeda.model.ExceptPlan" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="INS_OR_TYTEN_NAME" property="insOrTytenName" jdbcType="VARCHAR" />
+    <result column="MESSAGE" property="message" jdbcType="CLOB" typeHandler="org.springframework.orm.ibatis.support.ClobStringTypeHandler"/>
+    <result column="INS_NO" property="insNo" jdbcType="INTEGER" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <parameterMap id="updateCheakParams" class="java.util.Map">
+    <parameter property="jobId" jdbcType="VARCHAR2" javaType="java.lang.String" mode="IN" />
+    <parameter property="TO_CHECK_CNT" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT" />
+  </parameterMap>
+
+   <select id="countExceptPlan" parameterClass="java.util.Map" resultClass="int">
+        SELECT
+            COUNT(*) FROM
+            DPS_C_EXCEPT_PLAN
+            WHERE SOS_CD = #sosCd:CHAR#
+   </select>
+
+   <select id="selectExceptPlan" parameterClass="java.util.Map" resultMap="resultMap">
+        SELECT
+			EXP.SEQ_KEY
+			,EXP.SOS_CD
+			,EXP.JGI_NO
+			,JGI_NAME
+			,CASE
+				WHEN REGEXP_LIKE(EXP.TMS_TYTEN_CD,'[0-9a-zA-Z]') THEN  TYT.TMS_TYTEN_MEI_KJ
+				WHEN REGEXP_LIKE(EXP.INS_NO,'[0-9a-zA-Z]')       THEN  INS.INS_FORMAL_NAME
+				ELSE '---'
+			 END AS INS_OR_TYTEN_NAME
+			,EXP.MESSAGE
+			,EXP.INS_NO
+			,EXP.TMS_TYTEN_CD
+			,EXP.IS_JGI_NO
+			,EXP.IS_JGI_NAME
+			,EXP.IS_DATE
+			,EXP.UP_JGI_NO
+			,EXP.UP_JGI_NAME
+			,EXP.UP_DATE
+		 FROM
+            DPS_C_EXCEPT_PLAN EXP
+            LEFT JOIN DPS_C_VI_JGI_MST JGI
+            ON JGI.JGI_NO = EXP.JGI_NO
+            LEFT JOIN DPS_C_INS_MST INS
+            ON INS.INS_NO = EXP.INS_NO
+            LEFT JOIN DPS_S_T_TMS_TYTEN_MST_UN TYT
+            ON TYT.TMS_TYTEN_CD = EXP.TMS_TYTEN_CD
+         WHERE
+            EXP.SOS_CD = #sosCd:CHAR#
+            AND EXP.CATEGORY = #category:CHAR#
+   </select>
+
+   <!-- 削除（予定）施設チェック -->
+   <procedure id="updateCheakDelflg" parameterMap="updateCheakParams" >
+        {call DPS_PROCESS_0101(?, ?)}
+   </procedure>
+
+   <!-- 計画対象外特約店チェック -->
+   <procedure id="updateCheakPlantaigaiflg" parameterMap="updateCheakParams" >
+        {call DPS_PROCESS_0102(?, ?)}
+   </procedure>
+</sqlMap>

@@ -1,0 +1,253 @@
+#set( $layout = "nothingLayout.vm" )
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+#parse("WEB-INF/view/cmn/cmnHttpHeader.vm")
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Language" content="ja" />
+<title>納入計画システム</title>
+
+<script language="javascript">
+<!--
+function executeAction(path) {
+	document.frm.action = path;
+	document.frm.submit();
+    return false;
+}
+//-->
+</script>
+</head>
+<body>
+<br>
+#allMessage()
+<div class="datadivision">
+<span class="bbig">テスト用ログイン画面</span><br>
+<form name="frm" id="frm" action="" style="margin:0px;" method="post">
+<table width="350" border="0" cellspacing="1" cellpadding="3">
+<tr>
+<td bgcolor='#EFF6FF'><span class="btext">従業員番号</span></td>
+<td bgcolor='#FFFFFF'><span class="btext"><input type="text" name="loginJgiNoooooo" value="2840479" length="7" style="ime-mode:disabled"></span></td>
+</tr>
+<tr>
+<td colspan="2" align="center"><input type="button" onclick="return executeAction('$link.setAction('dps000C00F00')')" value="医薬支援ログイン" style="width:150px"></td>
+<td colspan="2" align="center"><input type="button" onclick="return executeAction('$link.setAction('dps000C00F50')')" value="ワクチン支援ログイン" style="width:150px"></td>
+</tr>
+<tr>
+<td colspan="2" align="center"><input type="button" onclick="return executeAction('$link.setAction('dpm000C00F00')')" value="医薬管理ログイン" style="width:150px"></td>
+<td colspan="2" align="center"><input type="button" onclick="return executeAction('$link.setAction('dpm000C00F50')')" value="ワクチン管理ログイン" style="width:150px"></td>
+</tr>
+</table>
+</form>
+</div>
+<table border="1">
+	<tr>
+		<td width="1%">ex)　</td>
+		<td width="8%">　　支店長</td>
+		<td width="10%">大阪支店</td>
+		<td width="5%">c279014</td>
+		<td width="5%">2790142</td>
+		<td width="20%">今●　伸●さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;</td>
+		<td width="8%">　　事務</td>
+		<td width="10%">大阪支店</td>
+		<td width="5%">c910123</td>
+		<td width="5%">9101238</td>
+		<td width="20%">大●　恵●子さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;</td>
+		<td width="8%">　　ＳＣ（癌免疫）</td>
+		<td width="10%">大阪支店</td>
+		<td width="5%">c303152</td>
+		<td width="5%">3031524</td>
+		<td width="20%">西●　功●さん</td>
+	</tr>
+
+	<!-- 空行挿入 -->
+	<tr><td colspan="6"><br /></td></tr>
+
+	<tr>
+		<td width="1%">&nbsp;</td>
+		<td width="8%">　　営業所長</td>
+		<td width="10%">大阪北営業所</td>
+		<td width="5%">c288144</td>
+		<td width="5%">2881445</td>
+		<td width="20%">志●　和●さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　事務</td>
+		<td width="10%">大阪北営業所</td>
+		<td width="5%">c294018</td>
+		<td width="5%">2940188</td>
+		<td width="20%">塩●　健●さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　事務</td>
+		<td width="10%">大阪北営業所</td>
+		<td width="5%">c910123</td>
+		<td width="5%">9101238</td>
+		<td width="20%">大●　恵●子さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　チ－ムリ－ダ－</td>
+		<td width="10%">大阪北営業所第五AT</td>
+		<td width="5%">c287040</td>
+		<td width="5%">2870400</td>
+		<td width="20%">上●　輝●さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　ＭＲ</td>
+		<td width="10%">大阪北営業所第五AT</td>
+		<td width="5%">c907065</td>
+		<td width="5%">9070655</td>
+		<td width="20%">島●　莉●さん</td>
+	</tr>
+
+	<!-- 空行挿入 -->
+	<tr><td colspan="6"><br /></td></tr>
+
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　営業所長</td>
+		<td width="10%">大阪東営業所</td>
+		<td width="5%">c283069</td>
+		<td width="5%">2830693</td>
+		<td width="20%">宮●　剛●さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　事務</td>
+		<td width="10%">大阪東営業所</td>
+		<td width="5%">c892190</td>
+		<td width="5%">8921908</td>
+		<td width="20%">中●　紀●さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　チ－ムリ－ダ－</td>
+		<td width="10%">大阪東営業所第三AT</td>
+		<td width="5%">c301081</td>
+		<td width="5%">3010818</td>
+		<td width="20%">出●　正●さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　ＭＲ</td>
+		<td width="10%">大阪東営業所第四AT</td>
+		<td width="5%">c905127</td>
+		<td width="5%">9051272</td>
+		<td width="20%">関●　香●さん</td>
+	</tr>
+
+	<!-- 空行挿入 -->
+	<tr><td colspan="6"><br /></td></tr>
+
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　部長</td>
+		<td width="10%">西日本特約店部</td>
+		<td width="5%">c282039</td>
+		<td width="5%">2820390</td>
+		<td width="20%">米●　俊●さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　グル－プマネジャ－</td>
+		<td width="10%">福岡特約店Ｇ</td>
+		<td width="5%">c287058</td>
+		<td width="5%">2870587</td>
+		<td width="20%">平●　浩●さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　営業</td>
+		<td width="10%">福岡特約店Ｇ</td>
+		<td width="5%">c303083</td>
+		<td width="5%">3030830</td>
+		<td width="20%">神●　功●さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　ワクチン</td>
+		<td width="10%">福岡特約店Ｇ</td>
+		<td width="5%">c291166</td>
+		<td width="5%">2911668</td>
+		<td width="20%">川●　俊●さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　ワクチン</td>
+		<td width="10%">福岡特約店Ｇ</td>
+		<td width="5%">c291174</td>
+		<td width="5%">2911747</td>
+		<td width="20%">一●　賢●郎さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　部長</td>
+		<td width="10%">東日本特約店部</td>
+		<td width="5%">c284018</td>
+		<td width="5%">2840182</td>
+		<td width="20%">福●　雄●郎さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　グル－プマネジャ－</td>
+		<td width="10%">首都圏特約店Ｇ</td>
+		<td width="5%">c284018</td>
+		<td width="5%">2840182</td>
+		<td width="20%">福●　雄●郎さん※兼務</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　営業</td>
+		<td width="10%">首都圏特約店Ｇ</td>
+		<td width="5%">c288046</td>
+		<td width="5%">2880465</td>
+		<td width="20%">松●　幸●さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　チ－ムリ－ダ－</td>
+		<td width="10%">首都圏特約店Ｇワクチン１T</td>
+		<td width="5%">c281042</td>
+		<td width="5%">2810426</td>
+		<td width="20%">大●　克●さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　ワクチン</td>
+		<td width="10%">首都圏特約店Ｇワクチン１T</td>
+		<td width="5%">c902007</td>
+		<td width="5%">9020070</td>
+		<td width="20%">山●　麻●子さん</td>
+	</tr>
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　ワクチン</td>
+		<td width="10%">首都圏特約店Ｇワクチン２T</td>
+		<td width="5%">c903091</td>
+		<td width="5%">9030918</td>
+		<td width="20%">小●　さ●香さん</td>
+	</tr>
+
+	<!-- 空行挿入 -->
+	<tr><td colspan="6"><br /></td></tr>
+
+	<tr>
+		<td width="1%">&nbsp;　</td>
+		<td width="8%">　　医営本外</td>
+		<td width="10%">&nbsp;</td>
+		<td width="5%">c903001</td>
+		<td width="5%">9030918</td>
+		<td width="20%">野●村　真●子さん</td>
+	</tr>
+</table>
+</body>
+</html>

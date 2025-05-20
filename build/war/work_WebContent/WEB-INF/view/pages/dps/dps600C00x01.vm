@@ -1,0 +1,120 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS600C00_DATA_R_SEARCH_RESULT").detailList)
+    #set( $dataList = $form.getRequestData("DPS600C00_DATA_R_SEARCH_RESULT").detailList)
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+
+<rows>
+#foreach($resultData in $dataList)
+    ##品目固定コード
+        #set($prodCode = "")
+        #if($resultData.prodCode)
+            #set($prodCode = $resultData.prodCode)
+        #end
+    ##品目名称
+        #set($prodName = "")
+        #if($resultData.prodName)
+            #set($prodName = $resultData.prodName)
+        #end
+    ##製品区分
+        #set($prodType = "")
+        #if($resultData.prodType)
+            #set($prodType = $resultData.prodType)
+        #end
+    ##配分状況
+	    #set($insDocPlanStatSum = ${resultData.insDocPlanStatSum})    
+        #set($statusName = "")
+        #set($statusDate = "")
+        #set($statusFontColor = "")
+	    #set($codeAndValueInsDocPlanDist = $progress.progressInsDocPlanDistStatus($!{insDocPlanStatSum}))
+	    #if($!codeAndValueInsDocPlanDist.code.equals("NOT"))
+	    	#if($codeAndValueInsDocPlanDist.value && $codeAndValueInsDocPlanDist.value != "")
+				#set($statusName = $codeAndValueInsDocPlanDist.value)
+				#set($statusDate = "<br>#writeLastUpDate($insDocPlanStatSum.distStartDate,'-')")
+				#set($statusFontColor = "#FF0000")
+				#set($selectValue = "0")
+	    	#end
+	    #else
+			#set($statusName = $codeAndValueInsDocPlanDist.value)
+			#set($statusDate = "<br>#writeLastUpDate($insDocPlanStatSum.distEndDate,'-')")
+			#set($selectValue = "0")
+	    #end
+    ##本部案/営業所案
+        #set($base = "" )
+        #if($resultData.honbu)
+            #set($base = "本部案")
+        #else
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            #set($base = "エリア案")
+##            #set($base = "営業所案")
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        #end
+    ##配分基準最終更新日
+        #set($upDate = "<br>#writeLastUpDate($resultData.upDate,'-')")
+    ##[UH]比率（未獲得市場）
+        #set($indexMikakutokuUH = "")
+        #if($resultData.indexMikakutokuUH)
+            #set($indexMikakutokuUH = $resultData.indexMikakutokuUH)
+        #end
+    ##[UH]比率（過去実績）
+        #set($indexDeliveryUH = "")
+        #if($resultData.indexDeliveryUH)
+            #set($indexDeliveryUH = $resultData.indexDeliveryUH)
+        #end
+    ##[UH]実績参照期間(FROM)
+        #set($refPeriodFromUH = "")
+        #if($resultData.refPeriodFromUH)
+            #set($refPeriodFromUH = $!{format.toString($!{resultData.refPeriodFromUH},"yyyy/MM")})
+        #end
+    ##[UH]実績参照期間(TO)
+        #set($refPeriodToUH = "")
+        #if($resultData.refPeriodToUH)
+            #set($refPeriodToUH = $!{format.toString($!{resultData.refPeriodToUH},"yyyy/MM")})
+        #end
+    ##[UH]有効率
+        #set($lossRateUH = "")
+        #if($resultData.lossRateUH)
+            #set($lossRateUH = $resultData.lossRateUH)
+        #end
+    ##[P]比率（未獲得市場）
+        #set($indexMikakutokuP = "")
+        #if($resultData.indexMikakutokuP)
+            #set($indexMikakutokuP = $resultData.indexMikakutokuP)
+        #end
+    ##[P]比率（過去実績）
+        #set($indexDeliveryP = "")
+        #if($resultData.indexDeliveryP)
+            #set($indexDeliveryP = $resultData.indexDeliveryP)
+        #end
+    ##[P]実績参照期間(FROM)
+        #set($refPeriodFromP = "")
+        #if($resultData.refPeriodFromP)
+            #set($refPeriodFromP = $!{format.toString($!{resultData.refPeriodFromP},"yyyy/MM")})
+        #end
+    ##[P]実績参照期間(TO)
+        #set($refPeriodToP = "")
+        #if($resultData.refPeriodToP)
+            #set($refPeriodToP = $!{format.toString($!{resultData.refPeriodToP},"yyyy/MM")})
+        #end
+    ##[P]有効率
+        #set($lossRateP = "")
+        #if($resultData.lossRateP)
+            #set($lossRateP = $resultData.lossRateP)
+        #end
+    <row id='$velocityCount'>
+        <cell style="height:35">$!prodName</cell>
+        <cell style="height:35">$!prodType</cell>
+        <cell style="height:35"><![CDATA[<font color="$statusFontColor">$!statusName</font>$!statusDate]]></cell>
+        <cell style="height:35">$!base</cell>
+##        <cell style="height:35"><![CDATA[<a href="#" onclick="executeLink('$link.setAction('dps600C01F00')','$!form.bean.sosCd3Tran','$!prodCode')">編集</a>$!upDate]]></cell>
+        <cell style="height:35">$!indexMikakutokuUH : $!indexDeliveryUH</cell>
+        <cell style="height:35">$!refPeriodFromUH - $!refPeriodToUH</cell>
+        <cell style="height:35">$!lossRateUH %</cell>
+        <cell style="height:35">$!indexMikakutokuP : $!indexDeliveryP</cell>
+        <cell style="height:35">$!refPeriodFromP - $!refPeriodToP</cell>
+		<cell style="height:35">$!lossRateP %</cell>
+    </row>
+#end
+</rows>
+#end

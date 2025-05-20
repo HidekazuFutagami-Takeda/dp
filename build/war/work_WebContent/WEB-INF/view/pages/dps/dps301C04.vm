@@ -1,0 +1,134 @@
+## ------------------------------------
+## 担当者別計画立案方法
+## ------------------------------------
+#set($layout = "nothingLayout.vm" )
+#set($pageTitle = $text.get("dps301C04","title"))
+#parse("WEB-INF/view/cmn/xhtml.vm")
+<html>
+#parse("WEB-INF/view/cmn/headerInfo.vm")
+## 配下チームがあるか
+#set($existsTeamSos = $form.bean.existsTeamSos)
+<body style="background-color:#f5f5f5" onfocus="return dialogWin.checkModal()">
+
+<div class="clear"></div>
+<div id="messageArea">
+#allMessage()
+</div>
+
+<script language="javascript">
+<!--
+var editFlg = false;
+var calcTypeValue = "$!form.bean.calcType";
+## 1回も実行していない場合の初期値
+#if(!$!form.bean.calcType || $!form.bean.calcType.equals(""))
+#if($existsTeamSos)
+	calcTypeValue = "1";
+#else
+	calcTypeValue = "2";
+#end
+#end
+##試算処理実行
+function dps301C04F05() {
+    ##親画面の試算処理実行をONにする。
+    var opener=window.opener;
+    opener.document.dps301C00Form.calcType.value = calcTypeValue;
+    opener.document.dps301C00Form.calcFlg.value = "true";
+    window.close();
+}
+## 試算処理実行時チェック
+function executeValidation() {
+}
+## ダイアログを閉じる
+function closeWindow() {
+    var opener=window.opener;
+    if (editFlg) {
+        if (window.confirm('$text.get("DPC999C99.001","dialogue")')) {
+            window.close();
+        }
+    }
+    else {
+        window.close();
+    }
+}
+##チェックしたラジオボタン
+function checkRadio(value) {
+	calcTypeValue = value;
+}
+//-->
+</script>
+##ラジオボタンの制御
+#set($flow1 = "checked")
+#set($flow2 = "")
+#set($allProdOnFlg = $!form.bean.allProdOnFlg)
+#if($!form.bean.calcType)
+    #if($!form.bean.calcType.equals("1"))
+        #set($flow1 = "checked")
+        #if($allProdOnFlg)
+            #set($flow2 = "")
+        #else
+            #set($flow2 = "disabled")
+        #end
+    #end
+    #if($!form.bean.calcType.equals("2"))
+        #set($flow2 = "checked")
+        #if($allProdOnFlg)
+            #set($flow1 = "")
+        #else
+            #set($flow1 = "disabled")
+        #end
+    #end
+#end
+## 配下チームがない場合
+#if(!$existsTeamSos)
+    #set($flow2 = "checked")
+#end
+<form name="dps301C04Form" method="post">
+<br>
+<table align="center" style="width: 100%;">
+<tr><td align="center" style="width: 100%;"><label style="font-size: 17px;text-decoration: underline">担当者別計画立案方法の確認</label></td></tr>
+</table>
+<br>
+<center>
+<fieldset style="width:95%">
+<legend><label style="font-size:15px">立案方法</label></legend>
+<table align="left">
+## チームがある場合のみ
+#if($existsTeamSos)
+<tr>
+<td align="left" style="padding:3px">
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+<label style="font-size:12px;font-family:'ＭＳ ゴシック'"><input type="radio" name="calcType" value="1"  $flow1 onclick="checkRadio('1')"/>エリア別計画　　⇒　　チーム別計画　　⇒　　担当者別計画</label>　　
+##<label style="font-size:12px;font-family:'ＭＳ ゴシック'"><input type="radio" name="calcType" value="1"  $flow1 onclick="checkRadio('1')"/>営業所別計画　　⇒　　チーム別計画　　⇒　　担当者別計画</label>　　
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+</td>
+</tr>
+#end
+<tr>
+<td align="left" style="padding:3px">
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+<label style="font-size:12px;font-family:'ＭＳ ゴシック'"><input type="radio" name="calcType" value="2"  $flow2 onclick="checkRadio('2')"/>エリア別計画　　⇒　　担当者別計画　#if($existsTeamSos)<font class="guide">※ チーム別計画は担当者別計画を積上げ</font>#end</label>
+##label style="font-size:12px;font-family:'ＭＳ ゴシック'"><input type="radio" name="calcType" value="2"  $flow2 onclick="checkRadio('2')"/>営業所別計画　　⇒　　担当者別計画　#if($existsTeamSos)<font class="guide">※ チーム別計画は担当者別計画を積上げ</font>#end</label>
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+</td>
+</tr>
+</table>
+</fieldset>
+</center>
+<br>
+<br>
+<table align="center" style="width: 100%;">
+    <tr>
+        <td style="width: 50%;"><input type="button" value="試算処理を実行" class="floatR" style="width:120px;" onclick="dps301C04F05()" /></td>
+        <td style="width: 50%;"><input type="button" value="キャンセル" class="floatL" style="width:120px;" onclick="closeWindow()" /></td>
+    </tr>
+</table>
+<br>
+## チームがある場合のみ
+#if($existsTeamSos)
+<div class="guide">
+　※ 担当者別計画立案方法を変更する場合は全品目を選択してください。
+</div>
+#end
+</form>
+</body>
+</html>

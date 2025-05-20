@@ -1,0 +1,846 @@
+#set($pageTitle = $text.get("dps301C01","title"))
+#set($bodyOnloadMethod = "dps300C00F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($resultData = $form.getRequestData("DPS301C01_DATA_R"))
+##カテゴリ
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　toString→.dbValue
+###set($category = $!resultData.plannedProd.category.toString())
+#set($category = $!resultData.plannedProd.category)
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　toString→.dbValue
+## ワクチンのカテゴリコード取得
+#set($vaccineCode = $service.getShienVaccineCode())
+##試算基準
+#set( $isHonbu = true)
+#if($resultData.estParamOffice.seqKey)
+    #set( $isHonbu = false)
+#else
+    #set( $isHonbu = true)
+#end
+##本部案　フリー項目1
+#set( $honbuIndexFreeName1 = $!consts.getDefaultIndexFreeName1())
+#if($$resultData.estParamHonbu.estimationParam.indexFreeName1)
+    #set( $honbuIndexFreeName1 = $resultData.estParamHonbu.estimationParam.indexFreeName1)
+#end
+##本部案　フリー項目2
+#set( $honbuIndexFreeName2 = $!consts.getDefaultIndexFreeName2())
+#if($resultData.estParamHonbu.estimationParam.indexFreeName2)
+    #set( $honbuIndexFreeName2 = $resultData.estParamHonbu.estimationParam.indexFreeName2)
+#end
+##本部案　フリー項目3
+#set( $honbuIndexFreeName3 = $!consts.getDefaultIndexFreeName3())
+#if($resultData.estParamHonbu.estimationParam.indexFreeName3)
+    #set( $honbuIndexFreeName3 = $resultData.estParamHonbu.estimationParam.indexFreeName3)
+#end
+##本部案　実績参照品目1
+#set( $resultRefProdName1 = "　")
+#if($resultData.estParamHonbu.baseParam.resultRefProdName1)
+    #set( $resultRefProdName1 = $resultData.estParamHonbu.baseParam.resultRefProdName1)
+#end
+##本部案　実績参照品目2
+#set( $resultRefProdName2 = "　")
+#if($resultData.estParamHonbu.baseParam.resultRefProdName2)
+    #set( $resultRefProdName2 = $resultData.estParamHonbu.baseParam.resultRefProdName2)
+#end
+##本部案　実績参照品目3
+#set( $resultRefProdName3 = "　")
+#if($resultData.estParamHonbu.baseParam.resultRefProdName3)
+    #set( $resultRefProdName3 = $resultData.estParamHonbu.baseParam.resultRefProdName3)
+#end
+##営業所案　フリー項目1
+#set( $officeIndexFreeName1 = $!consts.getDefaultIndexFreeName1())
+#if($resultData.estParamOffice.estimationParam.indexFreeName1)
+    #set( $officeIndexFreeName1 = $resultData.estParamOffice.estimationParam.indexFreeName1)
+#end
+##営業所案　フリー項目2
+#set( $officeIndexFreeName2 = $!consts.getDefaultIndexFreeName2())
+#if($resultData.estParamOffice.estimationParam.indexFreeName2)
+    #set( $officeIndexFreeName2 = $resultData.estParamOffice.estimationParam.indexFreeName2)
+#end
+##営業所案　フリー項目3
+#set( $officeIndexFreeName3 = $!consts.getDefaultIndexFreeName3())
+#if($resultData.estParamOffice.estimationParam.indexFreeName3)
+    #set( $officeIndexFreeName3 = $resultData.estParamOffice.estimationParam.indexFreeName3)
+#end
+##計画対象品目リスト
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　汎用的なメソッドに変更
+###set( $prodList = $service.getMMP_ONCRefProdList(false))
+###set( $prodList = $service.getAllProdList(false))
+#if($category == $vaccineCode)
+    #set( $prodList = $service.getWakutinProdList(false))
+#else
+    #set( $prodList = $service.getDpsProdList($category, false))
+#end
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　汎用的なメソッドに変更　
+##参照品目リスト
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　汎用的なメソッドに変更、変数名変更
+###set( $MMPRefProdList = $service.getMMP_ONCRefProdList(true))
+###set( $RefProdList = $service.getAllProdList(true))
+#if($category == $vaccineCode)
+    #set( $RefProdList = $service.getWakutinRefProdList(true))
+#else
+    #set( $RefProdList = $service.getDpsRefProdList($category, true))
+#end
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　汎用的なメソッドに変更、変数名変更　
+##参照期間リスト
+#set( $refPeriodList = $service.getRefPeriodList(false))
+##カテゴリリスト
+#set( $categoryList = $!form.bean.prodCategoryList)
+<script language="javascript">
+<!--
+var editFlg = false;
+## 初期表示＋読込処理
+function dps300C00F00() {
+    sosApplyExt("$!form.bean.sosCd3", "", "02", false);
+}
+## リンク移動
+function executeLink() {
+    var actionPath = '$link.setAction('dps301C00F00')';
+    document.dps301C01Form.action = actionPath;
+    document.dps301C01Form.submit();
+}
+##登録処理
+function dps301C01F05() {
+    ##入力チェック
+    if (!updateValidation()) {
+      return;
+    }
+    ##登録事前チェック
+    if (!checkResult()) {
+      return;
+    }
+    ##確認
+    if (!confirm('$text.get("DPS301C01.001","dialogue")')) {
+        return;
+    }
+    ##送信
+    var actionPath = '$link.setAction('dps301C01F05Execute')';
+    document.dps301C01Form.action = actionPath;
+    document.dps301C01Form.submit();
+    dps301C01F10Execute = blockIt;
+    dps301C01F11 = blockIt;
+    dps301C01F05 = blockIt;
+}
+##登録処理事前チェック
+function checkResult(){
+    var sosCd3 = document.dps301C01Form.sosCd3.value;
+    var prodCode = '$!resultData.plannedProd.prodCode';
+    var officeIndexMikakutoku = document.dps301C01Form.officeIndexMikakutoku.value;
+    var officeIndexFree1 = document.dps301C01Form.officeIndexFree1.value;
+    var officeIndexFree2 = document.dps301C01Form.officeIndexFree2.value;
+    var officeIndexFree3 = document.dps301C01Form.officeIndexFree3.value;
+    var officeIndexFreeName1 = encodeURI('$!resultData.estParamOffice.estimationParam.indexFreeName1');
+    var officeIndexFreeName2 = encodeURI('$!resultData.estParamOffice.estimationParam.indexFreeName2');
+    var officeIndexFreeName3 = encodeURI('$!resultData.estParamOffice.estimationParam.indexFreeName3');
+
+    ##GET送信
+    var url ="$link.setAction('dps301C01F06Execute')";
+    url = url.concat("?sFlg=true");
+    url = url.concat("&sosCd3=").concat(sosCd3);
+    url = url.concat("&prodCode=").concat(prodCode);
+    url = url.concat("&officeIndexMikakutoku=").concat(officeIndexMikakutoku);
+    url = url.concat("&officeIndexFree1=").concat(officeIndexFree1);
+    url = url.concat("&officeIndexFree2=").concat(officeIndexFree2);
+    url = url.concat("&officeIndexFree3=").concat(officeIndexFree3);
+    url = url.concat("&officeIndexFreeName1=").concat(officeIndexFreeName1);
+    url = url.concat("&officeIndexFreeName2=").concat(officeIndexFreeName2);
+    url = url.concat("&officeIndexFreeName3=").concat(officeIndexFreeName3);
+    ##結果からメッセージ作成
+    try {
+        var text = getPage(url);
+        var obj = JSON.parse(text);
+        var messageList = obj.messageList;
+        var arr = messageList.split(",");
+        for( var i=0; i<arr.length; i++ ){
+            if(arr[i] == ""){continue;}
+            addErrorMessage(arr[i]);
+        }
+    } catch(e) {
+    }
+    return validation();
+}
+
+##営業所案から本部案に戻す処理
+function dps301C01F10Execute() {
+    ##確認
+    if (!confirm('$text.get("DPS301C01.002","dialogue")')) {
+        return;
+    }
+    ##送信
+    var actionPath = '$link.setAction('dps301C01F10Execute')';
+    document.dps301C01Form.action = actionPath;
+    document.dps301C01Form.submit();
+    dps301C01F05 = blockIt;
+    dps301C01F11 = blockIt;
+    dps301C01F10Execute = blockIt;
+}
+##本部案から本部案に戻す処理
+function dps301C01F11() {
+    ##確認
+    if (!confirm('$text.get("DPS301C01.003","dialogue")')) {
+        return;
+    }
+    ##送信
+    var actionPath = '$link.setAction('dps301C01F11')';
+    document.dps301C01Form.action = actionPath;
+    document.dps301C01Form.submit();
+    dps301C01F05 = blockIt;
+    dps301C01F10Execute = blockIt;
+    dps301C01F11 = blockIt;
+}
+## 過去実績参照ダイアログ
+function openResultDialog(prodCode) {
+    if(!isEntered(prodCode)){
+        errorMsg = '$text.get("DPC1006E",["実績参照品目"])';
+        addErrorInfo(true, errorMsg);
+        validation();
+        return;
+    }
+    var sosCd3 = document.dps301C01Form.sosCd3.value;
+    var url ="$link.setAction('dps913C00F00')";
+    url = url.concat("?prodCode=").concat(prodCode);
+    url = url.concat("&sosCd3=").concat(sosCd3);
+    url = url.concat("&page=4");
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　
+##  #if($category == "MMP")
+##      url = url.concat("&prodCategory=1");
+##  #elseif($category == "ONC")
+##      url = url.concat("&prodCategory=3");
+##  #end
+    url = url.concat("&category=$category");
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　
+    openModalWindow(url);
+}
+## 登録処理時チェック
+function updateValidation() {
+
+    ##［必須］試算元計画値
+    var isAdded = false;
+    var value = document.dps301C01Form.officeEstimationBase.value;
+    var errorMsg = '$text.get("DPC1003E",["試算元計画値"])';
+    isAdded = addErrorInfo(!isEntered(value), errorMsg);
+
+## add start 2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+    ##［必須］留保率
+    isAdded = false;
+    value = document.dps301C01Form.officeIndexRyhRtsu.value;
+    errorMsg = '$text.get("DPC1003E",["留保率"])';
+    isAdded = addErrorInfo(!isEntered(value), errorMsg);
+    ## [数値] 留保率
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["留保率","半角数値"])';
+        isAdded = addErrorInfo(!isDecimal(value), errorMsg);
+    }
+    ## [整数] 留保率
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1016E",["留保率"])';
+        isAdded = addErrorInfo(!isInteger(value), errorMsg);
+    }
+    ## [0未満] 留保率
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1008E",["留保率","0"])';
+        isAdded = addErrorInfo(!isPlus(value), errorMsg);
+    }
+    ## [100以上] 留保率
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1009E",["留保率","100"])';
+        isAdded = addErrorInfo(!isIntegerInRange(value, 0, 100), errorMsg);
+    }
+## add end   2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+
+    ##［必須］未獲得市場
+    isAdded = false;
+    value = document.dps301C01Form.officeIndexMikakutoku.value;
+    errorMsg = '$text.get("DPC1003E",["比率1：未獲得市場"])';
+    isAdded = addErrorInfo(!isEntered(value), errorMsg);
+    ## [数値] 未獲得市場
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["比率1：未獲得市場","半角数値"])';
+        isAdded = addErrorInfo(!isDecimal(value), errorMsg);
+    }
+    ## [整数] 未獲得市場
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1016E",["比率1：未獲得市場"])';
+        isAdded = addErrorInfo(!isInteger(value), errorMsg);
+    }
+    ## [0未満] 未獲得市場
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1008E",["比率1：未獲得市場","0"])';
+        isAdded = addErrorInfo(!isPlus(value), errorMsg);
+    }
+    ## [100以上] 未獲得市場
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1009E",["比率1：未獲得市場","100"])';
+        isAdded = addErrorInfo(!isIntegerInRange(value, 0, 100), errorMsg);
+    }
+
+    ##［必須］過去実績
+    isAdded = false;
+    value = document.dps301C01Form.officeIndexDelivery.value;
+    errorMsg = '$text.get("DPC1003E",["比率2：過去実績"])';
+    isAdded = addErrorInfo(!isEntered(value), errorMsg);
+    ## [数値] 過去実績
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["比率2：過去実績","半角数値"])';
+        isAdded = addErrorInfo(!isDecimal(value), errorMsg);
+    }
+    ## [整数] 過去実績
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1016E",["比率2：過去実績"])';
+        isAdded = addErrorInfo(!isInteger(value), errorMsg);
+    }
+    ## [0未満] 過去実績
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1008E",["比率2：過去実績","0"])';
+        isAdded = addErrorInfo(!isPlus(value), errorMsg);
+    }
+    ## [100以上] 過去実績
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1009E",["比率2：過去実績","100"])';
+        isAdded = addErrorInfo(!isIntegerInRange(value, 0, 100), errorMsg);
+    }
+
+    ##［必須］比率3(フリー①)
+    isAdded = false;
+    value = document.dps301C01Form.officeIndexFree1.value;
+    errorMsg = '$text.get("DPC1003E",["比率3：$officeIndexFreeName1"])';
+    isAdded = addErrorInfo(!isEntered(value), errorMsg);
+    ## [数値] 比率3(フリー①)
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["比率3：$officeIndexFreeName1","半角数値"])';
+        isAdded = addErrorInfo(!isDecimal(value), errorMsg);
+    }
+    ## [整数] 比率3(フリー①)
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1016E",["比率3：$officeIndexFreeName1"])';
+        isAdded = addErrorInfo(!isInteger(value), errorMsg);
+    }
+    ## [0未満] 比率3(フリー①)
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1008E",["比率3：$officeIndexFreeName1","0"])';
+        isAdded = addErrorInfo(!isPlus(value), errorMsg);
+    }
+    ## [100以上] 比率3(フリー①)
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1009E",["比率3：$officeIndexFreeName1","100"])';
+        isAdded = addErrorInfo(!isIntegerInRange(value, 0, 100), errorMsg);
+    }
+
+    ##［必須］比率4(フリー②)
+    isAdded = false;
+    value = document.dps301C01Form.officeIndexFree2.value;
+    errorMsg = '$text.get("DPC1003E",["比率4：$officeIndexFreeName2"])';
+    isAdded = addErrorInfo(!isEntered(value), errorMsg);
+    ## [数値] 比率4(フリー②)
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["比率4：$officeIndexFreeName2","半角数値"])';
+        isAdded = addErrorInfo(!isDecimal(value), errorMsg);
+    }
+    ## [整数] 比率4(フリー②)
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1016E",["比率4：$officeIndexFreeName2"])';
+        isAdded = addErrorInfo(!isInteger(value), errorMsg);
+    }
+    ## [0未満] 比率4(フリー②)
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1008E",["比率4：$officeIndexFreeName2","0"])';
+        isAdded = addErrorInfo(!isPlus(value), errorMsg);
+    }
+    ## [100以上] 比率4(フリー②)
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1009E",["比率4：$officeIndexFreeName2","100"])';
+        isAdded = addErrorInfo(!isIntegerInRange(value, 0, 100), errorMsg);
+    }
+
+    ##［必須］比率5(フリー③)
+    isAdded = false;
+    value = document.dps301C01Form.officeIndexFree3.value;
+    errorMsg = '$text.get("DPC1003E",["比率5：$officeIndexFreeName3"])';
+    isAdded = addErrorInfo(!isEntered(value), errorMsg);
+    ## [数値] 比率5(フリー③)
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["比率5：$officeIndexFreeName3","半角数値"])';
+        isAdded = addErrorInfo(!isDecimal(value), errorMsg);
+    }
+    ## [整数] 比率5(フリー③)
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1016E",["比率5：$officeIndexFreeName3"])';
+        isAdded = addErrorInfo(!isInteger(value), errorMsg);
+    }
+    ## [0未満] 比率5(フリー③)
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1008E",["比率5：$officeIndexFreeName3","0"])';
+        isAdded = addErrorInfo(!isPlus(value), errorMsg);
+    }
+    ## [100以上] 比率5(フリー③)
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1009E",["比率5：$officeIndexFreeName3","100"])';
+        isAdded = addErrorInfo(!isIntegerInRange(value, 0, 100), errorMsg);
+    }
+
+    ##［必須］試算品目
+    isAdded = false;
+    value = document.dps301C01Form.officeRefProdCode.value;
+    errorMsg = '$text.get("DPC1006E",["試算品目"])';
+    addErrorInfo(!isEntered(value), errorMsg)
+
+    ##［必須］実績参照期間(FROM)
+    isAdded = false;
+    value = document.dps301C01Form.officeRefFrom.value;
+    errorMsg = '$text.get("DPC1006E",["実績参照期間(FROM)"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    ##［必須］実績参照期間(TO)
+    isAdded = false;
+    value = document.dps301C01Form.officeRefTo.value;
+    errorMsg = '$text.get("DPC1006E",["実績参照期間(TO)"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    if(!validation()){
+        return false;
+    }
+
+    ## 関連チェック（試算指数の合計が100でない場合）
+    var total = 0;
+    if (document.dps301C01Form.officeIndexMikakutoku.value) {
+        total += parseInt(document.dps301C01Form.officeIndexMikakutoku.value);
+    }
+    if (document.dps301C01Form.officeIndexDelivery.value) {
+        total += parseInt(document.dps301C01Form.officeIndexDelivery.value);
+    }
+    if (document.dps301C01Form.officeIndexFree1.value) {
+        total += parseInt(document.dps301C01Form.officeIndexFree1.value);
+    }
+    if (document.dps301C01Form.officeIndexFree2.value) {
+        total += parseInt(document.dps301C01Form.officeIndexFree2.value);
+    }
+    if (document.dps301C01Form.officeIndexFree3.value) {
+        total += parseInt(document.dps301C01Form.officeIndexFree3.value);
+    }
+    if (total != 100) {
+        errorMsg = '$text.get("DPS1001E",["比率","100"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(!validation()){
+        return false;
+    }
+
+    ##関連チェック（参照期間）
+    valueFrom = document.dps301C01Form.officeRefFrom.value - 0;
+    valueTo = document.dps301C01Form.officeRefTo.value - 0;
+    if(valueFrom > valueTo){
+        errorMsg = '$text.get("DPS1032E",["実績参照期間(FROM)","実績参照期間(TO)"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(!validation()){
+        return false;
+    }
+    ##関連チェック（参照品目間）
+    refCode1 = document.dps301C01Form.officeResultRefProdCode1.value;
+    refCode2 = document.dps301C01Form.officeResultRefProdCode2.value;
+    refCode3 = document.dps301C01Form.officeResultRefProdCode3.value;
+    if(!isEntered(refCode1) && isEntered(refCode2)){
+        errorMsg = '$text.get("DPS1030E",["1"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(!isEntered(refCode2) && isEntered(refCode3)){
+        errorMsg = '$text.get("DPS1030E",["2"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(!validation()){
+        return false;
+    }
+    if(isEntered(refCode1) && ((refCode1 == refCode2) ||(refCode1 == refCode3))){
+        errorMsg = '$text.get("DPC1018E",["実績参照品目1、実績参照品目2、実績参照品目3","品目"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(!validation()){
+        return false;
+    }
+    if(isEntered(refCode2) && (refCode2 == refCode3)){
+        errorMsg = '$text.get("DPC1018E",["実績参照品目1、実績参照品目2、実績参照品目3","品目"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(!validation()){
+        return false;
+    }
+    ##関連チェック（参照品目と計画対象品目）
+    prodCode = document.dps301C01Form.prodCode.value;
+    if(prodCode == refCode1){
+        errorMsg = '$text.get("DPS1031E",["1"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(prodCode == refCode2){
+        errorMsg = '$text.get("DPS1031E",["2"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(prodCode == refCode3){
+        errorMsg = '$text.get("DPS1031E",["3"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(!validation()){
+        return false;
+    }
+    return true;
+}
+##編集した場合の設定
+function editOn(){
+    editFlg = true;
+    if (document.dps301C01Form.honbuBackBtn) {
+        document.dps301C01Form.honbuBackBtn.disabled = false;
+    }
+}
+##リンク移動確認
+function linkClick(){
+    if(editFlg){
+        var answer = window.confirm('$text.get("DPC999C99.001","dialogue")');
+        if(!answer){
+            return false;
+        }
+    }
+    return true;
+}
+//-->
+</script>
+#tabbar("sienSosiki", "dps301C00F00")
+<div id="tabBox" style="height: 520px;">
+<form name="dps301C01Form" method="post">
+    ##品目情報
+    <div align="left" style="float: left;width: 70%;">
+    <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+        <tbody class="tableBody">
+            <tr>
+                <td class="header" style="width:70px;">組織</td>
+                <td  colspan="7" id="sos">　</td>
+            </tr>
+            <tr>
+                <td class="header" style="width:70px;">カテゴリ</td>
+                <td>#getValueFromCode($categoryList,$resultData.plannedProd.category)</td>
+                <td class="header" style="width:70px;">品目名称</td>
+                <td>$!resultData.plannedProd.prodName</td>
+                <td class="header" style="width:70px;">製品区分</td>
+                <td>#if($!resultData.plannedProd.prodType)$!resultData.plannedProd.prodType#else 　　　 #end</td>
+## mod Start 2022/5/16 R.Yoshida 文言変更　「営業所」→「エリア」
+## var setInitWidthsStr = ["営業所"];
+## var setInitWidthsStr = ["エリア"];
+## mod End 2022/5/16 R.Yoshida 文言変更　「営業所」→「エリア」
+                <td class="header" style="width:120px;">本部案/エリア案</td>
+                #if($isHonbu)
+                    <td>本部案</td>
+                #else
+                    <td>エリア案</td>
+                #end
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    ##最終更新情報
+    <div class="label" align="right" style="float: left;width: 30%;">
+        #if($isHonbu)
+            #upDateInfo($!{resultData.estParamHonbu.upJgiName},$!{resultData.estParamHonbu.upDate})
+        #else
+            #upDateInfo($!{resultData.estParamOffice.upJgiName},$!{resultData.estParamOffice.upDate})
+        #end
+        <a href="#" onclick="if(linkClick())executeLink()">一覧へ戻る</a>
+    </div>
+    ##メイン情報
+    <div class="label" align="left" style="float: left;width: 70%;min-width: 985px;">
+    <table style="margin:0px 0px 0px 0px;">
+        <tr>
+            #if ($!security.hasAuthEdit("DPS301"))
+                <td><input type="button" value="登録する" style="width:80px;"  onclick="dps301C01F05()" /></td>
+                #if($isHonbu)
+                    <td><input type="button" value="本部案に戻す" id="honbuBackBtn" style="width:80px;"  onclick="dps301C01F11()" disabled /></td>
+                #else
+                    <td><input type="button" value="本部案に戻す" style="width:80px;"  onclick="dps301C01F10Execute()" /></td>
+                #end
+            #end
+        </tr>
+    </table>
+## mod Start 2022/5/16 R.Yoshida 文言変更　「営業所」→「エリア」
+## var setInitWidthsStr = ["営業所"];
+## var setInitWidthsStr = ["エリア"];
+## mod End 2022/5/16 R.Yoshida 文言変更　「営業所」→「エリア」
+    <div class="guide">
+        ※登録するをクリックすると、エリア案として試算パラメータを登録します。<br>
+        ※本部案に戻すをクリックすると、入力値を本部案に戻します。(エリア案が存在する場合は削除されます。以降の試算では、本部案が使用されます。)
+    </div>
+    <table width ="100%" height="300px">
+        <tr>
+            <td width ="50%" style="padding:0px 15px 0px 15px;">
+                <div class="midTitle">試算パラメータ(本部案)</div>
+            </td>
+            <td width ="50%" style="padding:0px 15px 0px 15px;">
+## mod Start 2022/5/16 R.Yoshida 文言変更　「営業所」→「エリア」
+## var setInitWidthsStr = ["営業所"];
+## var setInitWidthsStr = ["エリア"];
+## mod End 2022/5/16 R.Yoshida 文言変更　「営業所」→「エリア」
+                <div class="midTitle">試算パラメータ(エリア案)</div>
+            </td>
+        </tr>
+        <tr>
+            <td width ="50%" style="padding:0px 20px 0px 20px;vertical-align: top;">
+                <div class="titleLine">試算元計画値</div>
+                <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+                    <tbody class="tableBody">
+                        <tr>
+                            <td class="header" width ="130px">試算元計画値</td>
+                            <td style="text-align: left">
+							    #if($resultData.estParamHonbu.estimationParam.estimationBase.dbValue == "1") 計画値全体 #end
+							    #if($resultData.estParamHonbu.estimationParam.estimationBase.dbValue == "2") 増分値 #end
+                            </td>
+                        </tr>
+                    <tbody>
+                </table>
+            </td>
+            <td width ="50%" style="padding:0px 20px 0px 20px;vertical-align: top;">
+                <div class="titleLine">試算元計画値</div>
+                <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+                    <tbody class="tableBody">
+                        <tr>
+                            <td class="header" width ="130px">試算元計画値</td>
+                            <td style="text-align: left;"">
+								<select name="officeEstimationBase" onChange="editOn();">
+									<option value="1" #if($resultData.estParamOffice.estimationParam.estimationBase.dbValue == "1") selected #end>計画値全体</option>
+									<option value="2" #if($resultData.estParamOffice.estimationParam.estimationBase.dbValue == "2") selected #end>増分値</option>
+								</select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+## add start 2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+        <tr>
+            <td width ="50%" style="padding:0px 20px 0px 20px;vertical-align: top;">
+                <div class="titleLine">留保率</div>
+                <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+                    <tbody class="tableBody">
+                        <tr>
+                            <td class="header" width ="130px">留保率</td>
+                            <td style="text-align: left">
+							    $resultData.estParamHonbu.estimationParam.indexRyhRtsu %
+                            </td>
+                        </tr>
+                    <tbody>
+                </table>
+            </td>
+            <td width ="50%" style="padding:0px 20px 0px 20px;vertical-align: top;">
+                <div class="titleLine">留保率</div>
+                <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+                    <tbody class="tableBody">
+                        <tr>
+                            <td class="header" width ="130px">留保率</td>
+                            <td style="text-align: left;"">
+								<input type="text" id="officeIndexRyhRtsu" name="officeIndexRyhRtsu" value="$!resultData.estParamOffice.estimationParam.indexRyhRtsu" onkeyup="editOn()" size="10" maxlength="3" class="inputB ime_not textR" style="padding-right:1px;"/>%
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+## add end   2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+        <tr>
+            <td width ="50%" style="padding:0px 20px 0px 20px;vertical-align: top;">
+                <div class="titleLine">比率</div>
+                <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+                    <thead class="tableHeader">
+                        <tr>
+                            <td width ="130px">　</td>
+                            <td>項目名</td>
+                            <td width ="130px">比率</td>
+                        </tr>
+                    </thead>
+                    <tbody class="tableBody">
+                        <tr>
+                            <td class="header" width ="130px">比率1</td>
+                            <td style="text-align: center">未獲得市場</td>
+                            <td style="text-align: right;">$resultData.estParamHonbu.estimationParam.indexMikakutoku</td>
+                        </tr>
+                        <tr>
+                            <td class="header" width ="130px">比率2</td>
+                            <td style="text-align: center">過去実績</td>
+                            <td style="text-align: right;">$resultData.estParamHonbu.estimationParam.indexDelivery</td>
+                        </tr>
+                        <tr>
+                            <td class="header" width ="130px">比率3</td>
+                            <td style="text-align: center">$honbuIndexFreeName1</td>
+                            <td style="text-align: right;">$resultData.estParamHonbu.estimationParam.indexFree1</td>
+                        </tr>
+                        <tr>
+                            <td class="header" width ="130px">比率4</td>
+                            <td style="text-align: center">$honbuIndexFreeName2</td>
+                            <td style="text-align: right;">$resultData.estParamHonbu.estimationParam.indexFree2</td>
+                        </tr>
+                        <tr>
+                            <td class="header" width ="130px">比率5</td>
+                            <td style="text-align: center">$honbuIndexFreeName3</td>
+                            <td style="text-align: right;">$resultData.estParamHonbu.estimationParam.indexFree3</td>
+                        </tr>
+                    <tbody>
+                </table>
+            </td>
+            <td width ="50%" style="padding:0px 20px 0px 20px;vertical-align: top;">
+                <div class="titleLine">比率</div>
+                <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+                    <thead class="tableHeader">
+                        <tr>
+                            <td width ="130px">　</td>
+                            <td>項目名</td>
+                            <td width ="130px">比率</td>
+                        </tr>
+                    </thead>
+                    <tbody class="tableBody">
+                        <tr>
+                            <td class="header" width ="130px">比率1</td>
+                            <td style="text-align: center">未獲得市場</td>
+                            <td style="text-align: right;">
+                            <input type="text" id="officeIndexMikakutoku" name="officeIndexMikakutoku" value="$!resultData.estParamOffice.estimationParam.indexMikakutoku" onkeyup="editOn()" size="10" maxlength="3" class="inputB ime_not textR" style="width:95%;padding-right:1px;"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="header" width ="130px">比率2</td>
+                            <td style="text-align: center">過去実績</td>
+                            <td style="text-align: right;">
+                            <input type="text" id="officeIndexDelivery" name="officeIndexDelivery" value="$!resultData.estParamOffice.estimationParam.indexDelivery" onkeyup="editOn()" size="10" maxlength="3" class="inputB ime_not textR" style="width:95%;padding-right:1px;"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="header" width ="130px">比率3</td>
+                            <td style="text-align: center">$officeIndexFreeName1</td>
+                            <td style="text-align: right;">
+                            <input type="text" id="officeIndexFree1" name="officeIndexFree1" value="$!resultData.estParamOffice.estimationParam.indexFree1" onkeyup="editOn()" size="10" maxlength="3" class="inputB ime_not textR" style="width:95%;padding-right:1px;"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="header" width ="130px">比率4</td>
+                            <td style="text-align: center">$officeIndexFreeName2</td>
+                            <td style="text-align: right;">
+                            <input type="text" id="officeIndexFree2" name="officeIndexFree2" value="$!resultData.estParamOffice.estimationParam.indexFree2" onkeyup="editOn()" size="10" maxlength="3" class="inputB ime_not textR" style="width:95%;padding-right:1px;"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="header" width ="130px">比率5</td>
+                            <td style="text-align: center">$officeIndexFreeName3</td>
+                            <td style="text-align: right;">
+                            <input type="text" id="officeIndexFree3" name="officeIndexFree3" value="$!resultData.estParamOffice.estimationParam.indexFree3" onkeyup="editOn()" size="10" maxlength="3" class="inputB ime_not textR" style="width:95%;padding-right:1px;"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td width ="50%" style="padding:0px 20px 0px 20px;vertical-align: top;">
+                <div class="titleLine">試算品目データ</div>
+                <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+                    <tbody class="tableBody">
+                    	#set($estParamHonbuBaseProdName = "　")
+                    	#if($resultData.estParamHonbu.baseParam.refProdInfo.prodName)
+	                    	#set($estParamHonbuBaseProdName = $resultData.estParamHonbu.baseParam.refProdInfo.prodName)
+	                	#end
+                        <tr>
+                            <td class="header" width ="130px" nowrap>試算品目</td>
+                            <td style="text-align: left">$estParamHonbuBaseProdName</td>
+                        </tr>
+                        <tr>
+                            <td class="header" width ="130px" nowrap>実績参照期間</td>
+                            <td style="text-align: left">#getValueFromCode($refPeriodList,$resultData.estParamHonbu.baseParam.refFrom.dbValue)
+                                                         　-　
+                                                         #getValueFromCode($refPeriodList,$resultData.estParamHonbu.baseParam.refTo.dbValue)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td width ="50%" style="padding:0px 20px 0px 20px;vertical-align: top;">
+                <div class="titleLine">試算品目データ</div>
+                <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+                    <tbody class="tableBody">
+                        <tr>
+                            <td class="header" width ="130px" nowrap>試算品目*</td>
+                            <td style="text-align: center;padding: 0px;">#selectWithFunc ("officeRefProdCode", $prodList, $!resultData.estParamOffice.baseParam.refProdCode, "editOn()")</td>
+                            <td style="text-align: center;"><input type="button" value="過去実績参照" onclick="openResultDialog(document.dps301C01Form.officeRefProdCode.value)" /></td>
+                        </tr>
+                        <tr>
+                            <td class="header" width ="130px" nowrap>実績参照期間*</td>
+                            <td colspan="2" style="text-align: center;">
+                            #selectWithFunc ("officeRefFrom", $refPeriodList, $!resultData.estParamOffice.baseParam.refFrom.dbValue, "editOn()")
+                            　　　　-　　　　
+                            #selectWithFunc ("officeRefTo", $refPeriodList, $!resultData.estParamOffice.baseParam.refTo.dbValue, "editOn()")
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="guide">※過去実績参照をクリックすると、指定された品目の過去実績を表示します。</div>
+            </td>
+        </tr>
+        <tr>
+            <td width ="50%" style="padding:0px 20px 0px 20px;vertical-align: top;">
+                <div class="titleLine">参考表示実績</div>
+                <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+                    <tbody class="tableBody">
+                        <tr>
+                            <td class="header" width ="130px" nowrap>実績参照品目1</td>
+                            <td style="text-align: left">$resultRefProdName1</td>
+                        </tr>
+                        <tr>
+                            <td class="header" width ="130px" nowrap>実績参照品目2</td>
+                            <td style="text-align: left">$resultRefProdName2</td>
+                        </tr>
+                        <tr>
+                            <td class="header" width ="130px" nowrap>実績参照品目3</td>
+                            <td style="text-align: left">$resultRefProdName3</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td width ="50%" style="padding:0px 20px 0px 20px;vertical-align: top;">
+                <div class="titleLine">参考表示実績</div>
+                <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+                    <tbody class="tableBody">
+                        <tr>
+                            <td class="header" width ="130px" nowrap>実績参照品目1</td>
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　変数名変更
+##                          <td style="text-align: center;padding: 0px;">#selectWithFunc ("officeResultRefProdCode1", $MMPRefProdList, $!resultData.estParamOffice.baseParam.resultRefProdCode1, "editOn()")</td>
+                            <td style="text-align: center;padding: 0px;">#selectWithFunc ("officeResultRefProdCode1", $RefProdList, $!resultData.estParamOffice.baseParam.resultRefProdCode1, "editOn()")</td>
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　変数名変更
+                            <td style="text-align: center;"><input type="button" value="過去実績参照" onclick="openResultDialog(document.dps301C01Form.officeResultRefProdCode1.value)" /></td>
+                        </tr>
+                        <tr>
+                            <td class="header" width ="130px" nowrap>実績参照品目2</td>
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　変数名変更
+##                          <td style="text-align: center;padding: 0px;">#selectWithFunc ("officeResultRefProdCode2", $MMPRefProdList, $!resultData.estParamOffice.baseParam.resultRefProdCode2, "editOn()")</td>
+                            <td style="text-align: center;padding: 0px;">#selectWithFunc ("officeResultRefProdCode2", $RefProdList, $!resultData.estParamOffice.baseParam.resultRefProdCode2, "editOn()")</td>
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　変数名変更
+                            <td style="text-align: center;"><input type="button" value="過去実績参照" onclick="openResultDialog(document.dps301C01Form.officeResultRefProdCode2.value)" /></td>
+                        </tr>
+                        <tr>
+                            <td class="header" width ="130px" nowrap>実績参照品目3</td>
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　変数名変更
+##                          <td style="text-align: center;padding: 0px;">#selectWithFunc ("officeResultRefProdCode3", $MMPRefProdList, $!resultData.estParamOffice.baseParam.resultRefProdCode3, "editOn()")</td>
+                            <td style="text-align: center;padding: 0px;">#selectWithFunc ("officeResultRefProdCode3", $RefProdList, $!resultData.estParamOffice.baseParam.resultRefProdCode3, "editOn()")</td>
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　変数名変更
+                            <td style="text-align: center;"><input type="button" value="過去実績参照" onclick="openResultDialog(document.dps301C01Form.officeResultRefProdCode3.value)" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="guide">※過去実績参照をクリックすると、指定された品目の過去実績を表示します。</div>
+            </td>
+        </tr>
+    </table>
+    </div>
+    #token()
+    <input type="hidden" id="sosCd3" name="sosCd3" value="$!form.bean.getSosCd3()" />
+    <input type="hidden" id="initSosCodeValue" name="initSosCodeValue"  value="$!security.defaultSosCd"/>
+    <input type="hidden" name="prodCode" value="$!resultData.plannedProd.prodCode" />
+    <input type="hidden" name="prodName" value="$!resultData.plannedProd.prodName" />
+    <input type="hidden" name="officeIndexFreeName1" value="$!resultData.estParamOffice.estimationParam.indexFreeName1" />
+    <input type="hidden" name="officeIndexFreeName2" value="$!resultData.estParamOffice.estimationParam.indexFreeName2" />
+    <input type="hidden" name="officeIndexFreeName3" value="$!resultData.estParamOffice.estimationParam.indexFreeName3" />
+    <input type="hidden" name="officeResultRefProdCode4" value="$!resultData.estParamOffice.baseParam.resultRefProdCode4" />
+    <input type="hidden" name="officeLastUpdateTime" value="$!resultData.estParamOffice.upDate.time" />
+    <input type="hidden" name="officeSeqKey" value="$!resultData.estParamOffice.seqKey" />
+    <input type="hidden" id="sosCd2" name="sosCd2" />
+    <input type="hidden" id="sosCd4" name="sosCd4"  />
+    <input type="hidden" id="jgiNo" name="jgiNo"  />
+</form>
+</div>

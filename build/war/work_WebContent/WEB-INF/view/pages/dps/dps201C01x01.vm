@@ -1,0 +1,34 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS201C01_DATA_R"))
+    #set( $dataList = $form.getRequestData("DPS201C01_DATA_R"))
+#end
+#if($dataList)
+    $!consts.getDhtmlxGridXmlHeader()
+    <rows total_count='$dataList.size()'>
+    #foreach($resultObj in $dataList)
+    <row id='$velocityCount'>
+        <userdata name="prodCode">$!resultObj.getProdCode()</userdata>
+        <userdata name="category">$!resultObj.getCategory()</userdata>
+##試算
+#set($estimationFlgChecked = "")
+#if($!resultObj.getStrEstimationFlg().equals("1"))
+            #set($estimationFlgChecked = 1)
+#end
+<cell>$estimationFlgChecked</cell>
+
+##配分
+#set($exceptFlgChecked = "")
+#if($!resultObj.getStrExceptFlg().equals("1"))
+            #set($exceptFlgChecked = 1)
+#end
+<cell>$exceptFlgChecked</cell>
+
+##カテゴリ
+        <cell>$!resultObj.getCategoryName()</cell>
+
+##品目名称
+        <cell>$!resultObj.getProdName()</cell>
+    </row>
+    #end
+    </rows>
+#end

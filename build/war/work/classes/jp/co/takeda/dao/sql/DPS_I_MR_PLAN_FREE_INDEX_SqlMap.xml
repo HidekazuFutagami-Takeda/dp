@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_MR_PLAN_FREE_INDEX_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.MrPlanFreeIndex" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INDEX_FREE_VALUE_UH_1" property="indexFreeValueUh1" jdbcType="BIGINT" />
+    <result column="INDEX_FREE_VALUE_UH_2" property="indexFreeValueUh2" jdbcType="BIGINT" />
+    <result column="INDEX_FREE_VALUE_UH_3" property="indexFreeValueUh3" jdbcType="BIGINT" />
+    <result column="INDEX_FREE_VALUE_P_1" property="indexFreeValueP1" jdbcType="BIGINT" />
+    <result column="INDEX_FREE_VALUE_P_2" property="indexFreeValueP2" jdbcType="BIGINT" />
+    <result column="INDEX_FREE_VALUE_P_3" property="indexFreeValueP3" jdbcType="BIGINT" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultMapList" class="jp.co.takeda.model.MrPlanFreeIndex" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="SHOKUSHU_NAME" property="shokushuName" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INDEX_FREE_VALUE_UH_1" property="indexFreeValueUh1" jdbcType="BIGINT" />
+    <result column="INDEX_FREE_VALUE_UH_2" property="indexFreeValueUh2" jdbcType="BIGINT" />
+    <result column="INDEX_FREE_VALUE_UH_3" property="indexFreeValueUh3" jdbcType="BIGINT" />
+    <result column="INDEX_FREE_VALUE_P_1" property="indexFreeValueP1" jdbcType="BIGINT" />
+    <result column="INDEX_FREE_VALUE_P_2" property="indexFreeValueP2" jdbcType="BIGINT" />
+    <result column="INDEX_FREE_VALUE_P_3" property="indexFreeValueP3" jdbcType="BIGINT" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="sumValueMap" class="java.util.HashMap" >
+    <result column="INDEX_FREE_VALUE_UH_1" property="indexFreeValueUh1" jdbcType="BIGINT" />
+    <result column="INDEX_FREE_VALUE_UH_2" property="indexFreeValueUh2" jdbcType="BIGINT" />
+    <result column="INDEX_FREE_VALUE_UH_3" property="indexFreeValueUh3" jdbcType="BIGINT" />
+    <result column="INDEX_FREE_VALUE_P_1" property="indexFreeValueP1" jdbcType="BIGINT" />
+    <result column="INDEX_FREE_VALUE_P_2" property="indexFreeValueP2" jdbcType="BIGINT" />
+    <result column="INDEX_FREE_VALUE_P_3" property="indexFreeValueP3" jdbcType="BIGINT" />
+  </resultMap>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,INDEX_FREE_VALUE_UH_1
+          ,INDEX_FREE_VALUE_UH_2
+          ,INDEX_FREE_VALUE_UH_3
+          ,INDEX_FREE_VALUE_P_1
+          ,INDEX_FREE_VALUE_P_2
+          ,INDEX_FREE_VALUE_P_3
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_MR_PLAN_FREE_INDEX
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.MrPlanFreeIndex" >
+    SELECT SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,INDEX_FREE_VALUE_UH_1
+          ,INDEX_FREE_VALUE_UH_2
+          ,INDEX_FREE_VALUE_UH_3
+          ,INDEX_FREE_VALUE_P_1
+          ,INDEX_FREE_VALUE_P_2
+          ,INDEX_FREE_VALUE_P_3
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_MR_PLAN_FREE_INDEX
+     WHERE JGI_NO = #jgiNo:INTEGER#
+       AND PROD_CODE = #prodCode:CHAR#
+  </select>
+
+  <!-- 組織検索 -->
+  <select id="selectListBySosCd" resultMap="resultMapList" parameterClass="java.util.Map" >
+    SELECT MPFI.SEQ_KEY
+          ,JM.JGI_NO
+          ,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+          ,#prodCode:CHAR# AS PROD_CODE
+          ,MPFI.INDEX_FREE_VALUE_UH_1
+          ,MPFI.INDEX_FREE_VALUE_UH_2
+          ,MPFI.INDEX_FREE_VALUE_UH_3
+          ,MPFI.INDEX_FREE_VALUE_P_1
+          ,MPFI.INDEX_FREE_VALUE_P_2
+          ,MPFI.INDEX_FREE_VALUE_P_3
+          ,MPFI.IS_JGI_NO
+          ,MPFI.IS_JGI_NAME
+          ,MPFI.IS_DATE
+          ,MPFI.UP_JGI_NO
+          ,MPFI.UP_JGI_NAME
+          ,MPFI.UP_DATE
+          ,JM.JGI_NAME
+      FROM ((DPS_C_VI_JGI_MST JM
+           INNER JOIN DPS_C_SOS_MST SM ON JM.SOS_CD = SM.SOS_CD)
+           LEFT OUTER JOIN DPS_I_MR_PLAN_FREE_INDEX MPFI ON JM.JGI_NO = MPFI.JGI_NO AND MPFI.PROD_CODE = #prodCode:CHAR#
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ ON JJ.JGI_NO = JM.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#)
+     WHERE
+       <isNotNull property="jgiKbList">
+           <iterate prepend="JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               #jgiKbList[].dbValue#
+           </iterate>
+       </isNotNull>
+       <isNotNull prepend="AND" property="jokenSetList">
+           EXISTS (SELECT JO.JGI_NO
+           FROM DPS_C_JGI_JOKEN JO
+           WHERE JO.JGI_NO = JM.JGI_NO
+           <isNotNull property="jokenSetList">
+               <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                   #jokenSetList[].dbValue#
+               </iterate>
+           </isNotNull>
+           )
+       </isNotNull>
+       <isNotEmpty prepend="AND" property="sosCd3">
+           JM.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotEmpty>
+       <isNotEmpty prepend="AND" property="sosCd4">
+           JM.SOS_CD4 = #sosCd4:VARCHAR#
+       </isNotEmpty>
+<!-- add Start 2022/7/13 H.Futagami 2022年4月組織変更対応 検索条件にカテゴリ追加（結合条件：職種コード） -->
+      <isNotNull prepend="AND" property="category">
+       EXISTS (SELECT 'X'
+       FROM DPS_C_PLANNED_CTG CTG
+           ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+       WHERE CTG.CATEGORY = #category:CHAR#
+       AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+       AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+       AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+       )
+       </isNotNull>
+<!-- add End 2022/7/13 H.Futagami 2022年4月組織変更対応 検索条件にカテゴリ追加（結合条件：職種コード） -->
+
+  ORDER BY BR_CODE
+         , DIST_SEQ
+         , DIST_CODE
+         , TEAM_CODE
+         , SHOKUSEI_CD
+         , SHOKUSHU_CD
+         , JGI_NO
+  </select>
+
+  <!-- 検索・品目コード、組織コードから、フリー項目合計を取得 -->
+  <select id="sumFreeIndexByProdSos" resultMap="sumValueMap" parameterClass="java.util.Map" >
+    SELECT
+           SUM(fi.index_free_value_uh_1) as index_free_value_uh_1
+          ,SUM(fi.index_free_value_p_1) as index_free_value_p_1
+          ,SUM(fi.index_free_value_uh_2) as index_free_value_uh_2
+          ,SUM(fi.index_free_value_p_2) as index_free_value_p_2
+          ,SUM(fi.index_free_value_uh_3) as index_free_value_uh_3
+          ,SUM(fi.index_free_value_p_3) as index_free_value_p_3
+      FROM DPS_I_MR_PLAN_FREE_INDEX FI
+           INNER JOIN DPS_C_JGI_MST JM ON FI.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_SOS_MST SM ON JM.SOS_CD = SM.SOS_CD
+     WHERE FI.PROD_CODE = #prodCode:CHAR#
+       AND JM.SOS_CD3 = #sosCd3:VARCHAR#
+  </select>
+
+  <!-- 最終レコード取得 -->
+  <select id="selectUpDate" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,INDEX_FREE_VALUE_UH_1
+          ,INDEX_FREE_VALUE_UH_2
+          ,INDEX_FREE_VALUE_UH_3
+          ,INDEX_FREE_VALUE_P_1
+          ,INDEX_FREE_VALUE_P_2
+          ,INDEX_FREE_VALUE_P_3
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+    FROM
+        (
+        SELECT MPFI.SEQ_KEY
+              ,MPFI.JGI_NO
+              ,MPFI.PROD_CODE
+              ,MPFI.INDEX_FREE_VALUE_UH_1
+              ,MPFI.INDEX_FREE_VALUE_UH_2
+              ,MPFI.INDEX_FREE_VALUE_UH_3
+              ,MPFI.INDEX_FREE_VALUE_P_1
+              ,MPFI.INDEX_FREE_VALUE_P_2
+              ,MPFI.INDEX_FREE_VALUE_P_3
+              ,MPFI.IS_JGI_NO
+              ,MPFI.IS_JGI_NAME
+              ,MPFI.IS_DATE
+              ,MPFI.UP_JGI_NO
+              ,MPFI.UP_JGI_NAME
+              ,MPFI.UP_DATE
+          FROM DPS_C_JGI_MST JM
+               INNER JOIN DPS_I_MR_PLAN_FREE_INDEX MPFI ON JM.JGI_NO = MPFI.JGI_NO
+         WHERE JM.SOS_CD3 = #sosCd3:VARCHAR#
+           AND MPFI.PROD_CODE = #prodCode:CHAR#
+           ORDER BY UP_DATE DESC
+        )
+    WHERE ROWNUM = 1
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.MrPlanFreeIndex" >
+    INSERT INTO DPS_I_MR_PLAN_FREE_INDEX
+          (SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,INDEX_FREE_VALUE_UH_1
+          ,INDEX_FREE_VALUE_UH_2
+          ,INDEX_FREE_VALUE_UH_3
+          ,INDEX_FREE_VALUE_P_1
+          ,INDEX_FREE_VALUE_P_2
+          ,INDEX_FREE_VALUE_P_3
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (ORADPX01.SEQ_DPS_I_MR_PLAN_FREE_INDEX.NEXTVAL
+          ,#jgiNo:INTEGER#
+          ,#prodCode:CHAR#
+          ,#indexFreeValueUh1:BIGINT#
+          ,#indexFreeValueUh2:BIGINT#
+          ,#indexFreeValueUh3:BIGINT#
+          ,#indexFreeValueP1:BIGINT#
+          ,#indexFreeValueP2:BIGINT#
+          ,#indexFreeValueP3:BIGINT#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.MrPlanFreeIndex" >
+    UPDATE DPS_I_MR_PLAN_FREE_INDEX
+       SET JGI_NO = #jgiNo:INTEGER#
+          ,PROD_CODE = #prodCode:CHAR#
+          ,INDEX_FREE_VALUE_UH_1 = #indexFreeValueUh1:BIGINT#
+          ,INDEX_FREE_VALUE_UH_2 = #indexFreeValueUh2:BIGINT#
+          ,INDEX_FREE_VALUE_UH_3 = #indexFreeValueUh3:BIGINT#
+          ,INDEX_FREE_VALUE_P_1 = #indexFreeValueP1:BIGINT#
+          ,INDEX_FREE_VALUE_P_2 = #indexFreeValueP2:BIGINT#
+          ,INDEX_FREE_VALUE_P_3 = #indexFreeValueP3:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_MR_PLAN_FREE_INDEX
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </delete>
+
+</sqlMap>

@@ -1,0 +1,57 @@
+#set($layout = "nothingLayout.vm" )
+#if($form.getRequestData("DPS500C00_DATA_R"))
+    #set($resultDataList = $form.getRequestData("DPS500C00_DATA_R").tmsTytenPlanDistProdList)
+#end
+<rows>
+#if($!security.sysManage.transTFlg)
+    #set($transTFlg = true)
+#else
+    #set($transTFlg = false)
+#end
+#if($resultDataList)
+    #foreach($resultData in $resultDataList)
+        ## 配分済/未配分のチェック
+        #if(!$resultData.statusDistForWs)
+            #set($disabled = "")
+            #set($checked = "1")
+        #elseif($resultData.statusDistForWs.DbValue == "1")
+            #set($disabled = "disabled='true'")
+            #set($checked = "")
+        #else
+            #set($disabled = "")
+            #set($checked = "")
+        #end
+        ## T/Y変換後
+        #if($transTFlg)
+            #set($disabled = "disabled='true'")
+        #end
+        <row id="$velocityCount">
+            <userdata name="prodCode">$!resultData.prodCode</userdata>
+            ## mod Start 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+            ##<cell $disabled>$checked</cell>
+            ##<cell>$!resultData.prodName</cell>
+            ##<cell>
+            <cell $disabled style="height:20px;">$checked</cell>
+            <cell style="height:20px;">$!resultData.prodName</cell>
+            <cell style="height:20px;">
+            ## mod End 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                #if(!$resultData.statusDistForWs)
+                    配分前
+                #elseif($resultData.statusDistForWs.DbValue == "0")
+                    配分前
+                #elseif($resultData.statusDistForWs.DbValue == "1")
+                    <![CDATA[配分中($format.toString($resultData.distStartDate ,"MM/dd HH:mm") -)]]>
+                #elseif($resultData.statusDistForWs.DbValue == "2")
+                    <![CDATA[配分済($format.toString($resultData.distStartDate ,"MM/dd HH:mm") - $format.toString($resultData.distEndDate ,"MM/dd HH:mm"))]]>
+                #end
+            </cell>
+            ## mod Start 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+            ##<cell>$!resultData.sumPlannedValueUhY</cell>
+            ##<cell>$!resultData.sumPlannedValuePY</cell>
+            <cell style="height:20px;">$!resultData.sumPlannedValueUhY</cell>
+            <cell style="height:20px;">$!resultData.sumPlannedValuePY</cell>
+            ## mod End 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+        </row>
+    #end
+#end
+</rows>

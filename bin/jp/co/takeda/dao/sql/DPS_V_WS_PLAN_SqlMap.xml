@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_V_WS_PLAN_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.WsPlanForVac" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="KA_BASE_KB" property="kaBaseKb" jdbcType="CHAR" />
+    <result column="PLANNED_VALUE" property="plannedValue" jdbcType="BIGINT" />
+    <result column="INS_STACK_VALUE" property="insStackValue" jdbcType="BIGINT" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultListMap" class="jp.co.takeda.model.WsPlanForVac" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="KA_BASE_KB" property="kaBaseKb" jdbcType="CHAR" />
+    <result column="PLANNED_VALUE" property="plannedValue" jdbcType="BIGINT" />
+    <result column="INS_STACK_VALUE" property="insStackValue" jdbcType="BIGINT" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="BUMON_SEI_NAME" property="bumonSeiName" jdbcType="VARCHAR" />
+    <result column="SHITEN_MEI_KJ" property="shitenMeiKj" jdbcType="VARCHAR" />
+    <result column="TMS_TYTEN_MEI_KJ" property="tmsTytenMeiKj" jdbcType="VARCHAR" />
+    <result column="PLAN_TAI_GAI_FLG_TOK" property="planTaiGaiFlgTok" jdbcType="CHAR" />
+    <result column="PLAN_TAI_GAI_FLG_RIK" property="planTaiGaiFlgRik" jdbcType="CHAR" />
+  </resultMap>
+
+  <sql id="columnList">
+           SEQ_KEY
+          ,TMS_TYTEN_CD
+          ,PROD_CODE
+          ,SOS_CD
+          ,KA_BASE_KB
+          ,PLANNED_VALUE
+          ,INS_STACK_VALUE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+  </sql>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+    <include refid="columnList" />
+      FROM DPS_V_WS_PLAN
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.WsPlanForVac" >
+    SELECT
+    <include refid="columnList" />
+      FROM DPS_V_WS_PLAN
+     WHERE SOS_CD = #sosCd:VARCHAR#
+       AND PROD_CODE = #prodCode:CHAR#
+       AND TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+  </select>
+
+  <!-- 検索リスト -->
+  <select id="selectList" resultMap="resultListMap" parameterClass="java.util.Map" >
+    SELECT WP.SEQ_KEY
+          ,WP.TMS_TYTEN_CD
+          ,WP.PROD_CODE
+          ,WP.SOS_CD
+          ,WP.KA_BASE_KB
+          ,WP.PLANNED_VALUE
+          ,WP.INS_STACK_VALUE
+          ,WP.IS_JGI_NO
+          ,WP.IS_JGI_NAME
+          ,WP.IS_DATE
+          ,WP.UP_JGI_NO
+          ,WP.UP_JGI_NAME
+          ,WP.UP_DATE
+          ,SM.BUMON_SEI_NAME
+          ,TMS.SHITEN_MEI_KJ
+          ,TMS.TMS_TYTEN_MEI_KJ
+          ,TMS.PLAN_TAI_GAI_FLG_TOK
+          ,TMS.PLAN_TAI_GAI_FLG_RIK
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPS_V_WS_PLAN WP
+           INNER JOIN DPS_C_SOS_MST SM
+        ON WP.SOS_CD = SM.SOS_CD
+           INNER JOIN DPS_C_PLANNED_PROD PP
+        ON WP.PROD_CODE = PP.PROD_CODE
+           INNER JOIN (<include refid="COMMON_SqlMap.tms" />) TMS
+        ON WP.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+           LEFT JOIN DPS_C_CD_MST CM
+        ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD
+     WHERE 1 = 1
+       <isNotNull prepend="AND" property="tmsTytenCd">
+           WP.TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="tmsTytenCdPart">
+           WP.TMS_TYTEN_CD LIKE #tmsTytenCdPart:CHAR#
+       </isNotNull>
+       AND WP.KA_BASE_KB = #kaBaseKb:CHAR#
+       <isNotNull prepend="AND" property="prodCode">
+           WP.PROD_CODE = #prodCode:CHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="sosCd">
+           WP.SOS_CD = #sosCd:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="sosCd2">
+           SM.UP_SOS_CD = #sosCd2:VARCHAR#
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.WsPlanForVac" >
+    INSERT INTO DPS_V_WS_PLAN
+          (<include refid="columnList" />)
+    VALUES (ORADPX01.SEQ_DPS_V_WS_PLAN.NEXTVAL
+          ,#tmsTytenCd:CHAR#
+          ,#prodCode:CHAR#
+          ,#sosCd:VARCHAR#
+          ,#kaBaseKb:CHAR#
+          ,#plannedValue:BIGINT#
+          ,#insStackValue:BIGINT#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 品目固定コードを元にワクチン用特約店別計画の積上値を計画値にコピーする -->
+  <update id="updateCopyStackToPlanned" parameterClass="java.util.Map" >
+    UPDATE DPS_V_WS_PLAN
+       SET PLANNED_VALUE = INS_STACK_VALUE
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     <dynamic prepend="WHERE">
+        <isNotNull  prepend="AND" property="prodCode">
+            <iterate prepend="PROD_CODE IN " open="(" close=")" conjunction=","  property="prodCode">
+                #prodCode[]#
+            </iterate>
+        </isNotNull>
+     </dynamic>
+  </update>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.WsPlanForVac" >
+    UPDATE DPS_V_WS_PLAN
+       SET PLANNED_VALUE = #plannedValue:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_V_WS_PLAN
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </delete>
+
+</sqlMap>

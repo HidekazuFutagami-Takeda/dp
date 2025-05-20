@@ -1,0 +1,241 @@
+#set( $layout = "nothingLayout.vm" )
+#set( $data = $form.getRequestData("DPS202C01_V_DATA_R"))
+#set( $dataList = $data.getSpecialInsPlanProdList())
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+##集計行表示判断用変数
+#set( $isFirst = true )
+##RowId用カウンタ
+#set( $idcnt = 1 )
+##各集計行集計範囲
+#set( $srange = "" )
+#set( $hrange = "" )
+#set( $mrange = "" )
+##各集計行
+#set( $srowids = "" )
+#set( $hrowids = "" )
+#set( $mrowids = "" )
+##追加ボタンId
+#set( $bid = 1 )
+##品目表示用カウント
+#set( $DispProdCnt = 0 )
+#set( $detailButtonFlg = false )
+#foreach($resultData in $dataList)
+    ##集計行
+    ##項目の施設コード、品目コードが前行と異なる場合、集計行を表示する
+    #set( $sisetuflg = ( $resultData.getInsName() == "sSum" ) )
+    #set( $hinmokuflg = ( $resultData.getInsName() == "hSum" ) )
+    #set( $mmpflg = ( $resultData.getInsName() == "mSum" ) )
+     #if($DispProdCnt == 0)
+        #set( $ProdName = $!resultData.getProdName() )
+        #set( $isDispProdName = false )
+     #elseif($DispProdCnt == 1)
+        #set( $ProdName = "" )
+     #else
+         #set( $ProdName = "" )
+     #end
+     #set( $DispProdCnt = $DispProdCnt + 1 )
+     #set( $q = '"' )
+     #set( $monNnu0PFAP = $!resultData.getmonNnu0_preFarAdvancePeriod())
+     #set( $monNnu0FAP = $!resultData.getmonNnu0_FarAdvancePeriod())
+     #set( $monNnu0AP = $!resultData.getmonNnu0_AdvancePeriod())
+     #set( $monNnu0CP = $!resultData.getmonNnu0_CurrentPeriod())
+     #if (!($sisetuflg) && !($hinmokuflg) && !($mmpflg) && $resultData.getMonNnu0())
+        #set( $p = "?jgiNo=$!form.bean.jgiNo&prodCode=$!resultData.getProdCode()&insNo=$!resultData.getInsNo()")
+        #set( $detailButton0 = "<![CDATA[<input type='button' value='詳細' onClick='openModalWindow(${q}${link.setAction('dps913C03F00')}${p}${q})'/>]]>" )
+        #if($detailButtonFlg)
+            #set( $detailButton0 = "")
+            #set( $detailButtonFlg = false )
+        #else
+            #set( $detailButtonFlg = true )
+        #end
+     #else
+        #set( $detailButton0 = "" )
+        #set( $detailButtonFlg = false )
+     #end
+     #if($isFirst)
+        #set( $InsName = $!resultData.getInsName() )
+        #set( $InsClass = $!resultData.getInsClass() )
+        #if ($!security.hasAuthEdit("DPS202C00"))
+            ## mod Start 2022/6/27  Y.Taniguchi バックログNo.15　ワクチンの場合、選択した都道府県に紐づく“特約店（本店）”のみ表示
+            #set( $addButton = "<![CDATA[<input type='button' value='追加' style='font-size: 10px;' onClick='inspos = $bid;openModalWindowW(${q}${link.setAction('dps912C01F00')}?tmsSelectMode=$tmsselect.getGrayAndDisableButtonMode()&tytenApplyFuncName=dps202C01TytenApply&sosCd=$!data.getSosCd3()&addrCodePref=$!data.getAddrCodePref()${q})' />]]>" )
+            ## mod End 2022/6/27  Y.Taniguchi バックログNo.15　ワクチンの場合、選択した都道府県に紐づく“特約店（本店）”のみ表示
+        #else
+            #set( $addButton = "" )
+        #end
+     #else
+        #set( $InsName = "" )
+        #set( $InsClass = "" )
+        #set( $addButton = "" )
+        #set( $detailButton = "" )
+     #end
+     #if($resultData.getPlannedValueB())
+        #set( $type = "edn" )
+     #else
+        #set( $type = "ed" )
+     #end
+     #set( $inputBgClass = " class='inputB'" )
+     #if($resultData.getTmsTytenCd())
+        #set( $sumRowFlg = "false" )
+     #else
+        #set( $type = "ro" )
+        #set( $inputBgClass = "" )
+        #set( $sumRowFlg = "true" )
+     #end
+     ## 編集権限が無い場合、入力不可とする
+     #if (!$!security.hasAuthEdit("DPS202C00"))
+        #set( $inputBgClass = "" )
+        #set( $type = "ro" )
+        ## 特約店追加ボタンなし
+        #set( $addButton = "" )
+     #end
+     #set($bgClass = "")
+     #set($bgClassTms = "")
+     ## 削除施設の場合
+     #if($resultData.getDelFlg())
+        ## 背景色グレー
+        #set( $bgClass = " class='delIns'" )
+        #set( $bgClassTms = " class='delIns'" )
+        ## 入力項目なし
+        #set( $inputBgClass = " class='delIns'" )
+        #set( $type = "ro" )
+        ## 特約店追加ボタンなし
+        #set( $addButton = "" )
+     ## 配分除外の場合
+     #elseif($resultData.getExDistFlg())
+        ## 背景色黄色
+        #set( $bgClass = " class='exceptDist'" )
+        #set( $bgClassTms = " class='exceptDist'" )
+        ## 入力項目なし
+        #set( $inputBgClass = " class='exceptDist'" )
+        #set( $type = "ro" )
+        ## 特約店追加ボタンなし
+        #set( $addButton = "" )
+     ## 廃止特約店の場合
+     #elseif($resultData.getPlanTaiGaiFlgRik())
+        ## 背景色グレー
+        #set( $bgClassTms = " class='planTaiGaiFlgRik'" )
+        ## 入力項目なし
+        #set( $inputBgClass = " class='planTaiGaiFlgRik'" )
+        #set( $type = "ron" )
+     #end
+     #if(!($sisetuflg) && !($hinmokuflg) && !($mmpflg))
+     <row id='$idcnt'>
+        ##メッセージ見出し用
+        <userdata name="prodName">$!resultData.getProdName()</userdata>
+        <userdata name="insName">$!resultData.getInsName()</userdata>
+        <userdata name="tmsTytenName">$!resultData.getTmsTytenName()</userdata>
+        ##送信データ
+        <userdata name="prodCode">$!resultData.getProdCode()</userdata>
+        <userdata name="insNoA">$!resultData.getInsNo()</userdata>
+        <userdata name="tmsTytenCd">$!resultData.getTmsTytenCd()</userdata>
+        <userdata name="seqKey">$!resultData.getSeqKey()</userdata>
+        <userdata name="para">$!resultData.getInsNo(),$!resultData.getProdCode(),$!resultData.getTmsTytenCd()</userdata>
+        ##グリッド操作用
+        <userdata name="sumRowFlg">$sumRowFlg</userdata>
+        <userdata name="rowType">input</userdata>
+        ##計算、追加用インデックス
+        <userdata name="bid">$bid</userdata>
+        ##計画立案対象外フラグ
+        <userdata name="planTaiGaiFlgRik">$!resultData.getPlanTaiGaiFlgRik()</userdata>
+        <cell style="border-width:0px 1px 0px 1px;">$!ProdName</cell>
+        <cell$bgClass style="border-width:0px 1px 0px 1px;">$!InsName</cell>
+        <cell$bgClass style="border-width:0px 1px 0px 1px;">$!InsClass</cell>
+        <cell$bgClass style="border-width:0px 1px 0px 1px;">$!addButton</cell>
+        <cell$bgClassTms>#if( $resultData.getPlanTaiGaiFlgRik() )$tmsselect.getPlanTaiGaiLabel()#end$!resultData.getTmsTytenName()</cell>
+        <cell$inputBgClass type='$type'>$!resultData.getPlannedValueB()</cell>
+        <cell$bgClassTms type='#setColType( $monNnu0PFAP, "ro" ,"ron")'>$monNnu0PFAP</cell>
+        <cell$bgClassTms type='#setColType( $monNnu0FAP, "ro" ,"ron")'>$monNnu0FAP</cell>
+        <cell$bgClassTms type='#setColType( $monNnu0AP, "ro" ,"ron")'>$monNnu0AP</cell>
+        <cell$bgClassTms type='#setColType( $monNnu0CP, "ro" ,"ron")'>$monNnu0CP</cell>
+        <cell$bgClass style="border-width:0px 1px 0px 1px;">$!detailButton0</cell>
+        #set( $srange = $srange + "," + $idcnt)
+        #set( $idcnt = $idcnt + 1 )
+    </row>
+    ##比較用施設コード、品目コード更新
+    #set( $oldInsNo = $resultData.getInsNo() )
+    #set( $oldProdCode = $resultData.getProdCode() )
+    #set( $isFirst = false )
+    #end
+    ##施設計
+    #if($sisetuflg)
+    <row id='$idcnt'>
+    <userdata name="srange">$srange</userdata>
+    <userdata name="sumRowFlg">true</userdata>
+    #if($DispProdCnt == 2)
+        <cell style="border-width: 0px 1px 0px 1px;"></cell>
+    #else
+        <cell style="border-width: 0px 1px 0px 1px;"></cell>
+    #end
+        <cell$bgClass style="border-width:0px 1px 1px 1px;"></cell>
+        <cell$bgClass style="border-width:0px 1px 1px 1px;"></cell>
+        <cell$bgClass style="text-align:center;border-width:1px 0px 1px 1px;">施設計</cell>
+        <cell$bgClass style="border-width:1px 0px 1px 0px;"></cell>
+        <cell$bgClass type="ron">$!resultData.getPlannedValueB()</cell>
+        <cell$bgClass>$!resultData.getmonNnu0_preFarAdvancePeriod()</cell>
+        <cell$bgClass>$!resultData.getmonNnu0_FarAdvancePeriod()</cell>
+        <cell$bgClass>$!resultData.getmonNnu0_AdvancePeriod()</cell>
+        <cell$bgClass>$!resultData.getmonNnu0_CurrentPeriod()</cell>
+        <cell$bgClass></cell>
+        #set( $srange = "" )
+        #set( $bid = $bid + 1 )
+        #set( $hrange = $hrange + "," + $idcnt )
+        #set( $idcnt = $idcnt + 1 )
+        #set( $isFirst = true )
+     </row>
+     #end
+     ##品目計
+     #if($hinmokuflg)
+     <row id='$idcnt'>
+        <userdata name="hrange">$hrange</userdata>
+        <userdata name="sumRowFlg">true</userdata>
+        <cell></cell>
+        <cell class="psumB textL" style="border-width:1px 0px 1px 0px;">品目計</cell>
+        <cell class="psumB" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="psumB" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="psumB" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="psumB" type="ron">$!resultData.getPlannedValueB()</cell>
+        <cell class="psumB">$!resultData.getmonNnu0_preFarAdvancePeriod()</cell>
+        <cell class="psumB">$!resultData.getmonNnu0_FarAdvancePeriod()</cell>
+        <cell class="psumB">$!resultData.getmonNnu0_AdvancePeriod()</cell>
+        <cell class="psumB">$!resultData.getmonNnu0_CurrentPeriod()</cell>
+        <cell class="psumB"></cell>
+        #set( $DispProdCnt = 0 )
+        #set( $srowids =  $srowids + $hrange )
+        #set( $hrange = "" )
+        #set( $mrange = $mrange + "," + $idcnt )
+        #set( $idcnt = $idcnt + 1 )
+     </row>
+     #end
+     ##mmp計
+     #if($mmpflg)
+     #set( $sumName = $!resultData.getProdName() )
+     <row id='$idcnt'>
+        <userdata name="mrange">$mrange</userdata>
+        <userdata name="sumRowFlg">true</userdata>
+        <cell class="asumB textL" style="border-width:1px 0px 1px 0px;">$sumName</cell>
+        <cell class="asumB" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="asumB" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="asumB" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="asumB" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="asumB" type="ron">$!resultData.getPlannedValueB()</cell>
+        <cell class="asumB">$!resultData.getmonNnu0_preFarAdvancePeriod()</cell>
+        <cell class="asumB">$!resultData.getmonNnu0_FarAdvancePeriod()</cell>
+        <cell class="asumB">$!resultData.getmonNnu0_AdvancePeriod()</cell>
+        <cell class="asumB">$!resultData.getmonNnu0_CurrentPeriod()</cell>
+        <cell class="asumB"></cell>
+        #set( $DispProdCnt = 0 )
+        #set( $hrowids =  $hrowids + $mrange )
+        #set( $mrowids = $mrowids + "," + $idcnt )
+        #set( $idcnt = $idcnt + 1 )
+     </row>
+     #end
+#end
+##集計行
+<userdata name="srowids">$srowids</userdata>
+<userdata name="hrowids">$hrowids</userdata>
+<userdata name="mrowids">$mrowids</userdata>
+<userdata name="hiddencnt">$hiddencnt</userdata>
+</rows>
+#end

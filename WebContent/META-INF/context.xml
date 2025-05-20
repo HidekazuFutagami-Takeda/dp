@@ -2,6 +2,11 @@
 <Context path="/takeda_dp" reloadable="true">
     <Resource name="jdbc/ORADPX01DS" auth="Container" type="javax.sql.DataSource"
         driverClassName="oracle.jdbc.driver.OracleDriver"
-         url="jptyororthdb-prd001.ctw3983siqju.ap-northeast-1.rds.amazonaws.com/ORCL"
-        username="THSP_PRDRDS_WEB_SVCUSR" password="Dbsu_38fjeun46" />
+        url="jdbc:oracle:thin:@jptyospdbord1.cie4ijpuyjwp.ap-northeast-1.rds.amazonaws.com/ORCL"
+ username="SP_DEVRDS_WEB_SVCUSR" password="ojgdaksTRWEF$#752" />
 </Context>
+<!--         url="jdbc:oracle:thin:@jptyothdbort1.cwddxjpmm7ru.ap-northeast-1.rds.amazonaws.com/ORCL" -->
+<!--  username="THSP_UATRDS_WEB_SVCUSR" password="hJjfgJGIWQD#755" /> -->
+<!-- username="SP_DEVRDS_HIT_rna8405" password="Cswu_834hru5h" /> -->
+
+

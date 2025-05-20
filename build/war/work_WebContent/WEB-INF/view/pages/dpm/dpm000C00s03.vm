@@ -1,0 +1,12 @@
+## ----------------------------------------
+## 画面右側
+## ----------------------------------------
+#if($security.hasIyaku())
+    #if ($sosiki.isIyakuSosListDispFlg())
+    #parse("WEB-INF/view/pages/dpm/dpm000C00s25.vm")
+    #else
+    #parse("WEB-INF/view/pages/dpm/dpm000C00s99.vm")
+    #end
+#elseif($security.hasVaccine())
+    #parse("WEB-INF/view/pages/dpm/dpm000C00s99.vm")
+#end

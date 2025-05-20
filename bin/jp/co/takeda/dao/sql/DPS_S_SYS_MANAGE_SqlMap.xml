@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_S_SYS_MANAGE_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.SysManage" >
+    <result column="SYS_CLASS" property="sysClass" jdbcType="CHAR" />
+    <result column="SYS_TYPE" property="sysType" jdbcType="CHAR" />
+    <result column="SYS_YEAR" property="sysYear" jdbcType="CHAR" />
+    <result column="SYS_TERM" property="sysTerm" jdbcType="CHAR" />
+    <result column="SERVICE_STOP_FLG" property="serviceStopFlg" jdbcType="CHAR" />
+    <result column="MESSAGE_CODE" property="messageCode" jdbcType="CHAR" />
+    <result column="YAKKA_INS_WS_FLG" property="yakkaInsWsFlg" jdbcType="CHAR" />
+    <result column="YAKKA_WS_FLG" property="yakkaWsFlg" jdbcType="CHAR" />
+    <result column="TRANS_T_FLG" property="transTFlg" jdbcType="CHAR" />
+    <result column="WS_END_FLG" property="wsEndFlg" jdbcType="CHAR" />
+    <result column="PLANNED_TYPE" property="plannedType" jdbcType="CHAR" />
+    <result column="SERVICE_STOP_TIME_1" property="serviceStopTime1" jdbcType="CHAR" />
+    <result column="SERVICE_STOP_TIME_2" property="serviceStopTime2" jdbcType="CHAR" />
+  </resultMap>
+
+  <!-- 検索 -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SYS_CLASS
+          ,SYS_TYPE
+          ,SYS_YEAR
+          ,SYS_TERM
+          ,SERVICE_STOP_FLG
+          ,MESSAGE_CODE
+          ,YAKKA_INS_WS_FLG
+          ,YAKKA_WS_FLG
+          ,TRANS_T_FLG
+          ,WS_END_FLG
+          ,PLANNED_TYPE
+          ,SERVICE_STOP_TIME_1
+          ,SERVICE_STOP_TIME_2
+      FROM DPS_S_SYS_MANAGE
+     WHERE SYS_CLASS = #sysClass:CHAR#
+       AND SYS_TYPE = #sysType:CHAR#
+  </select>
+
+</sqlMap>

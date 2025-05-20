@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_MR_PLAN_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.MrPlan" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="SPECIAL_INS_PLAN_VALUE_UH_Y" property="specialInsPlanValueUhY" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_UH_1" property="theoreticalValueUh1" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_UH_2" property="theoreticalValueUh2" jdbcType="BIGINT" />
+    <result column="OFFICE_VALUE_UH_Y" property="officeValueUhY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_UH_Y" property="plannedValueUhY" jdbcType="BIGINT" />
+    <result column="SPECIAL_INS_PLAN_VALUE_P_Y" property="specialInsPlanValuePY" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_P_1" property="theoreticalValueP1" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_P_2" property="theoreticalValueP2" jdbcType="BIGINT" />
+    <result column="OFFICE_VALUE_P_Y" property="officeValuePY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_P_Y" property="plannedValuePY" jdbcType="BIGINT" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultSumMap" class="jp.co.takeda.model.MrPlan" >
+    <result column="SPECIAL_INS_PLAN_VALUE_UH_Y" property="specialInsPlanValueUhY" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_UH_1" property="theoreticalValueUh1" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_UH_2" property="theoreticalValueUh2" jdbcType="BIGINT" />
+    <result column="OFFICE_VALUE_UH_Y" property="officeValueUhY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_UH_Y" property="plannedValueUhY" jdbcType="BIGINT" />
+    <result column="SPECIAL_INS_PLAN_VALUE_P_Y" property="specialInsPlanValuePY" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_P_1" property="theoreticalValueP1" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_P_2" property="theoreticalValueP2" jdbcType="BIGINT" />
+    <result column="OFFICE_VALUE_P_Y" property="officeValuePY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_P_Y" property="plannedValuePY" jdbcType="BIGINT" />
+  </resultMap>
+
+  <!-- ユニークキー条件文 -->
+  <sql id="selectiveUk">
+    WHERE JGI_NO = #jgiNo:INTEGER#
+      AND PROD_CODE = #prodCode:CHAR#
+  </sql>
+
+  <!-- columnList -->
+  <sql id="columnList">
+          MRP.SEQ_KEY
+          ,MRP.JGI_NO
+          ,MRP.PROD_CODE
+          ,MRP.SPECIAL_INS_PLAN_VALUE_UH_Y
+          ,MRP.THEORETICAL_VALUE_UH_1
+          ,MRP.THEORETICAL_VALUE_UH_2
+          ,MRP.OFFICE_VALUE_UH_Y
+          ,MRP.PLANNED_VALUE_UH_Y
+          ,MRP.SPECIAL_INS_PLAN_VALUE_P_Y
+          ,MRP.THEORETICAL_VALUE_P_1
+          ,MRP.THEORETICAL_VALUE_P_2
+          ,MRP.OFFICE_VALUE_P_Y
+          ,MRP.PLANNED_VALUE_P_Y
+          ,MRP.IS_JGI_NO
+          ,MRP.IS_JGI_NAME
+          ,MRP.IS_DATE
+          ,MRP.UP_JGI_NO
+          ,MRP.UP_JGI_NAME
+          ,MRP.UP_DATE
+  </sql>
+  <sql id="columnListReport">
+          MIN(MRP.SEQ_KEY) SEQ_KEY,
+          MRP.JGI_NO ,
+          PP.PCAT_CODE PROD_CODE ,
+          SUM(MRP.SPECIAL_INS_PLAN_VALUE_UH_Y) SPECIAL_INS_PLAN_VALUE_UH_Y,
+          SUM(MRP.THEORETICAL_VALUE_UH_1) THEORETICAL_VALUE_UH_1,
+          SUM(MRP.THEORETICAL_VALUE_UH_2) THEORETICAL_VALUE_UH_2,
+          SUM(MRP.OFFICE_VALUE_UH_Y) OFFICE_VALUE_UH_Y,
+          SUM(MRP.PLANNED_VALUE_UH_Y) PLANNED_VALUE_UH_Y,
+          SUM(MRP.SPECIAL_INS_PLAN_VALUE_P_Y) SPECIAL_INS_PLAN_VALUE_P_Y,
+          SUM(MRP.THEORETICAL_VALUE_P_1) THEORETICAL_VALUE_P_1,
+          SUM(MRP.THEORETICAL_VALUE_P_2) THEORETICAL_VALUE_P_2,
+          SUM(MRP.OFFICE_VALUE_P_Y) OFFICE_VALUE_P_Y,
+          SUM(MRP.PLANNED_VALUE_P_Y) PLANNED_VALUE_P_Y,
+          MAX(MRP.IS_JGI_NO) IS_JGI_NO,
+          MAX(MRP.IS_JGI_NAME) IS_JGI_NAME,
+          MAX(MRP.IS_DATE) IS_DATE,
+          MAX(MRP.UP_JGI_NO) UP_JGI_NO,
+          MAX(MRP.UP_JGI_NAME) UP_JGI_NAME,
+          MAX(MRP.UP_DATE) UP_DATE
+  </sql>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT <include refid="columnList" />
+      FROM DPS_I_MR_PLAN MRP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.MrPlan" >
+    SELECT <include refid="columnList" />
+      FROM DPS_I_MR_PLAN MRP
+    <include refid="selectiveUk" />
+  </select>
+
+  <!-- 検索(組織コード) -->
+  <select id="selectBySosCd" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+    <isNotEqual property="report" compareValue="TRUE">
+      <include refid="columnList" />
+    </isNotEqual>
+    <isEqual property="report" compareValue="TRUE">
+      <include refid="columnListReport" />
+    </isEqual>
+      FROM DPS_I_MR_PLAN MRP
+           INNER JOIN DPS_C_JGI_MST JM
+        ON MRP.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD
+    <isNotEqual property="report" compareValue="TRUE">
+           INNER JOIN DPS_C_PLANNED_PROD PP
+        ON MRP.PROD_CODE = PP.PROD_CODE
+    </isNotEqual>
+    <isEqual property="report" compareValue="TRUE">
+           INNER JOIN DPS_C_VI_CPROD_XLS PP
+        ON MRP.PROD_CODE = PP.PROD_CODE
+    </isEqual>
+
+     <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="prodCode">
+       <isNotEqual property="report" compareValue="TRUE">
+        MRP.PROD_CODE = #prodCode:CHAR#
+       </isNotEqual>
+       <isEqual property="report" compareValue="TRUE">
+        PP.PCAT_CODE = #prodCode:CHAR#
+       </isEqual>
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd3">
+        JM.SOS_CD3 = #sosCd3:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd4">
+        JM.SOS_CD4 = #sosCd4:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="category">
+        PP.CATEGORY = #category:CHAR#
+      </isNotNull>
+     </dynamic>
+
+    <isEqual property="report" compareValue="TRUE">
+        GROUP BY MRP.JGI_NO, PP.PCAT_CODE
+    </isEqual>
+
+    <isPropertyAvailable property="sortString">
+      <isNotEqual property="report" compareValue="TRUE">
+        $sortString$
+      </isNotEqual>
+      <isEqual property="report" compareValue="TRUE">
+        ORDER BY MAX(BR_CODE), MAX(DIST_SEQ), MAX(DIST_CODE), MAX(TEAM_CODE), MAX(SHOKUSEI_CD), MAX(SHOKUSHU_CD), JGI_NO, MAX(SORT_ID)
+      </isEqual>
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 最終更新日時取得(組織コード) -->
+  <select id="getLastUpDate" resultMap="resultMap" parameterClass="java.util.Map" >
+   SELECT <include refid="columnList" />
+     FROM (
+        SELECT <include refid="columnList" />
+          FROM DPS_I_MR_PLAN MRP
+               INNER JOIN DPS_C_JGI_MST JM
+            ON MRP.JGI_NO = JM.JGI_NO
+               INNER JOIN DPS_C_SOS_MST SM
+            ON JM.SOS_CD = SM.SOS_CD
+         WHERE MRP.PROD_CODE = #prodCode:CHAR#
+          <isNotNull prepend="AND" property="sosCd3">
+            JM.SOS_CD3 = #sosCd3:VARCHAR#
+          </isNotNull>
+          <isNotNull prepend="AND" property="sosCd4">
+            JM.SOS_CD4 = #sosCd4:VARCHAR#
+          </isNotNull>
+         ORDER BY UP_DATE DESC
+         ) MRP
+    WHERE ROWNUM = 1
+  </select>
+
+  <!-- 検索(サマリー) -->
+  <select id="selectSummary" resultMap="resultSumMap" parameterClass="java.util.Map" >
+    SELECT SUM(MRP.SPECIAL_INS_PLAN_VALUE_UH_Y) AS SPECIAL_INS_PLAN_VALUE_UH_Y
+          ,SUM(MRP.THEORETICAL_VALUE_UH_1) AS THEORETICAL_VALUE_UH_1
+          ,SUM(MRP.THEORETICAL_VALUE_UH_2) AS THEORETICAL_VALUE_UH_2
+          ,SUM(MRP.OFFICE_VALUE_UH_Y) AS OFFICE_VALUE_UH_Y
+          ,SUM(MRP.PLANNED_VALUE_UH_Y) AS PLANNED_VALUE_UH_Y
+          ,SUM(MRP.SPECIAL_INS_PLAN_VALUE_P_Y) AS SPECIAL_INS_PLAN_VALUE_P_Y
+          ,SUM(MRP.THEORETICAL_VALUE_P_1) AS THEORETICAL_VALUE_P_1
+          ,SUM(MRP.THEORETICAL_VALUE_P_2) AS THEORETICAL_VALUE_P_2
+          ,SUM(MRP.OFFICE_VALUE_P_Y) AS OFFICE_VALUE_P_Y
+          ,SUM(MRP.PLANNED_VALUE_P_Y) AS PLANNED_VALUE_P_Y
+      FROM DPS_I_MR_PLAN MRP
+           INNER JOIN DPS_C_JGI_MST JM
+        ON MRP.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD
+     <isEqual property="report" compareValue="TRUE">
+           INNER JOIN DPS_C_VI_CPROD_XLS PP
+        ON MRP.PROD_CODE = PP.PROD_CODE
+     </isEqual>
+     WHERE
+      <isNotEqual property="report" compareValue="TRUE">
+           MRP.PROD_CODE = #prodCode:CHAR#
+      </isNotEqual>
+      <isEqual property="report" compareValue="TRUE">
+           PP.PCAT_CODE = #prodCode:CHAR#
+      </isEqual>
+
+      <isNotNull prepend="AND" property="sosCd3">
+        JM.SOS_CD3 = #sosCd3:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd4">
+        JM.SOS_CD4 = #sosCd4:VARCHAR#
+      </isNotNull>
+<!-- add Start 2022/7/13 H.Futagami 2022年4月組織変更対応 検索条件にカテゴリ追加（結合条件：職種コード） -->
+      <isNotNull prepend="AND" property="category">
+       EXISTS (SELECT 'X'
+       FROM DPS_C_PLANNED_CTG CTG
+           ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+       WHERE CTG.CATEGORY = #category:CHAR#
+       AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+       AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+       AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+       )
+       </isNotNull>
+<!-- add End 2022/7/13 H.Futagami 2022年4月組織変更対応 検索条件にカテゴリ追加（結合条件：職種コード） -->
+
+  </select>
+
+  <!-- 登録(試算) -->
+  <insert id="insertByEst" parameterClass="jp.co.takeda.model.MrPlan" >
+    INSERT INTO DPS_I_MR_PLAN
+          (SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,SPECIAL_INS_PLAN_VALUE_UH_Y
+          ,THEORETICAL_VALUE_UH_1
+          ,THEORETICAL_VALUE_UH_2
+          ,SPECIAL_INS_PLAN_VALUE_P_Y
+          ,THEORETICAL_VALUE_P_1
+          ,THEORETICAL_VALUE_P_2
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (ORADPX01.SEQ_DPS_I_MR_PLAN.NEXTVAL
+          ,#jgiNo:INTEGER#
+          ,#prodCode:CHAR#
+          ,#specialInsPlanValueUhY:BIGINT#
+          ,#theoreticalValueUh1:BIGINT#
+          ,#theoreticalValueUh2:BIGINT#
+          ,#specialInsPlanValuePY:BIGINT#
+          ,#theoreticalValueP1:BIGINT#
+          ,#theoreticalValueP2:BIGINT#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 登録(配分UH) -->
+  <insert id="insertByDistUh" parameterClass="jp.co.takeda.model.MrPlan" >
+    INSERT INTO DPS_I_MR_PLAN
+          (SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,PLANNED_VALUE_UH_Y
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (ORADPX01.SEQ_DPS_I_MR_PLAN.NEXTVAL
+          ,#jgiNo:INTEGER#
+          ,#prodCode:CHAR#
+          ,#plannedValueUhY:BIGINT#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 登録(配分P) -->
+  <insert id="insertByDistP" parameterClass="jp.co.takeda.model.MrPlan" >
+    INSERT INTO DPS_I_MR_PLAN
+          (SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,PLANNED_VALUE_P_Y
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (ORADPX01.SEQ_DPS_I_MR_PLAN.NEXTVAL
+          ,#jgiNo:INTEGER#
+          ,#prodCode:CHAR#
+          ,#plannedValuePY:BIGINT#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 更新(試算) -->
+  <update id="updateByEst" parameterClass="jp.co.takeda.model.MrPlan" >
+    UPDATE DPS_I_MR_PLAN
+       SET UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+          ,SPECIAL_INS_PLAN_VALUE_UH_Y = #specialInsPlanValueUhY:BIGINT#
+          ,THEORETICAL_VALUE_UH_1 = #theoreticalValueUh1:BIGINT#
+          ,THEORETICAL_VALUE_UH_2 = #theoreticalValueUh2:BIGINT#
+          ,SPECIAL_INS_PLAN_VALUE_P_Y = #specialInsPlanValuePY:BIGINT#
+          ,THEORETICAL_VALUE_P_1 = #theoreticalValueP1:BIGINT#
+          ,THEORETICAL_VALUE_P_2 = #theoreticalValueP2:BIGINT#
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </update>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.MrPlan" >
+    UPDATE DPS_I_MR_PLAN
+       SET UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+          ,OFFICE_VALUE_UH_Y = #officeValueUhY:BIGINT#
+          ,PLANNED_VALUE_UH_Y = #plannedValueUhY:BIGINT#
+          ,OFFICE_VALUE_P_Y = #officeValuePY:BIGINT#
+          ,PLANNED_VALUE_P_Y = #plannedValuePY:BIGINT#
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+      <isNotNull prepend="AND" property="upDate">
+       TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+      </isNotNull>
+  </update>
+
+  <!-- 更新(UH) -->
+  <update id="updateUh" parameterClass="jp.co.takeda.model.MrPlan" >
+    UPDATE DPS_I_MR_PLAN
+       SET UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+          ,OFFICE_VALUE_UH_Y = #officeValueUhY:BIGINT#
+          ,PLANNED_VALUE_UH_Y = #plannedValueUhY:BIGINT#
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+      <isNotNull prepend="AND" property="upDate">
+       TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+      </isNotNull>
+  </update>
+
+  <!-- 更新(P) -->
+  <update id="updateP" parameterClass="jp.co.takeda.model.MrPlan" >
+    UPDATE DPS_I_MR_PLAN
+       SET UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+          ,OFFICE_VALUE_P_Y = #officeValuePY:BIGINT#
+          ,PLANNED_VALUE_P_Y = #plannedValuePY:BIGINT#
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+      <isNotNull prepend="AND" property="upDate">
+       TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+      </isNotNull>
+  </update>
+
+  <delete id="updateByDistSos" parameterClass="java.util.Map">
+    UPDATE DPS_I_MR_PLAN
+       SET UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+          <isEqual property="insType.dbValue" compareValue="1">
+          ,PLANNED_VALUE_UH_Y = NULL
+          </isEqual>
+          <isEqual property="insType.dbValue" compareValue="2">
+          ,PLANNED_VALUE_P_Y = NULL
+          </isEqual>
+          WHERE JGI_NO IN (SELECT JGI_NO
+                             FROM DPS_C_JGI_MST
+                            WHERE SOS_CD3 = #sosCd3:VARCHAR#
+                          )
+            AND PROD_CODE = #prodCode:CHAR#
+  </delete>
+
+  <!-- 検索(担当者計画) -->
+  <select id="selectJgiNoProdList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT <include refid="columnList" />
+      FROM DPS_I_MR_PLAN MRP
+      WHERE
+       <isNotNull property="jgiMst">
+           <iterate prepend="MRP.JGI_NO IN" open="(" close=")" conjunction=","  property="jgiMst">
+               #jgiMst[].jgiNo#
+           </iterate>
+       </isNotNull>
+       <isNotNull property="prodList">
+           <iterate prepend="AND MRP.PROD_CODE IN" open="(" close=")" conjunction=","  property="prodList">
+               #prodList[]#
+           </iterate>
+       </isNotNull>
+  </select>
+
+</sqlMap>

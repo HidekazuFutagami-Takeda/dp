@@ -1,0 +1,91 @@
+## ----------------------------------------------
+## (医)特約店別計画(MMP品・仕入品(一般・麻薬)・ONC)
+## ----------------------------------------------
+#set($GridObjName = "dps000C00s29Grid")
+#set($CoverId = "dps000C00s29CoverId")
+#set ($rankString = $progress.getProgressIyakuRank().toString())
+<script language="javascript">
+<!--
+var ${GridObjName};
+## 初期表示＋読込処理
+function dps000C00F29() {
+	##グリッド設定用文字列をカテゴリ可変で作成
+	#set($gridSetHeaderStr      = "特約店別計画")
+	## mod Start 2021/7/19 H.Kaneko Step4UAT課題 特約店別計画を支店ごとに表示
+	###set($gridAttachHeaderStr1  = "カテゴリ")
+	#set($gridAttachHeaderStr1  = "リージョン")
+	#set($gridAttachHeaderStr2  = "#rspan")
+	## mod End 2021/7/19 H.Kaneko Step4UAT課題 特約店別計画を支店ごとに表示
+	#set($gridSetInitWidthsStr  = "110")
+	#set($gridSetColAlignStr    = "left")
+	#set($gridSetColTypesStr    = "ro")
+	#set($gridEnableResizingStr = "false")
+	#set($gridEnableTooltipsStr = "false")
+
+	## del Start 2021/7/19 H.Kaneko Step4UAT課題 特約店別計画を支店ごとに表示
+	##配分状況用
+	###set($gridSetHeaderStr      = $gridSetHeaderStr      + ",#cspan")
+	###set($gridAttachHeaderStr1  = $gridAttachHeaderStr1  + ",配分状況")
+	###set($gridSetInitWidthsStr  = $gridSetInitWidthsStr  + ",150")
+	###set($gridSetColAlignStr    = $gridSetColAlignStr    + ",center")
+	###set($gridSetColTypesStr    = $gridSetColTypesStr    + ",ro")
+	###set($gridEnableResizingStr = $gridEnableResizingStr + ",false")
+	###set($gridEnableTooltipsStr = $gridEnableTooltipsStr + ",false")
+
+	##スライド状況用
+	###set($gridSetHeaderStr      = $gridSetHeaderStr      + ",#cspan")
+	###set($gridAttachHeaderStr1  = $gridAttachHeaderStr1  + ",スライド状況")
+	###set($gridSetInitWidthsStr  = $gridSetInitWidthsStr  + ",150")
+	###set($gridSetColAlignStr    = $gridSetColAlignStr    + ",center")
+	###set($gridSetColTypesStr    = $gridSetColTypesStr    + ",ro")
+	###set($gridEnableResizingStr = $gridEnableResizingStr + ",false")
+	###set($gridEnableTooltipsStr = $gridEnableTooltipsStr + ",false")
+	## del End 2021/7/19 H.Kaneko Step4UAT課題 特約店別計画を支店ごとに表示
+
+	## add Start 2021/7/19 H.Kaneko Step4UAT課題 特約店別計画を支店ごとに表示
+	###foreach($category in $categoryList)
+	#foreach($category in $progress.getProdCategoryListByDataSeq())
+		#set($categoryName = $category.prodCategoryName)
+		#set($gridSetHeaderStr      = $gridSetHeaderStr      + ",#cspan,#cspan")
+		#set($gridAttachHeaderStr1  = $gridAttachHeaderStr1  + ",$categoryName,#cspan")
+		#set($gridAttachHeaderStr2  = $gridAttachHeaderStr2  + ",配分状況")
+		#set($gridAttachHeaderStr2  = $gridAttachHeaderStr2  + ",スライド状況")
+		#set($gridSetInitWidthsStr  = $gridSetInitWidthsStr  + ",80,80")
+		#set($gridSetColAlignStr    = $gridSetColAlignStr    + ",center,center")
+		#set($gridSetColTypesStr    = $gridSetColTypesStr    + ",ro,ro")
+		#set($gridEnableResizingStr = $gridEnableResizingStr + ",false,false")
+		#set($gridEnableTooltipsStr = $gridEnableTooltipsStr + ",false,false")
+	#end
+	## add End 2021/7/19 H.Kaneko Step4UAT課題 特約店別計画を支店ごとに表示
+
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("$gridSetHeaderStr");
+    ${GridObjName}.attachHeader("$gridAttachHeaderStr1");
+    ## add Start 2021/7/19 H.Kaneko Step4UAT課題 特約店別計画を支店ごとに表示
+    ${GridObjName}.attachHeader("$gridAttachHeaderStr2");
+    ## add end 2021/7/19 H.Kaneko Step4UAT課題 特約店別計画を支店ごとに表示
+    ${GridObjName}.setInitWidths("$gridSetInitWidthsStr");
+    ${GridObjName}.setColAlign("$gridSetColAlignStr");
+    ${GridObjName}.setColTypes("$gridSetColTypesStr");
+    ${GridObjName}.enableResizing("$gridEnableResizingStr");
+    ${GridObjName}.enableTooltips("$gridEnableTooltipsStr");
+    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.enableAutoWidth(true);
+    ${GridObjName}.enableAutoHeight(true);
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.objBox.style.overflowY="hidden";
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.load("$link.setAction('dps000C00F29?sFlg=true')", "");
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.attachEvent("onBeforeSelect",function(newId,oldId){return;});
+}
+//-->
+</script>
+#loadingGridDiv("${GridObjName}", "${CoverId}")

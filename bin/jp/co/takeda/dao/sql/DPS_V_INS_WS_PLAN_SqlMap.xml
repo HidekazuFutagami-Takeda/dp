@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_V_INS_WS_PLAN_SqlMap" >
+  <resultMap id="resultMap" class="jp.co.takeda.model.InsWsPlanForVac" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INS_NO" property="insNo" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="DIST_VALUE_B" property="distValueB" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_B" property="plannedValueB" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_VALUE_B" property="befPlannedValueB" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_T" property="plannedValueT" jdbcType="BIGINT" />
+    <result column="SPECIAL_INS_PLAN_FLG" property="specialInsPlanFlg" jdbcType="CHAR" />
+    <result column="EXCEPT_DIST_INS_FLG" property="exceptDistInsFlg" jdbcType="CHAR" />
+    <result column="DEL_INS_FLG" property="delInsFlg" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultSumProdMap" class="jp.co.takeda.model.InsWsPlanForVac" >
+    <result column="DIST_VALUE_B" property="distValueB" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_B" property="plannedValueB" jdbcType="BIGINT" />
+  </resultMap>
+
+  <sql id="columnList">
+           SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,INS_NO
+          ,TMS_TYTEN_CD
+          ,DIST_VALUE_B
+          ,PLANNED_VALUE_B
+          ,BEF_PLANNED_VALUE_B
+          ,PLANNED_VALUE_T
+          ,SPECIAL_INS_PLAN_FLG
+          ,EXCEPT_DIST_INS_FLG
+          ,DEL_INS_FLG
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+  </sql>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+    <include refid="columnList" />
+      FROM DPS_V_INS_WS_PLAN
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.InsWsPlanForVac" >
+    SELECT
+    <include refid="columnList" />
+      FROM DPS_V_INS_WS_PLAN
+     WHERE JGI_NO = #jgiNo:INTEGER#
+       AND PROD_CODE = #prodCode:CHAR#
+       AND INS_NO = #insNo:CHAR#
+       AND TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+  </select>
+
+  <!-- 検索リスト -->
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT IWP.SEQ_KEY
+          ,IWP.JGI_NO
+          ,IWP.PROD_CODE
+          ,IWP.INS_NO
+          ,IWP.TMS_TYTEN_CD
+          ,IWP.DIST_VALUE_Y AS DIST_VALUE_B
+          ,IWP.PLANNED_VALUE_Y AS PLANNED_VALUE_B
+          ,IWP.BEF_PLANNED_VALUE_Y AS BEF_PLANNED_VALUE_B
+          ,IWP.PLANNED_VALUE_T
+          ,IWP.SPECIAL_INS_PLAN_FLG
+          ,IWP.EXCEPT_DIST_INS_FLG
+          ,IWP.DEL_INS_FLG
+          ,IWP.IS_JGI_NO
+          ,IWP.IS_JGI_NAME
+          ,IWP.IS_DATE
+          ,IWP.UP_JGI_NO
+          ,IWP.UP_JGI_NAME
+          ,IWP.UP_DATE
+      FROM DPS_I_INS_WS_PLAN IWP
+           INNER JOIN DPS_C_INS_MST INS
+        ON IWP.INS_NO = INS.INS_NO
+           INNER JOIN DPS_V_ACTIVITY_TYPE AT
+        ON IWP.INS_NO = AT.INS_NO
+     WHERE IWP.JGI_NO = #jgiNo:INTEGER#
+       AND IWP.PROD_CODE = #prodCode:CHAR#
+        <isNotNull prepend="AND" property="activityType">
+           AT.ACTIVITY_TYPE = #activityType:CHAR#
+        </isNotNull>
+        <isNotNull prepend="AND" property="addrCodePref">
+           INS.ADDR_CODE_PREF = #addrCodePref:VARCHAR#
+        </isNotNull>
+        <isNotNull prepend="AND" property="addrCodeCity">
+           INS.ADDR_CODE_CITY = #addrCodeCity:VARCHAR#
+        </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.InsWsPlanForVac" >
+    INSERT INTO DPS_V_INS_WS_PLAN
+          (<include refid="columnList" />)
+   VALUES (ORADPX01.SEQ_DPS_V_INS_WS_PLAN.NEXTVAL
+          ,#jgiNo:INTEGER#
+          ,#prodCode:CHAR#
+          ,#insNo:CHAR#
+          ,#tmsTytenCd:CHAR#
+          ,#distValueB:BIGINT#
+          ,#plannedValueB:BIGINT#
+          ,#befPlannedValueB:BIGINT#
+          ,#plannedValueT:BIGINT#
+          ,#specialInsPlanFlg:CHAR#
+          ,#exceptDistInsFlg:CHAR#
+          ,#delInsFlg:CHAR#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.InsWsPlanForVac" >
+    UPDATE DPS_V_INS_WS_PLAN
+       SET PLANNED_VALUE_B = #plannedValueB:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_V_INS_WS_PLAN
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </delete>
+
+  <!-- 削除 -->
+  <delete id="deleteByJgi" parameterClass="java.util.Map" >
+    DELETE FROM DPS_V_INS_WS_PLAN
+     <dynamic prepend="WHERE">
+        <isNotNull prepend="AND" property="jgiNo">
+           JGI_NO = #jgiNo:INTEGER#
+        </isNotNull>
+        <isNotNull prepend="AND" property="prodCode">
+           PROD_CODE = #prodCode:CHAR#
+        </isNotNull>
+     </dynamic>
+  </delete>
+
+  <!-- 検索サマリー -->
+  <select id="selectProdSummary" resultMap="resultSumProdMap" parameterClass="java.util.Map" >
+    SELECT SUM(IWP.DIST_VALUE_Y) AS DIST_VALUE_B
+          ,SUM(IWP.PLANNED_VALUE_Y) AS PLANNED_VALUE_B
+      FROM DPS_I_INS_WS_PLAN IWP
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IWP.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD
+           INNER JOIN DPS_C_INS_MST INS
+        ON IWP.INS_NO = INS.INS_NO
+           INNER JOIN DPS_V_ACTIVITY_TYPE AT
+        ON IWP.INS_NO = AT.INS_NO
+     WHERE IWP.PROD_CODE = #prodCode:CHAR#
+        <isNotNull prepend="AND" property="jgiNo">
+            JM.JGI_NO = #jgiNo:INTEGER#
+        </isNotNull>
+        <isNotNull prepend="AND" property="sosCd3">
+            JM.SOS_CD3 = #sosCd3:VARCHAR#
+        </isNotNull>
+        <isNotNull prepend="AND" property="activityType">
+            AT.ACTIVITY_TYPE = #activityType:VARCHAR#
+        </isNotNull>
+        <isNotNull prepend="AND" property="addrCodePref">
+            INS.ADDR_CODE_PREF = #addrCodePref:VARCHAR#
+        </isNotNull>
+        <isNotNull prepend="AND" property="addrCodeCity">
+            INS.ADDR_CODE_CITY = #addrCodeCity:VARCHAR#
+        </isNotNull>
+  </select>
+
+</sqlMap>

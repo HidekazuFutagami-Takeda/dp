@@ -1,0 +1,221 @@
+#set($pageTitle = $text.get("dps201C00","title"))
+#set($bodyOnloadMethod = "dps201C00F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dps201C00x01.vm")
+#set($GridObjName = "dps201C00Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps401C05CoverId")
+#if ( $form.getRequestData("DPS201C00_DATA_R"))
+    #set( $data = $form.getRequestData("DPS201C00_DATA_R"))
+    #set( $dataList = $data.getExceptDistInsDtoList())
+#end
+
+## ワクチンユーザであるか
+#set($vaccineCode = $!form.bean.vaccineCode)
+
+<script language="javascript">
+<!--
+var ${GridObjName};
+## 初期表示＋読込処理
+function dps201C00F00() {
+    doInitGrid();
+    if (document.getElementById("dps201C00x01.vm")) {
+        var loadXMLString = document.getElementById("dps201C00x01.vm").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("$CoverId");
+        }
+    }
+    dps201C00SosApply("$!security.defaultSosCd", "$!security.defaultJgiNo", "04");
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+    var gridWidth = (document.documentElement.clientWidth - 585) / 2;
+    if (gridWidth < 282) {
+      gridWidth = 282;
+    }
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("選択,施設名,対象,施設<br>分類,試算除外<br>対象,配分除外<br>対象,最終更新者<br>（最終更新日）,試算除外品目名,配分除外品目名");
+    ${GridObjName}.setInitWidths("40,210,40,40,60,60,100," + gridWidth + "," + gridWidth);
+    ${GridObjName}.setColAlign("center,left,center,center,center,center,center,left,left");
+    ${GridObjName}.setColTypes("ch,ro,ro,ro,ro,ro,ro,ro,ro");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,true,false,false,false,false,false,false,false");
+##  ${GridObjName}.enableDistributedParsing(true,10,300);
+    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps201C00', $!gridHeight));
+    ${GridObjName}.enableAutoWidth(false);
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.objBox.style.overflowY="scroll";
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.attachEvent("onXLE",function(){
+    });
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.attachEvent("onRowCreated",function(id){
+        var cell = ${GridObjName}.cells(id,0); //checkbox cell
+        if (cell.getAttribute("disabled")) cell.setDisabled(true);
+    });
+}
+## 検索処理
+function dps201C00F05() {
+    if (dps201C00F05Validation()) {
+        var actionPath = '$link.setAction('dps201C00F05')';
+        document.dps201C00Form.action = actionPath;
+        document.dps201C00Form.submit();
+        dps201C00F10Execute = blockIt;
+        dps201C00F05 = blockIt;
+    }
+}
+## 施設登録画面呼出処理
+function dps201C01F00() {
+    if (dps201C00F05Validation()) {
+        var sosCd2 = document.getElementById('sosCd2').value;
+        var sosCd3 = document.getElementById('sosCd3').value;
+        var sosCd4 = document.getElementById('sosCd4').value;
+        var jgiNo = document.getElementById('jgiNo').value;
+        var initSosCodeValue = sosCd3;
+        if (sosCd4 != ""){
+            initSosCodeValue = sosCd4;
+        }
+        var category = "$!form.bean.category";
+        var url = "$link.setAction('dps201C01F00')?sosCd2=" + sosCd2 + "&sosCd3=" + sosCd3 + "&sosCd4=" + sosCd4 + "&jgiNo=" + jgiNo + "&initSosCodeValue=" + initSosCodeValue + '&searchCategory=' + category;
+        var childWindow = openWindow(url);
+        ## 子画面が閉じるまで待機
+        var interval = setInterval(function(){
+            if(childWindow.closed){
+                clearInterval(interval);
+                dps201C00F05();
+            }
+        }, 200);
+    }
+}
+## 削除処理
+function dps201C00F10Execute() {
+    if (dps201C00F05Validation()) {
+        form = document.dps201C00Form;
+        flag = addCheckRowIdList(form, ${GridObjName}, 'selectRowIdList', 'selectRowId', 0);
+        if (!flag) {
+            errorMsg = '$text.get("DPC1006E",["配分除外施設"])';
+            addErrorInfo(!flag, errorMsg);
+            return validation();
+        }
+        var flag = confirm('$text.get("DPS201C00.001","dialogue")');
+        if (flag) {
+            var actionPath = '$link.setAction('dps201C00F10Execute')';
+            document.dps201C00Form.action = actionPath;
+            document.dps201C00Form.submit();
+            dps201C00F05 = blockIt;
+            dps201C00F10Execute = blockIt;
+        }
+    }
+}
+## 画面入力チェック
+function dps201C00F05Validation() {
+    ## 入力フォーム
+    form = document.dps201C00Form;
+
+    ## [必須] 組織・従業員
+    var sosCd = form.sosCd3.value;
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    errorMsg = '$text.get("DPC1025E",["組織・従業員", "エリア", "従業員"])';
+##    errorMsg = '$text.get("DPC1025E",["組織・従業員", "営業所", "従業員"])';
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    addErrorInfo(!isEntered(sosCd), errorMsg);
+
+    ## ワクチンコードの取得
+    var vaccineCd = "$vaccineCode";
+    if(vaccineCd != ""){
+        value = "";
+        ## 組織に紐づくカテゴリ（全組織分）
+        var sosCdCategoryList = [
+                                #foreach($val in $!form.bean.sosCdCategoryList)
+                                , '$val'
+                                #end
+                                ];
+        var selectSosCdCategoryList = new Array();
+        var valRow = new Array();
+        ## 選択された組織のカテゴリを取得
+        for (var i = 1; i < sosCdCategoryList.length; i++){
+            if (sosCdCategoryList[i] == '$val'){
+                break;
+            }
+            valRow = sosCdCategoryList[i].split(',');
+            if (valRow[0] == sosCd){
+                selectSosCdCategoryList.push(valRow[1]);
+            }
+        }
+        ## 選択された組織のカテゴリにワクチンがある場合OK。ない場合NG
+        for (var j = 0; j < selectSosCdCategoryList.length; j++){
+            if (selectSosCdCategoryList[j] == vaccineCd) {
+                value = vaccineCd;
+            }
+        }
+        errorMsg = '$text.get("DPC1023E",[""])';
+        addErrorInfo(!isEntered(value), errorMsg);
+    }
+
+    return validation();
+}
+
+## 範囲指定コピー
+function onKeyPressed(code, ctrl, shift) {
+    return copyBlock(${GridObjName}, code, ctrl, shift);
+}
+## 当画面用組織反映関数
+function dps201C00SosApply(sosCd, jgiNo, sosMaxSrchGetValue) {
+    ## 共通の反映関数呼び出し
+    sosApply(sosCd, jgiNo, sosMaxSrchGetValue);
+    var sosCd3 = document.getElementById('sosCd3');
+    if(sosCd3.value){
+        document.getElementById('insAddBtn').disabled=false;
+    }else{
+        document.getElementById('insAddBtn').disabled=true;
+    }
+}
+//-->
+</script>
+#tabbar("sienSosiki", "dps201C00F00")
+<div id="tabBox">
+<form name="dps201C00Form" method="post">
+<table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+        <td class="gridIndex" style="width:150px;">組織・従業員*</td>
+        <td>#sosDialogExt2("dps201C00SosApply","01", "02", "04", "DPS201")</td>
+    </tr>
+</table>
+<table style="margin-top:6px;margin-bottom:6px;">
+    <tr>
+        <td><input type="button" value="検索" style="width:80px;" onclick="dps201C00F05()" /></td>
+        #if ($!security.hasAuthEdit("DPS201"))
+            <td><input type="button" value="施設追加" style="width:80px;" onclick="dps201C01F00()" id="insAddBtn" /></td>
+            #if($dataList)
+            <td><input type="button" value="解除する" style="width:80px;" onclick="dps201C00F10Execute()" /></td>
+            #else
+            <td><input type="button" value="解除する" style="width:80px;" onclick="dps201C00F10Execute()" disabled/></td>
+            #end
+            <td>
+            <div class="guide">
+※「解除する」をクリックして試算・配分除外を解除する場合、対象施設で設定されている全品目が解除されます。<br>
+            </div>
+            </td>
+        #end
+    </tr>
+</table>
+##loadingGridDiv2("${GridObjName}", "${CoverId}", "")
+#loadingGridDiv2("${GridObjName}", "${CoverId}", "width: 99.5%; clear: both;")
+#token()
+<div class="guide">
+※施設名称をクリックすると試算・配分除外品目編集画面を表示します。<br>
+※試算・配分除外施設(品目)を削除する場合、削除対象の施設を選択(複数可)し、【解除する】ボタンをクリックしてください。<br>
+</div>
+</form>
+</div>

@@ -1,0 +1,34 @@
+## ------------------------------------
+## 子画面ウィンドウの帳票[エラー]画面
+## ------------------------------------
+#set($layout = "nothingLayout.vm" )
+#parse("WEB-INF/view/cmn/xhtml.vm")
+<html>
+#parse("WEB-INF/view/cmn/headerInfo.vm")
+<body onload="window.focus()">
+<script language="javascript">
+<!--
+## キー入力無効
+window.document.onkeydown = function () {
+    event.keyCode = null;
+    return false;
+}
+//-->
+</script>
+<form name="${form.bean.getActionPath()}" method="post">
+<div class="label">
+<table align="center" width="100%" height="200px" border="0" cellpadding="5" style="text-align: center;">
+    <tr>
+        <td>エラーが発生しました。</td>
+    </tr>
+    <tr>
+        <td>※ 問題が解決しない場合は、サービスデスクにお問い合わせください。</td>
+    </tr>
+    <tr>
+        <td><input type="button" name="close" value="閉じる" onClick="self.window.close()"></td>
+    </tr>
+</table>
+<input type="hidden" name="downLoadFileName" id="downLoadFileName" value="$!form.bean.downLoadFileName" /></div>
+</form>
+</body>
+</html>

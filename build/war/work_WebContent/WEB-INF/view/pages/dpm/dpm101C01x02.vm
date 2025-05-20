@@ -1,0 +1,26 @@
+## 積上結果表示ダイアログ(積上前) 集計行
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPM101C01_DATA_R_SEARCH_RESULT"))
+    #set( $dataList = $form.getRequestData("DPM101C01_DATA_R_SEARCH_RESULT").detailList)
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+    <row id='1'>
+        <cell class="psumB" type="ro"></cell>
+        <cell class="psumB">$!prodCategory計</cell>
+        <cell class="psumB"></cell>
+        <cell class="psumB"></cell>
+        <cell class="psumB"></cell>
+        <cell class="psumB"></cell>
+        <cell class="psumB"></cell>
+        <cell class="psumB"></cell>
+        <cell class="psumB"></cell>
+        <cell class="psumB"></cell>
+        <cell class="psumB"></cell>
+        ## 計算用ユーザデータ
+        <userdata name="rowType">total</userdata>
+        <userdata name="subTotalId">none</userdata>
+    </row>
+</rows>
+#end

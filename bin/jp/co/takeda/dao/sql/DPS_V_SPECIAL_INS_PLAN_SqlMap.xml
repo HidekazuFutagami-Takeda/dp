@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_V_SPECIAL_INS_PLAN_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.SpecialInsPlanForVac" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="INS_NO" property="insNo" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="PLAN_TYPE" property="planType" jdbcType="CHAR" />
+    <result column="PLANNED_VALUE_Y" property="plannedValueB" jdbcType="BIGINT" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultUpdateMap" class="jp.co.takeda.model.SpecialInsPlanForVac" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="INS_NO" property="insNo" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="PLAN_TYPE" property="planType" jdbcType="CHAR" />
+    <result column="PLANNED_VALUE_Y" property="plannedValueB" jdbcType="BIGINT" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="RELN_INS_NO" property="relnInsNo" jdbcType="VARCHAR" />
+    <result column="INS_CLASS" property="insClass" jdbcType="VARCHAR" />
+    <result column="OLD_INSR_FLG" property="oldInsrFlg" jdbcType="VARCHAR" />
+    <result column="INS_ABBR_NAME" property="insAbbrName" jdbcType="VARCHAR" />
+    <result column="ADDR_CODE_PREF" property="addrCodePref" jdbcType="VARCHAR" />
+    <result column="ADDR_CODE_CITY" property="addrCodeCity" jdbcType="VARCHAR" />
+    <result column="REQ_FLG" property="reqFlg" jdbcType="INTEGER" />
+    <result column="DEL_FLG" property="delFlg" jdbcType="INTEGER" />
+    <result column="TMS_TYTEN_MEI_KJ" property="tmsTytenName" jdbcType="VARCHAR" />
+    <result column="PLAN_TAI_GAI_FLG_TOK" property="planTaiGaiFlgTok" jdbcType="CHAR" />
+    <result column="PLAN_TAI_GAI_FLG_RIK" property="planTaiGaiFlgRik" jdbcType="CHAR" />
+  </resultMap>
+
+  <resultMap id="resultMapList" class="jp.co.takeda.model.SpecialInsPlanForVac">
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="INS_NO" property="insNo" jdbcType="VARCHAR" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="RELN_INS_NO" property="relnInsNo" jdbcType="VARCHAR" />
+    <result column="INS_CLASS" property="insClass" jdbcType="VARCHAR" />
+    <result column="OLD_INSR_FLG" property="oldInsrFlg" jdbcType="VARCHAR" />
+    <result column="INS_ABBR_NAME" property="insAbbrName" jdbcType="VARCHAR" />
+    <result column="ADDR_CODE_PREF" property="addrCodePref" jdbcType="VARCHAR" />
+    <result column="ADDR_CODE_CITY" property="addrCodeCity" jdbcType="VARCHAR" />
+    <result column="REQ_FLG" property="reqFlg" jdbcType="INTEGER" />
+    <result column="DEL_FLG" property="delFlg" jdbcType="INTEGER" />
+    <result column="ACTIVITY_TYPE" property="activityType" jdbcType="CHAR" />
+  </resultMap>
+
+  <sql id="prod">
+     PROD AS (SELECT PROD_CODE
+                     FROM DPS_C_PLANNED_PROD
+                    WHERE PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+                      AND SALES = #sales:CHAR#
+                  <isNotNull prepend="AND" property="category">
+                    CATEGORY = #category:CHAR#
+                  </isNotNull>
+     )
+  </sql>
+  <sql id="mrIns">
+      MR_INS AS (
+            SELECT INS_NO
+              FROM DPS_C_MR_INS
+             WHERE MR_NO = #jgiNo:INTEGER#
+      )
+  </sql>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.SpecialInsPlanForVac" >
+    SELECT SEQ_KEY
+          ,JGI_NO
+          ,INS_NO
+          ,PROD_CODE
+          ,TMS_TYTEN_CD
+          ,PLAN_TYPE
+          ,PLANNED_VALUE_Y
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_SPECIAL_INS_PLAN
+     WHERE INS_NO = #insNo:VARCHAR#
+       AND PROD_CODE = #prodCode:CHAR#
+       AND TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+       AND PLAN_TYPE = #planType:CHAR#
+  </select>
+
+  <!-- 検索/更新用 -->
+  <select id="selectByInsNo" resultMap="resultUpdateMap" parameterClass="java.util.Map" >
+  WITH
+    <include refid="mrIns"/>
+    SELECT SIP.SEQ_KEY
+          ,SIP.JGI_NO
+          ,SIP.INS_NO
+          ,SIP.PROD_CODE
+          ,SIP.TMS_TYTEN_CD
+          ,SIP.PLAN_TYPE
+          ,SIP.PLANNED_VALUE_Y
+          ,SIP.IS_JGI_NO
+          ,SIP.IS_JGI_NAME
+          ,SIP.IS_DATE
+          ,SIP.UP_JGI_NO
+          ,SIP.UP_JGI_NAME
+          ,SIP.UP_DATE
+          ,INS.RELN_INS_NO
+          ,INS.INS_CLASS
+          ,INS.OLD_INSR_FLG
+          ,INS.INS_ABBR_NAME
+          ,INS.ADDR_CODE_PREF
+          ,INS.ADDR_CODE_CITY
+          ,INS.REQ_FLG
+          ,INS.DEL_FLG
+          ,TMS.TMS_TYTEN_MEI_KJ
+          ,TMS.PLAN_TAI_GAI_FLG_TOK
+          ,TMS.PLAN_TAI_GAI_FLG_RIK
+      FROM DPS_I_SPECIAL_INS_PLAN SIP
+           INNER JOIN (SELECT *
+                         FROM DPS_C_INS_MST
+                        WHERE INS_NO = #insNo:VARCHAR#
+                           OR (INS_NO IN (SELECT INS_NO FROM MR_INS)
+                               AND RELN_INS_NO = (SELECT RELN_INS_NO
+                                                    FROM DPS_C_INS_MST
+                                                   WHERE INS_NO = #insNo:VARCHAR#)
+                               AND INS_CLASS = #insClass:VARCHAR#
+                               AND OLD_INSR_FLG = #oldInsrFlg:VARCHAR#
+                              )
+                      ) INS
+        ON SIP.INS_NO = INS.INS_NO
+           INNER JOIN DPS_C_PLANNED_PROD PP
+        ON SIP.PROD_CODE = PP.PROD_CODE
+           INNER JOIN (<include refid="COMMON_SqlMap.tms" />) TMS
+        ON SIP.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+     WHERE SIP.JGI_NO = #jgiNo:INTEGER#
+       AND PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+       AND PP.SALES = #sales:CHAR#
+      <isNotNull prepend="AND" property="category">
+        PP.CATEGORY = #category:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="prodCode">
+        SIP.PROD_CODE = #prodCode:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planType">
+        SIP.PLAN_TYPE = #planType:CHAR#
+      </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+    </select>
+
+  <!-- 検索一覧 -->
+  <select id="selectList" resultMap="resultMapList" parameterClass="java.util.Map" >
+    SELECT JM.JGI_NO
+          ,INS.INS_NO
+          ,SIP.UP_JGI_NO
+          ,SIP.UP_JGI_NAME
+          ,SIP.UP_DATE
+          ,JM.JGI_NAME
+          ,INS.RELN_INS_NO
+          ,INS.INS_CLASS
+          ,INS.OLD_INSR_FLG
+          ,INS.INS_ABBR_NAME
+          ,INS.ADDR_CODE_PREF
+          ,INS.ADDR_CODE_CITY
+          ,INS.REQ_FLG
+          ,CASE
+            WHEN INS.DEL_FLG ='1' THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '●', 1, 1)=1  THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '〇', 1, 1)=1  THEN '1'
+            ELSE '0'
+           END AS DEL_FLG
+          ,ACT.ACTIVITY_TYPE
+      FROM ((((DPS_C_VI_JGI_MST JM
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD)
+           INNER JOIN DPS_C_MR_INS MI
+        ON JM.JGI_NO = MI.MR_NO)
+           INNER JOIN DPS_C_INS_MST INS
+        ON MI.INS_NO = INS.INS_NO
+      <isNotEmpty prepend="AND" property="insKanaSrch">
+        CONTAINS(INS.INS_KANA_SRCH, #insKanaSrch:VARCHAR#) > 0
+      </isNotEmpty>
+      <isNotEmpty prepend="AND" property="insFormalName">
+        (CONTAINS(INS.INS_FORMAL_NAME, #insFormalName:VARCHAR#) > 0
+         OR CONTAINS(INS.INS_ABBR_NAME, #insFormalName:VARCHAR#) > 0)
+      </isNotEmpty>
+        )
+           INNER JOIN DPS_V_ACTIVITY_TYPE ACT
+        ON INS.INS_NO = ACT.INS_NO)
+           LEFT OUTER JOIN DPS_I_SPECIAL_INS_PLAN SIP
+        ON JM.JGI_NO = SIP.JGI_NO
+       AND INS.INS_NO = SIP.INS_NO
+       <isNotEmpty prepend="AND" property="planType">
+         SIP.PLAN_TYPE = #planType:VARCHAR#
+       </isNotEmpty>
+     WHERE
+      <isNotNull property="jgiKbList">
+         <iterate prepend="JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+             #jgiKbList[].dbValue#
+         </iterate>
+      </isNotNull>
+      <isNotNull prepend="AND" property="jokenSetList">
+         EXISTS (SELECT JO.JGI_NO
+         FROM DPS_C_JGI_JOKEN JO
+         WHERE JO.JGI_NO = JM.JGI_NO
+         <isNotNull property="jokenSetList">
+             <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                 #jokenSetList[].dbValue#
+             </iterate>
+         </isNotNull>
+         )
+      </isNotNull>
+      <isNotNull prepend="AND" property="jgiNo">
+        JM.JGI_NO = #jgiNo:INTEGER#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd3">
+        JM.SOS_CD3 = #sosCd3:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd4">
+        JM.SOS_CD4 = #sosCd4:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="addrCodePref">
+        INS.ADDR_CODE_PREF = #addrCodePref:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="addrCodeCity">
+        INS.ADDR_CODE_CITY = #addrCodeCity:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="activityType">
+        ACT.ACTIVITY_TYPE = #activityType:CHAR#
+      </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 検索・従業員 -->
+  <select id="selectByJgiNo" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SIP.SEQ_KEY
+          ,SIP.JGI_NO
+          ,SIP.INS_NO
+          ,SIP.PROD_CODE
+          ,SIP.TMS_TYTEN_CD
+          ,SIP.PLAN_TYPE
+          ,SIP.PLANNED_VALUE_Y
+          ,SIP.IS_JGI_NO
+          ,SIP.IS_JGI_NAME
+          ,SIP.IS_DATE
+          ,SIP.UP_JGI_NO
+          ,SIP.UP_JGI_NAME
+          ,SIP.UP_DATE
+      FROM DPS_I_SPECIAL_INS_PLAN SIP
+           INNER JOIN DPS_C_JGI_MST JM
+        ON SIP.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD
+     WHERE SIP.JGI_NO = #jgiNo:INTEGER#
+       AND SIP.PROD_CODE = #prodCode:CHAR#
+         <isNotNull prepend="AND" property="planType">
+           SIP.PLAN_TYPE = #planType:CHAR#
+         </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 最新レコード取得 -->
+  <select id="selectUpDate" resultMap="resultMap"  parameterClass="java.util.Map" >
+    WITH
+    <include refid="prod"/>
+    ,
+    <include refid="mrIns"/>
+    ,A_SIP AS(SELECT *
+                FROM DPS_I_SPECIAL_INS_PLAN
+               WHERE (INS_NO = #insNo:VARCHAR#
+                      OR INS_NO IN (SELECT INS_NO FROM DPS_C_INS_MST
+                                     WHERE INS_NO IN (SELECT INS_NO FROM MR_INS)
+                                       AND RELN_INS_NO = (SELECT RELN_INS_NO
+                                                            FROM DPS_C_INS_MST
+                                                           WHERE INS_NO = #insNo:VARCHAR#)
+                                       AND INS_CLASS = #insClass:VARCHAR#
+                                       AND OLD_INSR_FLG = #oldInsrFlg:VARCHAR#
+                                   )
+                     )
+                 AND PROD_CODE IN (SELECT PROD_CODE FROM PROD)
+              <isNotNull prepend="AND" property="planType">
+                PLAN_TYPE = #planType:CHAR#
+              </isNotNull>
+
+    )
+    SELECT SEQ_KEY
+          ,JGI_NO
+          ,INS_NO
+          ,PROD_CODE
+          ,TMS_TYTEN_CD
+          ,PLAN_TYPE
+          ,PLANNED_VALUE_Y
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM
+    (
+    SELECT SIP.SEQ_KEY
+          ,SIP.JGI_NO
+          ,SIP.INS_NO
+          ,SIP.PROD_CODE
+          ,SIP.TMS_TYTEN_CD
+          ,SIP.PLAN_TYPE
+          ,SIP.PLANNED_VALUE_Y
+          ,SIP.IS_JGI_NO
+          ,SIP.IS_JGI_NAME
+          ,SIP.IS_DATE
+          ,SIP.UP_JGI_NO
+          ,SIP.UP_JGI_NAME
+          ,SIP.UP_DATE
+      FROM DPS_I_SPECIAL_INS_PLAN SIP
+           INNER JOIN A_SIP
+        ON SIP.SEQ_KEY = A_SIP.SEQ_KEY
+     WHERE SIP.UP_DATE IN (SELECT MAX(UP_DATE) FROM A_SIP)
+      <isNotNull prepend="AND" property="planType">
+        SIP.PLAN_TYPE = #planType:CHAR#
+      </isNotNull>
+    )
+     WHERE ROWNUM = 1
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.SpecialInsPlanForVac" >
+    INSERT INTO DPS_I_SPECIAL_INS_PLAN
+          (SEQ_KEY
+          ,JGI_NO
+          ,INS_NO
+          ,PROD_CODE
+          ,TMS_TYTEN_CD
+          ,PLAN_TYPE
+          ,PLANNED_VALUE_Y
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (ORADPX01.SEQ_DPS_I_SPECIAL_INS_PLAN.NEXTVAL
+          ,#jgiNo:INTEGER#
+          ,#insNo:VARCHAR#
+          ,#prodCode:CHAR#
+          ,#tmsTytenCd:CHAR#
+          ,#planType:CHAR#
+          ,#plannedValueB:BIGINT#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+     DELETE FROM DPS_I_SPECIAL_INS_PLAN
+      WHERE (INS_NO = #insNo:VARCHAR#
+             OR INS_NO IN(SELECT INS_NO FROM DPS_C_INS_MST
+                           WHERE INS_NO IN (SELECT INS_NO FROM DPS_C_MR_INS WHERE MR_NO =#jgiNo:INTEGER#)
+                             AND RELN_INS_NO = (SELECT RELN_INS_NO
+                                                  FROM DPS_C_INS_MST
+                                                 WHERE INS_NO = #insNo:VARCHAR#)
+                             AND INS_CLASS=#insClass:VARCHAR#
+                             AND OLD_INSR_FLG=#oldInsrFlg:VARCHAR#
+                          )
+            )
+        AND PROD_CODE IN (SELECT PROD_CODE
+                     FROM DPS_C_PLANNED_PROD
+                    WHERE PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+                      AND SALES = #sales:CHAR#
+                  <isNotNull prepend="AND" property="category">
+                    CATEGORY = #category:CHAR#
+                  </isNotNull>)
+<!--
+        AND TO_CHAR((SELECT MAX(UP_DATE)
+                       FROM DPS_V_SPECIAL_INS_PLAN
+                      WHERE (INS_NO = #insNo:VARCHAR#
+                             OR INS_NO IN(SELECT INS_NO FROM DPS_C_INS_MST
+                                           WHERE INS_NO IN (SELECT INS_NO FROM DPS_C_MR_INS WHERE MR_NO =#jgiNo:INTEGER#)
+                                             AND RELN_INS_NO = (SELECT RELN_INS_NO
+                                                                  FROM DPS_C_INS_MST
+                                                                 WHERE INS_NO = #insNo:VARCHAR#)
+                                             AND INS_CLASS=#insClass:VARCHAR#
+                                             AND OLD_INSR_FLG=#oldInsrFlg:VARCHAR#
+                                          )
+                            )
+                        AND PROD_CODE IN (SELECT PROD_CODE
+                                            FROM DPS_C_PLANNED_PROD
+                                           WHERE PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+                                             AND SALES = #sales:CHAR#
+                                           <isNotNull prepend="AND" property="category">
+                                                 CATEGORY = #category:CHAR#
+                                           </isNotNull>)
+                      <isNotNull prepend="AND" property="planType">
+                            PLAN_TYPE = #planType:CHAR#
+                     </isNotNull>
+            ),'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+ -->
+      <isNotNull prepend="AND" property="planType">
+        PLAN_TYPE = #planType:CHAR#
+      </isNotNull>
+  </delete>
+
+</sqlMap>

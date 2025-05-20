@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_MAIN_SUB_RELATION_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.JgiMst" >
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="SOS_CD2" property="sosCd2" jdbcType="VARCHAR" />
+    <result column="SOS_CD3" property="sosCd3" jdbcType="VARCHAR" />
+    <result column="SOS_CD4" property="sosCd4" jdbcType="VARCHAR" />
+    <result column="SHOKUSEI_CD" property="shokuseiCd" jdbcType="VARCHAR" />
+    <result column="SHOKUSHU_CD" property="shokushuCd" jdbcType="VARCHAR" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="JGI_KB" property="jgiKb" jdbcType="VARCHAR" />
+    <result column="SHOKUSHU_NAME" property="shokushuName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <!-- 検索 -->
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT JGI.JGI_NO
+          ,JGI.JGI_NAME
+          ,JGI.SOS_CD2
+          ,JGI.SOS_CD3
+          ,JGI.SOS_CD4
+          ,JGI.SHOKUSEI_CD
+          ,JGI.SHOKUSHU_CD
+          ,SM.SOS_CD
+          ,JGI.JGI_KB
+          ,NVL2(JJ.JGI_NO,'TL',JGI.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+      FROM DPS_C_JGI_MST JGI
+      INNER JOIN DPS_I_MAIN_SUB_RELATION REL ON JGI.JGI_NO = REL.MAIN_INS_MR_NO
+      INNER JOIN DPS_C_SOS_MST SM ON JGI.SOS_CD = SM.SOS_CD
+      LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ ON JJ.JGI_NO = JGI.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+      WHERE REL.SUB_INS_MR_NO = #jgiNo:INTEGER#
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+</sqlMap>

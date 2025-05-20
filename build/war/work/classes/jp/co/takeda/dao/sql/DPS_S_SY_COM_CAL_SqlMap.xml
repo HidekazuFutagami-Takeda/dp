@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_S_SY_COM_CAL_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.Cal" >
+    <result column="CAL_YEAR" property="calYear" jdbcType="VARCHAR" />
+    <result column="CAL_MONTH" property="calMonth" jdbcType="VARCHAR" />
+    <result column="CAL_DAY" property="calDay" jdbcType="VARCHAR" />
+    <result column="FISCAL_YEAR" property="fiscalYear" jdbcType="VARCHAR" />
+    <result column="DAY_KB" property="dayKb" jdbcType="VARCHAR" />
+    <result column="CAL_DATE" property="calDate" jdbcType="DATE" />
+    <result column="CAL_TERM" property="term" jdbcType="VARCHAR" />
+    <result column="PUB_HOLIDAY" property="pubHolidayFlg" jdbcType="VARCHAR" />
+    <result column="BUSINESS_DAY" property="bussinessDayFlg" jdbcType="VARCHAR" />
+    <result column="TODAY" property="todayFlg" jdbcType="VARCHAR" />
+    <result column="SUMMARY" property="summary" jdbcType="VARCHAR" />
+    <result column="BIZ_DAYS" property="bizDays" jdbcType="INTEGER" />
+  </resultMap>
+
+  <!-- 検索 -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT CAL_YEAR
+          ,CAL_MONTH
+          ,CAL_DAY
+          ,FISCAL_YEAR
+          ,DAY_KB
+          ,CAL_DATE
+          ,CAL_TERM
+          ,PUB_HOLIDAY
+          ,BUSINESS_DAY
+          ,TODAY
+          ,SUMMARY
+          ,BIZ_DAYS
+    FROM DPS_S_SY_COM_CAL
+    WHERE CAL_YEAR = #calYear:VARCHAR#
+      AND CAL_MONTH = #calMonth:VARCHAR#
+      AND CAL_DAY = #calDay:VARCHAR#
+  </select>
+
+  <!-- 検索 -->
+  <select id="selectBusinessDay" resultClass="java.util.Date" parameterClass="java.util.Map" >
+    SELECT CAL_DATE
+      FROM (SELECT CAL_DATE
+                  ,RANK()OVER(ORDER BY CAL_DATE) AS RANK
+              FROM DPS_S_SY_COM_CAL
+             WHERE CAL_DATE > #baseDate:DATE#
+    	       AND BUSINESS_DAY = #bussinessDayFlg:VARCHAR#
+             ORDER BY CAL_DATE
+            )
+     WHERE RANK = #days:INTEGER#
+  </select>
+
+  <!-- 検索 -->
+  <select id="selectToday" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT CAL_YEAR
+          ,CAL_MONTH
+          ,CAL_DAY
+          ,FISCAL_YEAR
+          ,NULL AS DAY_KB
+          ,CAL_DATE
+          ,CAL_TERM
+          ,PUB_HOLIDAY
+          ,BUSINESS_DAY
+          ,TODAY
+          ,SUMMARY
+          ,BIZ_DAYS
+      FROM DPS_S_SY_COM_CAL
+     WHERE TODAY = '1'
+  </select>
+
+  <!-- add Start 2022/11/29 H.futagami No.19　合計欄は前月までの実績＋当月以降の入力した計画の合計を表示 -->
+  <!-- 月内営業日順位で検索 -->
+  <select id="selectBizDays" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT CAL_YEAR
+          ,CAL_MONTH
+          ,CAL_DAY
+          ,FISCAL_YEAR
+          ,NULL AS DAY_KB
+          ,CAL_DATE
+          ,CAL_TERM
+          ,PUB_HOLIDAY
+          ,BUSINESS_DAY
+          ,TODAY
+          ,SUMMARY
+          ,BIZ_DAYS
+      FROM DPS_S_SY_COM_CAL
+    WHERE CAL_YEAR = #calYear:VARCHAR#
+      AND CAL_MONTH = #calMonth:VARCHAR#
+      AND BIZ_DAYS = #bizDays:INTEGER#
+  </select>
+  <!-- add End 2022/11/29 H.futagami No.19　合計欄は前月までの実績＋当月以降の入力した計画の合計を表示 -->
+
+</sqlMap>

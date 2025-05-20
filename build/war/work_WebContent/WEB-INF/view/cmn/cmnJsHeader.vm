@@ -1,0 +1,8 @@
+<script type="text/javascript">
+<!--
+    var contextPath = "$link.getContextPath()";
+//-->
+</script>
+<script language="javascript" type="text/javascript" src="$link.getContextPath()/cmn/js/custom/csJs.js?rn=$!service.getReleaseNumber()"></script>
+<script language="javascript" type="text/javascript" src="$link.getContextPath()/cmn/js/custom/csServer.js?rn=$!service.getReleaseNumber()"></script>
+<script language="javascript" type="text/javascript" src="$link.getContextPath()/cmn/js/lib/openLib.js"></script>

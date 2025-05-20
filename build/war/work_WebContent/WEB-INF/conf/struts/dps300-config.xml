@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+ "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+
+    <form-beans>
+         <form-bean name="Dps300C00Form" type="jp.co.takeda.web.in.dps.Dps300C00Form" />
+    </form-beans>
+
+<action-mappings type="jp.co.takeda.web.cmn.action.DpActionMapping">
+<!-- ***********************************************************************
+
+    (医)営業所計画編集画面
+
+ ***********************************************************************  -->
+<action path="/dps300C00F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps300C00Action" name="Dps300C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps300C00F00" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps300C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps300C00.vm" />
+</action>
+
+<action path="/dps300C00F05"
+ type="jp.co.takeda.web.ctrl.dps.Dps300C00Action" name="Dps300C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps300C00F05" />
+    <set-property property="generateToken" value="true" />
+    <set-property property="validationMethod" value="dps300C00F05Validation" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps300C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps300C00.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps300C00.vm" />
+</action>
+
+<action path="/dps300C00F06"
+ type="jp.co.takeda.web.ctrl.dps.Dps300C00Action" name="Dps300C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps300C00F06" />
+    <set-property property="generateToken" value="true" />
+    <set-property property="validationMethod" value="dps300C00F05Validation" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps300C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps300C00.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps300C00.vm" />
+</action>
+
+<action path="/dps300C00F10Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps300C00Action" name="Dps300C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps300C00F10Execute" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="validationMethod" value="dps300C00F10Validation" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps300C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps300C00.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps300C00.vm" />
+</action>
+
+<action path="/dps300C00F15Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps300C00Action" name="Dps300C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps300C00F15Execute" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="validationMethod" value="dps300C00F15Validation" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps300C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps300C00.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps300C00.vm" />
+</action>
+
+</action-mappings>
+</struts-config>

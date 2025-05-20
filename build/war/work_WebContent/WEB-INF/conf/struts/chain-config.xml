@@ -1,0 +1,113 @@
+<?xml version="1.0" ?>
+<catalog name="struts">
+
+	<define name="lookup" className="org.apache.commons.chain.generic.LookupCommand" />
+	<chain name="servlet-standard">
+		<command className="org.apache.struts.chain.commands.ExceptionCatcher" catalogName="struts" exceptionCommand="servlet-exception" />
+		<lookup catalogName="struts" name="process-action" optional="false" />
+		<lookup catalogName="struts" name="process-view" optional="false" />
+	</chain>
+
+	<!-- ========== Action Processing chain ======================== -->
+	<chain name="process-action">
+
+		<!-- Look up optional preprocess command -->
+		<lookup catalogName="struts" name="servlet-standard-preprocess" optional="true" />
+
+
+		<!-- Identify the Locale for this request -->
+		<command className="org.apache.struts.chain.commands.servlet.SelectLocale" />
+
+
+		<!-- Set (if needed) the URI of the original request -->
+		<command className="org.apache.struts.chain.commands.servlet.SetOriginalURI" />
+
+
+		<!-- Set (if needed) no cache HTTP response headers -->
+		<command className="org.apache.struts.chain.commands.servlet.RequestNoCache" />
+
+
+		<!-- Set (if needed) the HTTP response content type -->
+		<command className="org.apache.struts.chain.commands.servlet.SetContentType" />
+
+
+		<!-- Remove messages cached in the Session -->
+		<command className="org.apache.struts.chain.commands.RemoveCachedMessages" />
+
+
+		<!-- Identify the ActionConfig for this request -->
+		<command className="org.apache.struts.chain.commands.servlet.SelectAction" />
+
+
+		<!-- Authorize the selected ActionConfig for this request -->
+		<command className="org.apache.struts.chain.commands.servlet.AuthorizeAction" />
+
+
+		<!-- Create (if needed) the ActionForm for this request -->
+		<command className="org.apache.struts.chain.commands.CreateActionForm" />
+
+
+		<!-- Populate the ActionForm for this request -->
+		<command className="org.apache.struts.chain.commands.servlet.PopulateActionForm" />
+
+
+		<!-- Validate the ActionForm for this request -->
+		<command className="org.apache.struts.chain.commands.servlet.ValidateActionForm" />
+
+
+		<!-- Select the appropriate ForwardConfig for return to input page -->
+		<command className="org.apache.struts.chain.commands.servlet.SelectInput" />
+
+
+		<!-- Lookup and execute a chain command if the current ActionConfig is
+             so-configured. -->
+		<command className="org.apache.struts.chain.commands.ExecuteCommand" />
+
+
+		<!-- Select the appropriate ForwardConfig for action mappings that only
+             have an ActionForward -->
+		<command className="org.apache.struts.chain.commands.servlet.SelectForward" />
+
+
+		<!-- Select the include uri (if any) for the current action mapping -->
+		<command className="org.apache.struts.chain.commands.SelectInclude" />
+
+
+		<!-- Perform the include (if needed) -->
+		<command className="org.apache.struts.chain.commands.servlet.PerformInclude" />
+
+
+		<!-- Create (if needed) the Action for this request -->
+		<!-- <command className="org.apache.struts.chain.commands.servlet.CreateAction" />  -->
+		<command className="jp.co.takeda.a.web.action.CreateSpringAction" />
+
+
+		<!-- Execute the Action for this request -->
+		<command className="org.apache.struts.chain.commands.servlet.ExecuteAction" />
+	</chain>
+
+	<!-- ========== View Processing chain ======================== -->
+	<chain name="process-view">
+
+		<!-- Lookup and execute a chain command if the current ForwardConfig is
+             so-configured. -->
+		<command className="org.apache.struts.chain.commands.ExecuteForwardCommand" />
+
+		<!-- Follow the returned ForwardConfig (if any) -->
+		<command className="org.apache.struts.chain.commands.servlet.PerformForward" />
+
+	</chain>
+
+	<!-- ========== Servlet Exception Handler Chain ======================== -->
+
+	<chain name="servlet-exception">
+
+		<!-- Execute the configured exception handler (if any) -->
+		<command className="org.apache.struts.chain.commands.servlet.ExceptionHandler" />
+
+		<!-- Follow the returned ForwardConfig (if any) -->
+		<command className="org.apache.struts.chain.commands.servlet.PerformForward" />
+
+	</chain>
+
+</catalog>

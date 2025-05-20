@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_C_PLANNED_CTG_SqlMap" >
+  <resultMap id="resultMap" class="jp.co.takeda.model.DpsPlannedCtg" >
+    <result column="TRT_CD" property="trtCd" jdbcType="CHAR" />
+    <result column="CATEGORY" property="category" jdbcType="CHAR" />
+    <result column="OYAKO_KB" property="oyakoKb" jdbcType="CHAR" />
+    <result column="OYAKO_KB2" property="oyakoKb2" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_ZENSHA" property="planLevelZensha" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_SITEN" property="planLevelSiten" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_OFFICE" property="planLevelOffice" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_TEAM" property="planLevelTeam" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_MR" property="planLevelMr" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_INS" property="planLevelIns" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_INS_WS" property="planLevelInsWs" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_WS" property="planLevelWs" jdbcType="CHAR" />
+  </resultMap>
+
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+           TRT_CD
+          ,CATEGORY
+          ,OYAKO_KB
+          ,OYAKO_KB2
+          ,PLAN_LEVEL_ZENSHA
+          ,PLAN_LEVEL_SITEN
+          ,PLAN_LEVEL_OFFICE
+          ,PLAN_LEVEL_TEAM
+          ,PLAN_LEVEL_MR
+          ,PLAN_LEVEL_INS
+          ,PLAN_LEVEL_INS_WS
+          ,PLAN_LEVEL_WS
+      FROM DPS_C_PLANNED_CTG
+       <isNotNull property="prodCategory">
+           WHERE CATEGORY = #prodCategory:CHAR#
+       </isNotNull>
+  </select>
+
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+           TRT_CD
+          ,CATEGORY
+          ,OYAKO_KB
+          ,OYAKO_KB2
+          ,PLAN_LEVEL_ZENSHA
+          ,PLAN_LEVEL_SITEN
+          ,PLAN_LEVEL_OFFICE
+          ,PLAN_LEVEL_TEAM
+          ,PLAN_LEVEL_MR
+          ,PLAN_LEVEL_INS
+          ,PLAN_LEVEL_INS_WS
+          ,PLAN_LEVEL_WS
+      FROM DPS_C_PLANNED_CTG
+       <isNotNull property="sosCtgList">
+       <iterate prepend="WHERE CATEGORY IN " open="(" close=")" conjunction=","  property="sosCtgList">
+           #sosCtgList[].category#
+       </iterate>
+       </isNotNull>
+  </select>
+
+  <select id="selectByPlanLevel" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+           TRT_CD
+          ,CATEGORY
+          ,OYAKO_KB
+          ,OYAKO_KB2
+          ,PLAN_LEVEL_ZENSHA
+          ,PLAN_LEVEL_SITEN
+          ,PLAN_LEVEL_OFFICE
+          ,PLAN_LEVEL_TEAM
+          ,PLAN_LEVEL_MR
+          ,PLAN_LEVEL_INS
+          ,PLAN_LEVEL_INS_WS
+          ,PLAN_LEVEL_WS
+      FROM DPS_C_PLANNED_CTG
+      WHERE 1 = 1
+      <isNotNull prepend="AND" property="planLevelZensha">
+        PLAN_LEVEL_ZENSHA = #planLevelZensha:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelSiten">
+        PLAN_LEVEL_SITEN = #planLevelSiten:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelOffice">
+        PLAN_LEVEL_OFFICE = #planLevelOffice:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelTeam">
+        PLAN_LEVEL_TEAM = #planLevelTeam:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelMr">
+        PLAN_LEVEL_MR = #planLevelMr:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelIns">
+        PLAN_LEVEL_INS = #planLevelIns:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelInsWs">
+        PLAN_LEVEL_INS_WS = #planLevelInsWs:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelWs">
+        PLAN_LEVEL_WS = #planLevelWs:CHAR#
+      </isNotNull>
+  </select>
+  
+<!-- add Start 2022/6/08 H.Futagami バックログNo.4　削除施設・調整あり計画データのダウンロード機能 -->
+  <!-- 検索 -->
+  <select id="selectListOfCategory" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT T0.PROD_CODE
+          ,T0.GROUP_CODE
+          ,T0.STAT_PROD_CODE
+          ,T0.CATEGORY
+          ,T0.SALES
+          ,T0.PROD_TYPE
+          ,T0.PROD_NAME
+          ,T0.PROD_ABBR_NAME
+          ,T0.YAKKOU_SIJOU_CODE
+          ,T0.DIST_BASIS_TYPE
+          ,T0.PLAN_LEVEL_ZENSHA
+          ,T0.PLAN_LEVEL_SITEN
+          ,T0.PLAN_LEVEL_OFFICE
+          ,T0.PLAN_LEVEL_TEAM
+          ,T0.PLAN_LEVEL_MR
+          ,T0.PLAN_LEVEL_INS
+          ,T0.PLAN_LEVEL_INS_DOC
+          ,T0.PLAN_LEVEL_INS_WS
+          ,T0.PLAN_LEVEL_WS
+          ,T0.TEMP_PROD_FLG
+          ,T0.PLAN_TARGET_FLG
+          ,T0.PRESCRIPTION_TYPE
+          ,T0.IS_JGI_NO
+          ,T0.IS_JGI_NAME
+          ,T0.IS_DATE
+          ,T0.UP_JGI_NO
+          ,T0.UP_JGI_NAME
+          ,T0.UP_DATE
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPS_C_PLANNED_PROD T0
+      LEFT JOIN DPS_C_CD_MST CM
+        ON CM.DATA_KBN = 'sort_prod'
+      AND T0.PROD_CODE = CM.DATA_CD
+      WHERE T0.CATEGORY = #category:CHAR#
+      AND   T0.PLAN_TARGET_FLG = '1'
+      ORDER BY CM.DATA_SEQ
+  </select>
+<!-- add End 2022/6/08 H.Futagami バックログNo.4　削除施設・調整あり計画データのダウンロード機能 -->
+
+</sqlMap>

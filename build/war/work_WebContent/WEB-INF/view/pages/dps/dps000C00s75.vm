@@ -1,0 +1,36 @@
+## ----------------------------------------
+## 業務進捗表(ワ)[T/B変換指定率]
+## ----------------------------------------
+#set($GridObjName = "dps000C00s75Grid")
+#set($CoverId = "dps000C00s75CoverId")
+<script language="javascript">
+<!--
+var ${GridObjName};
+## 初期表示＋読込処理
+function dps000C00F75() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("T/B変換指定率最終更新日");
+    ${GridObjName}.setInitWidths("200");
+    ${GridObjName}.setColAlign("center");
+    ${GridObjName}.setColTypes("ro");
+    ${GridObjName}.enableResizing("false");
+    ${GridObjName}.enableTooltips("false");
+    ${GridObjName}.enableAutoWidth(true);
+    ${GridObjName}.enableAutoHeight(true);
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.objBox.style.overflowY="hidden";
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.load("$link.setAction('dps000C00F75?sFlg=true')", dps000C00F76);
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.attachEvent("onBeforeSelect",function(newId,oldId){return;});
+}
+//-->
+</script>
+#loadingGridDiv("${GridObjName}", "${CoverId}")

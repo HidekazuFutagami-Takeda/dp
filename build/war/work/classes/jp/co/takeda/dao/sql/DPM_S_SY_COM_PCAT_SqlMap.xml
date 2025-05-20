@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_S_SY_COM_PCAT_SqlMap" >
+  <select id="selectProdCategoryName" resultClass="string" parameterClass="java.util.Map" >
+         SELECT DISTINCT(CP.PCAT_NAME) AS PCAT_NAME
+           FROM DPM_S_SY_COM_PCAT CP
+     INNER JOIN DPM_C_PLANNED_CTG CTG
+     <isEmpty property="jrnsPcatCd">
+        ON CP.PCAT_CODE = CTG.PCAT_CODE
+        AND CTG.CATEGORY = #category:CHAR#
+     </isEmpty>
+     <isNotEmpty property="jrnsPcatCd">
+       ON CP.PCAT_CODE = #jrnsPcatCd:VARCHAR#
+     </isNotEmpty>
+      WHERE CTG.CAL_YEAR = #calYear:CHAR#
+        AND CTG.CAL_TERM = #calTerm:CHAR#
+  </select>
+</sqlMap>

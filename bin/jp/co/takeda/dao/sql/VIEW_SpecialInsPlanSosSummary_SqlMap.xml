@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_SpecialInsPlanSosSummary_SqlMap" >
+
+  <resultMap id="resultMapList" class="jp.co.takeda.model.view.SpecialInsPlanSosSummary">
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="VARCHAR" />
+    <result column="HO_INS_TYPE" property="hoInsType" jdbcType="VARCHAR" />
+    <result column="SUMMARY_Y" property="summaryY" jdbcType="BIGINT" />
+  </resultMap>
+
+  <!-- 組織、対象区分集約検索一覧 -->
+  <select id="selectSummaryList" resultMap="resultMapList" parameterClass="java.util.Map" >
+    SELECT JM.SOS_CD3 AS SOS_CD
+           ,SIP.PROD_CODE
+           ,INS.HO_INS_TYPE
+           ,SUM(PLANNED_VALUE_Y) AS SUMMARY_Y
+      FROM (((DPS_C_JGI_MST JM
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD)
+           INNER JOIN DPS_C_MR_INS MI
+        ON JM.JGI_NO = MI.MR_NO)
+           INNER JOIN DPS_C_INS_MST INS
+        ON MI.INS_NO = INS.INS_NO)
+           INNER JOIN DPS_I_SPECIAL_INS_PLAN SIP
+        ON JM.JGI_NO = SIP.JGI_NO
+       AND INS.INS_NO = SIP.INS_NO
+     WHERE SIP.PROD_CODE = #prodCode:VARCHAR#
+       AND SIP.PLAN_TYPE = #planType:VARCHAR#
+      <isNotNull prepend="AND" property="sosCd3">
+          JM.SOS_CD3 = #sosCd3:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd4">
+          JM.SOS_CD4 = #sosCd4:VARCHAR#
+      </isNotNull>
+       AND INS.DEL_FLG = #delFlg:INTEGER#
+     GROUP BY JM.SOS_CD3,SIP.PROD_CODE,INS.HO_INS_TYPE
+     ORDER BY JM.SOS_CD3,SIP.PROD_CODE,INS.HO_INS_TYPE
+  </select>
+
+</sqlMap>

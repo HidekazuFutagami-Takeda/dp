@@ -1,0 +1,180 @@
+#set($contentsId = "freeSizeContents")
+#set( $layout = "dialogueLayout.vm" )
+#set($bodyOnloadMethod = "dps912C02F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($pageTitle = $text.get("dps912C02","title"))
+## アクションフォーム値取得
+#set($tytenApplyFuncName = $form.bean.tytenApplyFuncName)
+#set($crntPageNo2 = $form.bean.crntPageNo2)
+#if($!form.bean.takedaSosCd2)
+    #set($takedaSosCd2 = $!form.bean.takedaSosCd2)
+#else
+    #set($takedaSosCd2 = "")
+#end
+#if($!form.bean.hontenTmsTytenCd)
+    #set($hontenTmsTytenCd = $!form.bean.hontenTmsTytenCd)
+#else
+    #set($hontenTmsTytenCd = "")
+#end
+#if ($form.getRequestData("TMS_LIST_KEY_R"))
+    #set($listDto = $form.getRequestData("TMS_LIST_KEY_R"))
+    #set($pagingBean = $paging.getPagingBean($listDto.tmsTytenMstList,$consts.pageCount,$crntPageNo2))
+    #set($dataList = $pagingBean.getCrntPageData())
+#else
+    #set($dataList = "")
+#end
+
+<script language="javascript">
+<!--
+function dps912C02F00() {
+}
+## 特約店部名クリック
+function dps912C00F00() {
+    var actionPath = '$link.setAction('dps912C00F00')';
+    document.dps912C02Form.action = actionPath;
+    document.dps912C02Form.submit();
+    return false;
+}
+## 本店名クリック
+function dps912C01F10() {
+    var actionPath = '$link.setAction('dps912C01F10')';
+    document.dps912C02Form.action = actionPath;
+    document.dps912C02Form.submit();
+    return false;
+}
+## ページ番号クリック
+function dps912C02F00Page(crntPageNo2) {
+    document.getElementById("crntPageNo2").value = crntPageNo2;
+    var actionPath = '$link.setAction('dps912C02F05')';
+    document.dps912C02Form.action = actionPath;
+    document.dps912C02Form.submit();
+    return false;
+}
+## リンククリック
+function dps912C02F00Link(shishaTmsTytenCd) {
+    document.getElementById("shishaTmsTytenCd").value = shishaTmsTytenCd;
+    document.getElementById("shishaExistFlg").value = true;
+    var actionPath = '$link.setAction('dps912C03F00')';
+    document.dps912C02Form.action = actionPath;
+    document.dps912C02Form.submit();
+    return false;
+}
+## 呼び出し画面へ返す
+function dps912C02F00Return(wsCode,wsName) {
+    var check = window.opener.${tytenApplyFuncName}(wsCode, wsName);
+    if(!(typeof check === 'string')){
+        window.close();
+    }else{
+        alert(check);
+    }
+    return false;
+}
+//-->
+</script>
+<div class="disp">
+<form name="dps912C02Form" method="post">
+#token()
+<input type="hidden" name="tytenApplyFuncName" value="$tytenApplyFuncName" id="tytenApplyFuncName" />
+<input type="hidden" name="crntPageNo2" value="$crntPageNo2" id="crntPageNo2"/>
+<input type="hidden" name="takedaSosCd2" value="$takedaSosCd2" id="takedaSosCd2"/>
+<input type="hidden" name="hontenTmsTytenCd" value="$hontenTmsTytenCd" id="hontenTmsTytenCd"/>
+<input type="hidden" name="shishaTmsTytenCd" id="shishaTmsTytenCd"/>
+<input type="hidden" name="shishaExistFlg" id="shishaExistFlg"/>
+<table cellspacing="1" cellpadding="１" align="left" width="400">
+    <tr valign="top">
+        <td colspan="3">
+        <div align="center"><b>特約店選択</b></div>
+        </td>
+    </tr>
+    <tr valign="top">
+        <td class="label">
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（「特約店部」→「流通政策部」）
+        <div align="left">流通政策部：　<a href="#" onclick="dps912C00F00()">
+##        <div align="left">特約店部：　<a href="#" onclick="dps912C00F00()">
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（「特約店部」→「流通政策部」）
+        #if( $!form.bean.tytenBuName )
+            $!form.bean.tytenBuName
+        #else
+            全て
+        #end
+        </a>
+        </div>
+        </td>
+        <td></td><td></td>
+    </tr>
+    <tr valign="top">
+        <td class="label">
+        <div align="left">特約店　：　<a href="#" onclick="dps912C01F10()">
+        #if( $!form.bean.hontenMeiKj )
+            $!form.bean.hontenMeiKj
+        #else
+            全て
+        #end
+        </a>
+        </div>
+        </td>
+        <td></td><td></td>
+    </tr>
+    #if( $pagingBean != "" )
+    <tr valign="top">
+        <td class="label">
+        <div align="left">#dispSearchCount($pagingBean)</div>
+        </td>
+        <td>
+        <div align="right">#dispSearchPage($pagingBean,"dps912C02F00Page")</div>
+        </td>
+        <td>
+        </td>
+    </tr>
+    #end
+    <tr valign="top">
+        <td width="400" colspan="2">
+        <div>
+        <table width="100%" class="gridLine" style="border-collapse:collapse;">
+            <tr>
+                <td class="gridIndex" width="20">
+                </td>
+                <td nowrap class="gridIndex">
+                <div align="center">特約店(特約店Ｃ)</div>
+                </td>
+                <td nowrap class="gridIndex">
+                <div align="center">更新年月</div>
+                </td>
+            </tr>
+            #if( $dataList != "" )
+            #foreach($tmsMst in $dataList)
+            <tr>
+                <td class="gridIndex"><input type="button" name="sos" style="WIDTH: 20px;" onClick="dps912C02F00Return('$tmsMst.tmsTytenCd','$tmsMst.tmsTytenMeiKj')"></td>
+                <td class="gridLine"><a href="#" onclick="dps912C02F00Link('$tmsMst.tmsTytenCd')">${tmsMst.tmsTytenMeiKj}</a>
+                ## 本店の場合、コードは3桁表示
+                #if( $tmsMst.tmsTytenCd == $!hontenTmsTytenCd )
+                <label>(${tmsMst.tmsTytenCdHonten})</label>
+                #else
+                <label>(${tmsMst.tmsTytenCdHonten}${tmsMst.tmsTytenCdShisha})</label>
+                #end
+                </td>
+                <td class="gridLine" align="center"><label>$format.toString($tmsMst.updTs, "yy/MM")</label></td>
+            </tr>
+            #end
+            #end
+        </table>
+        </div>
+        </td>
+        <td>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" colspan="3">
+        <table width="100%" border="0" cellspacing="0" cellpadding="4" align="left">
+            <tr>
+                <td width="15%">
+                <div align="left"><input type="button" name="add_item2" value="閉じる" onClick="self.window.close()" style="width:80px;"></div>
+                </td>
+                <td></td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+</table>
+</form>
+</div>

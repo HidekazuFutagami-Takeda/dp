@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_V_INS_WS_PLAN_STATUS_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.InsWsPlanStatusForVac" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="STATUS" property="statusForInsWsPlan" jdbcType="CHAR" />
+    <result column="ASYNC_BEF_STATUS" property="asyncBefStatus" jdbcType="CHAR" />
+    <result column="ASYNC_SERVER_KBN" property="appServerKbn" jdbcType="VARCHAR" />
+    <result column="ASYNC_BEF_DIST_START_DATE" property="asyncBefDistStartDate" jdbcType="TIMESTAMP" />
+    <result column="DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+    <result column="DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_OPEN_DATE" property="insWsOpenDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_FIX_DATE" property="insWsFixDate" jdbcType="TIMESTAMP" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="resultMapList" class="jp.co.takeda.model.InsWsPlanStatusForVac">
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="STATUS" property="statusForInsWsPlan" jdbcType="CHAR" />
+    <result column="ASYNC_BEF_STATUS" property="asyncBefStatus" jdbcType="CHAR" />
+    <result column="ASYNC_SERVER_KBN" property="appServerKbn" jdbcType="VARCHAR" />
+    <result column="ASYNC_BEF_DIST_START_DATE" property="asyncBefDistStartDate" jdbcType="TIMESTAMP" />
+    <result column="DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+    <result column="DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_OPEN_DATE" property="insWsOpenDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_FIX_DATE" property="insWsFixDate" jdbcType="TIMESTAMP" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="insWsPlanStatSum" class="jp.co.takeda.model.view.InsWsPlanStatSum" >
+    <result column="INS_WS_PLAN_NONE" property="none" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_DISTING" property="disting" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_DISTED" property="disted" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_OPENED" property="planOpened" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_COMPLETED" property="planCompleted" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_STAT_COUNT" property="totalCount" jdbcType="INTEGER" />
+    <result column="INS_WS_DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_OPEN_DATE" property="insWsOpenDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_FIX_DATE" property="insWsFixDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultSumMap" class="java.util.LinkedHashMap">
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result property="insWsPlanStatSum" resultMap="DPS_V_INS_WS_PLAN_STATUS_SqlMap.insWsPlanStatSum" />
+    <result column="INS_WS_LAST_UPDATE" property="lastUpdate" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+  </resultMap>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT IWPS.SEQ_KEY
+          ,IWPS.JGI_NO
+          ,IWPS.PROD_CODE
+          ,IWPS.STATUS
+          ,IWPS.ASYNC_BEF_STATUS
+          ,IWPS.ASYNC_SERVER_KBN
+          ,IWPS.ASYNC_BEF_DIST_START_DATE
+          ,IWPS.DIST_START_DATE
+          ,IWPS.DIST_END_DATE
+          ,IWPS.INS_WS_OPEN_DATE
+          ,IWPS.INS_WS_FIX_DATE
+          ,IWPS.IS_JGI_NO
+          ,IWPS.IS_JGI_NAME
+          ,IWPS.IS_DATE
+          ,IWPS.UP_JGI_NO
+          ,IWPS.UP_JGI_NAME
+          ,IWPS.UP_DATE
+          ,JM.JGI_NAME
+      FROM DPS_I_INS_WS_PLAN_STATUS IWPS
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IWPS.JGI_NO = JM.JGI_NO
+       AND JM.KENMU_KB = 0
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.InsWsPlanStatusForVac" >
+    SELECT IWPS.SEQ_KEY
+          ,IWPS.JGI_NO
+          ,IWPS.PROD_CODE
+          ,IWPS.STATUS
+          ,IWPS.ASYNC_BEF_STATUS
+          ,IWPS.ASYNC_SERVER_KBN
+          ,IWPS.ASYNC_BEF_DIST_START_DATE
+          ,IWPS.DIST_START_DATE
+          ,IWPS.DIST_END_DATE
+          ,IWPS.INS_WS_OPEN_DATE
+          ,IWPS.INS_WS_FIX_DATE
+          ,IWPS.IS_JGI_NO
+          ,IWPS.IS_JGI_NAME
+          ,IWPS.IS_DATE
+          ,IWPS.UP_JGI_NO
+          ,IWPS.UP_JGI_NAME
+          ,IWPS.UP_DATE
+          ,JM.JGI_NAME
+      FROM DPS_I_INS_WS_PLAN_STATUS IWPS
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IWPS.JGI_NO = JM.JGI_NO
+       AND JM.KENMU_KB = 0
+     WHERE IWPS.JGI_NO = #jgiNo:INTEGER#
+       AND PROD_CODE = #prodCode:CHAR#
+  </select>
+
+  <!-- 検索リスト 計画対象品目・従業員情報・組織情報 -->
+  <select id="selectList" resultMap="resultMapList" parameterClass="java.util.Map" >
+    SELECT IWPS.SEQ_KEY
+          ,IWPS.JGI_NO
+          ,IWPS.PROD_CODE
+          ,IWPS.STATUS
+          ,IWPS.ASYNC_BEF_STATUS
+          ,IWPS.ASYNC_SERVER_KBN
+          ,IWPS.ASYNC_BEF_DIST_START_DATE
+          ,IWPS.DIST_START_DATE
+          ,IWPS.DIST_END_DATE
+          ,IWPS.INS_WS_OPEN_DATE
+          ,IWPS.INS_WS_FIX_DATE
+          ,IWPS.IS_JGI_NO
+          ,IWPS.IS_JGI_NAME
+          ,IWPS.IS_DATE
+          ,IWPS.UP_JGI_NO
+          ,IWPS.UP_JGI_NAME
+          ,IWPS.UP_DATE
+          ,JM.JGI_NAME
+      FROM DPS_I_INS_WS_PLAN_STATUS IWPS
+           INNER JOIN DPS_C_PLANNED_PROD PR
+        ON IWPS.PROD_CODE = PR.PROD_CODE
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IWPS.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="prodCode">
+        PR.PROD_CODE = #prodCode:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd3">
+        JM.SOS_CD3 = #sosCd3:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd4">
+        JM.SOS_CD4 = #sosCd4:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="jgiNo">
+        IWPS.JGI_NO = #jgiNo:INTEGER#
+      </isNotNull>
+    </dynamic>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 最終更新日取得 -->
+  <select id="getLastUpDate" resultClass="java.sql.Timestamp" parameterClass="java.util.Map" >
+    SELECT MAX(UP_DATE)
+      FROM DPS_I_INS_WS_PLAN_STATUS IWPS
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IWPS.JGI_NO = JM.JGI_NO
+     WHERE IWPS.PROD_CODE = #prodCode:VARCHAR#
+    <isNotNull prepend="AND" property="sosCd3">
+      JM.SOS_CD3 = #sosCd3:VARCHAR#
+    </isNotNull>
+    <isNotNull prepend="AND" property="sosCd4">
+      JM.SOS_CD4 = #sosCd4:VARCHAR#
+    </isNotNull>
+  </select>
+
+  <!-- 検索リスト(従業員) -->
+  <select id="selectJgiBaseList" resultMap="resultMapList" parameterClass="java.util.Map" >
+    SELECT IWPS.SEQ_KEY
+          ,JM.JGI_NO AS JGI_NO
+          ,#prodCode:CHAR# AS PROD_CODE
+          ,IWPS.STATUS
+          ,IWPS.ASYNC_BEF_STATUS
+          ,IWPS.ASYNC_SERVER_KBN
+          ,IWPS.ASYNC_BEF_DIST_START_DATE
+          ,IWPS.DIST_START_DATE
+          ,IWPS.DIST_END_DATE
+          ,IWPS.INS_WS_OPEN_DATE
+          ,IWPS.INS_WS_FIX_DATE
+          ,IWPS.IS_JGI_NO
+          ,IWPS.IS_JGI_NAME
+          ,IWPS.IS_DATE
+          ,IWPS.UP_JGI_NO
+          ,IWPS.UP_JGI_NAME
+          ,IWPS.UP_DATE
+          ,JM.JGI_NAME
+     FROM DPS_C_VI_JGI_MST JM
+          INNER JOIN DPS_C_SOS_MST SM
+       ON JM.SOS_CD = SM.SOS_CD
+          LEFT OUTER JOIN DPS_I_INS_WS_PLAN_STATUS IWPS
+       ON IWPS.JGI_NO = JM.JGI_NO
+      AND IWPS.PROD_CODE = #prodCode:CHAR#
+    WHERE
+      <isNotNull property="jgiKbList">
+          <iterate prepend="JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+              #jgiKbList[].dbValue#
+          </iterate>
+      </isNotNull>
+      <isNotNull prepend="AND" property="jokenSetList">
+      EXISTS (
+          SELECT JO.JGI_NO
+          FROM DPS_C_JGI_JOKEN JO
+          WHERE JO.JGI_NO = JM.JGI_NO
+          <isNotNull property="jokenSetList">
+              <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                  #jokenSetList[].dbValue#
+              </iterate>
+          </isNotNull>
+      )
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd3">
+          JM.SOS_CD3 = #sosCd3:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd4">
+          JM.SOS_CD4 = #sosCd4:VARCHAR#
+      </isNotNull>
+    ORDER BY BR_CODE, DIST_SEQ, DIST_CODE, TEAM_CODE, SHOKUSEI_CD, SHOKUSHU_CD, JGI_NO
+  </select>
+
+  <!-- 検索リスト サーバ区分指定 -->
+  <select id="selectDistingListByServerKbn" resultMap="resultMapList" parameterClass="java.util.Map" >
+    SELECT IWPS.SEQ_KEY
+          ,IWPS.JGI_NO
+          ,IWPS.PROD_CODE
+          ,IWPS.STATUS
+          ,IWPS.ASYNC_BEF_STATUS
+          ,IWPS.ASYNC_SERVER_KBN
+          ,IWPS.ASYNC_BEF_DIST_START_DATE
+          ,IWPS.DIST_START_DATE
+          ,IWPS.DIST_END_DATE
+          ,IWPS.INS_WS_OPEN_DATE
+          ,IWPS.INS_WS_FIX_DATE
+          ,IWPS.IS_JGI_NO
+          ,IWPS.IS_JGI_NAME
+          ,IWPS.IS_DATE
+          ,IWPS.UP_JGI_NO
+          ,IWPS.UP_JGI_NAME
+          ,IWPS.UP_DATE
+          ,JM.JGI_NAME
+      FROM DPS_I_INS_WS_PLAN_STATUS IWPS
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IWPS.JGI_NO = JM.JGI_NO
+       AND JM.KENMU_KB = 0
+     WHERE IWPS.ASYNC_SERVER_KBN = #appServerKbn:VARCHAR#
+       AND IWPS.STATUS = '1'
+     <isPropertyAvailable property="sortString">
+         $sortString$
+     </isPropertyAvailable>
+  </select>
+
+  <!-- 検索/ステータスサマリー -->
+  <select id="selectProdStat" resultMap="resultSumMap" parameterClass="java.util.Map" >
+    WITH INS_WS_PLAN_STAT AS (SELECT PP.PROD_CODE
+                  ,COUNT(CASE WHEN IWPS.STATUS IS NULL THEN 1 ELSE NULL END) AS INS_WS_PLAN_NONE
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '1' THEN 1 ELSE NULL END) AS INS_WS_PLAN_DISTING
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '2' THEN 1 ELSE NULL END) AS INS_WS_PLAN_DISTED
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '3' THEN 1 ELSE NULL END) AS INS_WS_PLAN_OPENED
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '4' THEN 1 ELSE NULL END) AS INS_WS_PLAN_COMPLETED
+                  ,COUNT(JM.JGI_NO) AS INS_WS_PLAN_STAT_COUNT
+                  ,MAX(DIST_START_DATE) AS INS_WS_DIST_START_DATE
+                  ,MAX(DIST_END_DATE) AS INS_WS_DIST_END_DATE
+                  ,MAX(INS_WS_OPEN_DATE) AS INS_WS_OPEN_DATE
+                  ,MAX(INS_WS_FIX_DATE) AS INS_WS_FIX_DATE
+                  ,MAX(IWPS.UP_DATE) AS INS_WS_LAST_UPDATE
+              FROM DPS_C_VI_JGI_MST JM
+                   LEFT OUTER JOIN DPS_C_PLANNED_PROD PP
+                  <isNotNull property="jgiNo" >
+                ON JM.JGI_NO = #jgiNo:INTEGER#
+                  </isNotNull>
+                  <isNotNull property="sosCd3" >
+                ON JM.SOS_CD3 = #sosCd3:VARCHAR#
+                  </isNotNull>
+                  <isNotNull property="sosCd4" >
+                ON JM.SOS_CD4 = #sosCd4:VARCHAR#
+                  </isNotNull>
+               <isNotNull property="jgiKbList">
+                   <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+                       #jgiKbList[].dbValue#
+                   </iterate>
+               </isNotNull>
+               <isNotNull prepend="AND" property="jokenSetList">
+               EXISTS (SELECT JO.JGI_NO
+               FROM DPS_C_JGI_JOKEN JO
+               WHERE JO.JGI_NO = JM.JGI_NO
+               <isNotNull property="jokenSetList">
+                   <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                       #jokenSetList[].dbValue#
+                   </iterate>
+               </isNotNull>
+               )
+               </isNotNull>
+                   LEFT OUTER JOIN DPS_I_INS_WS_PLAN_STATUS IWPS
+                ON IWPS.JGI_NO = JM.JGI_NO
+               AND IWPS.PROD_CODE = PP.PROD_CODE
+             WHERE PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+               AND PP.SALES = #sales:CHAR#
+             GROUP BY PP.PROD_CODE
+             )
+
+    SELECT PP.PROD_CODE
+          ,PP.PROD_NAME
+          ,INS_WS_PLAN_NONE
+          ,INS_WS_PLAN_DISTING
+          ,INS_WS_PLAN_DISTED
+          ,INS_WS_PLAN_OPENED
+          ,INS_WS_PLAN_COMPLETED
+          ,INS_WS_PLAN_STAT_COUNT
+          ,INS_WS_DIST_START_DATE
+          ,INS_WS_DIST_END_DATE
+          ,INS_WS_OPEN_DATE
+          ,INS_WS_FIX_DATE
+          ,INS_WS_LAST_UPDATE
+      FROM DPS_C_PLANNED_PROD PP
+           INNER JOIN INS_WS_PLAN_STAT IWPS
+        ON PP.PROD_CODE = IWPS.PROD_CODE
+     ORDER BY GROUP_CODE, STAT_PROD_CODE, PROD_CODE
+    </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.InsWsPlanStatusForVac" >
+    INSERT INTO DPS_I_INS_WS_PLAN_STATUS
+          (SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,STATUS
+          ,ASYNC_BEF_STATUS
+          ,ASYNC_SERVER_KBN
+          ,ASYNC_BEF_DIST_START_DATE
+          ,DIST_START_DATE
+          ,DIST_END_DATE
+          ,INS_WS_OPEN_DATE
+          ,INS_WS_FIX_DATE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (ORADPX01.SEQ_DPS_I_INS_WS_PLAN_STATUS.NEXTVAL
+          ,#jgiNo:INTEGER#
+          ,#prodCode:CHAR#
+          ,#statusForInsWsPlan:CHAR#
+          ,#asyncBefStatus:CHAR#
+          ,#appServerKbn:CHAR#
+          ,#asyncBefDistStartDate:TIMESTAMP#
+          ,#distStartDate:TIMESTAMP#
+          ,#distEndDate:TIMESTAMP#
+          ,#insWsOpenDate:TIMESTAMP#
+          ,#insWsFixDate:TIMESTAMP#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.InsWsPlanStatusForVac" >
+    UPDATE DPS_I_INS_WS_PLAN_STATUS
+       SET JGI_NO = #jgiNo:INTEGER#
+          ,PROD_CODE = #prodCode:CHAR#
+          ,STATUS = #statusForInsWsPlan:CHAR#
+          ,ASYNC_BEF_STATUS = #asyncBefStatus:CHAR#
+          ,ASYNC_SERVER_KBN = #appServerKbn:VARCHAR#
+          ,ASYNC_BEF_DIST_START_DATE = #asyncBefDistStartDate:TIMESTAMP#
+          ,DIST_START_DATE = #distStartDate:TIMESTAMP#
+          ,DIST_END_DATE = #distEndDate:TIMESTAMP#
+          ,INS_WS_OPEN_DATE = #insWsOpenDate:TIMESTAMP#
+          ,INS_WS_FIX_DATE = #insWsFixDate:TIMESTAMP#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_INS_WS_PLAN_STATUS
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </delete>
+
+</sqlMap>

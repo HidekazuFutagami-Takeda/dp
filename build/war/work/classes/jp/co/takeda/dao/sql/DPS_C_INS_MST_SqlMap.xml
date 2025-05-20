@@ -1,0 +1,752 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_C_INS_MST_SqlMap" >
+
+<!--   <resultMap id="resultMap" class="jp.co.takeda.model.DpsInsMst" > -->
+<!--     <result column="INS_NO" property="insNo" jdbcType="VARCHAR" /> -->
+<!--     <result column="INS_CLASS" property="insClass" jdbcType="VARCHAR" /> -->
+<!--     <result column="RELN_INS_NO" property="relnInsNo" jdbcType="VARCHAR" /> -->
+<!--     <result column="RELN_INS_CODE" property="relnInsCode" jdbcType="VARCHAR" /> -->
+<!--     <result column="OLD_INSR_FLG" property="oldInsrFlg" jdbcType="VARCHAR" /> -->
+<!--     <result column="INS_KANA" property="insKana" jdbcType="VARCHAR" /> -->
+<!--     <result column="INS_KANA_SRCH" property="insKanaSrch" jdbcType="VARCHAR" /> -->
+<!--     <result column="INS_ABBR_NAME" property="insAbbrName" jdbcType="VARCHAR" /> -->
+<!--     <result column="INS_FORMAL_NAME" property="insFormalName" jdbcType="VARCHAR" /> -->
+<!--     <result column="ADDR_CODE_PREF" property="addrCodePref" jdbcType="VARCHAR" /> -->
+<!--     <result column="ADDR_CODE_CITY" property="addrCodeCity" jdbcType="VARCHAR" /> -->
+<!--     <result column="TRADE_TYPE" property="tradeType" jdbcType="VARCHAR" /> -->
+<!--     <result column="HO_INS_TYPE" property="hoInsType" jdbcType="VARCHAR" /> -->
+<!--     <result column="REQ_FLG" property="reqFlg" jdbcType="INTEGER" /> -->
+<!--     <result column="DEL_FLG" property="delFlg" jdbcType="INTEGER" /> -->
+<!--     <result column="ACTIVITY_TYPE" property="activityType" jdbcType="CHAR" /> -->
+<!--     <result column="SHIKUCHOSON_MEI_KJ" property="shikuchosonMeiKj" jdbcType="VARCHAR" /> -->
+<!--     <result column="INS_INFO_NAME" property="prodIns.insInfoName" jdbcType="VARCHAR" /> -->
+<!--     <result column="DISP_FONT_COL_CD" property="prodIns.dispFontColCd" jdbcType="CHAR" /> -->
+<!--     <result column="ERR_KB" property="prodIns.prodInsInfoErrKbn" jdbcType="CHAR" /> -->
+<!--     <result column="SCRN_DISP_KB" property="prodIns.prodInsInfoScanDispKbn" jdbcType="CHAR" /> -->
+<!--     <result column="DIST_KB" property="prodIns.prodInsInfoDistKbn" jdbcType="CHAR" /> -->
+<!--     <result column="IMP_INS_KB" property="prodIns.prodInsInfoImpInsKbn" jdbcType="CHAR" /> -->
+<!--     <result column="EXEC_PG_ID" property="prodIns.execPgId" jdbcType="VARCHAR" /> -->
+<!--     <result column="REMARKS" property="prodIns.remarks" jdbcType="VARCHAR" /> -->
+<!--   </resultMap> -->
+
+  <resultMap id="fullResultMap" class="jp.co.takeda.model.DpsInsMst" >
+    <result column="INS_NO" property="insNo" jdbcType="VARCHAR" />
+    <result column="INS_CLASS" property="insClass" jdbcType="VARCHAR" />
+    <result column="RELN_INS_NO" property="relnInsNo" jdbcType="VARCHAR" />
+    <result column="RELN_INS_CODE" property="relnInsCode" jdbcType="VARCHAR" />
+    <result column="OLD_INSR_FLG" property="oldInsrFlg" jdbcType="VARCHAR" />
+    <result column="INS_KANA" property="insKana" jdbcType="VARCHAR" />
+    <result column="INS_KANA_SRCH" property="insKanaSrch" jdbcType="VARCHAR" />
+    <result column="INS_ABBR_NAME" property="insAbbrName" jdbcType="VARCHAR" />
+    <result column="INS_FORMAL_NAME" property="insFormalName" jdbcType="VARCHAR" />
+    <result column="ADDR_CODE_PREF" property="addrCodePref" jdbcType="VARCHAR" />
+    <result column="ADDR_CODE_CITY" property="addrCodeCity" jdbcType="VARCHAR" />
+    <result column="TRADE_TYPE" property="tradeType" jdbcType="VARCHAR" />
+    <result column="HO_INS_TYPE" property="hoInsType" jdbcType="VARCHAR" />
+    <result column="REQ_FLG" property="reqFlg" jdbcType="INTEGER" />
+    <result column="DEL_FLG" property="delFlg" jdbcType="INTEGER" />
+    <result column="ACTIVITY_TYPE" property="activityType" jdbcType="CHAR" />
+    <result column="SHIKUCHOSON_MEI_KJ" property="shikuchosonMeiKj" jdbcType="VARCHAR" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="SHOKUSHU_NAME" property="shokushuName" jdbcType="VARCHAR" />
+<!-- mod start 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+    <result column="LIST_JGI_NO" property="listJgiNo" jdbcType="INTEGER" />
+    <result column="LIST_JGI_NAME" property="listJgiName" jdbcType="VARCHAR" />
+    <result column="LIST_SHOKUSHU_NAME" property="listShokushuName" jdbcType="VARCHAR" />
+    <result column="LIST_MR_CAT" property="listMrCat" jdbcType="VARCHAR" />
+    <result column="LIST_JGI_KB" property="listJgiKb" jdbcType="VARCHAR" />
+<!--     <result column="COM_JGI_NO" property="comJgiNo" jdbcType="INTEGER" /> -->
+<!--     <result column="COM_JGI_NAME" property="comJgiName" jdbcType="VARCHAR" /> -->
+<!--     <result column="COM_SHOKUSHU_NAME" property="comShokushuName" jdbcType="VARCHAR" /> -->
+<!--     <result column="CVM_JGI_NO" property="cvmJgiNo" jdbcType="INTEGER" /> -->
+<!--     <result column="CVM_JGI_NAME" property="cvmJgiName" jdbcType="VARCHAR" /> -->
+<!--     <result column="CVM_SHOKUSHU_NAME" property="cvmShokushuName" jdbcType="VARCHAR" /> -->
+<!--     <result column="RS_JGI_NO" property="rsJgiNo" jdbcType="INTEGER" /> -->
+<!--     <result column="RS_JGI_NAME" property="rsJgiName" jdbcType="VARCHAR" /> -->
+<!--     <result column="RS_SHOKUSHU_NAME" property="rsShokushuName" jdbcType="VARCHAR" /> -->
+<!-- add start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）SP追加 -->
+<!--     <result column="SP_JGI_NO" property="spJgiNo" jdbcType="INTEGER" /> -->
+<!--     <result column="SP_JGI_NAME" property="spJgiName" jdbcType="VARCHAR" /> -->
+<!--     <result column="SP_SHOKUSHU_NAME" property="spShokushuName" jdbcType="VARCHAR" /> tes  -->
+<!-- add end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）SP追加 -->
+<!--     <result column="ONC_JGI_NO" property="oncJgiNo" jdbcType="INTEGER" /> -->
+<!--     <result column="ONC_JGI_NAME" property="oncJgiName" jdbcType="VARCHAR" /> -->
+<!--     <result column="ONC_SHOKUSHU_NAME" property="oncShokushuName" jdbcType="VARCHAR" /> -->
+<!-- add start 2020/04/16 趙 2020年4月組織変更対応（各種アプリ） -->
+<!--     <result column="KOKEI_JGI_NO" property="kokeiJgiNo" jdbcType="INTEGER" /> -->
+<!--     <result column="KOKEI_JGI_NAME" property="kokeiJgiName" jdbcType="VARCHAR" /> -->
+<!--     <result column="KOKEI_SHOKUSHU_NAME" property="kokeiShokushuName" jdbcType="VARCHAR" /> -->
+<!-- add end   2020/04/16 趙 2020年4月組織変更対応（各種アプリ） -->
+<!--     <result column="VAC_JGI_NO" property="vacJgiNo" jdbcType="INTEGER" /> -->
+<!--     <result column="VAC_JGI_NAME" property="vacJgiName" jdbcType="VARCHAR" /> -->
+<!--     <result column="VAC_SHOKUSHU_NAME" property="vacShokushuName" jdbcType="VARCHAR" />  -->
+<!-- mod End 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+    <result column="PROD_CODE" property="prodIns.prodCode" jdbcType="VARCHAR" />
+    <result column="INS_INFO_NAME" property="prodIns.insInfoName" jdbcType="VARCHAR" />
+    <result column="DISP_FONT_COL_CD" property="prodIns.dispFontColCd" jdbcType="CHAR" />
+    <result column="ERR_KB" property="prodIns.prodInsInfoErrKbn" jdbcType="CHAR" />
+    <result column="SCRN_DISP_KB" property="prodIns.prodInsInfoScanDispKbn" jdbcType="CHAR" />
+    <result column="DIST_KB" property="prodIns.prodInsInfoDistKbn" jdbcType="CHAR" />
+    <result column="IMP_INS_KB" property="prodIns.prodInsInfoImpInsKbn" jdbcType="CHAR" />
+    <result column="EXEC_PG_ID" property="prodIns.execPgId" jdbcType="VARCHAR" />
+    <result column="REMARKS" property="prodIns.remarks" jdbcType="VARCHAR" />
+    <result column="EXCEPT_DIST_INS_FLG" property="exceptDistFlg" jdbcType="INTEGER" />
+<!--     <result column="OINS_HO_INS_TYPE" property="oinsHoInsType" jdbcType="VARCHAR" /> -->
+<!--     <result column="OINS_RELN_INS_NO" property="oinsRelnInsNo" jdbcType="VARCHAR" /> -->
+<!--     <result column="MAIN_INS_NO" property="mainInsNo" jdbcType="VARCHAR" /> -->
+<!--     <result column="INS_HO_INS_TYPE" property="insHoInsType" jdbcType="VARCHAR" /> -->
+  </resultMap>
+
+
+  <!-- 検索（品目指定なし） -->
+  <select id="selectList" resultMap="fullResultMap" parameterClass="java.util.Map" >
+    WITH MR_INS AS (
+        SELECT
+          MRI.INS_NO
+<!-- mod Start 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+         ,MRI.MR_CAT AS LIST_MR_CAT
+         ,LIST_JGI.JGI_KB AS LIST_JGI_KB
+         ,LIST_JGI.JGI_NO AS LIST_JGI_NO
+         ,LIST_JGI.JGI_NAME AS LIST_JGI_NAME
+         ,LIST_JGI.SHOKUSEI_CD AS LIST_SHOKUSEI_CD
+         ,LIST_JGI.SHOKUSHU_CD AS LIST_SHOKUSHU_CD
+         ,LIST_JGI.SHOKUSHU_NAME AS LIST_SHOKUSHU_NAME
+<!--          ,MAX(JM_COM.JGI_NO) AS COM_JGI_NO, MAX(JM_COM.JGI_NAME) AS COM_JGI_NAME, MAX(JM_COM.SHOKUSEI_CD) AS COM_SHOKUSEI_CD, MAX(JM_COM.SHOKUSHU_CD) AS COM_SHOKUSHU_CD, MAX(JM_COM.SHOKUSHU_NAME) AS COM_SHOKUSHU_NAME -->
+<!--          ,MAX(JM_CVM.JGI_NO) AS CVM_JGI_NO, MAX(JM_CVM.JGI_NAME) AS CVM_JGI_NAME, MAX(JM_CVM.SHOKUSEI_CD) AS CVM_SHOKUSEI_CD, MAX(JM_CVM.SHOKUSHU_CD) AS CVM_SHOKUSHU_CD, MAX(JM_CVM.SHOKUSHU_NAME) AS CVM_SHOKUSHU_NAME -->
+<!--          ,MAX(JM_RS.JGI_NO)  AS RS_JGI_NO,  MAX(JM_RS.JGI_NAME)  AS RS_JGI_NAME,  MAX(JM_RS.SHOKUSEI_CD)  AS RS_SHOKUSEI_CD,  MAX(JM_RS.SHOKUSHU_CD)  AS RS_SHOKUSHU_CD,  MAX(JM_RS.SHOKUSHU_NAME)  AS RS_SHOKUSHU_NAME -->
+<!-- add start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）SP追加 -->
+<!--          ,MAX(JM_SP.JGI_NO) AS SP_JGI_NO, MAX(JM_SP.JGI_NAME) AS SP_JGI_NAME, MAX(JM_SP.SHOKUSEI_CD) AS SP_SHOKUSEI_CD, MAX(JM_SP.SHOKUSHU_CD) AS SP_SHOKUSHU_CD, MAX(JM_SP.SHOKUSHU_NAME) AS SP_SHOKUSHU_NAME -->
+<!-- add end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）SP追加 -->
+<!--          ,MAX(JM_ONC.JGI_NO) AS ONC_JGI_NO, MAX(JM_ONC.JGI_NAME) AS ONC_JGI_NAME, MAX(JM_ONC.SHOKUSEI_CD) AS ONC_SHOKUSEI_CD, MAX(JM_ONC.SHOKUSHU_CD) AS ONC_SHOKUSHU_CD, MAX(JM_ONC.SHOKUSHU_NAME) AS ONC_SHOKUSHU_NAME -->
+<!-- add start 2020/04/16 趙 2020年4月組織変更対応（各種アプリ） -->
+<!--          ,MAX(JM_KOKEI.JGI_NO) AS KOKEI_JGI_NO, MAX(JM_KOKEI.JGI_NAME) AS KOKEI_JGI_NAME, MAX(JM_KOKEI.SHOKUSEI_CD) AS KOKEI_SHOKUSEI_CD, MAX(JM_KOKEI.SHOKUSHU_CD) AS KOKEI_SHOKUSHU_CD, MAX(JM_KOKEI.SHOKUSHU_NAME) AS KOKEI_SHOKUSHU_NAME -->
+<!-- add end   2020/04/16 趙 2020年4月組織変更対応（各種アプリ） -->
+<!--          ,MAX(JM_VAC.JGI_NO) AS VAC_JGI_NO, MAX(JM_VAC.JGI_NAME) AS VAC_JGI_NAME, MAX(JM_VAC.SHOKUSEI_CD) AS VAC_SHOKUSEI_CD, MAX(JM_VAC.SHOKUSHU_CD) AS VAC_SHOKUSHU_CD, MAX(JM_VAC.SHOKUSHU_NAME) AS VAC_SHOKUSHU_NAME -->
+<!--        <isNotNull property="jgiNo"> -->
+<!--           ,MAX(SRC_JGI.JGI_NO) AS JGI_NO, MAX(SRC_JGI.JGI_NAME) AS JGI_NAME, MAX(SRC_JGI.SHOKUSEI_CD) AS SHOKUSEI_CD, MAX(SRC_JGI.SHOKUSHU_CD) AS SHOKUSHU_CD, MAX(SRC_JGI.SHOKUSHU_NAME) AS SHOKUSHU_NAME -->
+<!--        </isNotNull> -->
+       <isNotNull property="jgiNo">
+          ,JGI_INFO.JGI_NO AS JGI_NO, JGI_INFO.JGI_NAME AS JGI_NAME, JGI_INFO.SHOKUSEI_CD AS SHOKUSEI_CD, JGI_INFO.SHOKUSHU_CD AS SHOKUSHU_CD, JGI_INFO.SHOKUSHU_NAME AS SHOKUSHU_NAME
+       </isNotNull>
+<!-- mod End 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+       <isNull property="jgiNo">
+          ,NULL AS JGI_NO,NULL AS JGI_NAME,NULL AS SHOKUSEI_CD, NULL AS SHOKUSHU_CD, NULL AS SHOKUSHU_NAME
+       </isNull>
+        FROM
+            DPS_C_MR_INS MRI
+<!-- mod Start 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+<!--        INNER JOIN DPS_C_MR_INS SRC_MI ON MRI.INS_NO = SRC_MI.INS_NO AND SRC_MI.MAIN_MR = '0' -->
+<!--        INNER JOIN DPS_C_VI_JGI_MST SRC_JGI ON SRC_MI.MR_NO = SRC_JGI.JGI_NO -->
+            INNER JOIN DPS_C_JGI_MST LIST_JGI ON MRI.MR_NO = LIST_JGI.JGI_NO AND MRI.MAIN_MR = '0' AND LIST_JGI.JGI_KB IN ('0','1','8')
+
+         <isNotNull property="jgiNo">
+            INNER JOIN DPS_C_MR_INS INS_INFO ON MRI.INS_NO = INS_INFO.INS_NO AND INS_INFO.MR_NO = #jgiNo:VARCHAR#
+            INNER JOIN DPS_C_JGI_MST JGI_INFO ON INS_INFO.MR_NO = JGI_INFO.JGI_NO
+         </isNotNull>
+            <!-- パフォーマンスが出ないので、外部結合は従業員ビューを通さない -->
+<!--             LEFT JOIN DPS_C_JGI_MST JM_COM ON MRI.MR_NO = JM_COM.JGI_NO AND MRI.MR_CAT = '01' AND MRI.MAIN_MR = '0' AND JM_COM.JGI_KB IN ('0','1','8') -->
+<!--             LEFT JOIN DPS_C_JGI_MST JM_CVM ON MRI.MR_NO = JM_CVM.JGI_NO AND MRI.MR_CAT = '08' AND MRI.MAIN_MR = '0' AND JM_CVM.JGI_KB IN ('0','1','8') -->
+<!--             LEFT JOIN DPS_C_JGI_MST JM_RS  ON MRI.MR_NO = JM_RS.JGI_NO  AND MRI.MR_CAT = '09' AND MRI.MAIN_MR = '0' AND JM_RS.JGI_KB IN ('0','1','8') -->
+<!-- add start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）SP追加 -->
+<!--             LEFT JOIN DPS_C_JGI_MST JM_SP  ON MRI.MR_NO = JM_SP.JGI_NO  AND MRI.MR_CAT = '03' AND MRI.MAIN_MR = '0' AND JM_SP.JGI_KB IN ('0','1') -->
+<!-- add end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）SP追加 -->
+<!--             LEFT JOIN DPS_C_JGI_MST JM_ONC ON MRI.MR_NO = JM_ONC.JGI_NO AND MRI.MR_CAT = '05' AND MRI.MAIN_MR = '0' AND JM_ONC.JGI_KB IN ('0','1') -->
+<!-- add start 2020/04/16 趙 2020年4月組織変更対応（各種アプリ） -->
+<!--             LEFT JOIN DPS_C_JGI_MST JM_KOKEI ON MRI.MR_NO = JM_KOKEI.JGI_NO AND MRI.MR_CAT = '12' AND MRI.MAIN_MR = '0' AND JM_KOKEI.JGI_KB IN ('0','1') -->
+<!-- add end   2020/04/16 趙 2020年4月組織変更対応（各種アプリ） -->
+<!--             LEFT JOIN DPS_C_JGI_MST JM_VAC ON MRI.MR_NO = JM_VAC.JGI_NO AND MRI.MR_CAT = '02' AND MRI.MAIN_MR = '0' AND JM_VAC.JGI_KB IN ('0','1','8') -->
+<!--    WHERE -->
+    WHERE
+<!--     SRC_JGI.KENMU_KB = 0 -->
+       EXISTS ( SELECT 1 FROM DPS_C_MR_INS INS_JKN INNER JOIN DPS_C_VI_JGI_MST JGI_JKN ON INS_JKN.MR_NO = JGI_JKN.JGI_NO
+                        WHERE MRI.INS_NO = INS_JKN.INS_NO
+                          AND JGI_JKN.KENMU_KB = 0
+       <isNotNull prepend="AND" property="sosCd3">
+                              JGI_JKN.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="sosCd4">
+                              JGI_JKN.SOS_CD4 = #sosCd4:VARCHAR#
+       </isNotNull>
+       )
+<!--       <isNotNull prepend="AND" property="insNo"> -->
+<!--         MRI.INS_NO = #insNo:VARCHAR# -->
+<!--       </isNotNull> -->
+      <isNotNull prepend="AND" property="insNo">
+        MRI.INS_NO = #insNo:VARCHAR#
+      </isNotNull>
+<!--       <isNotNull prepend="AND" property="sosCd3"> -->
+<!--         SRC_JGI.SOS_CD3 = #sosCd3:VARCHAR# -->
+<!--       </isNotNull> -->
+<!--       <isNotNull prepend="AND" property="sosCd4"> -->
+<!--         SRC_JGI.SOS_CD4 = #sosCd4:VARCHAR# -->
+<!--       </isNotNull> -->
+<!--       <isNotNull prepend="AND" property="jgiNo"> -->
+<!--         SRC_JGI.JGI_NO = #jgiNo:INTEGER# -->
+<!--       </isNotNull> -->
+<!--         GROUP BY MRI.INS_NO -->
+<!--         ORDER BY MRI.INS_NO -->
+<!-- mod End 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+    )
+    SELECT INS.INS_NO
+          ,INS.INS_CLASS
+<!--           ,INS.RELN_INS_NO -->
+<!--           ,INS.RELN_INS_CODE -->
+          ,INS.OLD_INSR_FLG
+          ,INS.INS_KANA
+          ,INS.INS_KANA_SRCH
+          ,INS.INS_ABBR_NAME
+          ,INS.INS_FORMAL_NAME
+          ,INS.ADDR_CODE_PREF
+          ,INS.ADDR_CODE_CITY
+          ,INS.TRADE_TYPE
+<!-- mod start 2021/8/17 h.Kaneko 親子紐づけ対応 -->
+          <!-- ,INS.HO_INS_TYPE -->
+         ,NVL(OINS.HO_INS_TYPE, INS.HO_INS_TYPE) AS HO_INS_TYPE
+<!-- mod end 2021/8/17 -->
+          ,INS.REQ_FLG
+          ,CASE
+            WHEN INS.DEL_FLG ='1' THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '●', 1, 1)=1  THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '〇', 1, 1)=1  THEN '1'
+            ELSE '0'
+           END AS DEL_FLG
+          ,AT.ACTIVITY_TYPE
+          ,JIS.SHIKUCHOSON_MEI_KJ
+      ,MR_INS.JGI_NO AS JGI_NO
+      ,MR_INS.JGI_NAME AS JGI_NAME
+      ,NVL2(JJ.JGI_NO, 'TL', MR_INS.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+<!-- mod Stert 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+      ,MR_INS.LIST_MR_CAT AS LIST_MR_CAT
+      ,MR_INS.LIST_JGI_KB AS LIST_JGI_KB
+      ,MR_INS.LIST_JGI_NO AS LIST_JGI_NO
+      ,MR_INS.LIST_JGI_NAME AS LIST_JGI_NAME
+      ,NVL2(JJ_TAN.JGI_NO, 'TL', MR_INS.LIST_SHOKUSHU_NAME) AS LIST_SHOKUSHU_NAME
+<!--       ,MR_INS.COM_JGI_NO AS COM_JGI_NO -->
+<!--       ,MR_INS.COM_JGI_NAME AS COM_JGI_NAME -->
+<!--       ,NVL2(JJ_COM.JGI_NO, 'TL', MR_INS.COM_SHOKUSHU_NAME) AS COM_SHOKUSHU_NAME -->
+<!--       ,MR_INS.CVM_JGI_NO AS CVM_JGI_NO -->
+<!--       ,MR_INS.CVM_JGI_NAME AS CVM_JGI_NAME -->
+<!--       ,NVL2(JJ_CVM.JGI_NO, 'TL', MR_INS.CVM_SHOKUSHU_NAME) AS CVM_SHOKUSHU_NAME -->
+<!--       ,MR_INS.RS_JGI_NO AS RS_JGI_NO -->
+<!--       ,MR_INS.RS_JGI_NAME AS RS_JGI_NAME -->
+<!--       ,NVL2(JJ_RS.JGI_NO, 'TL', MR_INS.RS_SHOKUSHU_NAME) AS RS_SHOKUSHU_NAME -->
+<!-- add start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）SP追加 -->
+<!--       ,MR_INS.SP_JGI_NO AS SP_JGI_NO -->
+<!--       ,MR_INS.SP_JGI_NAME AS SP_JGI_NAME -->
+<!--       ,NVL2(JJ_SP.JGI_NO, 'TL', MR_INS.SP_SHOKUSHU_NAME) AS SP_SHOKUSHU_NAME -->
+<!-- add end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）SP追加 -->
+<!--       ,MR_INS.ONC_JGI_NO AS ONC_JGI_NO -->
+<!--       ,MR_INS.ONC_JGI_NAME AS ONC_JGI_NAME -->
+<!--       ,NVL2(JJ_ONC.JGI_NO, 'TL', MR_INS.ONC_SHOKUSHU_NAME) AS ONC_SHOKUSHU_NAME -->
+<!-- add start 2020/04/16 趙 2020年4月組織変更対応（各種アプリ） -->
+<!--       ,MR_INS.KOKEI_JGI_NO AS KOKEI_JGI_NO -->
+<!--       ,MR_INS.KOKEI_JGI_NAME AS KOKEI_JGI_NAME -->
+<!--       ,NVL2(JJ_KOKEI.JGI_NO, 'TL', MR_INS.KOKEI_SHOKUSHU_NAME) AS KOKEI_SHOKUSHU_NAME -->
+<!-- add end   2020/04/16 趙 2020年4月組織変更対応（各種アプリ） -->
+<!--       ,MR_INS.VAC_JGI_NO AS VAC_JGI_NO -->
+<!--       ,MR_INS.VAC_JGI_NAME AS VAC_JGI_NAME -->
+<!--       ,NVL2(JJ_VAC.JGI_NO, 'TL', MR_INS.VAC_SHOKUSHU_NAME) AS VAC_SHOKUSHU_NAME -->
+<!-- mod End 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+          ,NULL AS PROD_CODE
+          ,NULL AS INS_INFO_NAME
+          ,NULL AS DISP_FONT_COL_CD
+          ,NULL AS ERR_KB
+          ,NULL AS SCRN_DISP_KB
+          ,NULL AS DIST_KB
+          ,NULL AS IMP_INS_KB
+          ,NULL AS EXEC_PG_ID
+          ,NULL AS REMARKS
+          ,NULL AS EXCEPT_DIST_INS_FLG
+<!--           ,INS.HO_INS_TYPE -->
+          ,OINS.HO_INS_TYPE AS OINS_HO_INS_TYPE
+          ,OINS.RELN_INS_NO AS OINS_RELN_INS_NO
+          ,NVL(OYK.MAIN_INS_NO,'0') AS MAIN_INS_NO
+          ,INS.HO_INS_TYPE AS INS_HO_INS_TYPE
+          ,INS.RELN_INS_NO
+          ,INS.RELN_INS_CODE
+      FROM MR_INS
+           INNER JOIN DPS_C_INS_MST INS ON INS.INS_NO = MR_INS.INS_NO
+   <isNotEmpty prepend="AND" property="insKanaSrch">
+        CONTAINS(INS.INS_KANA_SRCH, #insKanaSrch:VARCHAR#) > 0
+   </isNotEmpty>
+   <isNotEmpty prepend="AND" property="insFormalName">
+        (CONTAINS(INS.INS_FORMAL_NAME, #insFormalName:VARCHAR#) > 0 OR CONTAINS(INS.INS_ABBR_NAME, #insFormalName:VARCHAR#) > 0)
+   </isNotEmpty>
+           LEFT JOIN DPS_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO
+           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+           LEFT JOIN DPS_C_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+<!-- mod Stert 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+<!--    <isNotNull property="isIyaku"> -->
+<!--            INNER JOIN DPS_C_JGI_MST SRT_JGI ON SRT_JGI.JGI_NO = MR_INS.COM_JGI_NO -->
+        <!-- sortMrCatには、医薬なら"01"ワクチンなら"02"が2022/06/30時点では設定される。ソートキー取得の為 -->
+            INNER JOIN DPS_C_MR_INS SOS_JGI ON SOS_JGI.INS_NO = MR_INS.INS_NO AND SOS_JGI.MR_CAT = #sortMrCat:VARCHAR#
+            INNER JOIN DPS_C_JGI_MST SRT_JGI ON SRT_JGI.JGI_NO = SOS_JGI.MR_NO
+            INNER JOIN DPS_C_SOS_MST SRT_SOS ON SRT_SOS.SOS_CD = SRT_JGI.SOS_CD
+<!--        INNER JOIN DPS_C_SOS_MST SRT_SOS ON SRT_SOS.SOS_CD = SRT_JGI.SOS_CD -->
+<!--    </isNotNull> -->
+<!--    <isNull property="isIyaku"> -->
+<!--            INNER JOIN DPS_C_JGI_MST SRT_JGI ON SRT_JGI.JGI_NO = MR_INS.VAC_JGI_NO -->
+<!--            INNER JOIN DPS_C_SOS_MST SRT_SOS ON SRT_SOS.SOS_CD = SRT_JGI.SOS_CD -->
+<!--    </isNull> -->
+<!-- mod End 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+           LEFT JOIN DPS_V_ACTIVITY_TYPE AT ON INS.INS_NO = AT.INS_NO
+           LEFT JOIN DPS_S_SY_T_JIS_MST JIS ON INS.ADDR_CODE_PREF = JIS.TODOUFUKEN_CD AND INS.ADDR_CODE_CITY = JIS.SHIKUCHOSON_CD
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ     ON JJ.JGI_NO     = MR_INS.JGI_NO     AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+<!-- mod Stert 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ_TAN ON JJ_TAN.JGI_NO = MR_INS.LIST_JGI_NO     AND JJ_TAN.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+<!--            LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ_COM ON JJ_COM.JGI_NO = MR_INS.COM_JGI_NO AND JJ_COM.JOKEN_SET_CD = #TLJokenSet:VARCHAR# -->
+<!--            LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ_CVM ON JJ_CVM.JGI_NO = MR_INS.CVM_JGI_NO AND JJ_CVM.JOKEN_SET_CD = #TLJokenSet:VARCHAR# -->
+<!--            LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ_RS  ON JJ_RS.JGI_NO  = MR_INS.RS_JGI_NO  AND JJ_RS.JOKEN_SET_CD = #TLJokenSet:VARCHAR# -->
+<!-- add start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）SP追加 -->
+<!--            LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ_SP  ON JJ_SP.JGI_NO  = MR_INS.SP_JGI_NO  AND JJ_SP.JOKEN_SET_CD = #TLJokenSet:VARCHAR# -->
+<!-- add end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）SP追加 -->
+<!--            LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ_ONC ON JJ_ONC.JGI_NO = MR_INS.ONC_JGI_NO AND JJ_ONC.JOKEN_SET_CD = #TLJokenSet:VARCHAR# -->
+<!-- add start 2020/04/16 趙 2020年4月組織変更対応（各種アプリ） -->
+<!--            LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ_KOKEI ON JJ_KOKEI.JGI_NO = MR_INS.KOKEI_JGI_NO AND JJ_KOKEI.JOKEN_SET_CD = #TLJokenSet:VARCHAR# -->
+<!-- add end   2020/04/16 趙 2020年4月組織変更対応（各種アプリ） -->
+<!--            LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ_VAC ON JJ_VAC.JGI_NO = MR_INS.VAC_JGI_NO AND JJ_VAC.JOKEN_SET_CD = #TLJokenSet:VARCHAR# -->
+<!-- mod End 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+<dynamic prepend="WHERE">
+<isNotNull prepend="AND" property="insNo">
+INS.INS_NO = #insNo:VARCHAR#
+</isNotNull>
+          <isNotNull prepend="AND" property="searchInsType">
+              <iterate open="(" close=")" conjunction=" OR "  property="searchInsType">
+              (
+<!-- mod start 2021/8/17 h.Kaneko 親子紐づけ対応 -->
+                  <!-- INS.HO_INS_TYPE = #searchInsType[]# -->
+                  NVL(oins.ho_ins_type, ins.ho_ins_type) = #searchInsType[]#
+<!-- mod end 2021/8/17 -->
+                  <isEqual prepend="AND" property="searchInsType[]" compareProperty="vaccineSelect">
+                  INS.PHARM_TYPE = '07'
+                  </isEqual>
+              )
+              </iterate>
+          </isNotNull>
+<isNotNull prepend="AND" property="activityType">
+ AT.ACTIVITY_TYPE = #activityType:CHAR#
+</isNotNull>
+</dynamic>
+ORDER BY SRT_SOS.BR_CODE, SRT_SOS.DIST_SEQ,SRT_SOS.DIST_CODE, SRT_SOS.TEAM_CODE, SRT_JGI.SHOKUSEI_CD, SRT_JGI.SHOKUSHU_CD, SRT_JGI.JGI_NO,OINS_HO_INS_TYPE, OINS_RELN_INS_NO, MAIN_INS_NO, INS_HO_INS_TYPE, INS.RELN_INS_NO, INS.RELN_INS_CODE
+<!-- add Stert 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+         ,MR_INS.INS_NO, MR_INS.LIST_MR_CAT
+<!-- add End 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+  </select>
+
+  <!-- 検索（品目指定） -->
+  <select id="selectListByProd" resultMap="fullResultMap" parameterClass="java.util.Map" >
+	WITH MR_INS_PROD AS (
+        SELECT
+          MIP.INS_NO
+          ,SRC_JGI.JGI_NO
+          ,SRC_JGI.JGI_NAME
+          ,SRC_JGI.SHOKUSEI_CD
+          ,SRC_JGI.SHOKUSHU_CD
+          ,SRC_JGI.SHOKUSHU_NAME
+          ,MIP.PROD_CODE
+          ,MIP.INS_INFO_NAME
+          ,MIP.DISP_FONT_COL_CD
+          ,MIP.ERR_KB
+          ,MIP.SCRN_DISP_KB
+          ,MIP.DIST_KB
+          ,MIP.IMP_INS_KB
+        FROM
+            DPS_C_MR_INS_PROD_ALL MIP
+            INNER JOIN DPS_C_VI_JGI_MST SRC_JGI on MIP.MR_NO = SRC_JGI.JGI_NO
+        WHERE
+            MIP.PROD_CODE = #prodCode:CHAR#
+        AND MIP.MAIN_MR = '0'
+        AND (MIP.SCRN_DISP_KB IS NULL OR MIP.SCRN_DISP_KB = '1')
+	      <isNotNull prepend="AND" property="insNo">
+	        MIP.INS_NO = #insNo:VARCHAR#
+	      </isNotNull>
+	      <isNotNull prepend="AND" property="sosCd3">
+	        SRC_JGI.SOS_CD3 = #sosCd3:VARCHAR#
+	      </isNotNull>
+	      <isNotNull prepend="AND" property="sosCd4">
+	        SRC_JGI.SOS_CD4 = #sosCd4:VARCHAR#
+	      </isNotNull>
+	      <isNotNull prepend="AND" property="jgiNo">
+	        SRC_JGI.JGI_NO = #jgiNo:INTEGER#
+	      </isNotNull>
+        ORDER BY MIP.INS_NO
+	)
+    SELECT INS.INS_NO
+          ,INS.INS_CLASS
+<!--           ,INS.RELN_INS_NO -->
+<!--           ,INS.RELN_INS_CODE -->
+          ,INS.OLD_INSR_FLG
+          ,INS.INS_KANA
+          ,INS.INS_KANA_SRCH
+          ,INS.INS_ABBR_NAME
+          ,INS.INS_FORMAL_NAME
+          ,INS.ADDR_CODE_PREF
+          ,INS.ADDR_CODE_CITY
+          ,INS.TRADE_TYPE
+<!-- mod start 2021/8/17 h.Kaneko 親子紐づけ対応 -->
+          <!-- ,INS.HO_INS_TYPE -->
+          ,NVL(OINS.HO_INS_TYPE, INS.HO_INS_TYPE) AS HO_INS_TYPE
+<!-- mod end 2021/8/17 h.Kaneko -->
+          ,INS.REQ_FLG
+          ,CASE
+            WHEN INS.DEL_FLG ='1' THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '●', 1, 1)=1  THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '〇', 1, 1)=1  THEN '1'
+            ELSE '0'
+           END AS DEL_FLG
+          ,AT.ACTIVITY_TYPE
+          ,JIS.SHIKUCHOSON_MEI_KJ
+          ,MR_INS_PROD.JGI_NO AS JGI_NO
+          ,MR_INS_PROD.JGI_NAME AS JGI_NAME
+          ,NVL2(JJ.JGI_NO,'TL',MR_INS_PROD.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+<!-- mod Start 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+      ,NULL AS LIST_MR_CAT
+      ,NULL AS LIST_JGI_KB
+      ,NULL AS LIST_JGI_NO
+      ,NULL AS LIST_JGI_NAME
+      ,NULL AS LIST_SHOKUSHU_NAME
+<!--           ,NULL AS COM_JGI_NO -->
+<!--           ,NULL AS COM_JGI_NAME -->
+<!--           ,NULL AS COM_SHOKUSHU_NAME -->
+<!--           ,NULL AS CVM_JGI_NO -->
+<!--           ,NULL AS CVM_JGI_NAME -->
+<!--           ,NULL AS CVM_SHOKUSHU_NAME -->
+<!--           ,NULL AS RS_JGI_NO -->
+<!--           ,NULL AS RS_JGI_NAME -->
+<!--           ,NULL AS RS_SHOKUSHU_NAME -->
+<!-- add start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）SP追加 -->
+<!--           ,NULL AS SP_JGI_NO -->
+<!--           ,NULL AS SP_JGI_NAME -->
+<!--           ,NULL AS SP_SHOKUSHU_NAME -->
+<!-- add end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）SP追加 -->
+<!--           ,NULL AS ONC_JGI_NO -->
+<!--           ,NULL AS ONC_JGI_NAME -->
+<!--           ,NULL AS ONC_SHOKUSHU_NAME -->
+<!-- add start 2020/04/16 趙 2020年4月組織変更対応（各種アプリ） -->
+<!--           ,NULL AS KOKEI_JGI_NO -->
+<!--           ,NULL AS KOKEI_JGI_NAME -->
+<!--           ,NULL AS KOKEI_SHOKUSHU_NAME -->
+<!-- add end   2020/04/16 趙 2020年4月組織変更対応（各種アプリ） -->
+<!--           ,NULL AS VAC_JGI_NO -->
+<!--           ,NULL AS VAC_JGI_NAME -->
+<!--           ,NULL AS VAC_SHOKUSHU_NAME -->
+<!-- mod Start 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+          ,MR_INS_PROD.PROD_CODE
+          ,MR_INS_PROD.INS_INFO_NAME
+          ,MR_INS_PROD.DISP_FONT_COL_CD
+          ,MR_INS_PROD.ERR_KB
+          ,MR_INS_PROD.SCRN_DISP_KB
+          ,MR_INS_PROD.DIST_KB
+          ,MR_INS_PROD.IMP_INS_KB
+          ,NULL AS EXEC_PG_ID
+          ,NULL AS REMARKS
+          ,CASE WHEN EXC_INS.INS_NO IS NULL THEN '0' ELSE '1' END AS EXCEPT_DIST_INS_FLG
+          ,OINS.HO_INS_TYPE AS OINS_HO_INS_TYPE
+          ,OINS.RELN_INS_NO AS OINS_RELN_INS_NO
+          ,NVL(OYK.MAIN_INS_NO,'0') AS MAIN_INS_NO
+          ,INS.HO_INS_TYPE AS INS_HO_INS_TYPE
+          ,INS.RELN_INS_NO
+          ,INS.RELN_INS_CODE
+      FROM MR_INS_PROD
+           INNER JOIN DPS_C_INS_MST INS ON INS.INS_NO = MR_INS_PROD.INS_NO
+          <isNotEmpty prepend="AND" property="insKanaSrch">
+           CONTAINS(INS.INS_KANA_SRCH, #insKanaSrch:VARCHAR#) > 0
+         </isNotEmpty>
+         <isNotEmpty prepend="AND" property="insFormalName">
+           (CONTAINS(INS.INS_FORMAL_NAME, #insFormalName:VARCHAR#) > 0 OR CONTAINS(INS.INS_ABBR_NAME, #insFormalName:VARCHAR#) > 0)
+         </isNotEmpty>
+           LEFT JOIN DPS_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO
+           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+           LEFT JOIN DPS_C_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+           INNER JOIN DPS_C_JGI_MST SRT_JGI ON SRT_JGI.JGI_NO = MR_INS_PROD.JGI_NO
+           INNER JOIN DPS_C_SOS_MST SRT_SOS ON SRT_SOS.SOS_CD = SRT_JGI.SOS_CD
+           LEFT JOIN DPS_V_ACTIVITY_TYPE AT ON INS.INS_NO = AT.INS_NO
+           LEFT JOIN DPS_S_SY_T_JIS_MST JIS ON INS.ADDR_CODE_PREF = JIS.TODOUFUKEN_CD AND INS.ADDR_CODE_CITY = JIS.SHIKUCHOSON_CD
+           LEFT JOIN DPS_I_EXCEPT_DIST_INS EXC_INS ON MR_INS_PROD.INS_NO = EXC_INS.INS_NO AND ( EXC_INS.PROD_CODE = #prodCode:CHAR# OR EXC_INS.PROD_CODE IS NULL)
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ ON JJ.JGI_NO = MR_INS_PROD.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+          <dynamic prepend="WHERE">
+
+<!-- del start 2021/8/17 h.Kaneko 親子紐づけ対応 -->
+          <isNotNull prepend="AND" property="insNo">
+          INS.INS_NO = #insNo:VARCHAR#
+          </isNotNull>
+          <isNotNull prepend="AND" property="searchInsType">
+              <iterate open="(" close=")" conjunction=" OR "  property="searchInsType">
+              (
+<!-- mod start 2021/8/17 h.Kaneko 親子紐づけ対応 -->
+                  <!-- INS.HO_INS_TYPE = #searchInsType[]# -->
+                   NVL(OINS.HO_INS_TYPE, INS.HO_INS_TYPE) = #searchInsType[]#
+<!-- mod end 2021/8/17 -->
+                  <isEqual prepend="AND" property="searchInsType[]" compareProperty="vaccineSelect">
+                  INS.PHARM_TYPE = '07'
+                  </isEqual>
+              )
+              </iterate>
+          </isNotNull>
+          <isNotNull prepend="AND" property="activityType">
+          AT.ACTIVITY_TYPE = #activityType:CHAR#
+          </isNotNull>
+          </dynamic>
+<!-- del end 2021/8/17 -->
+
+          ORDER BY SRT_SOS.BR_CODE, SRT_SOS.DIST_SEQ, SRT_SOS.DIST_CODE, SRT_SOS.TEAM_CODE, SRT_JGI.SHOKUSEI_CD, SRT_JGI.SHOKUSHU_CD, SRT_JGI.JGI_NO,OINS_HO_INS_TYPE, OINS_RELN_INS_NO, MAIN_INS_NO, INS_HO_INS_TYPE, INS.RELN_INS_NO, INS.RELN_INS_CODE
+          </select>
+
+  <!-- 検索（関連親子施設取得） -->
+  <select id="selectFamilyInsList" resultMap="fullResultMap" parameterClass="java.util.Map" >
+    SELECT INS.INS_NO
+          ,INS.INS_CLASS
+          ,INS.RELN_INS_NO
+          ,INS.RELN_INS_CODE
+          ,INS.OLD_INSR_FLG
+          ,INS.INS_KANA
+          ,INS.INS_KANA_SRCH
+          ,INS.INS_ABBR_NAME
+          ,INS.INS_FORMAL_NAME
+          ,INS.ADDR_CODE_PREF
+          ,INS.ADDR_CODE_CITY
+          ,INS.TRADE_TYPE
+          ,INS.HO_INS_TYPE
+          ,INS.REQ_FLG
+          ,CASE
+            WHEN INS.DEL_FLG ='1' THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '●', 1, 1)=1  THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '〇', 1, 1)=1  THEN '1'
+            ELSE '0'
+           END AS DEL_FLG
+          ,AT.ACTIVITY_TYPE
+          ,JIS.SHIKUCHOSON_MEI_KJ
+          ,JGI.JGI_NO AS JGI_NO
+          ,JGI.JGI_NAME AS JGI_NAME
+          ,NVL2(JJ.JGI_NO,'TL',JGI.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+<!-- mod Start 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+      ,NULL AS LIST_MR_CAT
+      ,NULL AS LIST_JGI_KB
+      ,NULL AS LIST_JGI_NO
+      ,NULL AS LIST_JGI_NAME
+      ,NULL AS LIST_SHOKUSHU_NAME
+<!--           ,NULL AS COM_JGI_NO -->
+<!--           ,NULL AS COM_JGI_NAME -->
+<!--           ,NULL AS COM_SHOKUSHU_NAME -->
+<!--           ,NULL AS CVM_JGI_NO -->
+<!--           ,NULL AS CVM_JGI_NAME -->
+<!--           ,NULL AS CVM_SHOKUSHU_NAME -->
+<!--           ,NULL AS RS_JGI_NO -->
+<!--           ,NULL AS RS_JGI_NAME -->
+<!--           ,NULL AS RS_SHOKUSHU_NAME -->
+<!-- add start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）SP追加 -->
+<!--           ,NULL AS SP_JGI_NO -->
+<!--           ,NULL AS SP_JGI_NAME -->
+<!--           ,NULL AS SP_SHOKUSHU_NAME -->
+<!-- add end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）SP追加 -->
+<!--           ,NULL AS ONC_JGI_NO -->
+<!--           ,NULL AS ONC_JGI_NAME -->
+<!--           ,NULL AS ONC_SHOKUSHU_NAME -->
+<!-- add start 2020/04/16 趙 2020年4月組織変更対応（各種アプリ） -->
+<!--           ,NULL AS KOKEI_JGI_NO -->
+<!--           ,NULL AS KOKEI_JGI_NAME -->
+<!--           ,NULL AS KOKEI_SHOKUSHU_NAME -->
+<!-- add end   2020/04/16 趙 2020年4月組織変更対応（各種アプリ） -->
+<!--           ,NULL AS VAC_JGI_NO -->
+<!--           ,NULL AS VAC_JGI_NAME -->
+<!--           ,NULL AS VAC_SHOKUSHU_NAME -->
+<!-- mod Start 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+          ,MIP.PROD_CODE
+          ,MIP.INS_INFO_NAME
+          ,MIP.DISP_FONT_COL_CD
+          ,MIP.ERR_KB
+          ,MIP.SCRN_DISP_KB
+          ,MIP.DIST_KB
+          ,MIP.IMP_INS_KB
+          ,NULL AS EXEC_PG_ID
+          ,NULL AS REMARKS
+          ,CASE WHEN EXC_INS.INS_NO IS NULL THEN '0' ELSE '1' END AS EXCEPT_DIST_INS_FLG
+      FROM DPS_C_INS_MST INS
+	       <isNotNull property="isFamily">
+           INNER JOIN DPS_C_INS_MST TARGET_INS ON TARGET_INS.RELN_INS_NO = INS.RELN_INS_NO
+	       </isNotNull>
+           INNER JOIN DPS_C_MR_INS_PROD_ALL MIP ON MIP.INS_NO = INS.INS_NO AND MIP.PROD_CODE = #prodCode:CHAR# AND MIP.MR_NO = #jgiNo:INTEGER# AND MIP.MAIN_MR = '0'
+           LEFT JOIN DPS_C_JGI_MST JGI ON JGI.JGI_NO = MIP.MR_NO
+           LEFT JOIN DPS_V_ACTIVITY_TYPE AT ON INS.INS_NO = AT.INS_NO
+           LEFT JOIN DPS_S_SY_T_JIS_MST JIS ON INS.ADDR_CODE_PREF = JIS.TODOUFUKEN_CD AND INS.ADDR_CODE_CITY = JIS.SHIKUCHOSON_CD
+           LEFT JOIN DPS_I_EXCEPT_DIST_INS EXC_INS ON INS.INS_NO = EXC_INS.INS_NO AND ( EXC_INS.PROD_CODE = #prodCode:CHAR# OR EXC_INS.PROD_CODE IS NULL )
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ ON JJ.JGI_NO = JGI.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+     WHERE
+	       <isNotNull property="isFamily">
+           TARGET_INS.INS_NO = #insNo:VARCHAR#
+	       </isNotNull>
+	       <isNull property="isFamily">
+           INS.INS_NO = #insNo:VARCHAR#
+	       </isNull>
+	ORDER BY INS.HO_INS_TYPE, INS.RELN_INS_NO, INS.RELN_INS_CODE
+  </select>
+
+  <!-- 検索/A調含む施設（ワクチンのみ使用（特定施設個別計画）） -->
+  <select id="selectIncludeA" resultMap="fullResultMap" parameterClass="java.util.Map" >
+    SELECT INS.INS_NO
+          ,INS.INS_CLASS
+          ,INS.RELN_INS_NO
+          ,INS.RELN_INS_CODE
+          ,INS.OLD_INSR_FLG
+          ,INS.INS_KANA
+          ,INS.INS_KANA_SRCH
+          ,INS.INS_ABBR_NAME
+          ,INS.INS_FORMAL_NAME
+          ,INS.ADDR_CODE_PREF
+          ,INS.ADDR_CODE_CITY
+          ,INS.TRADE_TYPE
+          ,INS.HO_INS_TYPE
+          ,INS.REQ_FLG
+          ,CASE
+            WHEN INS.DEL_FLG ='1' THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '●', 1, 1)=1  THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '〇', 1, 1)=1  THEN '1'
+            ELSE '0'
+           END AS DEL_FLG
+          ,ACTIVITY_TYPE
+          ,SHIKUCHOSON_MEI_KJ
+          ,NULL AS JGI_NO
+          ,NULL AS JGI_NAME
+          ,NULL AS SHOKUSHU_NAME
+<!-- mod Start 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+      ,NULL AS LIST_MR_CAT
+      ,NULL AS LIST_JGI_KB
+      ,NULL AS LIST_JGI_NO
+      ,NULL AS LIST_JGI_NAME
+      ,NULL AS LIST_SHOKUSHU_NAME
+<!--           ,NULL AS COM_JGI_NO -->
+<!--           ,NULL AS COM_JGI_NAME -->
+<!--           ,NULL AS COM_SHOKUSHU_NAME -->
+<!--           ,NULL AS CVM_JGI_NO -->
+<!--           ,NULL AS CVM_JGI_NAME -->
+<!--           ,NULL AS CVM_SHOKUSHU_NAME -->
+<!--           ,NULL AS RS_JGI_NO -->
+<!--           ,NULL AS RS_JGI_NAME -->
+<!--           ,NULL AS RS_SHOKUSHU_NAME -->
+<!--           ,NULL AS SP_JGI_NO -->
+<!--           ,NULL AS SP_JGI_NAME -->
+<!--           ,NULL AS SP_SHOKUSHU_NAME -->
+<!--           ,NULL AS ONC_JGI_NO -->
+<!--           ,NULL AS ONC_JGI_NAME -->
+<!--           ,NULL AS ONC_SHOKUSHU_NAME -->
+<!--           ,NULL AS KOKEI_JGI_NO -->
+<!--           ,NULL AS KOKEI_JGI_NAME -->
+<!--           ,NULL AS KOKEI_SHOKUSHU_NAME -->
+<!--           ,NULL AS VAC_JGI_NO -->
+<!--           ,NULL AS VAC_JGI_NAME -->
+<!--           ,NULL AS VAC_SHOKUSHU_NAME -->
+<!-- mod Start 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+          ,NULL AS PROD_CODE
+          ,NULL AS INS_INFO_NAME
+          ,NULL AS DISP_FONT_COL_CD
+          ,NULL AS ERR_KB
+          ,NULL AS SCRN_DISP_KB
+          ,NULL AS DIST_KB
+          ,NULL AS IMP_INS_KB
+          ,NULL AS EXEC_PG_ID
+          ,NULL AS REMARKS
+          ,NULL AS EXCEPT_DIST_INS_FLG
+      FROM DPS_C_INS_MST INS
+           INNER JOIN DPS_C_MR_INS MRI
+        ON INS.INS_NO = MRI.INS_NO
+           LEFT JOIN DPS_V_ACTIVITY_TYPE AT
+        ON INS.INS_NO = AT.INS_NO
+           LEFT JOIN DPS_S_SY_T_JIS_MST JIS
+        ON INS.ADDR_CODE_PREF = JIS.TODOUFUKEN_CD
+       AND INS.ADDR_CODE_CITY = JIS.SHIKUCHOSON_CD
+     WHERE MRI.MR_NO = #jgiNo:INTEGER#
+       AND ((RELN_INS_NO = (SELECT RELN_INS_NO
+                             FROM DPS_C_INS_MST
+                            WHERE INS_NO = #insNo:VARCHAR#)
+             AND INS_CLASS=#insClass:VARCHAR#
+             AND OLD_INSR_FLG=#oldInsrFlg:VARCHAR#)
+           OR INS.INS_NO = #insNo:VARCHAR#)
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 検索（施設指定） -->
+  <select id="selectMR01ByInsNo" resultMap="fullResultMap" parameterClass="java.util.Map" >
+    SELECT INS.INS_NO
+          ,INS.INS_CLASS
+          ,INS.RELN_INS_NO
+          ,INS.RELN_INS_CODE
+          ,INS.OLD_INSR_FLG
+          ,INS.INS_KANA
+          ,INS.INS_KANA_SRCH
+          ,INS.INS_ABBR_NAME
+          ,INS.INS_FORMAL_NAME
+          ,INS.ADDR_CODE_PREF
+          ,INS.ADDR_CODE_CITY
+          ,INS.TRADE_TYPE
+          ,INS.HO_INS_TYPE
+          ,INS.REQ_FLG
+          ,CASE
+            WHEN INS.DEL_FLG ='1' THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '●', 1, 1)=1  THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '〇', 1, 1)=1  THEN '1'
+            ELSE '0'
+           END AS DEL_FLG
+          ,AT.ACTIVITY_TYPE
+          ,JIS.SHIKUCHOSON_MEI_KJ
+          ,MRI.MR_NO AS JGI_NO
+          ,NULL AS JGI_NAME
+          ,NULL AS SHOKUSHU_NAME
+<!-- mod Start 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+      ,NULL AS LIST_MR_CAT
+      ,NULL AS LIST_JGI_KB
+      ,NULL AS LIST_JGI_NO
+      ,NULL AS LIST_JGI_NAME
+      ,NULL AS LIST_SHOKUSHU_NAME
+<!--           ,NULL AS COM_JGI_NO -->
+<!--           ,NULL AS COM_JGI_NAME -->
+<!--           ,NULL AS COM_SHOKUSHU_NAME -->
+<!--           ,NULL AS CVM_JGI_NO -->
+<!--           ,NULL AS CVM_JGI_NAME -->
+<!--           ,NULL AS CVM_SHOKUSHU_NAME -->
+<!--           ,NULL AS RS_JGI_NO -->
+<!--           ,NULL AS RS_JGI_NAME -->
+<!--           ,NULL AS RS_SHOKUSHU_NAME -->
+<!--           ,NULL AS SP_JGI_NO -->
+<!--           ,NULL AS SP_JGI_NAME -->
+<!--           ,NULL AS SP_SHOKUSHU_NAME -->
+<!--           ,NULL AS ONC_JGI_NO -->
+<!--           ,NULL AS ONC_JGI_NAME -->
+<!--           ,NULL AS ONC_SHOKUSHU_NAME -->
+<!--           ,NULL AS KOKEI_JGI_NO -->
+<!--           ,NULL AS KOKEI_JGI_NAME -->
+<!--           ,NULL AS KOKEI_SHOKUSHU_NAME -->
+<!--           ,NULL AS VAC_JGI_NO -->
+<!--           ,NULL AS VAC_JGI_NAME -->
+<!--           ,NULL AS VAC_SHOKUSHU_NAME -->
+<!-- mod Start 2022/06/30 R.takamoto 施設選択画面の担当者にNSBU、RDBUが含まれない対応 -->
+          ,NULL AS PROD_CODE
+          ,NULL AS INS_INFO_NAME
+          ,NULL AS DISP_FONT_COL_CD
+          ,NULL AS ERR_KB
+          ,NULL AS SCRN_DISP_KB
+          ,NULL AS DIST_KB
+          ,NULL AS IMP_INS_KB
+          ,NULL AS EXEC_PG_ID
+          ,NULL AS REMARKS
+          ,NULL AS EXCEPT_DIST_INS_FLG
+      FROM DPS_C_INS_MST INS
+           INNER JOIN DPS_C_MR_INS MRI
+        ON INS.INS_NO = MRI.INS_NO
+           LEFT JOIN DPS_V_ACTIVITY_TYPE AT
+        ON INS.INS_NO = AT.INS_NO
+           LEFT JOIN DPS_S_SY_T_JIS_MST JIS
+        ON INS.ADDR_CODE_PREF = JIS.TODOUFUKEN_CD
+       AND INS.ADDR_CODE_CITY = JIS.SHIKUCHOSON_CD
+     WHERE INS.INS_NO = #insNo:VARCHAR#
+       AND MRI.MR_CAT = '01'
+       AND MRI.MAIN_MR = '0'
+     ORDER BY JGI_NO, INS.HO_INS_TYPE, INS.RELN_INS_NO, INS.RELN_INS_CODE
+  </select>
+
+</sqlMap>

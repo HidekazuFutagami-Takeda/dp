@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_DIST_PARAM_OFFICE_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.DistParamOffice" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INS_TYPE" property="insType" jdbcType="CHAR" />
+    <result column="DISTRIBUTION_TYPE" property="distParam.distributionType" jdbcType="CHAR" />
+    <result column="ZERO_DIST_FLG" property="distParam.zeroDistFlg" jdbcType="CHAR" />
+    <result column="REF_PROD_CODE" property="baseParam.refProdCode" jdbcType="CHAR" />
+    <result column="REF_PROD_NAME" property="baseParam.refProdInfo.prodName" jdbcType="VARCHAR" />
+    <result column="REF_PROD_TYPE" property="baseParam.refProdInfo.prodType" jdbcType="VARCHAR" />
+    <result column="REF_FROM" property="baseParam.refFrom" jdbcType="CHAR" />
+    <result column="REF_TO" property="baseParam.refTo" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_1" property="baseParam.resultRefProdCode1" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_2" property="baseParam.resultRefProdCode2" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_3" property="baseParam.resultRefProdCode3" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_4" property="baseParam.resultRefProdCode4" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_NAME_1" property="baseParam.resultRefProdName1" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_NAME_2" property="baseParam.resultRefProdName2" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_NAME_3" property="baseParam.resultRefProdName3" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_NAME_4" property="baseParam.resultRefProdName4" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_TYPE_1" property="baseParam.resultRefProdType1" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_TYPE_2" property="baseParam.resultRefProdType2" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_TYPE_3" property="baseParam.resultRefProdType3" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_TYPE_4" property="baseParam.resultRefProdType4" jdbcType="VARCHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="columnList">
+     DPO.SEQ_KEY
+          ,DPO.SOS_CD
+          ,DPO.PROD_CODE
+          ,DPO.INS_TYPE
+          ,DPO.DISTRIBUTION_TYPE
+          ,DPO.ZERO_DIST_FLG
+          ,DPO.REF_PROD_CODE
+          ,DPO.REF_FROM
+          ,DPO.REF_TO
+          ,REF_PP.PROD_NAME AS REF_PROD_NAME
+          ,REF_PP.PROD_TYPE AS REF_PROD_TYPE
+          ,RESULT_REF_PROD_CODE_1
+          ,RESULT_REF_PROD_CODE_2
+          ,RESULT_REF_PROD_CODE_3
+          ,RESULT_REF_PROD_CODE_4
+          ,RESULT_PP1.PROD_NAME AS RESULT_REF_PROD_NAME_1
+          ,RESULT_PP2.PROD_NAME AS RESULT_REF_PROD_NAME_2
+          ,RESULT_PP3.PROD_NAME AS RESULT_REF_PROD_NAME_3
+          ,RESULT_PP4.PROD_NAME AS RESULT_REF_PROD_NAME_4
+          ,RESULT_PP1.PROD_TYPE AS RESULT_REF_PROD_TYPE_1
+          ,RESULT_PP2.PROD_TYPE AS RESULT_REF_PROD_TYPE_2
+          ,RESULT_PP3.PROD_TYPE AS RESULT_REF_PROD_TYPE_3
+          ,RESULT_PP4.PROD_TYPE AS RESULT_REF_PROD_TYPE_4
+          ,DPO.IS_JGI_NO
+          ,DPO.IS_JGI_NAME
+          ,DPO.IS_DATE
+          ,DPO.UP_JGI_NO
+          ,DPO.UP_JGI_NAME
+          ,DPO.UP_DATE
+  </sql>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH REF_PROD AS (<include refid="COMMON_SqlMap.refProd"/>)
+    SELECT <include refid="columnList"/>
+      FROM DPS_I_DIST_PARAM_OFFICE DPO
+           LEFT OUTER JOIN REF_PROD REF_PP
+        ON DPO.REF_PROD_CODE = REF_PP.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP1
+        ON DPO.RESULT_REF_PROD_CODE_1 = RESULT_PP1.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP2
+        ON DPO.RESULT_REF_PROD_CODE_2 = RESULT_PP2.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP3
+        ON DPO.RESULT_REF_PROD_CODE_3 = RESULT_PP3.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP4
+        ON DPO.RESULT_REF_PROD_CODE_4 = RESULT_PP4.PROD_CODE
+     WHERE DPO.SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.DistParamOffice" >
+    WITH REF_PROD AS (<include refid="COMMON_SqlMap.refProd"/>)
+    SELECT <include refid="columnList"/>
+      FROM DPS_I_DIST_PARAM_OFFICE DPO
+           LEFT OUTER JOIN REF_PROD REF_PP
+        ON DPO.REF_PROD_CODE = REF_PP.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP1
+        ON DPO.RESULT_REF_PROD_CODE_1 = RESULT_PP1.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP2
+        ON DPO.RESULT_REF_PROD_CODE_2 = RESULT_PP2.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP3
+        ON DPO.RESULT_REF_PROD_CODE_3 = RESULT_PP3.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP4
+        ON DPO.RESULT_REF_PROD_CODE_4 = RESULT_PP4.PROD_CODE
+     WHERE DPO.SOS_CD = #sosCd:VARCHAR#
+       AND DPO.PROD_CODE = #prodCode:CHAR#
+       AND DPO.INS_TYPE = #insType:CHAR#
+       AND DPO.DISTRIBUTION_TYPE = #distParam.distributionType:CHAR#
+  </select>
+
+  <!-- 検索リスト -->
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH REF_PROD AS (<include refid="COMMON_SqlMap.refProd"/>)
+    SELECT
+      <include refid="columnList"/>
+      ,PP.GROUP_CODE
+      ,PP.STAT_PROD_CODE
+    FROM
+      DPS_I_DIST_PARAM_OFFICE DPO INNER JOIN DPS_C_PLANNED_PROD PP ON DPO.PROD_CODE = PP.PROD_CODE
+        LEFT OUTER JOIN REF_PROD REF_PP ON DPO.REF_PROD_CODE = REF_PP.PROD_CODE
+          LEFT OUTER JOIN REF_PROD RESULT_PP1 ON DPO.RESULT_REF_PROD_CODE_1 = RESULT_PP1.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP2 ON DPO.RESULT_REF_PROD_CODE_2 = RESULT_PP2.PROD_CODE
+             LEFT OUTER JOIN REF_PROD RESULT_PP3 ON DPO.RESULT_REF_PROD_CODE_3 = RESULT_PP3.PROD_CODE
+               LEFT OUTER JOIN REF_PROD RESULT_PP4 ON DPO.RESULT_REF_PROD_CODE_4 = RESULT_PP4.PROD_CODE
+    WHERE
+      DPO.DISTRIBUTION_TYPE = #distributionType:CHAR#
+      AND PP.SALES = #sales:CHAR#
+      AND PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+      <isNotNull prepend="AND" property="sosCd">
+       DPO.SOS_CD = #sosCd:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="prodCode">
+       DPO.PROD_CODE = #prodCode:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="insType">
+       DPO.INS_TYPE = #insType:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="category">
+       PP.CATEGORY = #category:CHAR#
+      </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 検索リスト -->
+  <select id="selectWsParamList" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH REF_PROD AS (<include refid="COMMON_SqlMap.refProd"/>)
+    SELECT <include refid="columnList"/>
+      FROM (SELECT null AS SEQ_KEY
+                  ,SM.SOS_CD
+                  ,DPH.PROD_CODE
+                  ,DPH.DISTRIBUTION_TYPE
+                  ,DPH.INS_TYPE
+                  ,DPH.ZERO_DIST_FLG
+                  ,DPH.REF_PROD_CODE
+                  ,DPH.REF_FROM
+                  ,DPH.REF_TO
+                  ,DPH.RESULT_REF_PROD_CODE_1
+                  ,DPH.RESULT_REF_PROD_CODE_2
+                  ,DPH.RESULT_REF_PROD_CODE_3
+                  ,DPH.RESULT_REF_PROD_CODE_4
+                  ,DPH.IS_JGI_NO
+                  ,DPH.IS_JGI_NAME
+                  ,DPH.IS_DATE
+                  ,DPH.UP_JGI_NO
+                  ,DPH.UP_JGI_NAME
+                  ,DPH.UP_DATE
+                FROM (DPS_I_DIST_PARAM_HONBU DPH
+                      CROSS JOIN DPS_C_SOS_MST SM
+                     )
+                WHERE NOT EXISTS(SELECT *
+                                 FROM DPS_I_DIST_PARAM_OFFICE DPO
+                                 WHERE DPO.SOS_CD = SM.SOS_CD
+                                 AND   DPO.PROD_CODE = DPH.PROD_CODE
+                                 AND   DPO.INS_TYPE = DPH.INS_TYPE
+                                 AND   DPO.DISTRIBUTION_TYPE = DPH.DISTRIBUTION_TYPE
+                                )
+                  AND SM.UP_SOS_CD = #sosCd:VARCHAR#
+            UNION ALL
+            SELECT null AS SEQ_KEY
+                  ,DPO.SOS_CD
+                  ,DPO.PROD_CODE
+                  ,DPO.DISTRIBUTION_TYPE
+                  ,DPO.INS_TYPE
+                  ,DPO.ZERO_DIST_FLG
+                  ,DPO.REF_PROD_CODE
+                  ,DPO.REF_FROM
+                  ,DPO.REF_TO
+                  ,DPO.RESULT_REF_PROD_CODE_1
+                  ,DPO.RESULT_REF_PROD_CODE_2
+                  ,DPO.RESULT_REF_PROD_CODE_3
+                  ,DPO.RESULT_REF_PROD_CODE_4
+                  ,DPO.IS_JGI_NO
+                  ,DPO.IS_JGI_NAME
+                  ,DPO.IS_DATE
+                  ,DPO.UP_JGI_NO
+                  ,DPO.UP_JGI_NAME
+                  ,DPO.UP_DATE
+                FROM DPS_I_DIST_PARAM_OFFICE DPO
+                     INNER JOIN DPS_C_SOS_MST SM ON  DPO.SOS_CD = SM.SOS_CD
+                                                 AND SM.UP_SOS_CD = #sosCd:VARCHAR#
+           ) DPO INNER JOIN DPS_C_PLANNED_PROD PP ON DPO.PROD_CODE = PP.PROD_CODE
+           LEFT OUTER JOIN DPS_C_PLANNED_PROD REF_PP ON DPO.REF_PROD_CODE = REF_PP.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP1 ON DPO.RESULT_REF_PROD_CODE_1 = RESULT_PP1.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP2 ON DPO.RESULT_REF_PROD_CODE_2 = RESULT_PP2.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP3 ON DPO.RESULT_REF_PROD_CODE_3 = RESULT_PP3.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP4 ON DPO.RESULT_REF_PROD_CODE_4 = RESULT_PP4.PROD_CODE
+     WHERE DPO.DISTRIBUTION_TYPE = #distributionType:CHAR#
+       AND PP.SALES = #sales:CHAR#
+       AND PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+       <isNotNull property="prodCodeList">
+       <iterate prepend="AND DPO.PROD_CODE IN" property="prodCodeList" open="(" close=")" conjunction=",">
+        #prodCodeList[]#
+       </iterate>
+       </isNotNull>
+       <isNotNull prepend="AND" property="insType">
+           DPO.INS_TYPE = #insType:CHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="category">
+           PP.CATEGORY = #category:CHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="category">
+           EXISTS (SELECT SOS_CD FROM DPS_C_VI_SOS_CTG CTG WHERE CTG.SOS_CD = DPO.SOS_CD AND CATEGORY = #category:CHAR# )
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.DistParamOffice" >
+    INSERT INTO DPS_I_DIST_PARAM_OFFICE
+          (SEQ_KEY
+          ,SOS_CD
+          ,PROD_CODE
+          ,INS_TYPE
+          ,DISTRIBUTION_TYPE
+          ,ZERO_DIST_FLG
+          ,REF_PROD_CODE
+          ,REF_FROM
+          ,REF_TO
+          ,RESULT_REF_PROD_CODE_1
+          ,RESULT_REF_PROD_CODE_2
+          ,RESULT_REF_PROD_CODE_3
+          ,RESULT_REF_PROD_CODE_4
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (ORADPX01.SEQ_DPS_I_DIST_PARAM_OFFICE.NEXTVAL
+          ,#sosCd:VARCHAR#
+          ,#prodCode:CHAR#
+          ,#insType:CHAR#
+          ,#distParam.distributionType:CHAR#
+          ,#distParam.zeroDistFlg:CHAR#
+          ,#baseParam.refProdCode:CHAR#
+          ,#baseParam.refFrom:CHAR#
+          ,#baseParam.refTo:CHAR#
+          ,#baseParam.resultRefProdCode1:CHAR#
+          ,#baseParam.resultRefProdCode2:CHAR#
+          ,#baseParam.resultRefProdCode3:CHAR#
+          ,#baseParam.resultRefProdCode4:CHAR#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.DistParamOffice" >
+    UPDATE DPS_I_DIST_PARAM_OFFICE
+       SET ZERO_DIST_FLG = #distParam.zeroDistFlg:CHAR#
+          ,REF_PROD_CODE = #baseParam.refProdCode:CHAR#
+          ,REF_FROM = #baseParam.refFrom:CHAR#
+          ,REF_TO = #baseParam.refTo:CHAR#
+          ,RESULT_REF_PROD_CODE_1 = #baseParam.resultRefProdCode1:CHAR#
+          ,RESULT_REF_PROD_CODE_2 = #baseParam.resultRefProdCode2:CHAR#
+          ,RESULT_REF_PROD_CODE_3 = #baseParam.resultRefProdCode3:CHAR#
+          ,RESULT_REF_PROD_CODE_4 = #baseParam.resultRefProdCode4:CHAR#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_DIST_PARAM_OFFICE
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </delete>
+
+</sqlMap>

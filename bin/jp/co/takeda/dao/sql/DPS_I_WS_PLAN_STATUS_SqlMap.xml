@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_WS_PLAN_STATUS_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.WsPlanStatus" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="DIST_STATUS" property="statusDistForWs" jdbcType="CHAR" />
+    <result column="SLIDE_STATUS" property="statusSlideForWs" jdbcType="CHAR" />
+    <result column="ASYNC_BEF_STATUS" property="asyncBefStatus" jdbcType="CHAR" />
+    <result column="ASYNC_SERVER_KBN" property="appServerKbn" jdbcType="VARCHAR" />
+    <result column="ASYNC_BEF_DIST_START_DATE" property="asyncBefDistStartDate" jdbcType="TIMESTAMP" />
+    <result column="DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+    <result column="DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+    <result column="SLIDE_START_DATE" property="slideStartDate" jdbcType="TIMESTAMP" />
+    <result column="SLIDE_END_DATE" property="slideEndDate" jdbcType="TIMESTAMP" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultMapList" class="jp.co.takeda.model.WsPlanStatus">
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="DIST_STATUS" property="statusDistForWs" jdbcType="CHAR" />
+    <result column="SLIDE_STATUS" property="statusSlideForWs" jdbcType="CHAR" />
+    <result column="ASYNC_BEF_STATUS" property="asyncBefStatus" jdbcType="CHAR" />
+    <result column="ASYNC_SERVER_KBN" property="appServerKbn" jdbcType="VARCHAR" />
+    <result column="ASYNC_BEF_DIST_START_DATE" property="asyncBefDistStartDate" jdbcType="TIMESTAMP" />
+    <result column="DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+    <result column="DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+    <result column="SLIDE_START_DATE" property="slideStartDate" jdbcType="TIMESTAMP" />
+    <result column="SLIDE_END_DATE" property="slideEndDate" jdbcType="TIMESTAMP" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="columnList">
+           SEQ_KEY
+          ,SOS_CD
+          ,PROD_CODE
+          ,DIST_STATUS
+          ,SLIDE_STATUS
+          ,ASYNC_BEF_STATUS
+          ,ASYNC_SERVER_KBN
+          ,ASYNC_BEF_DIST_START_DATE
+          ,DIST_START_DATE
+          ,DIST_END_DATE
+          ,SLIDE_START_DATE
+          ,SLIDE_END_DATE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+  </sql>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+    <include refid="columnList" />
+      FROM DPS_I_WS_PLAN_STATUS
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.WsPlanStatus" >
+    SELECT
+    <include refid="columnList" />
+      FROM DPS_I_WS_PLAN_STATUS
+     WHERE SOS_CD = #sosCd:VARCHAR#
+       AND PROD_CODE = #prodCode:CHAR#
+  </select>
+
+  <!-- 検索リスト サーバ区分指定 -->
+  <select id="selectDistingListByServerKbn" resultMap="resultMapList" parameterClass="java.util.Map" >
+    SELECT WPS.SEQ_KEY
+          ,WPS.SOS_CD
+          ,WPS.PROD_CODE
+          ,WPS.DIST_STATUS
+          ,WPS.SLIDE_STATUS
+          ,WPS.ASYNC_BEF_STATUS
+          ,WPS.ASYNC_SERVER_KBN
+          ,WPS.ASYNC_BEF_DIST_START_DATE
+          ,WPS.DIST_START_DATE
+          ,WPS.DIST_END_DATE
+          ,WPS.SLIDE_START_DATE
+          ,WPS.SLIDE_END_DATE
+          ,WPS.IS_JGI_NO
+          ,WPS.IS_JGI_NAME
+          ,WPS.IS_DATE
+          ,WPS.UP_JGI_NO
+          ,WPS.UP_JGI_NAME
+          ,WPS.UP_DATE
+    FROM DPS_I_WS_PLAN_STATUS WPS
+         INNER JOIN DPS_C_PLANNED_PROD PP
+      ON PP.PROD_CODE = WPS.PROD_CODE
+    WHERE
+      PP.CATEGORY IS NOT NULL AND
+      WPS.ASYNC_SERVER_KBN = #appServerKbn:VARCHAR# AND
+      WPS.DIST_STATUS = '1'
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 検索リスト カテゴリ指定 -->
+  <select id="selectListByCategory" resultMap="resultMapList" parameterClass="java.util.Map" >
+    SELECT WPS.SEQ_KEY
+          ,WPS.SOS_CD
+          ,WPS.PROD_CODE
+          ,WPS.DIST_STATUS
+          ,WPS.SLIDE_STATUS
+          ,WPS.ASYNC_BEF_STATUS
+          ,WPS.ASYNC_SERVER_KBN
+          ,WPS.ASYNC_BEF_DIST_START_DATE
+          ,WPS.DIST_START_DATE
+          ,WPS.DIST_END_DATE
+          ,WPS.SLIDE_START_DATE
+          ,WPS.SLIDE_END_DATE
+          ,WPS.IS_JGI_NO
+          ,WPS.IS_JGI_NAME
+          ,WPS.IS_DATE
+          ,WPS.UP_JGI_NO
+          ,WPS.UP_JGI_NAME
+          ,WPS.UP_DATE
+    FROM DPS_I_WS_PLAN_STATUS WPS
+         INNER JOIN DPS_C_PLANNED_PROD PP
+      ON PP.PROD_CODE = WPS.PROD_CODE
+    WHERE
+      PP.CATEGORY IS NOT NULL
+      <isNotNull prepend="AND" property="category">
+        PP.CATEGORY = #category:CHAR#
+      </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+    <!-- 検索リスト カテゴリ指定 -->
+  <select id="selectListBySosCategory" resultMap="resultMapList" parameterClass="java.util.Map" >
+    SELECT WPS.SEQ_KEY
+          ,WPS.SOS_CD
+          ,WPS.PROD_CODE
+          ,WPS.DIST_STATUS
+          ,WPS.SLIDE_STATUS
+          ,WPS.ASYNC_BEF_STATUS
+          ,WPS.ASYNC_SERVER_KBN
+          ,WPS.ASYNC_BEF_DIST_START_DATE
+          ,WPS.DIST_START_DATE
+          ,WPS.DIST_END_DATE
+          ,WPS.SLIDE_START_DATE
+          ,WPS.SLIDE_END_DATE
+          ,WPS.IS_JGI_NO
+          ,WPS.IS_JGI_NAME
+          ,WPS.IS_DATE
+          ,WPS.UP_JGI_NO
+          ,WPS.UP_JGI_NAME
+          ,WPS.UP_DATE
+    FROM DPS_C_PLANNED_PROD PP
+         LEFT OUTER JOIN DPS_I_WS_PLAN_STATUS WPS ON  PP.PROD_CODE = WPS.PROD_CODE
+         <isNotNull prepend="AND" property="sosCd">
+            WPS.SOS_CD = #sosCd:VARCHAR#
+         </isNotNull>
+    WHERE PP.CATEGORY IS NOT NULL
+    AND   PP.SALES = #sales:CHAR#
+    AND   PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+      <isNotNull prepend="AND" property="category">
+        PP.CATEGORY = #category:CHAR#
+      </isNotNull>
+    AND PP.PLAN_LEVEL_WS = '1'
+  </select>
+
+  <!-- 検索リスト 組織指定 -->
+  <select id="selectListBySosProd" resultMap="resultMapList" parameterClass="java.util.Map" >
+    SELECT WPS.SEQ_KEY
+          ,WPS.SOS_CD
+          ,WPS.PROD_CODE
+          ,WPS.DIST_STATUS
+          ,WPS.SLIDE_STATUS
+          ,WPS.ASYNC_BEF_STATUS
+          ,WPS.ASYNC_SERVER_KBN
+          ,WPS.ASYNC_BEF_DIST_START_DATE
+          ,WPS.DIST_START_DATE
+          ,WPS.DIST_END_DATE
+          ,WPS.SLIDE_START_DATE
+          ,WPS.SLIDE_END_DATE
+          ,WPS.IS_JGI_NO
+          ,WPS.IS_JGI_NAME
+          ,WPS.IS_DATE
+          ,WPS.UP_JGI_NO
+          ,WPS.UP_JGI_NAME
+          ,WPS.UP_DATE
+    FROM DPS_I_WS_PLAN_STATUS WPS
+         INNER JOIN DPS_C_PLANNED_PROD PP
+      ON PP.PROD_CODE = WPS.PROD_CODE
+    WHERE
+      WPS.SOS_CD = #sosCd:VARCHAR#
+      <isNotNull property="prodCodeList">
+      <iterate prepend="AND WPS.PROD_CODE IN" property="prodCodeList" open="(" close=")" conjunction=",">
+        #prodCodeList[]#
+      </iterate>
+      </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.WsPlanStatus" >
+    INSERT INTO DPS_I_WS_PLAN_STATUS
+          (<include refid="columnList" />)
+    VALUES (ORADPX01.SEQ_DPS_I_WS_PLAN_STATUS.NEXTVAL
+          ,#sosCd:VARCHAR#
+          ,#prodCode:CHAR#
+          ,#statusDistForWs:CHAR#
+          ,#statusSlideForWs:CHAR#
+          ,#asyncBefStatus:CHAR#
+          ,#appServerKbn:CHAR#
+          ,#asyncBefDistStartDate:TIMESTAMP#
+          ,#distStartDate:TIMESTAMP#
+          ,#distEndDate:TIMESTAMP#
+          ,#slideStartDate:TIMESTAMP#
+          ,#slideEndDate:TIMESTAMP#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.WsPlanStatus" >
+    UPDATE DPS_I_WS_PLAN_STATUS
+       SET SOS_CD = #sosCd:VARCHAR#
+          ,PROD_CODE = #prodCode:CHAR#
+          ,DIST_STATUS = #statusDistForWs:CHAR#
+          ,SLIDE_STATUS = #statusSlideForWs:CHAR#
+          ,ASYNC_BEF_STATUS = #asyncBefStatus:CHAR#
+          ,ASYNC_SERVER_KBN = #appServerKbn:VARCHAR#
+          ,ASYNC_BEF_DIST_START_DATE = #asyncBefDistStartDate:TIMESTAMP#
+          ,DIST_START_DATE = #distStartDate:TIMESTAMP#
+          ,DIST_END_DATE = #distEndDate:TIMESTAMP#
+          ,SLIDE_START_DATE = #slideStartDate:TIMESTAMP#
+          ,SLIDE_END_DATE = #slideEndDate:TIMESTAMP#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+    WHERE SEQ_KEY = #seqKey:BIGINT#
+      AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_WS_PLAN_STATUS
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </delete>
+
+</sqlMap>

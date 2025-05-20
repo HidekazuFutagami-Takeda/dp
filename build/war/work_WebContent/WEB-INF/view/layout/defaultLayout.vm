@@ -1,0 +1,35 @@
+#parse("WEB-INF/view/cmn/xhtml.vm")
+<html>
+#parse("WEB-INF/view/cmn/headerInfoDhtmlx.vm")
+
+<body onload="$!bodyOnloadMethod" onfocus="$!bodyOnfocusMethod">
+#if($topPageFlg)
+<div id="topPageContents">
+#parse("WEB-INF/view/cmn/homeAndNaviTopPageHeader.vm")
+#else
+<div id="contents">
+#parse("WEB-INF/view/cmn/homeAndNaviHeader.vm")
+#end
+<div class="clear"></div>
+#parse("WEB-INF/view/cmn/dpHeader.vm")
+<div class="clear"></div>
+<div id="messageArea">
+#allMessage()
+</div>
+#if($dataListFileName)
+#set ($gKbn = $dataListFileName.substring(0,3))
+<textarea id="$dataListFileName" style="display:none;">
+#parse("WEB-INF/view/pages/$gKbn/$dataListFileName")
+</textarea>
+#end
+#if($dataListFileName2)
+<textarea id="$dataListFileName2" style="display:none;">
+#parse("WEB-INF/view/pages/$gKbn/$dataListFileName2")
+</textarea>
+#end
+<textarea id="closeWindow" style="display: none;">
+</textarea>
+$screen_content
+</div>
+</body>
+</html>

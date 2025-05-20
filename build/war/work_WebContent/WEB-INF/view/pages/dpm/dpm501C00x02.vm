@@ -1,0 +1,115 @@
+## (医)品目別計画編集画面 集計行
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPM501C00_DATA_R_SEARCH_RESULT"))
+    #set( $sumProdCategory = $form.getRequestData("DPM501C00_DATA_R_SEARCH_RESULT").prodCategory)
+#end
+
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+    <row id='1'>
+        <cell class="psumB" style="height:30;">$!sumProdCategory</cell>
+        <cell class="sumTeam"></cell>
+        ## add Start 2022/12/20 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+        <cell class="sumTeam"></cell>
+        <cell class="sumTeam"></cell>
+        ## add End 2022/12/20 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+        ## 1月目
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        ## add Start 2022/12/20 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+        <cell class="sumTeam"></cell>
+        ## add End 2022/12/20 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+        ## 2月目
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        ## add Start 2022/12/20 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+        <cell class="sumTeam"></cell>
+        ## add End 2022/12/20 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+        ## 3月目
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        ## add Start 2022/12/20 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+        <cell class="sumTeam"></cell>
+        ## add End 2022/12/20 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+        ## 4月目
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        ## add Start 2022/12/20 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+        <cell class="sumTeam"></cell>
+        ## add End 2022/12/20 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+        ## 5月目
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        ## add Start 2022/12/20 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+        <cell class="sumTeam"></cell>
+        ## add End 2022/12/20 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+        ## 6月目
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        ## add Start 2022/12/20 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+        <cell class="sumTeam"></cell>
+        ## add End 2022/12/20 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+        ## 合計
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        ## 計算用ユーザデータ
+        <userdata name="rowType">total</userdata>
+        <userdata name="subTotalId">none</userdata>
+
+        ## add Start 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+        <userdata name="hiddenRecordTotalValueYbJisseki"></userdata>
+        <userdata name="hiddenRecordTougetuValueYbJisseki"></userdata>
+        <userdata name="hiddenRecord1ValueYbJisseki"></userdata>
+        <userdata name="hiddenRecord2ValueYbJisseki"></userdata>
+        <userdata name="hiddenRecord3ValueYbJisseki"></userdata>
+        <userdata name="hiddenRecord4ValueYbJisseki"></userdata>
+        <userdata name="hiddenRecord5ValueYbJisseki"></userdata>
+        <userdata name="hiddenRecord6ValueYbJisseki"></userdata>
+        ## add End 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+
+    </row>
+</rows>
+#end

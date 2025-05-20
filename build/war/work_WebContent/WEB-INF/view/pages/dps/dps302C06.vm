@@ -1,0 +1,141 @@
+## ------------------------------------
+## 一括コピーダイアログ画面
+## ------------------------------------
+#set($layout = "nothingLayout.vm" )
+#set($pageTitle = $text.get("dps302C06","title"))
+#parse("WEB-INF/view/cmn/xhtml.vm")
+<html>
+#parse("WEB-INF/view/cmn/headerInfo.vm")
+<body style="background-color:#f5f5f5" onfocus="return dialogWin.checkModal()">
+
+<div class="clear"></div>
+<div id="messageArea">
+#allMessage()
+</div>
+
+<script language="javascript">
+<!--
+var editFlg = false;
+var copyTargetValue = "1";
+var copyWayValue = "1";
+##ラジオボタンの制御
+#set($flow1 = "")
+#set($flow2 = "")
+#if($!form.bean.calcType)
+    #if($!form.bean.calcType.equals("1"))
+        #set($flow1 = "checked")
+        ## チーム別計画で初期設定
+        copyTargetValue = "1";
+    #end
+    #if($!form.bean.calcType.equals("2"))
+        #set($flow1 = "disabled")
+        #set($flow2 = "checked")
+        ## 担当者別計画で固定
+        copyTargetValue = "2";
+    #end
+#end
+## 配下チームがあるか
+#set($existsTeamSos = $form.bean.existsTeamSos)
+##コピー実行
+function dps302C06F05() {
+    ##親画面のコピー処理実行をONにする。
+    var opener=window.opener;
+    opener.document.dps302C00Form.copyFlg.value = "true";
+    opener.document.dps302C00Form.copyTarget.value = copyTargetValue;
+    opener.document.dps302C00Form.copyWay.value = copyWayValue;
+    window.close();
+}
+## 試算処理実行時チェック
+function executeValidation() {
+}
+## ダイアログを閉じる
+function closeWindow() {
+    if (editFlg) {
+        if (window.confirm('$text.get("DPC999C99.001","dialogue")')) {
+            window.close();
+        }
+    }
+    else {
+        window.close();
+    }
+}
+##チェックしたラジオボタン
+function copyTargetRadio(value) {
+	copyTargetValue = value;
+}
+function copyWayRadio(value) {
+	copyWayValue = value;
+}
+//-->
+</script>
+<form name="dps301C04Form" method="post">
+<br>
+<table align="center" style="width: 100%;">
+<tr><td align="center" style="width: 100%;"><label style="font-size: 17px;text-decoration: underline">計画値の一括コピー方法の確認</label></td></tr>
+</table>
+<br>
+<center>
+<fieldset style="width:95%">
+<legend><label style="font-size:15px">コピー対象</label></legend>
+<table align="left">
+<tr>
+<td align="left">
+## チームがある場合のみ
+#if($existsTeamSos)
+<label style="font-size:12px;font-family:'ＭＳ ゴシック'"><input type="radio" name="copyTarget" value="1"  $flow1 onclick="copyTargetRadio('1')"/>チーム別計画</label>　　
+#end
+<label style="font-size:12px;font-family:'ＭＳ ゴシック'"><input type="radio" name="copyTarget" value="2"  $flow2 onclick="copyTargetRadio('2')"/>担当者別計画</label>
+</td>
+</tr>
+</table>
+</fieldset>
+</center>
+<br>
+<center>
+<fieldset style="width:95%">
+<legend><label style="font-size:15px">コピー方法</label></legend>
+<table align="left">
+<tr>
+<td align="left">
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+<label style="font-size:12px;font-family:'ＭＳ ゴシック'"><input type="radio" name="copyWay" value="1" onclick="copyWayRadio('1')" checked/>理論計画[1]をエリア案にコピー</label>　　
+<label style="font-size:12px;font-family:'ＭＳ ゴシック'"><input type="radio" name="copyWay" value="2" onclick="copyWayRadio('2')"/>理論計画[2]をエリア案にコピー</label>
+##<label style="font-size:12px;font-family:'ＭＳ ゴシック'"><input type="radio" name="copyWay" value="1" onclick="copyWayRadio('1')" checked/>理論計画[1]を営業所案にコピー</label>　　
+##<label style="font-size:12px;font-family:'ＭＳ ゴシック'"><input type="radio" name="copyWay" value="2" onclick="copyWayRadio('2')"/>理論計画[2]を営業所案にコピー</label>
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+</td>
+</tr>
+<tr>
+<td align="left">
+<label style="font-size:12px;font-family:'ＭＳ ゴシック'"><input type="radio" name="copyWay" value="3" onclick="copyWayRadio('3')"/>理論計画[1]を決定欄にコピー</label>　　　
+<label style="font-size:12px;font-family:'ＭＳ ゴシック'"><input type="radio" name="copyWay" value="4" onclick="copyWayRadio('4')"/>理論計画[2]を決定欄にコピー</label>
+</td>
+</tr>
+<tr>
+<td align="left">
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+<label style="font-size:12px;font-family:'ＭＳ ゴシック'"><input type="radio" name="copyWay" value="5" onclick="copyWayRadio('5')"/>エリア案を決定欄にコピー</label>　　
+##<label style="font-size:12px;font-family:'ＭＳ ゴシック'"><input type="radio" name="copyWay" value="5" onclick="copyWayRadio('5')"/>営業所案を決定欄にコピー</label>　　
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+</td>
+</tr>
+</table>
+</fieldset>
+</center>
+<br>
+<table align="center" style="width: 100%;">
+    <tr>
+        <td align="center" style="width: 50%;"><input type="button" value="コピー" style="width:120px;" class="floatR" onclick="dps302C06F05()" /></td>
+        <td align="center" style="width: 50%;"><input type="button" value="キャンセル" style="width:120px;" class="floatL" onclick="closeWindow()" /></td>
+    </tr>
+</table>
+<br>
+#if($existsTeamSos)
+<div class="guide">
+　※チーム別計画をコピーする場合は、担当者別計画の理論計画を再計算しますので、<br/>
+　　コピー実行後の画面表示に時間がかかります。
+</div>
+#end
+</form>
+</body>
+</html>

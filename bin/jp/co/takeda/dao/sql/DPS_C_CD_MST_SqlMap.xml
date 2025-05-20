@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_C_CD_MST_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.DpsCCdMst" >
+    <result column="DATA_KBN" property="dataKbn" jdbcType="VARCHAR" />
+    <result column="DATA_CD" property="dataCd" jdbcType="VARCHAR" />
+    <result column="DATA_NAME" property="dataName" jdbcType="VARCHAR" />
+    <result column="DATA_VALUE" property="dataValue" jdbcType="INTEGER" />
+    <result column="DATA_SEQ" property="dataSeq" jdbcType="INTEGER" />
+    <result column="DEF_FLG" property="defFlg" jdbcType="INTEGER" />
+  </resultMap>
+
+  <!-- カテゴリの検索 -->
+  <select id="searchCategoryList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT DATA_KBN
+          ,DATA_CD
+          ,DATA_NAME
+          ,DATA_VALUE
+          ,DATA_SEQ
+          ,DEF_FLG
+      FROM DPS_C_CD_MST
+      WHERE DATA_KBN = #dataKbn:VARCHAR#
+      <isNotNull property="dataCds">
+        <iterate prepend="AND DATA_CD IN" open="(" close=")" conjunction="," property="dataCds">
+          #dataCds[]#
+        </iterate>
+      </isNotNull>
+      ORDER BY DATA_SEQ
+  </select>
+
+  <!-- 計画管理汎用マスタからデータ区分をもとにデータを取得 DataSeqでソート -->
+  <select id="searchCodeByDataKbn" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT DATA_KBN
+          ,DATA_CD
+          ,DATA_NAME
+          ,DATA_VALUE
+          ,DATA_SEQ
+          ,DEF_FLG
+      FROM DPS_C_CD_MST
+      WHERE DATA_KBN = #dataKbn:VARCHAR#
+      ORDER BY DATA_SEQ
+  </select>
+
+  <!-- 計画管理汎用マスタからデータ区分をもとにデータを取得 DataValueでソート -->
+  <select id="searchCodeByDataKbnOrderByDataValue" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT DATA_KBN
+          ,DATA_CD
+          ,DATA_NAME
+          ,DATA_VALUE
+          ,DATA_SEQ
+          ,DEF_FLG
+      FROM DPS_C_CD_MST
+      WHERE DATA_KBN = #dataKbn:VARCHAR#
+      ORDER BY DATA_VALUE
+  </select>
+
+  <!-- 計画管理汎用マスタからデータ区分とコードをもとにデータを取得 -->
+  <select id="searchDataKbnAndCd" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT DATA_KBN
+          ,DATA_CD
+          ,DATA_NAME
+          ,DATA_VALUE
+          ,DATA_SEQ
+          ,DEF_FLG
+      FROM DPS_C_CD_MST
+      WHERE DATA_KBN = #dataKbn:VARCHAR#
+      AND DATA_CD = #dataCd:VARCHAR#
+  </select>
+
+  <select id="searchShienCategoryList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT MST.DATA_KBN AS DATA_KBN
+          ,MST.DATA_CD AS DATA_CD
+          ,MST.DATA_NAME AS DATA_NAME
+          ,MST.DATA_VALUE AS DATA_VALUE
+          ,MST.DATA_SEQ AS DATA_SEQ
+          ,MST.DEF_FLG AS DEF_FLG
+      FROM DPS_C_CD_MST MST
+     INNER JOIN DPS_C_PLANNED_CTG CTG
+        ON MST.DATA_KBN = 'category'
+       AND CTG.CATEGORY = MST.DATA_CD
+     INNER JOIN DPS_C_VI_SOS_CTG SOS_CTG
+        ON SOS_CTG.CATEGORY = MST.DATA_CD
+     WHERE SOS_CTG.SOS_CD = #sosCd:VARCHAR#
+      <isNotNull prepend="AND" property="planLevelZensha">
+        CTG.PLAN_LEVEL_ZENSHA = #planLevelZensha:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelSiten">
+        CTG.PLAN_LEVEL_SITEN = #planLevelSiten:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelOffice">
+        CTG.PLAN_LEVEL_OFFICE = #planLevelOffice:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelTeam">
+        CTG.PLAN_LEVEL_TEAM = #planLevelTeam:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelMr">
+        CTG.PLAN_LEVEL_MR = #planLevelMr:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelIns">
+        CTG.PLAN_LEVEL_INS = #planLevelIns:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelInsWs">
+        CTG.PLAN_LEVEL_INS_WS = #planLevelInsWs:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelWs">
+        CTG.PLAN_LEVEL_WS = #planLevelWs:CHAR#
+      </isNotNull>
+      ORDER BY MST.DATA_SEQ
+  </select>
+
+  <select id="selectTokuyakuJokenSetCd" resultClass="jp.co.takeda.model.div.JokenSet" parameterClass="java.util.Map" >
+    SELECT DATA_CD
+      FROM DPS_C_CD_MST
+      WHERE DATA_KBN = 'tokuyaku'
+  </select>
+</sqlMap>

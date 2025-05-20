@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_C_ANNOUNCE_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.Announce" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="MESSAGE" property="message" jdbcType="CLOB" typeHandler="org.springframework.orm.ibatis.support.ClobStringTypeHandler"/>
+    <result column="OUTPUT_FILE_ID" property="outputFileId" jdbcType="BIGINT" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="columnList">
+     SEQ_KEY
+    ,JGI_NO
+    ,MESSAGE
+    ,OUTPUT_FILE_ID
+    ,IS_JGI_NO
+    ,IS_JGI_NAME
+    ,IS_DATE
+    ,UP_JGI_NO
+    ,UP_JGI_NAME
+    ,UP_DATE
+  </sql>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+    <include refid="columnList" />
+      FROM DPS_C_ANNOUNCE
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索/従業員番号 -->
+  <select id="selectByJgiNo" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+    <include refid="columnList" />
+      FROM DPS_C_ANNOUNCE
+     WHERE JGI_NO = #jgiNo:INTEGER#
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- お知らせの数 -->
+  <select id="countAnnounce" resultClass="java.lang.Integer" parameterClass="java.util.Map" >
+      SELECT
+          COUNT(SEQ_KEY)
+      FROM
+          DPS_C_ANNOUNCE
+      WHERE
+          OUTPUT_FILE_ID = #outputFileId:INTEGER#
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.Announce" >
+    INSERT INTO DPS_C_ANNOUNCE
+          (<include refid="columnList" />)
+    VALUES (ORADPX01.SEQ_DPS_C_ANNOUNCE.NEXTVAL
+          ,#jgiNo:INTEGER#
+          ,#message:CLOB,handler="org.springframework.orm.ibatis.support.ClobStringTypeHandler"#
+          ,#outputFileId:BIGINT#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.Announce" >
+    UPDATE DPS_C_ANNOUNCE
+       SET JGI_NO = #jgiNo:INTEGER#
+          ,MESSAGE = #message:CLOB,handler="org.springframework.orm.ibatis.support.ClobStringTypeHandler"#
+          ,OUTPUT_FILE_ID = #outputFileId:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_C_ANNOUNCE
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </delete>
+
+</sqlMap>

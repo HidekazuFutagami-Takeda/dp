@@ -1,0 +1,854 @@
+#set($pageTitle = $text.get("dps400C01","title"))
+#set($bodyOnloadMethod = "dps400C01F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($resultData =$form.getRequestData("Dps400C01_DATA_R_SEARCH_RESULT"))
+##画面内定数 ---------------------------------------------------------------------------------------------
+##空文字
+#set($emptyStr = "　")
+##権限情報 -----------------------------------------------------------------------------------------------
+
+##更新権限
+#set($canEdit = false)
+#if($!security.hasAuthEdit("DPS400C01"))
+    #set($canEdit = true)
+#end
+
+##検索結果データ変数 (Nullの場合はHTMLの表示が崩れるため空白を挿入)
+
+##カテゴリ
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　toString→.dbValue
+###set($category = $!resultData.plannedProd.category.toString())
+##set($category = $!resultData.plannedProd.category.dbValue)
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　toString→.dbValue
+#set($category = $form.bean.category)
+
+#set($vaccineCode = $service.getShienVaccineCode())
+
+##品目名称
+#set($prodName = $emptyStr)
+#if($resultData.plannedProd.prodName)
+    #set($prodName = $resultData.plannedProd.prodName)
+#end
+
+##製品区分
+#set($prodType = $emptyStr)
+#if($resultData.plannedProd.prodType)
+    #set($prodType = $resultData.plannedProd.prodType)
+#end
+
+##本部案フラグ(TRUE=本部案のみ,FALSE=営業所案あり)
+#set($isHonbu = true)
+#if($resultData.distParamOfficeUH.seqKey || $resultData.distParamOfficeP.seqKey)
+    #set( $isHonbu = false)
+#end
+
+##本部案 ゼロ配分フラグ
+#set($isHonbuZero = false)
+#if($resultData.distParamHonbuUH.distParam.zeroDistFlg)
+    #set( $isHonbuZero = true)
+#end
+
+##営業所案 ゼロ配分フラグ
+#set($isOfficeZero = false)
+#if($resultData.distParamOfficeUH.distParam.zeroDistFlg)
+    #set( $isOfficeZero = true)
+#end
+
+##[UH]本部案 配分品目
+#set($honbuRefProdNameUH = $emptyStr)
+#if($resultData.distParamHonbuUH.baseParam.refProdInfo.prodName)
+    #set($honbuRefProdNameUH = $resultData.distParamHonbuUH.baseParam.refProdInfo.prodName)
+#end
+
+##[UH]本部案 実績参照期間FROM
+#set($honbuRefFromUH = $emptyStr)
+#if($resultData.distParamHonbuUH.baseParam.refFrom.dbValue)
+    #set($honbuRefFromUH = $resultData.distParamHonbuUH.baseParam.refFrom.dbValue)
+#end
+
+##[UH]本部案 実績参照期間TO
+#set($honbuRefToUH = $emptyStr)
+#if($resultData.distParamHonbuUH.baseParam.refTo.dbValue)
+    #set($honbuRefToUH = $resultData.distParamHonbuUH.baseParam.refTo.dbValue)
+#end
+
+##[UH]本部案 実績参照品目1
+#set($honbuResultRefProdName1UH = $emptyStr)
+#if($resultData.distParamHonbuUH.baseParam.resultRefProdName1)
+    #set($honbuResultRefProdName1UH = $resultData.distParamHonbuUH.baseParam.resultRefProdName1)
+#end
+
+##[UH]本部案 実績参照品目2
+#set($honbuResultRefProdName2UH = $emptyStr)
+#if($resultData.distParamHonbuUH.baseParam.resultRefProdName2)
+    #set($honbuResultRefProdName2UH = $resultData.distParamHonbuUH.baseParam.resultRefProdName2)
+#end
+
+##[UH]本部案 実績参照品目3
+#set($honbuResultRefProdName3UH = $emptyStr)
+#if($resultData.distParamHonbuUH.baseParam.resultRefProdName3)
+    #set($honbuResultRefProdName3UH = $resultData.distParamHonbuUH.baseParam.resultRefProdName3)
+#end
+
+##[P]本部案 配分品目
+#set($honbuRefProdNameP = $emptyStr)
+#if($resultData.distParamHonbuP.baseParam.refProdInfo.prodName)
+    #set($honbuRefProdNameP = $resultData.distParamHonbuP.baseParam.refProdInfo.prodName)
+#end
+
+##[P]本部案 実績参照期間FROM
+#set($honbuRefFromP = $emptyStr)
+#if($resultData.distParamHonbuP.baseParam.refFrom.dbValue)
+    #set($honbuRefFromP = $resultData.distParamHonbuP.baseParam.refFrom.dbValue)
+#end
+
+##[P]本部案 実績参照期間TO
+#set($honbuRefToP = $emptyStr)
+#if($resultData.distParamHonbuP.baseParam.refTo.dbValue)
+    #set($honbuRefToP = $resultData.distParamHonbuP.baseParam.refTo.dbValue)
+#end
+
+##[P]本部案 実績参照品目1
+#set($honbuResultRefProdName1P = $emptyStr)
+#if($resultData.distParamHonbuP.baseParam.resultRefProdName1)
+    #set($honbuResultRefProdName1P = $resultData.distParamHonbuP.baseParam.resultRefProdName1)
+#end
+
+##[P]本部案 実績参照品目2
+#set($honbuResultRefProdName2P = $emptyStr)
+#if($resultData.distParamHonbuP.baseParam.resultRefProdName2)
+    #set($honbuResultRefProdName2P = $resultData.distParamHonbuP.baseParam.resultRefProdName2)
+#end
+
+##[P]本部案 実績参照品目3
+#set($honbuResultRefProdName3P = $emptyStr)
+#if($resultData.distParamHonbuP.baseParam.resultRefProdName3)
+    #set($honbuResultRefProdName3P = $resultData.distParamHonbuP.baseParam.resultRefProdName3)
+#end
+
+##[UH]営業所案 配分品目
+#set($officeRefProdCodeUH = $emptyStr)
+#if($resultData.distParamOfficeUH.baseParam.refProdCode)
+    #set($officeRefProdCodeUH = $resultData.distParamOfficeUH.baseParam.refProdCode)
+#end
+
+##[UH]営業所案 実績参照期間FROM
+#set($officeRefFromUH = $emptyStr)
+#if($resultData.distParamOfficeUH.baseParam.refFrom.dbValue)
+    #set($officeRefFromUH = $resultData.distParamOfficeUH.baseParam.refFrom.dbValue)
+#end
+
+##[UH]営業所案 実績参照期間TO
+#set($officeRefToUH = $emptyStr)
+#if($resultData.distParamOfficeUH.baseParam.refTo.dbValue)
+    #set($officeRefToUH = $resultData.distParamOfficeUH.baseParam.refTo.dbValue)
+#end
+
+##[UH]営業所案 実績参照品目1
+#set($officeResultRefProdCode1UH = $emptyStr)
+#if($resultData.distParamOfficeUH.baseParam.resultRefProdCode1)
+    #set($officeResultRefProdCode1UH = $resultData.distParamOfficeUH.baseParam.resultRefProdCode1)
+#end
+
+##[UH]営業所案 実績参照品目2
+#set($officeResultRefProdCode2UH = $emptyStr)
+#if($resultData.distParamOfficeUH.baseParam.resultRefProdCode2)
+    #set($officeResultRefProdCode2UH = $resultData.distParamOfficeUH.baseParam.resultRefProdCode2)
+#end
+
+##[UH]営業所案 実績参照品目3
+#set($officeResultRefProdCode3UH = $emptyStr)
+#if($resultData.distParamOfficeUH.baseParam.resultRefProdCode3)
+    #set($officeResultRefProdCode3UH = $resultData.distParamOfficeUH.baseParam.resultRefProdCode3)
+#end
+
+##[P]営業所案 配分品目
+#set($officeRefProdCodeP = $emptyStr)
+#if($resultData.distParamOfficeP.baseParam.refProdCode)
+    #set($officeRefProdCodeP = $resultData.distParamOfficeP.baseParam.refProdCode)
+#end
+
+##[P]営業所案 実績参照期間FROM
+#set($officeRefFromP = $emptyStr)
+#if($resultData.distParamOfficeP.baseParam.refFrom.dbValue)
+    #set($officeRefFromP = $resultData.distParamOfficeP.baseParam.refFrom.dbValue)
+#end
+
+##[P]営業所案 実績参照期間TO
+#set($officeRefToP = $emptyStr)
+#if($resultData.distParamOfficeP.baseParam.refTo.dbValue)
+    #set($officeRefToP = $resultData.distParamOfficeP.baseParam.refTo.dbValue)
+#end
+
+##[P]営業所案 実績参照品目1
+#set($officeResultRefProdCode1P = $emptyStr)
+#if($resultData.distParamOfficeP.baseParam.resultRefProdCode1)
+    #set($officeResultRefProdCode1P = $resultData.distParamOfficeP.baseParam.resultRefProdCode1)
+#end
+
+##[P]営業所案 実績参照品目2
+#set($officeResultRefProdCode2P = $emptyStr)
+#if($resultData.distParamOfficeP.baseParam.resultRefProdCode2)
+    #set($officeResultRefProdCode2P = $resultData.distParamOfficeP.baseParam.resultRefProdCode2)
+#end
+
+##[P]営業所案 実績参照品目3
+#set($officeResultRefProdCode3P = $emptyStr)
+#if($resultData.distParamOfficeP.baseParam.resultRefProdCode3)
+    #set($officeResultRefProdCode3P = $resultData.distParamOfficeP.baseParam.resultRefProdCode3)
+#end
+
+##プルダウン定数 -----------------------------------------------------------------------------------------
+
+##カテゴリリスト
+#set( $categoryList = $service.getCategoryList(false,false))
+
+##計画対象品目リスト
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　汎用的な形に書き換え
+###if($category == "MMP" || $category == "ONC")
+###set( $prodList = $service.getMMP_ONCRefProdList(false))
+###elseif($category == "SHIIRE")
+###set( $prodList = $service.getShireRefProdList(false))
+###end
+
+##仕入品(2)の場合は仕入品品目、それ以外は仕入品以外の全品目
+##if($category == "2")
+#if($category == $vaccineCode)
+    #set( $prodList = $service.getWakutinProdList(false))
+#else
+    #set( $prodList = $service.getDpsProdList($category, false))
+#end
+##else
+##set( $prodList = $service.getAllProdList(false))
+##end
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　汎用的な形に書き換え　
+
+##参照期間リスト
+#set( $refPeriodList = $service.getRefPeriodList(false))
+
+##参照品目リスト
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　汎用的な形に書き換え
+###if($category == "MMP" || $category == "ONC")
+###set( $refProdList = $service.getMMP_ONCRefProdList(true))
+###elseif($category == "SHIIRE")
+###set( $refProdList = $service.getShireRefProdList(true))
+###end
+
+##仕入品(2)の場合は仕入品品目、それ以外は仕入品以外の全品目
+##if($category == "2")
+#if($category == $vaccineCode)
+    #set( $refProdList = $service.getWakutinRefProdList(true))
+#else
+    #set( $refProdList = $service.getDpsRefProdList($category, true))
+#end
+##else
+##set( $refProdList = $service.getAllProdList(true))
+##end
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　汎用的な形に書き換え　
+##--------------------------------------------------------------------------------------------------------
+
+<script language="javascript">
+<!--
+var editFlg = false;
+
+## 初期表示＋読込処理
+function dps400C01F00() {
+    sosApplyExt("$!form.bean.sosCd3", "", "02", false);
+}
+
+##登録処理
+function dps400C01F05Execute() {
+    execute('$text.get("DPS400C01.001","dialogue")', '$link.setAction("dps400C01F05Execute")');
+}
+
+##本部案に戻す処理
+function dps400C01F10Execute() {
+    execute('$text.get("DPS400C01.002","dialogue")', '$link.setAction("dps400C01F10Execute")');
+}
+
+##本部案を本部案に戻す処理
+function dps400C01F11() {
+    execute('$text.get("DPS400C01.003","dialogue")', '$link.setAction("dps400C01F11")');
+}
+
+## 更新処理
+function execute(confirmMsg, actionPath) {
+    ##入力チェック
+    if (!executeValidation()) {
+        return;
+    }
+    ##確認
+    if (!confirm(confirmMsg)) {
+        return;
+    }
+    ##送信
+    document.dps400C01Form.action = actionPath;
+    document.dps400C01Form.submit();
+    execute = blockIt;
+}
+
+## 更新時入力チェック
+function executeValidation() {
+    var rowInfoUH = "対象区分【UH】の";
+    var rowInfoP = "対象区分【P】の";
+
+    ##必須チェック
+    value = document.dps400C01Form.officeRefProdCodeUH.value;
+    errorMsg = rowInfoUH + '$text.get("DPC1006E",["参照品目"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    value = document.dps400C01Form.officeRefFromUH.value;
+    errorMsg = rowInfoUH + '$text.get("DPC1006E",["実績参照期間(FROM)"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    value = document.dps400C01Form.officeRefToUH.value;
+    errorMsg = rowInfoUH + '$text.get("DPC1006E",["実績参照期間(TO)"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    value = document.dps400C01Form.officeRefProdCodeP.value;
+    if (value != null && value == '　') value = '';
+    errorMsg = rowInfoP + '$text.get("DPC1006E",["参照品目"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    value = document.dps400C01Form.officeRefFromP.value;
+    errorMsg = rowInfoP + '$text.get("DPC1006E",["実績参照期間(FROM)"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    value = document.dps400C01Form.officeRefToP.value;
+    errorMsg = rowInfoP + '$text.get("DPC1006E",["実績参照期間(TO)"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    if(!validation()){
+        return false;
+    }
+
+    ##関連チェック（参照期間）
+    valueFrom = document.dps400C01Form.officeRefFromUH.value - 0;
+    valueTo = document.dps400C01Form.officeRefToUH.value - 0;
+    if(valueFrom > valueTo){
+        errorMsg = rowInfoUH + '$text.get("DPS1032E",["実績参照期間(FROM)","実績参照期間(TO)"])';
+        addErrorInfo(true, errorMsg);
+    }
+    valueFrom = document.dps400C01Form.officeRefFromP.value - 0;
+    valueTo = document.dps400C01Form.officeRefToP.value - 0;
+    if(valueFrom > valueTo){
+        errorMsg = rowInfoP + '$text.get("DPS1032E",["実績参照期間(FROM)","実績参照期間(TO)"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(!validation()){
+        return false;
+    }
+
+    ##関連チェック（参照品目間）
+    refCode1UH = document.dps400C01Form.officeResultRefProdCode1UH.value;
+    refCode2UH = document.dps400C01Form.officeResultRefProdCode2UH.value;
+    refCode3UH = document.dps400C01Form.officeResultRefProdCode3UH.value;
+    refCode1P  = document.dps400C01Form.officeResultRefProdCode1P.value;
+    refCode2P  = document.dps400C01Form.officeResultRefProdCode2P.value;
+    refCode3P  = document.dps400C01Form.officeResultRefProdCode3P.value;
+
+    if(!isEntered(refCode1UH) && isEntered(refCode2UH)){
+        errorMsg = rowInfoUH + '$text.get("DPS1030E",["1"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(!isEntered(refCode2UH) && isEntered(refCode3UH)){
+        errorMsg = rowInfoUH + '$text.get("DPS1030E",["2"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(!isEntered(refCode1P) && isEntered(refCode2P)){
+        errorMsg = rowInfoP + '$text.get("DPS1030E",["1"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(!isEntered(refCode2P) && isEntered(refCode3P)){
+        errorMsg = rowInfoP + '$text.get("DPS1030E",["2"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(!validation()){
+        return false;
+    }
+
+    if(isEntered(refCode1UH) && ((refCode1UH == refCode2UH) ||(refCode1UH == refCode3UH))){
+        errorMsg = rowInfoUH + '$text.get("DPC1018E",["実績参照品目1、実績参照品目2、実績参照品目3","品目"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(isEntered(refCode1P) && ((refCode1P == refCode2P) ||(refCode1P == refCode3P))){
+        errorMsg = rowInfoP + '$text.get("DPC1018E",["実績参照品目1、実績参照品目2、実績参照品目3","品目"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(!validation()){
+        return false;
+    }
+
+    if(isEntered(refCode2UH) && (refCode2UH == refCode3UH)){
+        errorMsg = rowInfoUH + '$text.get("DPC1018E",["実績参照品目1、実績参照品目2、実績参照品目3","品目"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(isEntered(refCode2P) && (refCode2P == refCode3P)){
+        errorMsg = rowInfoP + '$text.get("DPC1018E",["実績参照品目1、実績参照品目2、実績参照品目3","品目"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(!validation()){
+        return false;
+    }
+
+    ##関連チェック（参照品目と計画対象品目）
+    prodCode = document.dps400C01Form.prodCode.value;
+    if(prodCode == refCode1UH){
+        errorMsg = rowInfoUH + '$text.get("DPS1031E",["1"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(prodCode == refCode2UH){
+        errorMsg = rowInfoUH + '$text.get("DPS1031E",["2"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(prodCode == refCode3UH){
+        errorMsg = rowInfoUH + '$text.get("DPS1031E",["3"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(prodCode == refCode1P){
+        errorMsg = rowInfoP + '$text.get("DPS1031E",["1"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(prodCode == refCode2P){
+        errorMsg = rowInfoP + '$text.get("DPS1031E",["2"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(prodCode == refCode3P){
+        errorMsg = rowInfoP + '$text.get("DPS1031E",["3"])';
+        addErrorInfo(true, errorMsg);
+    }
+    if(!validation()){
+        return false;
+    }
+
+    return true;
+}
+
+## 過去実績参照ダイアログ
+function openResultDialog(prodCode) {
+    if(!isEntered(prodCode)){
+        errorMsg = '$text.get("DPC1006E",["実績参照品目"])';
+        addErrorInfo(true, errorMsg);
+        validation();
+        return;
+    }
+    var sosCd3 = document.dps400C01Form.sosCd3.value;
+    var url ="$link.setAction('dps913C00F00')";
+    url = url.concat("?prodCode=").concat(prodCode);
+    url = url.concat("&sosCd3=").concat(sosCd3);
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　
+##  #if($category == "MMP")
+##      url = url.concat("&prodCategory=1&page=4");
+##  #elseif($category == "ONC")
+##      url = url.concat("&prodCategory=3&page=4");
+##  #elseif($category == "SHIIRE")
+##      url = url.concat("&prodCategory=2&page=4");
+##  #end
+
+    url = url.concat("&category=$category&page=4");
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　
+
+    openModalWindow(url);
+}
+
+## リンク移動
+function executeLink() {
+    var actionPath = '$link.setAction('dps400C00F00')';
+    document.dps400C01Form.action = actionPath;
+    document.dps400C01Form.submit();
+}
+
+function editOn(){
+    editFlg = true;
+    if (document.dps400C01Form.honbuBackBtn) {
+        document.dps400C01Form.honbuBackBtn.disabled = false;
+    }
+}
+##リンク移動確認
+function linkClick(){
+    if(editFlg){
+        var answer = window.confirm('$text.get("DPC999C99.001","dialogue")');
+        if(!answer){
+            return false;
+        }
+    }
+    return true;
+}
+//-->
+</script>
+
+#tabbar("sienSisetuTokuyaku", "dps400C00F00")
+<div id="tabBox" style="height: 620px;">
+<form name="dps400C01Form" method="post">
+
+##品目情報
+<div align="left" style="float: left; width: 75%;">
+<table class="gridTableLine" style="width: 100%" cellspacing="0" cellpadding="0">
+    <tbody class="tableBody">
+        <tr>
+            <td class="header" style="width: 70px;">組織</td>
+            <td id="sos" colspan="7" >$emptyStr</td>
+        </tr>
+        <tr>
+            <td class="header" style="width: 70px;">カテゴリ</td>
+            <td>
+            $!resultData.categoryName
+                ##if($resultData.plannedProd.category.dbValue)
+                ##    #getValueFromCode($categoryList,$resultData.plannedProd.category.dbValue)
+                ##else
+                ##    $emptyStr
+                ##end
+            </td>
+            <td class="header" style="width: 70px;">品目名称</td>
+            <td>$prodName</td>
+            <td class="header" style="width: 70px;">製品区分</td>
+            <td>$prodType</td>
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            <td class="header" style="width: 120px;">本部案/エリア案</td>
+##            <td class="header" style="width: 120px;">本部案/営業所案</td>
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            <td>
+                #if($isHonbu)
+                    本部案
+                #else
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+                    エリア案
+##                    営業所案
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+                #end
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+
+##最終更新情報
+<div class="label" align="right" style="float: left; width: 25%;">
+    #if($isHonbu)
+        #upDateInfo($!{resultData.distParamHonbuUH.upJgiName},$!{resultData.distParamHonbuUH.upDate})
+    #else
+        #upDateInfo($!{resultData.distParamOfficeUH.upJgiName},$!{resultData.distParamOfficeUH.upDate})
+    #end
+    <a href="#" onclick="if(linkClick())executeLink()">一覧へ戻る</a>
+</div>
+
+##更新ボタン
+<div class="label" style="float: left; width: 100%;">
+<table style="margin: 0px 0px 0px 0px;">
+    <tr>
+        <td>
+        #if($canEdit)
+            <input type="button" value="登録する" style="width: 80px;" onclick="dps400C01F05Execute()" />
+        #end
+        </td>
+        <td>
+        #if($canEdit)
+        #if($isHonbu)
+            <input type="button" value="本部案に戻す" style="width: 80px;" id="honbuBackBtn" onclick="dps400C01F11()" disabled />
+        #else
+            <input type="button" value="本部案に戻す" style="width: 80px;" onclick="dps400C01F10Execute()" />
+        #end
+        #end
+        </td>
+    </tr>
+</table>
+<div class="guide">
+※ゼロ配分するを選択した場合、配分実行時に施設特約店別計画を配分値ゼロで作成します。<br>
+※過去実績参照ボタンをクリックすると、配分品目または実績参照品目で指定された品目の過去実績表示起動します。
+</div>
+
+##メイン情報
+<table width="100%" height="300px">
+    <tr>
+        <td style="padding: 0px 15px 0px 15px; width: 50%;">
+        <div class="midTitle">施設特約店別 配分基準（本部案)</div>
+        </td>
+        <td style="padding: 0px 15px 0px 15px; width: 50%;">
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        <div class="midTitle">施設特約店別 配分基準（エリア案）</div>
+##        <div class="midTitle">施設特約店別 配分基準（営業所案）</div>
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 0px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <div class="titleLine">配分指示</div>
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 130px;">ゼロ配分フラグ</td>
+                    <td style="text-align: center">
+                        #if($isHonbuZero)
+                        <input type="checkbox" id="cb1" disabled checked/>
+                        #else
+                        <input type="checkbox" id="cb1" disabled />
+                        #end
+                        <label for="cb1">配分結果を0として配分する</label>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+        <td style="padding: 0px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <div class="titleLine">配分指示</div>
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 130px;">ゼロ配分フラグ</td>
+                    <td style="text-align: center">
+                        #if($isOfficeZero)
+                        <input type="checkbox" name="officeZeroDistFlg" id="cb2" onclick="editOn();" checked />
+                        #else
+                        <input type="checkbox" name="officeZeroDistFlg" onclick="editOn();" id="cb2" />
+                        #end
+                        <label for="cb2">配分結果を0として配分する</label>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 100%;">UH</td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+        <td style="padding: 10px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 100%;">UH</td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 0px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <div class="titleLine">配分品目・実績参照期間</div>
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 130px;">配分品目</td>
+                    <td style="text-align: left">$honbuRefProdNameUH</td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;">実績参照期間</td>
+                    <td style="text-align: left">
+                        #if($honbuRefFromUH)
+                            #getValueFromCode($refPeriodList,$honbuRefFromUH)
+                        #end
+                        $emptyStr - $emptyStr
+                        #if($honbuRefToUH)
+                            #getValueFromCode($refPeriodList,$honbuRefToUH)
+                        #end
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+        <td style="padding: 0px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <div class="titleLine">配分品目・実績参照期間</div>
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 130px;" nowrap>配分品目*</td>
+                    <td style="text-align: center; padding: 0px;">#selectWithFunc ("officeRefProdCodeUH", $prodList, $officeRefProdCodeUH, "editOn()")</td>
+                    <td style="text-align: center;">
+                        <input type="button" value="過去実績参照" onclick="openResultDialog(document.dps400C01Form.officeRefProdCodeUH.value)" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;" nowrap>実績参照期間*</td>
+                    <td colspan="2" style="text-align: center;">
+                        #selectWithFunc ("officeRefFromUH", $refPeriodList, $officeRefFromUH, "editOn()")
+                        $emptyStr$emptyStr$emptyStr$emptyStr - $emptyStr$emptyStr$emptyStr$emptyStr
+                        #selectWithFunc ("officeRefToUH", $refPeriodList, $officeRefToUH, "editOn()")
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 0px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <div class="titleLine">参考表示実績</div>
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 130px;">実績参照品目1</td>
+                    <td style="text-align: left">$honbuResultRefProdName1UH</td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;">実績参照品目2</td>
+                    <td style="text-align: left">$honbuResultRefProdName2UH</td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;">実績参照品目3</td>
+                    <td style="text-align: left">$honbuResultRefProdName3UH</td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+        <td style="padding: 0px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <div class="titleLine">参考表示実績</div>
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 130px;" nowrap>実績参照品目1</td>
+                    <td style="text-align: center; padding: 0px;">#selectWithFunc ("officeResultRefProdCode1UH", $refProdList, $officeResultRefProdCode1UH, "editOn()")</td>
+                    <td style="text-align: center;"><input type="button" value="過去実績参照" onclick="openResultDialog(document.dps400C01Form.officeResultRefProdCode1UH.value)" /></td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;" nowrap>実績参照品目2</td>
+                    <td style="text-align: center; padding: 0px;">#selectWithFunc ("officeResultRefProdCode2UH", $refProdList, $officeResultRefProdCode2UH, "editOn()")</td>
+                    <td style="text-align: center;"><input type="button" value="過去実績参照" onclick="openResultDialog(document.dps400C01Form.officeResultRefProdCode2UH.value)" /></td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;" nowrap>実績参照品目3</td>
+                    <td style="text-align: center; padding: 0px;">#selectWithFunc ("officeResultRefProdCode3UH", $refProdList, $officeResultRefProdCode3UH, "editOn()")</td>
+                    <td style="text-align: center;"><input type="button" value="過去実績参照" onclick="openResultDialog(document.dps400C01Form.officeResultRefProdCode3UH.value)" /></td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 100%;">P</td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+        <td style="padding: 10px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 100%;">P</td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 0px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <div class="titleLine">配分品目・実績参照期間</div>
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 130px;">配分品目</td>
+                    <td style="text-align: left">$honbuRefProdNameP</td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;">実績参照期間</td>
+                    <td style="text-align: left">
+                        #if($honbuRefFromP)
+                            #getValueFromCode($refPeriodList,$honbuRefFromP)
+                        #end
+                        $emptyStr - $emptyStr
+                        #if($honbuRefToP)
+                            #getValueFromCode($refPeriodList,$honbuRefToP)
+                        #end
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+        <td style="padding: 0px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <div class="titleLine">配分品目・実績参照期間</div>
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 130px;" nowrap>配分品目*</td>
+                    <td style="text-align: center; padding: 0px;">#selectWithFunc ("officeRefProdCodeP", $prodList, $officeRefProdCodeP, "editOn()")</td>
+                    <td style="text-align: center;">
+                        <input type="button" value="過去実績参照" onclick="openResultDialog(document.dps400C01Form.officeRefProdCodeP.value)" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;" nowrap>実績参照期間*</td>
+                    <td colspan="2" style="text-align: center;">
+                        #selectWithFunc ("officeRefFromP", $refPeriodList, $officeRefFromP, "editOn()")
+                        $emptyStr$emptyStr$emptyStr$emptyStr - $emptyStr$emptyStr$emptyStr$emptyStr
+                        #selectWithFunc ("officeRefToP", $refPeriodList, $officeRefToP, "editOn()")
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 0px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <div class="titleLine">参考表示実績</div>
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 130px;">実績参照品目1</td>
+                    <td style="text-align: left">$honbuResultRefProdName1P</td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;">実績参照品目2</td>
+                    <td style="text-align: left">$honbuResultRefProdName2P</td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;">実績参照品目3</td>
+                    <td style="text-align: left">$honbuResultRefProdName3P</td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+        <td style="padding: 0px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <div class="titleLine">参考表示実績</div>
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 130px;" nowrap>実績参照品目1</td>
+                    <td style="text-align: center; padding: 0px;">#selectWithFunc ("officeResultRefProdCode1P", $refProdList, $officeResultRefProdCode1P, "editOn()")</td>
+                    <td style="text-align: center;"><input type="button" value="過去実績参照" onclick="openResultDialog(document.dps400C01Form.officeResultRefProdCode1P.value)" /></td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;" nowrap>実績参照品目2</td>
+                    <td style="text-align: center; padding: 0px;">#selectWithFunc ("officeResultRefProdCode2P", $refProdList, $officeResultRefProdCode2P, "editOn()")</td>
+                    <td style="text-align: center;"><input type="button" value="過去実績参照" onclick="openResultDialog(document.dps400C01Form.officeResultRefProdCode2P.value)" /></td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;" nowrap>実績参照品目3</td>
+                    <td style="text-align: center; padding: 0px;">#selectWithFunc ("officeResultRefProdCode3P", $refProdList, $officeResultRefProdCode3P, "editOn()")</td>
+                    <td style="text-align: center;"><input type="button" value="過去実績参照" onclick="openResultDialog(document.dps400C01Form.officeResultRefProdCode3P.value)" /></td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+    </tr>
+</table>
+</div>
+
+#token()
+
+## Hidden項目
+<input type="hidden" id="sosCd2" name="sosCd2" />
+<input type="hidden" id="sosCd3" name="sosCd3" value="$!form.bean.getSosCd3()" />
+<input type="hidden" id="sosCd4" name="sosCd4"  />
+<input type="hidden" id="jgiNo" name="jgiNo"  />
+<input type="hidden" id="initSosCodeValue" name="initSosCodeValue" value="$!security.defaultSosCd"/>
+<input type="hidden" name="prodCode" value="$!resultData.plannedProd.prodCode" />
+<input type="hidden" name="prodName" value="$!resultData.plannedProd.prodName" />
+<input type="hidden" name="officeSeqKeyUH" value="$!resultData.distParamOfficeUH.seqKey" />
+<input type="hidden" name="officeUpDateUH" value="$!resultData.distParamOfficeUH.upDate.time" />
+<input type="hidden" name="officeDistributionTypeUH" value="$!resultData.distParamOfficeUH.distParam.distributionType.DbValue" />
+<input type="hidden" name="officeResultRefProdCode4UH" value="$!resultData.distParamOfficeUH.baseParam.resultRefProdCode4" />
+<input type="hidden" name="officeSeqKeyP" value="$!resultData.distParamOfficeP.seqKey" />
+<input type="hidden" name="officeUpDateP" value="$!resultData.distParamOfficeP.upDate.time" />
+<input type="hidden" name="officeDistributionTypeP" value="$!resultData.distParamOfficeP.distParam.distributionType.DbValue" />
+<input type="hidden" name="officeResultRefProdCode4P" value="$!resultData.distParamOfficeP.baseParam.resultRefProdCode4" />
+
+</form>
+</div>

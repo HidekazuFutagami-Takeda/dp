@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_SosStatusSummary_SqlMap" >
+
+  <resultMap id="officePlanStatSum" class="jp.co.takeda.model.view.OfficePlanStatSum" >
+    <result column="OFFICE_PLAN_NONE" property="none" jdbcType="INTEGER" />
+    <result column="OFFICE_PLAN_DRAFT" property="draft" jdbcType="INTEGER" />
+    <result column="OFFICE_PLAN_COMPLETED" property="completed" jdbcType="INTEGER" />
+    <result column="OFFICE_PLAN_STAT_COUNT" property="totalCount" jdbcType="INTEGER" />
+    <result column="OFFICE_PLAN_UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="OFFICE_PLAN_CALC_TYPE" property="calcType" jdbcType="CHAR" />
+<!-- add Start 2022/7/25 H.Futagami 2022年4月組織変更対応  トップ画面 エリア計画の表示修正 -->
+    <result column="PLAN_LEVEL_OFFICE" property="planLevelOffice" jdbcType="CHAR" />
+<!-- add End 2022/7/25 H.Futagami 2022年4月組織変更対応  トップ画面 エリア計画の表示修正 -->
+  </resultMap>
+
+  <resultMap id="mrPlanStatSum" class="jp.co.takeda.model.view.MrPlanStatSum" >
+    <result column="MR_PLAN_NONE" property="none" jdbcType="INTEGER" />
+    <result column="ESTIMATING" property="estimating" jdbcType="INTEGER" />
+    <result column="ESTIMATED" property="estimated" jdbcType="INTEGER" />
+    <result column="TEAM_PLAN_OPENED" property="teamPlanOpened" jdbcType="INTEGER" />
+    <result column="TEAM_PLAN_COMPLETED" property="teamPlanCompleted" jdbcType="INTEGER" />
+    <result column="MR_PLAN_OPENED" property="mrPlanOpened" jdbcType="INTEGER" />
+    <result column="MR_PLAN_INPUT_FINISHED" property="mrPlanInputFinished" jdbcType="INTEGER" />
+    <result column="MR_PLAN_COMPLETED" property="mrPlanCompleted" jdbcType="INTEGER" />
+    <result column="MR_PLAN_STAT_COUNT" property="totalCount" jdbcType="INTEGER" />
+    <result column="EST_START_DATE" property="estStartDate" jdbcType="TIMESTAMP" />
+    <result column="EST_END_DATE" property="estEndDate" jdbcType="TIMESTAMP" />
+    <result column="TEAM_PLAN_OPEN_DATE" property="teamPlanOpenDate" jdbcType="TIMESTAMP" />
+    <result column="TEAM_PLAN_FIX_DATE" property="teamPlanFixDate" jdbcType="TIMESTAMP" />
+    <result column="MR_PLAN_OPEN_DATE" property="mrPlanOpenDate" jdbcType="TIMESTAMP" />
+    <result column="MR_PLAN_INPUT_DATE" property="mrPlanInputDate" jdbcType="TIMESTAMP" />
+    <result column="MR_PLAN_FIX_DATE" property="mrPlanFixDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="insDocPlanStatSum" class="jp.co.takeda.model.view.InsDocPlanStatSum" >
+    <result column="INS_DOC_PLAN_NONE" property="none" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_DISTING" property="disting" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_DISTED" property="disted" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_OPENED" property="planOpened" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_COMPLETED" property="planCompleted" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_STAT_COUNT" property="totalCount" jdbcType="INTEGER" />
+    <result column="INS_DOC_DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+    <result column="INS_DOC_DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+    <result column="INS_DOC_OPEN_DATE" property="insDocOpenDate" jdbcType="TIMESTAMP" />
+    <result column="INS_DOC_FIX_DATE" property="insDocFixDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="insWsPlanStatSum" class="jp.co.takeda.model.view.InsWsPlanStatSum" >
+    <result column="INS_WS_PLAN_NONE" property="none" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_DISTING" property="disting" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_DISTED" property="disted" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_OPENED" property="planOpened" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_COMPLETED" property="planCompleted" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_STAT_COUNT" property="totalCount" jdbcType="INTEGER" />
+    <result column="INS_WS_DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_OPEN_DATE" property="insWsOpenDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_FIX_DATE" property="insWsFixDate" jdbcType="TIMESTAMP" />
+    <result column="EXCEPT_PLAN_COUNT" property="exceptPlanCount" jdbcType="INTEGER" />
+  </resultMap>
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.view.SosStatusSummary" >
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="BUMON_SEI_NAME" property="bumonSeiName" jdbcType="VARCHAR" />
+    <result property="officePlanStatSum" resultMap="VIEW_SosStatusSummary_SqlMap.officePlanStatSum" />
+    <result property="mrPlanStatSum" resultMap="VIEW_SosStatusSummary_SqlMap.mrPlanStatSum" />
+    <result property="insDocPlanStatSum" resultMap="VIEW_SosStatusSummary_SqlMap.insDocPlanStatSum" />
+    <result property="insWsPlanStatSum" resultMap="VIEW_SosStatusSummary_SqlMap.insWsPlanStatSum" />
+    <result column="OFFICE_MR_CHOSEI_UHP_FLG" property="officeMrChoseiUHPFlg" jdbcType="CHAR" />
+    <result column="MR_INSDOC_CHOSEI_UHP_FLG" property="mrInsdocChoseiUHPFlg" jdbcType="CHAR" />
+    <result column="MR_INSWS_CHOSEI_UHP_FLG" property="mrInswsChoseiUHPFlg" jdbcType="CHAR" />
+    <result column="OFFICE_INSWS_CHOSEI_UHP_FLG" property="officeInswsChoseiUHPFlg" jdbcType="CHAR" />
+    <result column="OFFICE_MR_CHOSEI_UHP_UPDATE" property="officeMrChoseiUHPUpDate" jdbcType="TIMESTAMP" />
+    <result column="MR_INSDOC_CHOSEI_UHP_UPDATE" property="mrInsdocChoseiUHPUpDate" jdbcType="TIMESTAMP" />
+    <result column="MR_INSWS_CHOSEI_UHP_UPDATE" property="mrInswsChoseiUHPUpDate" jdbcType="TIMESTAMP" />
+    <result column="OFFICE_INSWS_CHOSEI_UHP_UPDATE" property="officeInswsChoseiUHPUpDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="teamCountMap" class="java.util.HashMap" >
+    <result column="INPUT_STATE" property="mrPlanInputFinished" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+    <result column="MR_PLAN_INPUT_DATE" property="mrPlanInputDate" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+  </resultMap>
+
+    <select id="teamCount" resultMap="teamCountMap" parameterClass="java.util.Map" >
+      <isNotNull property="sosCd4" >
+            SELECT COUNT(CASE WHEN TIS.INPUT_STATE = '2' THEN 1 ELSE NULL END) AS INPUT_STATE
+                  ,COUNT(PP.PROD_CODE) AS TEAM_INPUT_STAT_COUNT
+                  ,MAX(MR_PLAN_INPUT_DATE) AS MR_PLAN_INPUT_DATE
+              FROM DPS_C_SOS_MST SM
+                   INNER JOIN DPS_C_PLANNED_PROD PP
+                ON SM.BUMON_RANK = 4
+                   LEFT OUTER JOIN DPS_I_TEAM_INPUT_STATUS TIS
+                ON TIS.SOS_CD = SM.SOS_CD
+               AND TIS.PROD_CODE = PP.PROD_CODE
+             WHERE PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+               AND PP.SALES = #sales:CHAR#
+               AND PP.CATEGORY = #category:CHAR#
+               AND SM.SOS_CD = #sosCd4:VARCHAR#
+      </isNotNull>
+    </select>
+
+   <sql id="summary_sql">
+    WITH OFFICE_PLAN_STAT AS (SELECT SM1.SOS_CD
+                  ,COUNT(CASE WHEN OPS.STATUS IS NULL THEN 1 ELSE NULL END) AS OFFICE_PLAN_NONE
+                  ,COUNT(CASE WHEN OPS.STATUS >= '1' THEN 1 ELSE NULL END) AS OFFICE_PLAN_DRAFT
+                  ,COUNT(CASE WHEN OPS.STATUS >= '2' THEN 1 ELSE NULL END) AS OFFICE_PLAN_COMPLETED
+                  ,COUNT(SM1.SOS_CD) AS OFFICE_PLAN_STAT_COUNT
+                  ,MAX(OPS.UP_DATE) AS OFFICE_PLAN_UP_DATE
+      <isNotNull property="sosCd2" >
+              FROM DPS_C_SOS_MST SM1
+                   INNER JOIN DPS_C_SOS_MST SM2
+                ON SM1.SOS_CD = SM2.UP_SOS_CD
+                AND EXISTS (SELECT * FROM DPS_C_VI_SOS_CTG CTG WHERE CTG.SOS_CD = SM2.SOS_CD AND CTG.CATEGORY = #category:CHAR#)
+                   LEFT OUTER JOIN DPS_I_OFFICE_PLAN_STATUS OPS
+                ON OPS.SOS_CD = SM2.SOS_CD
+               AND OPS.CATEGORY = #category:CHAR#
+      </isNotNull>
+      <isNotNull property="sosCd3" >
+              FROM DPS_C_SOS_MST SM1
+                   LEFT OUTER JOIN DPS_I_OFFICE_PLAN_STATUS OPS
+                ON OPS.SOS_CD = SM1.SOS_CD
+               AND OPS.CATEGORY = #category:CHAR#
+      </isNotNull>
+             GROUP BY SM1.SOS_CD
+           )
+        ,OFFICE_CALC_TYPE AS (SELECT
+      <isNotNull property="sosCd2" >
+                   SOS_CD
+                  ,NULL AS OFFICE_PLAN_CALC_TYPE
+              FROM DPS_C_SOS_MST
+      </isNotNull>
+      <isNotNull property="sosCd3" >
+                   SM1.SOS_CD
+                  ,OPS.CALC_TYPE AS OFFICE_PLAN_CALC_TYPE
+              FROM DPS_C_SOS_MST SM1
+                   LEFT OUTER JOIN DPS_I_OFFICE_PLAN_STATUS OPS
+                ON OPS.SOS_CD = SM1.SOS_CD
+               AND OPS.CATEGORY = #category:CHAR#
+      </isNotNull>
+           )
+        ,MR_PLAN_STAT AS (SELECT SM1.SOS_CD
+                  ,COUNT(CASE WHEN MPS.STATUS IS NULL THEN 1 ELSE NULL END) AS MR_PLAN_NONE
+                  ,COUNT(CASE WHEN MPS.STATUS >= '1' THEN 1 ELSE NULL END) AS ESTIMATING
+                  ,COUNT(CASE WHEN MPS.STATUS >= '2' THEN 1 ELSE NULL END) AS ESTIMATED
+                  ,COUNT(CASE WHEN MPS.STATUS >= '3' THEN 1 ELSE NULL END) AS TEAM_PLAN_OPENED
+                  ,COUNT(CASE WHEN MPS.STATUS >= '4' THEN 1 ELSE NULL END) AS TEAM_PLAN_COMPLETED
+                  ,COUNT(CASE WHEN MPS.STATUS >= '5' THEN 1 ELSE NULL END) AS MR_PLAN_OPENED
+                  ,COUNT(CASE WHEN MPS.STATUS >= '6' THEN 1 ELSE NULL END) AS MR_PLAN_INPUT_FINISHED
+                  ,COUNT(CASE WHEN MPS.STATUS >= '7' THEN 1 ELSE NULL END) AS MR_PLAN_COMPLETED
+                  ,COUNT(PP.PROD_CODE) AS MR_PLAN_STAT_COUNT
+                  ,MAX(EST_START_DATE) AS EST_START_DATE
+                  ,MAX(EST_END_DATE) AS EST_END_DATE
+                  ,MAX(TEAM_PLAN_OPEN_DATE) AS TEAM_PLAN_OPEN_DATE
+                  ,MAX(TEAM_PLAN_FIX_DATE) AS TEAM_PLAN_FIX_DATE
+                  ,MAX(MR_PLAN_OPEN_DATE) AS MR_PLAN_OPEN_DATE
+                  ,MAX(MR_PLAN_INPUT_DATE) AS MR_PLAN_INPUT_DATE
+                  ,MAX(MR_PLAN_FIX_DATE) AS MR_PLAN_FIX_DATE
+      <isNotNull property="sosCd2" >
+              FROM DPS_C_SOS_MST SM1
+                   INNER JOIN DPS_C_SOS_MST SM2
+                ON SM1.SOS_CD = SM2.UP_SOS_CD
+                AND EXISTS (SELECT * FROM DPS_C_VI_SOS_CTG CTG WHERE CTG.SOS_CD = SM2.SOS_CD AND CTG.CATEGORY = #category:CHAR#)
+                   INNER JOIN DPS_C_PLANNED_PROD PP
+                ON SM2.BUMON_RANK = 3
+                   LEFT OUTER JOIN DPS_I_MR_PLAN_STATUS MPS
+                ON MPS.SOS_CD = SM2.SOS_CD
+               AND MPS.PROD_CODE = PP.PROD_CODE
+      </isNotNull>
+      <isNotNull property="sosCd3" >
+              FROM DPS_C_SOS_MST SM1
+                   LEFT OUTER JOIN DPS_C_PLANNED_PROD PP
+                ON SM1.SOS_CD = SM1.SOS_CD
+                   LEFT OUTER JOIN DPS_I_MR_PLAN_STATUS MPS
+                ON MPS.SOS_CD = SM1.SOS_CD
+               AND MPS.PROD_CODE = PP.PROD_CODE
+      </isNotNull>
+             WHERE PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+                     <isNotNull property="sales" >
+                     AND PP.SALES = #sales:CHAR#
+                     </isNotNull>
+               AND PP.CATEGORY = #category:CHAR#
+             GROUP BY SM1.SOS_CD
+           )
+<!--         <isNotNull property="isNotShiire"> -->
+<!--         ,INS_DOC_PLAN_STAT AS (SELECT -->
+<!--                   <isNotNull property="sosCd2" > -->
+<!--                    SOS_CD2 AS SOS_CD -->
+<!--                   </isNotNull> -->
+<!--                   <isNotNull property="sosCd3" > -->
+<!--                    SOS_CD3 AS SOS_CD -->
+<!--                   </isNotNull> -->
+<!--                   ,COUNT(CASE WHEN IDPS.STATUS IS NULL THEN 1 ELSE NULL END) AS INS_DOC_PLAN_NONE -->
+<!--                   ,COUNT(CASE WHEN IDPS.STATUS >= '1' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_DISTING -->
+<!--                   ,COUNT(CASE WHEN IDPS.STATUS >= '2' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_DISTED -->
+<!--                   ,COUNT(CASE WHEN IDPS.STATUS >= '3' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_OPENED -->
+<!--                   ,COUNT(CASE WHEN IDPS.STATUS >= '4' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_COMPLETED -->
+<!--                   ,COUNT(JM.JGI_NO) AS INS_DOC_PLAN_STAT_COUNT -->
+<!--                   ,MAX(DIST_START_DATE) AS INS_DOC_DIST_START_DATE -->
+<!--                   ,MAX(DIST_END_DATE) AS INS_DOC_DIST_END_DATE -->
+<!--                   ,MAX(INS_DOC_OPEN_DATE) AS INS_DOC_OPEN_DATE -->
+<!--                   ,MAX(INS_DOC_FIX_DATE) AS INS_DOC_FIX_DATE -->
+<!--               FROM DPS_C_VI_JGI_MST JM -->
+<!--                    LEFT OUTER JOIN DPS_I_INS_DOC_PLAN_STATUS IDPS -->
+<!--                 ON IDPS.JGI_NO = JM.JGI_NO -->
+<!--                    LEFT OUTER JOIN DPS_C_PLANNED_PROD PP -->
+<!--                ON IDPS.PROD_CODE = PP.PROD_CODE -->
+<!--              WHERE PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR# -->
+<!--                <isNotNull property="sales" > -->
+<!--                AND PP.SALES = #sales:CHAR# -->
+<!--                </isNotNull> -->
+<!--                AND PP.CATEGORY = #category:CHAR# -->
+<!--                AND PP.PLAN_LEVEL_INS_DOC = '1' -->
+<!--           <isNotNull property="sosCd2" > -->
+<!--              GROUP BY SOS_CD2 -->
+<!--           </isNotNull> -->
+<!--           <isNotNull property="sosCd3" > -->
+<!--              GROUP BY SOS_CD3 -->
+<!--           </isNotNull> -->
+<!--              ) -->
+<!--         </isNotNull> -->
+        ,INS_WS_PLAN_STAT AS (SELECT
+                  <isNotNull property="sosCd2" >
+                   SOS_CD2 AS SOS_CD
+                  </isNotNull>
+                  <isNotNull property="sosCd3" >
+                   SOS_CD3 AS SOS_CD
+                  </isNotNull>
+                  ,COUNT(CASE WHEN IWPS.STATUS IS NULL THEN 1 ELSE NULL END) AS INS_WS_PLAN_NONE
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '1' THEN 1 ELSE NULL END) AS INS_WS_PLAN_DISTING
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '2' THEN 1 ELSE NULL END) AS INS_WS_PLAN_DISTED
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '3' THEN 1 ELSE NULL END) AS INS_WS_PLAN_OPENED
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '4' THEN 1 ELSE NULL END) AS INS_WS_PLAN_COMPLETED
+                  ,COUNT(JM.JGI_NO) AS INS_WS_PLAN_STAT_COUNT
+                  ,MAX(DIST_START_DATE) AS INS_WS_DIST_START_DATE
+                  ,MAX(DIST_END_DATE) AS INS_WS_DIST_END_DATE
+                  ,MAX(INS_WS_OPEN_DATE) AS INS_WS_OPEN_DATE
+                  ,MAX(INS_WS_FIX_DATE) AS INS_WS_FIX_DATE
+              FROM DPS_C_VI_JGI_MST JM
+                   LEFT OUTER JOIN DPS_C_PLANNED_PROD PP
+                  <isNotNull property="sosCd2" >
+                ON JM.SOS_CD2 = JM.SOS_CD2
+                  </isNotNull>
+                  <isNotNull property="sosCd3" >
+                ON JM.SOS_CD3 = JM.SOS_CD3
+                  </isNotNull>
+                   LEFT OUTER JOIN DPS_I_INS_WS_PLAN_STATUS IWPS
+                ON IWPS.JGI_NO = JM.JGI_NO
+               AND IWPS.PROD_CODE = PP.PROD_CODE
+             WHERE PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+               AND PP.PLAN_LEVEL_INS_WS = #planTargetFlg:CHAR#
+               <isNotNull property="sales" >
+               AND PP.SALES = #sales:CHAR#
+              </isNotNull>
+               AND PP.CATEGORY = #category:CHAR#
+               AND EXISTS (SELECT * FROM DPS_C_VI_SOS_CTG CTG WHERE CTG.SOS_CD = JM.SOS_CD AND CTG.CATEGORY = #category:CHAR#)
+              <!-- add Start 2022/8/19 H.Futagami 2022年4月組織変更対応  トップ画面 配分状況の表示修正  -->
+              <isNotNull prepend="AND" property="category">
+                  EXISTS
+                  (SELECT 'X'
+                  FROM DPS_C_PLANNED_CTG CTG
+                      ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                  WHERE CTG.CATEGORY = #category:CHAR#
+                  AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                  AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                  AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                  )
+              </isNotNull>
+	          <!-- End End 2022/8/19 H.Futagami 2022年4月組織変更対応  トップ画面 配分状況の表示修正  -->
+          <isNotNull property="sosCd2" >
+             GROUP BY SOS_CD2
+          </isNotNull>
+          <isNotNull property="sosCd3" >
+             GROUP BY SOS_CD3
+          </isNotNull>
+             )
+       ,EXCEPT_PLAN_STAT AS ( SELECT
+            SOS_CD, COUNT(*) AS COUNT
+             FROM
+            DPS_C_EXCEPT_PLAN
+             WHERE
+            CATEGORY= #category:CHAR#
+            GROUP BY SOS_CD
+            )
+       <isNotNull property="sosCd3" >
+        ,CHOSEI AS(SELECT CO.SOS_CD
+              ,MAX(CO.MR_INSWS_CHOSEI_UHP_FLG) MR_INSWS_CHOSEI_UHP_FLG
+              ,MAX(CO.UP_DATE) UP_DATE
+               FROM DPS_I_CHOSEI_OFFICE CO
+                    INNER JOIN DPS_C_PLANNED_PROD PR
+               ON CO.PROD_CODE = PR.PROD_CODE
+               WHERE PR.CATEGORY= #category:CHAR#
+               GROUP BY CO.SOS_CD
+          )
+        ,CHOSEI2_UH AS(SELECT CO.SOS_CD
+              ,COUNT(*) OFFICE_MR_CHOSEI_UH_Y
+               FROM DPS_I_CHOSEI_OFFICE CO
+                    INNER JOIN DPS_C_PLANNED_PROD PR
+               ON CO.PROD_CODE = PR.PROD_CODE
+               WHERE PR.CATEGORY= #category:CHAR#
+                 AND CO.OFFICE_MR_CHOSEI_UH_Y IS NOT NULL
+                 AND CO.OFFICE_MR_CHOSEI_UH_Y != 0
+               GROUP BY CO.SOS_CD
+          )
+        ,CHOSEI2_P AS(SELECT CO.SOS_CD
+              ,COUNT(*) OFFICE_MR_CHOSEI_P_Y
+               FROM DPS_I_CHOSEI_OFFICE CO
+                    INNER JOIN DPS_C_PLANNED_PROD PR
+               ON CO.PROD_CODE = PR.PROD_CODE
+               WHERE PR.CATEGORY= #category:CHAR#
+                 AND CO.OFFICE_MR_CHOSEI_P_Y IS NOT NULL
+                 AND CO.OFFICE_MR_CHOSEI_P_Y != 0
+               GROUP BY CO.SOS_CD
+          )
+        ,CHOSEI3_UH AS(SELECT CO.SOS_CD
+              ,COUNT(*) OFFICE_INSWS_CHOSEI_UH_Y
+               FROM DPS_I_CHOSEI_OFFICE CO
+                    INNER JOIN DPS_C_PLANNED_PROD PR
+               ON CO.PROD_CODE = PR.PROD_CODE
+               WHERE PR.CATEGORY= #category:CHAR#
+                 AND CO.OFFICE_INSWS_CHOSEI_UH_Y IS NOT NULL
+                 AND CO.OFFICE_INSWS_CHOSEI_UH_Y != 0
+               GROUP BY CO.SOS_CD
+          )
+         ,CHOSEI3_P AS(SELECT CO.SOS_CD
+              ,COUNT(*) OFFICE_INSWS_CHOSEI_P_Y
+               FROM DPS_I_CHOSEI_OFFICE CO
+                    INNER JOIN DPS_C_PLANNED_PROD PR
+               ON CO.PROD_CODE = PR.PROD_CODE
+               WHERE PR.CATEGORY= #category:CHAR#
+                 AND CO.OFFICE_INSWS_CHOSEI_P_Y IS NOT NULL
+                 AND CO.OFFICE_INSWS_CHOSEI_P_Y != 0
+               GROUP BY CO.SOS_CD
+          )
+         ,CHOSEI4 AS(SELECT CO.SOS_CD
+              ,MAX(CO.MR_DR_CHOSEI_UHP_FLG) MR_INSDOC_CHOSEI_UHP_FLG
+               FROM DPS_I_CHOSEI_OFFICE CO
+                    INNER JOIN DPS_C_PLANNED_PROD PR
+               ON CO.PROD_CODE = PR.PROD_CODE
+               WHERE PR.CATEGORY = #category:CHAR#
+                 AND PR.PLAN_LEVEL_INS_DOC = '1'
+               GROUP BY CO.SOS_CD
+         )
+       </isNotNull>
+    SELECT SM.SOS_CD
+          ,SM.BUMON_SEI_NAME
+          ,OFFICE_PLAN_NONE
+          ,OFFICE_PLAN_DRAFT
+          ,OFFICE_PLAN_COMPLETED
+          ,OFFICE_PLAN_STAT_COUNT
+          ,OFFICE_PLAN_UP_DATE
+          ,OFFICE_PLAN_CALC_TYPE
+<!-- add Start 2022/7/25 H.Futagami 2022年4月組織変更対応  トップ画面エリア計画の表示修正 -->
+          ,(SELECT PLAN_LEVEL_OFFICE
+            FROM DPS_C_PLANNED_CTG
+            WHERE CATEGORY = #category:CHAR#) AS PLAN_LEVEL_OFFICE
+<!-- add End 2022/7/25 H.Futagami 2022年4月組織変更対応  トップ画面 エリア計画の表示修正 -->
+          ,MR_PLAN_NONE
+          ,ESTIMATING
+          ,ESTIMATED
+          ,TEAM_PLAN_OPENED
+          ,TEAM_PLAN_COMPLETED
+          ,MR_PLAN_OPENED
+          ,MR_PLAN_INPUT_FINISHED
+          ,MR_PLAN_COMPLETED
+          ,MR_PLAN_STAT_COUNT
+          ,EST_START_DATE
+          ,EST_END_DATE
+          ,TEAM_PLAN_OPEN_DATE
+          ,TEAM_PLAN_FIX_DATE
+          ,MR_PLAN_OPEN_DATE
+          ,MR_PLAN_INPUT_DATE
+          ,MR_PLAN_FIX_DATE
+          ,NULL AS INS_DOC_PLAN_NONE
+          ,NULL AS INS_DOC_PLAN_DISTING
+          ,NULL AS INS_DOC_PLAN_DISTED
+          ,NULL AS INS_DOC_PLAN_OPENED
+          ,NULL AS INS_DOC_PLAN_COMPLETED
+          ,NULL AS INS_DOC_PLAN_STAT_COUNT
+          ,NULL AS INS_DOC_DIST_START_DATE
+          ,NULL AS INS_DOC_DIST_END_DATE
+          ,NULL AS INS_DOC_OPEN_DATE
+          ,NULL AS INS_DOC_FIX_DATE
+          ,INS_WS_PLAN_NONE
+          ,INS_WS_PLAN_DISTING
+          ,INS_WS_PLAN_DISTED
+          ,INS_WS_PLAN_OPENED
+          ,INS_WS_PLAN_COMPLETED
+          ,INS_WS_PLAN_STAT_COUNT
+          ,INS_WS_DIST_START_DATE
+          ,INS_WS_DIST_END_DATE
+          ,INS_WS_OPEN_DATE
+          ,INS_WS_FIX_DATE
+          ,CASE
+               WHEN EPS.COUNT IS NULL THEN 0
+               ELSE EPS.COUNT
+           END EXCEPT_PLAN_COUNT
+     <isNotNull property="sosCd2" >
+          ,NULL AS OFFICE_MR_CHOSEI_UHP_FLG
+          ,NULL AS MR_INSDOC_CHOSEI_UHP_FLG
+          ,NULL AS MR_INSWS_CHOSEI_UHP_FLG
+          ,NULL AS OFFICE_INSWS_CHOSEI_UHP_FLG
+          ,NULL AS OFFICE_MR_CHOSEI_UHP_UPDATE
+          ,NULL AS MR_INSDOC_CHOSEI_UHP_UPDATE
+          ,NULL AS MR_INSWS_CHOSEI_UHP_UPDATE
+          ,NULL AS OFFICE_INSWS_CHOSEI_UHP_UPDATE
+     </isNotNull>
+     <isNotNull property="sosCd3" >
+          ,CASE WHEN (CHOSEI2_UH.OFFICE_MR_CHOSEI_UH_Y != 0) OR (CHOSEI2_P.OFFICE_MR_CHOSEI_P_Y != 0 ) THEN '1' ELSE '0' END AS OFFICE_MR_CHOSEI_UHP_FLG
+          ,CHOSEI4.MR_INSDOC_CHOSEI_UHP_FLG AS MR_INSDOC_CHOSEI_UHP_FLG
+          ,CHOSEI.MR_INSWS_CHOSEI_UHP_FLG AS MR_INSWS_CHOSEI_UHP_FLG
+          ,CASE WHEN (CHOSEI3_UH.OFFICE_INSWS_CHOSEI_UH_Y != 0) OR (CHOSEI3_P.OFFICE_INSWS_CHOSEI_P_Y != 0) THEN '1' ELSE '0' END AS OFFICE_INSWS_CHOSEI_UHP_FLG
+          ,CHOSEI.UP_DATE AS OFFICE_MR_CHOSEI_UHP_UPDATE
+          ,CHOSEI.UP_DATE AS MR_INSDOC_CHOSEI_UHP_UPDATE
+          ,CHOSEI.UP_DATE AS MR_INSWS_CHOSEI_UHP_UPDATE
+          ,CHOSEI.UP_DATE AS OFFICE_INSWS_CHOSEI_UHP_UPDATE
+     </isNotNull>
+      FROM DPS_C_SOS_MST SM
+           INNER JOIN OFFICE_PLAN_STAT OPS
+        ON SM.SOS_CD = OPS.SOS_CD
+           INNER JOIN MR_PLAN_STAT MPS
+        ON SM.SOS_CD = MPS.SOS_CD
+           INNER JOIN DPS_C_VI_SOS_CTG SCAT
+        ON SM.SOS_CD = SCAT.SOS_CD
+        AND SCAT.CATEGORY = #category:CHAR#
+<!--         <isNotNull property="isNotShiire"> -->
+<!--            LEFT JOIN INS_DOC_PLAN_STAT IDPS -->
+<!--         ON SM.SOS_CD = IDPS.SOS_CD -->
+<!--         </isNotNull> -->
+           INNER JOIN INS_WS_PLAN_STAT IWPS
+        ON SM.SOS_CD = IWPS.SOS_CD
+           LEFT JOIN EXCEPT_PLAN_STAT EPS
+        ON SM.SOS_CD = EPS.SOS_CD
+           INNER JOIN OFFICE_CALC_TYPE OCT
+        ON SM.SOS_CD = OCT.SOS_CD
+     <isNotNull property="sosCd3" >
+           LEFT OUTER JOIN CHOSEI
+        ON SM.SOS_CD = CHOSEI.SOS_CD
+           LEFT OUTER JOIN CHOSEI2_UH
+        ON SM.SOS_CD = CHOSEI2_UH.SOS_CD
+           LEFT OUTER JOIN CHOSEI2_P
+        ON SM.SOS_CD = CHOSEI2_P.SOS_CD
+           LEFT OUTER JOIN CHOSEI3_UH
+        ON SM.SOS_CD = CHOSEI3_UH.SOS_CD
+           LEFT OUTER JOIN CHOSEI3_P
+        ON SM.SOS_CD = CHOSEI3_P.SOS_CD
+           LEFT OUTER JOIN CHOSEI4
+        ON SM.SOS_CD = CHOSEI4.SOS_CD
+     </isNotNull>
+     </sql>
+
+  <!-- 検索/ステータスサマリー -->
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+  <include refid = "summary_sql"/>
+
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="upSosCd">
+        SM.UP_SOS_CD = #upSosCd:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosgrp">
+        EXISTS     (SELECT SOS_CD FROM DPS_C_SOS_GRP_M SGRP WHERE SGRP.SOS_CD = SM.SOS_CD AND SGRP.SOS_GROP = #sosgrp:VARCHAR#)
+      </isNotNull>
+      <isNotNull prepend="AND" property="excludeSosgrp">
+        NOT EXISTS (SELECT SOS_CD FROM DPS_C_SOS_GRP_M SGRP WHERE SGRP.SOS_CD = SM.SOS_CD AND SGRP.SOS_GROP = #excludeSosgrp:VARCHAR#)
+      </isNotNull>
+      <isNotNull prepend="AND" property="bumonRank">
+        SM.BUMON_RANK = #bumonRank:INTEGER#
+      </isNotNull>
+    </dynamic>
+    ORDER BY SM.BR_CODE, SM.DIST_SEQ, SM.DIST_CODE, SM.TEAM_CODE
+    </select>
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    <include refid = "summary_sql"/>
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="sosCd">
+        SM.SOS_CD = #sosCd:VARCHAR#
+      </isNotNull>
+    </dynamic>
+   </select>
+</sqlMap>

@@ -1,0 +1,46 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS302C02_DATA_R"))
+    #set( $resultData = $form.getRequestData("DPS302C02_DATA_R"))
+#end
+#if($resultData)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+
+    ##営業所計画(UH)
+    #set($previousPlanValueUH = 0)
+    #if($resultData.previousPlanValueUH)
+        #set($previousPlanValueUH = $resultData.previousPlanValueUH)
+    #end
+
+    ##営業所計画(P)
+    #set($previousPlanValueP = 0)
+    #if($resultData.previousPlanValueP)
+        #set($previousPlanValueP = $resultData.previousPlanValueP)
+    #end
+
+    ##チーム別計画(UH)
+    #set($totalPlanValueUH = 0)
+    #if($resultData.totalPlanValueUH)
+        #set($totalPlanValueUH = $resultData.totalPlanValueUH)
+    #end
+
+    ##チーム別計画(P)
+    #set($totalPlanValueP = 0)
+    #if($resultData.totalPlanValueP)
+        #set($totalPlanValueP = $resultData.totalPlanValueP)
+    #end
+
+    <row id="1">
+        <cell>$previousPlanValueUH</cell>
+        <cell>$totalPlanValueUH</cell>
+        <cell></cell>
+        <cell>$previousPlanValueP</cell>
+        <cell>$totalPlanValueP</cell>
+        <cell></cell>
+        <cell></cell>
+        <cell></cell>
+        <cell></cell>
+    </row>
+</rows>
+
+#end

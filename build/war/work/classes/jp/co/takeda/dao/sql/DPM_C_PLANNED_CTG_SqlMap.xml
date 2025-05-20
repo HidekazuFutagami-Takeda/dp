@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_C_PLANNED_CTG_SqlMap" >
+  <resultMap id="resultMap" class="jp.co.takeda.model.PlannedCtg" >
+    <result column="CAL_YEAR" property="calYear" jdbcType="CHAR" />
+    <result column="CAL_TERM" property="calTrm" jdbcType="CHAR" />
+    <result column="TRT_CD" property="trtCd" jdbcType="CHAR" />
+    <result column="CATEGORY" property="category" jdbcType="CHAR" />
+    <result column="OYAKO_KB" property="oyakoKb" jdbcType="CHAR" />
+    <result column="OYAKO_KB2" property="oyakoKb2" jdbcType="CHAR" />
+    <result column="TGT_INS_KB" property="tgtInsKb" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_ZENSHA" property="planLevelZensha" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_SITEN" property="planLevelSiten" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_OFFICE" property="planLevelOffice" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_TEAM" property="planLevelTeam" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_MR" property="planLevelMr" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_INS" property="planLevelIns" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_INS_WS" property="planLevelInsWs" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_WS" property="planLevelWs" jdbcType="CHAR" />
+  </resultMap>
+
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+           CAL_YEAR
+          ,CAL_TERM
+          ,TRT_CD
+          ,CATEGORY
+          ,OYAKO_KB
+          ,OYAKO_KB2
+          ,TGT_INS_KB
+          ,PLAN_LEVEL_ZENSHA
+          ,PLAN_LEVEL_SITEN
+          ,PLAN_LEVEL_OFFICE
+          ,PLAN_LEVEL_TEAM
+          ,PLAN_LEVEL_MR
+          ,PLAN_LEVEL_INS
+          ,PLAN_LEVEL_INS_WS
+          ,PLAN_LEVEL_WS
+      FROM DPM_C_PLANNED_CTG
+     WHERE CAL_TERM = #calTerm:CHAR#
+       AND CAL_YEAR = #calYear:CHAR#
+       <isNotNull property="prodCategory">
+       AND CATEGORY = #prodCategory:CHAR#
+       </isNotNull>
+  </select>
+
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+           CAL_YEAR
+          ,CAL_TERM
+          ,TRT_CD
+          ,CATEGORY
+          ,OYAKO_KB
+          ,OYAKO_KB2
+          ,TGT_INS_KB
+          ,PLAN_LEVEL_ZENSHA
+          ,PLAN_LEVEL_SITEN
+          ,PLAN_LEVEL_OFFICE
+          ,PLAN_LEVEL_TEAM
+          ,PLAN_LEVEL_MR
+          ,PLAN_LEVEL_INS
+          ,PLAN_LEVEL_INS_WS
+          ,PLAN_LEVEL_WS
+      FROM DPM_C_PLANNED_CTG
+     WHERE CAL_TERM = #calTerm:CHAR#
+       AND CAL_YEAR = #calYear:CHAR#
+       <isNotNull property="sosCtgList">
+       <iterate prepend=" AND CATEGORY IN " open="(" close=")" conjunction=","  property="sosCtgList">
+           #sosCtgList[].category#
+       </iterate>
+       </isNotNull>
+  </select>
+
+  <select id="selectByPlanLevel" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+           CAL_YEAR
+          ,CAL_TERM
+          ,TRT_CD
+          ,CATEGORY
+          ,OYAKO_KB
+          ,OYAKO_KB2
+          ,TGT_INS_KB
+          ,PLAN_LEVEL_ZENSHA
+          ,PLAN_LEVEL_SITEN
+          ,PLAN_LEVEL_OFFICE
+          ,PLAN_LEVEL_TEAM
+          ,PLAN_LEVEL_MR
+          ,PLAN_LEVEL_INS
+          ,PLAN_LEVEL_INS_WS
+          ,PLAN_LEVEL_WS
+      FROM DPM_C_PLANNED_CTG
+     WHERE CAL_TERM = #calTerm:CHAR#
+       AND CAL_YEAR = #calYear:CHAR#
+      <isNotNull prepend="AND" property="planLevelZensha">
+        PLAN_LEVEL_ZENSHA = #planLevelZensha:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelSiten">
+        PLAN_LEVEL_SITEN = #planLevelSiten:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelOffice">
+        PLAN_LEVEL_OFFICE = #planLevelOffice:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelTeam">
+        PLAN_LEVEL_TEAM = #planLevelTeam:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelMr">
+        PLAN_LEVEL_MR = #planLevelMr:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelIns">
+        PLAN_LEVEL_INS = #planLevelIns:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelInsWs">
+        PLAN_LEVEL_INS_WS = #planLevelInsWs:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelWs">
+        PLAN_LEVEL_WS = #planLevelWs:CHAR#
+      </isNotNull>
+  </select>
+
+</sqlMap>

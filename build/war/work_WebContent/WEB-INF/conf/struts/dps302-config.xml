@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+ "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+
+    <form-beans>
+        <form-bean name="Dps302C00Form" type="jp.co.takeda.web.in.dps.Dps302C00Form" />
+        <form-bean name="Dps302C01Form" type="jp.co.takeda.web.in.dps.Dps302C01Form" />
+        <form-bean name="Dps302C02Form" type="jp.co.takeda.web.in.dps.Dps302C02Form" />
+        <form-bean name="Dps302C03Form" type="jp.co.takeda.web.in.dps.Dps302C03Form" />
+        <form-bean name="Dps302C04Form" type="jp.co.takeda.web.in.dps.Dps302C04Form" />
+        <form-bean name="Dps302C05Form" type="jp.co.takeda.web.in.dps.Dps302C05Form" />
+        <form-bean name="Dps302C06Form" type="jp.co.takeda.web.in.dps.Dps302C06Form" />
+   </form-beans>
+
+<action-mappings type="jp.co.takeda.web.cmn.action.DpActionMapping">
+<!-- ***********************************************************************
+
+    (医)計画対象品目選択画面
+
+ ***********************************************************************  -->
+<action path="/dps302C00F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C00Action" name="Dps302C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps302C00F00" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+</action>
+
+<action path="/dps302C00F05"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C00Action" name="Dps302C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C00F05" />
+    <set-property property="validationMethod" value="dps302C00F05Validation" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+</action>
+
+<action path="/dps302C00F10Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C00Action" name="Dps302C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C00F10Execute" />
+    <set-property property="validationMethod" value="dps302C00F10Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+
+</action>
+
+<action path="/dps302C00F11Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C00Action" name="Dps302C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C00F11Execute" />
+    <set-property property="validationMethod" value="dps302C00F11Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+</action>
+
+<action path="/dps302C00F12Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C00Action" name="Dps302C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C00F12Execute" />
+    <set-property property="validationMethod" value="dps302C00F12Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+</action>
+
+<action path="/dps302C00F13Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C00Action" name="Dps302C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C00F13Execute" />
+    <set-property property="validationMethod" value="dps302C00F13Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+</action>
+
+<action path="/dps302C00F14Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C00Action" name="Dps302C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C00F14Execute" />
+    <set-property property="validationMethod" value="dps302C00F14Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+</action>
+
+<action path="/dps302C00F15Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C00Action" name="Dps302C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C00F15Execute" />
+    <set-property property="validationMethod" value="dps302C00F15Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+</action>
+
+<action path="/dps302C00F16Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C00Action" name="Dps302C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C00F16Execute" />
+    <set-property property="validationMethod" value="dps302C00F16Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+</action>
+
+<action path="/dps302C00F17Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C00Action" name="Dps302C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C00F17Execute" />
+    <set-property property="validationMethod" value="dps302C00F17Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+</action>
+
+<action path="/dps302C00F18"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C00Action" name="Dps302C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps302C00F18" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C00d01.vm" />
+    <forward name="asyncError" path="/WEB-INF/view/cmn/asyncError.vm" />
+</action>
+
+<action path="/dps302C00F20Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C00Action" name="Dps302C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C00F20Execute" />
+    <set-property property="validationMethod" value="dps302C00F20Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C00.vm" />
+</action>
+
+<!-- ***********************************************************************
+
+    (医)試算結果詳細画面
+
+ ***********************************************************************  -->
+<action path="/dps302C01F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C01Action" name="Dps302C01Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C01F00" />
+    <set-property property="validationMethod" value="dps302C01F00Validation" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C01.vm" />
+</action>
+
+<action path="/dps302C01F05"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C01Action" name="Dps302C01Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C01F05" />
+    <set-property property="validationMethod" value="dps302C01F05Validation" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C01.vm" />
+</action>
+
+<action path="/dps302C01F10Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C01Action" name="Dps302C01Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C01F10Execute" />
+    <set-property property="validationMethod" value="dps302C01F10Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C01.vm" />
+</action>
+
+<action path="/dps302C01F11Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C01Action" name="Dps302C01Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C01F11Execute" />
+    <set-property property="validationMethod" value="dps302C01F11Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C01.vm" />
+</action>
+<action path="/dps302C01F12Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C01Action" name="Dps302C01Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps302C01F12Execute" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C01d01.vm" />
+    <forward name="asyncError" path="/WEB-INF/view/cmn/asyncError.vm" />
+</action>
+
+<!-- ***********************************************************************
+
+    (医)担当者別計画編集画面(チーム別計画)
+
+ ***********************************************************************  -->
+<action path="/dps302C02F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C02Action" name="Dps302C02Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps302C02F00" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C02.vm" />
+</action>
+
+<action path="/dps302C02F05"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C02Action" name="Dps302C02Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps302C02F05" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C02.vm" />
+</action>
+
+<action path="/dps302C02F10Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C02Action" name="Dps302C02Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C02F10Execute" />
+    <set-property property="validationMethod" value="dps302C02F10Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C02.vm" />
+</action>
+
+<action path="/dps302C02F15"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C02Action" name="Dps302C02Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps302C02F15" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C02.vm" />
+</action>
+
+<!-- ***********************************************************************
+
+    (医)担当者別計画編集画面(担当者別計画)
+
+ ***********************************************************************  -->
+<action path="/dps302C03F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C03Action" name="Dps302C03Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps302C03F00" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C03.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C03.vm" />
+</action>
+
+<action path="/dps302C03F05"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C03Action" name="Dps302C03Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps302C03F05" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C03.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C03.vm" />
+</action>
+
+<action path="/dps302C03F10Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C03Action" name="Dps302C03Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C03F10Execute" />
+    <set-property property="validationMethod" value="dps302C03F10Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C03.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C03.vm" />
+</action>
+
+<action path="/dps302C03F15Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C03Action" name="Dps302C03Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C03F15Execute" />
+    <set-property property="validationMethod" value="dps302C03F15Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C03.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C03.vm" />
+</action>
+
+<action path="/dps302C03F20"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C03Action" name="Dps302C03Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps302C03F20" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C03.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C03.vm" />
+</action>
+
+<!-- ***********************************************************************
+
+    (ワ)計画対象品目選択画面
+
+ ***********************************************************************  -->
+ <action path="/dps302C04F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C04Action" name="Dps302C04Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps302C04F00" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C04.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C04.vm" />
+</action>
+
+<!-- ***********************************************************************
+
+    (ワ)担当者別計画編集画面(担当者別入力)
+
+ ***********************************************************************  -->
+ <action path="/dps302C05F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C05Action" name="Dps302C05Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps302C05F00" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C05.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C05.vm" />
+</action>
+
+ <action path="/dps302C05F05Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C05Action" name="Dps302C05Form"
+ scope="request"
+ validate="true">
+    <set-property property="actionMethod" value="dps302C05F05Execute" />
+    <set-property property="validationMethod" value="dps302C05F05Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C05.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C05.vm" />
+</action>
+
+<!-- ***********************************************************************
+
+    (医)計画値の一括コピー方法確認ダイアログ画面
+
+ ***********************************************************************  -->
+ <action path="/dps302C06F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps302C06Action" name="Dps302C06Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps302C06F00" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps302C06.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps302C06.vm" />
+</action>
+
+</action-mappings>
+</struts-config>

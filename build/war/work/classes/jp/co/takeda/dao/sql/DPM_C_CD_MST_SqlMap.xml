@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_C_CD_MST_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.DpmCCdMst" >
+    <result column="DATA_KBN" property="dataKbn" jdbcType="VARCHAR" />
+    <result column="DATA_CD" property="dataCd" jdbcType="VARCHAR" />
+    <result column="DATA_NAME" property="dataName" jdbcType="VARCHAR" />
+    <result column="DATA_VALUE" property="dataValue" jdbcType="INTEGER" />
+    <result column="DATA_SEQ" property="dataSeq" jdbcType="INTEGER" />
+    <result column="DEF_FLG" property="defFlg" jdbcType="INTEGER" />
+  </resultMap>
+
+  <!-- カテゴリの検索 -->
+  <select id="searchCategoryList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT DATA_KBN
+          ,DATA_CD
+          ,DATA_NAME
+          ,DATA_VALUE
+          ,DATA_SEQ
+          ,DEF_FLG
+      FROM DPM_C_CD_MST
+      WHERE DATA_KBN = #dataKbn:VARCHAR#
+      <isNotNull property="dataCds">
+        <iterate prepend="AND DATA_CD IN" open="(" close=")" conjunction="," property="dataCds">
+          #dataCds[]#
+        </iterate>
+      </isNotNull>
+      <isNotNull property="dataValue">
+        AND (DATA_VALUE = #dataValue:VARCHAR# OR DATA_VALUE = '0')
+      </isNotNull>
+      ORDER BY DATA_SEQ
+  </select>
+
+  <select id="searchCategory" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT DATA_KBN
+          ,DATA_CD
+          ,DATA_NAME
+          ,DATA_VALUE
+          ,DATA_SEQ
+          ,DEF_FLG
+      FROM DPM_C_CD_MST
+      WHERE DATA_KBN = #dataKbn:VARCHAR#
+      <isNotNull property="categoryCd">
+        AND DATA_CD = #categoryCd:VARCHAR#
+      </isNotNull>
+  </select>
+
+
+  <!-- 計画管理汎用マスタからデータ区分をもとにデータを取得 -->
+  <select id="searchCodeByDataKbn" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT DATA_KBN
+          ,DATA_CD
+          ,DATA_NAME
+          ,DATA_VALUE
+          ,DATA_SEQ
+          ,DEF_FLG
+      FROM DPM_C_CD_MST
+      WHERE DATA_KBN = #dataKbn:VARCHAR#
+      ORDER BY DATA_SEQ
+  </select>
+
+  <!-- 計画管理汎用マスタからデータ区分とコードをもとにデータを取得 -->
+  <select id="searchCategoryByKbnAndCd" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT DATA_KBN
+          ,DATA_CD
+          ,DATA_NAME
+          ,DATA_VALUE
+          ,DATA_SEQ
+          ,DEF_FLG
+      FROM DPM_C_CD_MST
+      WHERE DATA_KBN = #dataKbn:VARCHAR#
+      AND DATA_CD = #dataCd:VARCHAR#
+  </select>
+
+</sqlMap>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+ "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+
+    <form-beans>
+        <form-bean name="Dps920C00Form" type="jp.co.takeda.web.in.dps.Dps920C00Form" />
+    </form-beans>
+
+<action-mappings type="jp.co.takeda.web.cmn.action.DpActionMapping">
+
+<!-- ***********************************************************************
+
+    (医)計画立案準備ダウンロード画面
+
+ ***********************************************************************  -->
+<action path="/dps920C00F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps920C00Action" name="Dps920C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps920C00F00" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps920C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps920C00.vm" />
+</action>
+
+<action path="/dps920C00F10Output"
+ type="jp.co.takeda.web.ctrl.dps.Dps920C00Action" name="Dps920C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps920C00F10Output" />
+    <set-property property="generateToken" value="false" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps920C00.vm" />
+</action>
+
+</action-mappings>
+</struts-config>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="COMMON_SqlMap" >
+
+<resultMap id="prodInfo" class="jp.co.takeda.model.ProdInfo" >
+    <result column="GROUP_CODE" property="groupCode" jdbcType="CHAR" />
+    <result column="STAT_PROD_CODE" property="statProdCode" jdbcType="CHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="CHAR" />
+    <result column="PROD_ABBR_NAME" property="prodAbbrName" jdbcType="CHAR" />
+    <result column="CATEGORY" property="category" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_INS_DOC" property="planLevelInsDoc" jdbcType="CHAR" />
+    <result column="PRESCRIPTION_TYPE" property="prescriptionType" jdbcType="CHAR" />
+</resultMap>
+<resultMap id="convertInsKanaMap" class="jp.co.takeda.model.ConvertInsKana" >
+    <result column="ENTRY_STRING" property="entryString" jdbcType="CHAR" />
+    <result column="REPLACE_STRING" property="replaceString" jdbcType="CHAR" />
+</resultMap>
+
+  <!-- システム日付取得 -->
+  <select id="selectSysTimeStamp" resultClass="java.util.Date" parameterClass="java.util.Map" >
+    SELECT SYSTIMESTAMP FROM DUAL
+  </select>
+
+  <!-- 参照品目取得 -->
+  <sql id="refProd">
+    SELECT PROD.PROD_CODE
+          ,PROD.PROD_NAME
+          ,PP.PROD_TYPE
+          ,PROD.GROUP_CODE
+          ,PROD.STAT_PROD_CODE
+          ,PROD.CATEGORY
+          ,PROD.SALES
+      FROM (
+        SELECT PROD_CODE
+              ,PROD_NAME
+              ,GROUP_CODE
+              ,STAT_PROD_CODE
+              ,CATEGORY
+              ,SALES
+          FROM DPS_C_PLANNED_PROD
+         UNION
+        SELECT PROD_CODE
+              ,PROD_NAME
+              ,GROUP_CODE
+              ,STAT_PROD_CODE
+              ,CATEGORY
+              ,SALES
+         FROM DPS_C_REF_TOTAL_PROD
+           ) PROD
+           LEFT JOIN DPS_C_PLANNED_PROD PP
+        ON PROD.PROD_CODE = PP.PROD_CODE
+  </sql>
+
+  <!-- 参照時特約店情報取得 -->
+  <sql id="tms">
+    SELECT *
+      FROM DPS_S_T_TMS_TYTEN_MST_UN
+  </sql>
+
+  <!-- 管理、参照時特約店情報取得 -->
+  <sql id="tmsView">
+    SELECT *
+      FROM DPM_C_VI_T_TMS_TYTEN_MST_UN T
+     WHERE TEKIYO_END_YMD=(SELECT MAX(TEKIYO_END_YMD)
+      FROM DPM_C_VI_T_TMS_TYTEN_MST_UN
+     WHERE T.TMS_TYTEN_CD=TMS_TYTEN_CD)
+  </sql>
+
+  <!-- 管理、追加時特約店情報取得 -->
+  <sql id="add_tmsView">
+    SELECT *
+      FROM DPM_C_VI_T_TMS_TYTEN_MST_UN T
+     WHERE TEKIYO_END_YMD=(SELECT MAX(TEKIYO_END_YMD)
+      FROM DPM_C_VI_T_TMS_TYTEN_MST_UN
+     WHERE T.TMS_TYTEN_CD=TMS_TYTEN_CD
+       AND TO_CHAR((SELECT CAL_DATE FROM DPS_S_SY_COM_CAL WHERE TODAY = '1'),'YYYYMMDD') >= TEKIYO_YMD)
+  </sql>
+
+<select id="selectAll" resultMap="convertInsKanaMap">
+SELECT ENTRY_STRING, REPLACE_STRING FROM DPS_S_CONVERT_INS_KANA ORDER BY APPLY_NO
+</select>
+
+</sqlMap>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<toolbox>
+<!-- default -->
+<tool>
+    <key>esc</key>
+    <scope>application</scope>
+    <class>org.apache.velocity.tools.generic.EscapeTool</class>
+</tool>
+
+<tool>
+    <key>link</key>
+    <scope>request</scope>
+    <class>org.apache.velocity.tools.struts.StrutsLinkTool</class>
+</tool>
+
+<tool>
+    <key>text</key>
+    <scope>request</scope>
+    <class>org.apache.velocity.tools.struts.MessageTool</class>
+</tool>
+
+<tool>
+    <key>errors</key>
+    <scope>request</scope>
+    <class>org.apache.velocity.tools.struts.ErrorsTool</class>
+</tool>
+
+<tool>
+    <key>messages</key>
+    <scope>request</scope>
+    <class>org.apache.velocity.tools.struts.ActionMessagesTool</class>
+</tool>
+
+
+<!-- orginal -->
+<tool>
+    <key>form</key>
+    <scope>request</scope>
+    <class>jp.co.takeda.web.cmn.velocity.FormToolExt</class>
+</tool>
+
+<tool>
+    <key>progress</key>
+    <scope>application</scope>
+    <class>jp.co.takeda.web.cmn.velocity.ProgressTool</class>
+</tool>
+
+<tool>
+    <key>sosiki</key>
+    <scope>application</scope>
+    <class>jp.co.takeda.web.cmn.velocity.SosikiTool</class>
+</tool>
+
+<tool>
+    <key>service</key>
+    <scope>application</scope>
+    <class>jp.co.takeda.web.cmn.velocity.ServiceTool</class>
+</tool>
+
+<tool>
+    <key>format</key>
+    <scope>application</scope>
+    <class>jp.co.takeda.web.cmn.velocity.FormatTool</class>
+</tool>
+
+<tool>
+    <key>menu</key>
+    <scope>application</scope>
+    <class>jp.co.takeda.web.cmn.velocity.MenuTool</class>
+</tool>
+
+<tool>
+    <key>paging</key>
+    <scope>application</scope>
+    <class>jp.co.takeda.web.cmn.velocity.PagingTool</class>
+</tool>
+
+<tool>
+    <key>consts</key>
+    <scope>application</scope>
+    <class>jp.co.takeda.web.cmn.velocity.ConstantsTool</class>
+</tool>
+
+<tool>
+    <key>security</key>
+    <scope>application</scope>
+    <class>jp.co.takeda.web.cmn.velocity.SecurityTool</class>
+</tool>
+
+<tool>
+    <key>map</key>
+    <scope>application</scope>
+    <class>jp.co.takeda.web.cmn.velocity.MapTool</class>
+</tool>
+
+<tool>
+    <key>sanitizing</key>
+    <scope>request</scope>
+    <class>jp.co.takeda.web.cmn.velocity.SanitizingTool</class>
+</tool>
+
+<tool>
+    <key>tmsselect</key>
+    <scope>request</scope>
+    <class>jp.co.takeda.web.cmn.velocity.TmsSelectTool</class>
+</tool>
+
+</toolbox>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_MikakutokuSijouInsTypeSummary_SqlMap" >
+
+  <resultMap id="resultMapList" class="jp.co.takeda.model.view.MikakutokuSijouInsTypeSummary" >
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INS_TYPE" property="insType" jdbcType="CHAR" />
+    <result column="DIST_PLAN_MIKAKUTOKU" property="distPlanMikakutoku" jdbcType="BIGINT" />
+  </resultMap>
+
+  <!-- 試算対象品目 施設出力対象区分別、修正金額集計 -->
+  <select id="searchSummaryList" resultMap="resultMapList" parameterClass="java.util.Map" >
+    SELECT PP.PROD_CODE
+          ,MS.INS_TYPE
+          ,SUM(MS.DIST_PLAN_MIKAKUTOKU) as DIST_PLAN_MIKAKUTOKU
+      FROM (((DPS_I_MIKAKUTOKU_SIJOU MS
+           INNER JOIN DPS_C_PLANNED_PROD PP
+        ON MS.YAKKOU_SIJOU_CODE = PP.YAKKOU_SIJOU_CODE)
+           INNER JOIN DPS_C_JGI_MST JM
+        ON MS.JGI_NO = JM.JGI_NO)
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD)
+     WHERE PP.PROD_CODE = #refProdCode:CHAR#
+       AND JM.SOS_CD3 = #sosCd3:VARCHAR#
+     GROUP BY PP.PROD_CODE,PP.PROD_NAME,MS.INS_TYPE
+  </select>
+
+</sqlMap>

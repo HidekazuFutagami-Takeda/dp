@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_DELIVERY_RESULT_MR_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.DeliveryResultMr" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INS_TYPE" property="insType" jdbcType="CHAR" />
+    <result column="SLOPPY_CHARGE_FLG" property="sloppyChargeFlg" jdbcType="CHAR" />
+    <result property="monNnu" resultMap="DPS_I_DELIVERY_RESULT_SqlMap.monNnu" />
+  </resultMap>
+  <!-- add Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する -->
+  <resultMap id="resultMap2" class="jp.co.takeda.model.DeliveryResultMr" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="CHAR" />
+    <result column="INS_TYPE" property="insType" jdbcType="CHAR" />
+    <result column="SLOPPY_CHARGE_FLG" property="sloppyChargeFlg" jdbcType="CHAR" />
+    <result property="monNnu" resultMap="DPS_I_DELIVERY_RESULT_SqlMap.monNnu" />
+  </resultMap>
+  <!-- add End 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する -->
+
+  <resultMap id="resultSumMap" class="java.util.HashMap" >
+    <result property="monNnu" resultMap="DPS_I_DELIVERY_RESULT_SqlMap.monNnu" />
+  </resultMap>
+
+  <sql id="record">
+          DELIVERY_RECORD_01, DELIVERY_RECORD_02, DELIVERY_RECORD_03, DELIVERY_RECORD_04
+          ,DELIVERY_RECORD_05, DELIVERY_RECORD_06, DELIVERY_RECORD_07, DELIVERY_RECORD_08
+          ,DELIVERY_RECORD_09, DELIVERY_RECORD_10, DELIVERY_RECORD_11, DELIVERY_RECORD_12
+          ,DELIVERY_RECORD_13, DELIVERY_RECORD_14, DELIVERY_RECORD_15, DELIVERY_RECORD_16
+          ,DELIVERY_RECORD_17, DELIVERY_RECORD_18, DELIVERY_RECORD_19, DELIVERY_RECORD_20
+          ,DELIVERY_RECORD_21, DELIVERY_RECORD_22, DELIVERY_RECORD_23, DELIVERY_RECORD_24
+          ,PRE_FAR_ADVANCE_PERIOD, FAR_ADVANCE_PERIOD, ADVANCE_PERIOD, CURRENT_PERIOD, CURRENT_PLAN_VALUE
+   </sql>
+  <sql id="recordReport">
+          SUM(DELIVERY_RECORD_01) DELIVERY_RECORD_01, SUM(DELIVERY_RECORD_02) DELIVERY_RECORD_02, SUM(DELIVERY_RECORD_03) DELIVERY_RECORD_03, SUM(DELIVERY_RECORD_04) DELIVERY_RECORD_04,
+          SUM(DELIVERY_RECORD_05) DELIVERY_RECORD_05, SUM(DELIVERY_RECORD_06) DELIVERY_RECORD_06, SUM(DELIVERY_RECORD_07) DELIVERY_RECORD_07, SUM(DELIVERY_RECORD_08) DELIVERY_RECORD_08,
+          SUM(DELIVERY_RECORD_09) DELIVERY_RECORD_09, SUM(DELIVERY_RECORD_10) DELIVERY_RECORD_10, SUM(DELIVERY_RECORD_11) DELIVERY_RECORD_11, SUM(DELIVERY_RECORD_12) DELIVERY_RECORD_12,
+          SUM(DELIVERY_RECORD_13) DELIVERY_RECORD_13, SUM(DELIVERY_RECORD_14) DELIVERY_RECORD_14, SUM(DELIVERY_RECORD_15) DELIVERY_RECORD_15, SUM(DELIVERY_RECORD_16) DELIVERY_RECORD_16,
+          SUM(DELIVERY_RECORD_17) DELIVERY_RECORD_17, SUM(DELIVERY_RECORD_18) DELIVERY_RECORD_18, SUM(DELIVERY_RECORD_19) DELIVERY_RECORD_19, SUM(DELIVERY_RECORD_20) DELIVERY_RECORD_20,
+          SUM(DELIVERY_RECORD_21) DELIVERY_RECORD_21, SUM(DELIVERY_RECORD_22) DELIVERY_RECORD_22, SUM(DELIVERY_RECORD_23) DELIVERY_RECORD_23, SUM(DELIVERY_RECORD_24) DELIVERY_RECORD_24,
+          SUM(PRE_FAR_ADVANCE_PERIOD) PRE_FAR_ADVANCE_PERIOD, SUM(FAR_ADVANCE_PERIOD) FAR_ADVANCE_PERIOD, SUM(ADVANCE_PERIOD) ADVANCE_PERIOD, SUM(CURRENT_PERIOD) CURRENT_PERIOD,SUM(CURRENT_PLAN_VALUE) CURRENT_PLAN_VALUE
+   </sql>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.DeliveryResultMr" >
+    SELECT SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,INS_TYPE
+          ,SLOPPY_CHARGE_FLG
+          ,<include refid="record"/>
+      FROM DPS_I_DELIVERY_RESULT_MR
+     WHERE JGI_NO = #jgiNo:INTEGER#
+       AND PROD_CODE = #prodCode:CHAR#
+       AND INS_TYPE = #insType:CHAR#
+  </select>
+
+  <!-- mod Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する -->
+  <!-- <select id="selectByProd" resultMap="resultMap" parameterClass="java.util.Map" > -->
+  <select id="selectByProd" resultMap="resultMap2" parameterClass="java.util.Map" >
+  <!-- mod Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する -->
+    SELECT
+			MIN(SEQ_KEY) SEQ_KEY
+			,JM.JGI_NO
+        <isNotEqual property="report" compareValue="TRUE">
+            <!-- mod Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する -->
+			<!-- ,PROD_CODE -->
+			,DRM.PROD_CODE
+			<!-- mod end 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する -->
+        </isNotEqual>
+        <isEqual property="report" compareValue="TRUE">
+			,PP.PCAT_CODE PROD_CODE
+        </isEqual>
+			<!-- add Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する -->
+		<!-- mod Start 2022/5/11 H.Futagami バックログNo.13　帳票バグ対応 -->
+		<!-- 	,T1.PROD_NAME -->
+	    <isNotEqual property="report" compareValue="TRUE">
+			,T1.PROD_NAME
+	    </isNotEqual>
+	    <isEqual property="report" compareValue="TRUE">
+			,'' AS PROD_NAME
+	    </isEqual>
+		<!-- mod End 2022/5/11 H.Futagami バックログNo.13　帳票バグ対応 -->
+			<!-- add End 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する -->
+			,DECODE(INS_TYPE,'3','2',INS_TYPE) INS_TYPE
+			,MIN(SLOPPY_CHARGE_FLG) SLOPPY_CHARGE_FLG
+			,<include refid="recordReport"/>
+     FROM DPS_I_DELIVERY_RESULT_MR DRM
+          INNER JOIN DPS_C_VI_JGI_MST JM
+       ON DRM.JGI_NO = JM.JGI_NO
+          INNER JOIN DPS_C_SOS_MST SM
+       ON JM.SOS_CD = SM.SOS_CD
+       <!-- add Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する -->
+          LEFT JOIN DPS_C_PLANNED_PROD T1
+       ON DRM.PROD_CODE = T1.PROD_CODE
+       <!-- add End 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する -->
+     <isEqual property="report" compareValue="TRUE">
+          INNER JOIN DPS_C_VI_CPROD_XLS PP
+       ON DRM.PROD_CODE = PP.PROD_CODE
+      AND PP.CATEGORY = #category:CHAR#
+      AND PP.SALES = #sales:CHAR#
+      AND PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+     </isEqual>
+    WHERE
+     <isNotEqual property="report" compareValue="TRUE">
+            DRM.PROD_CODE = #prodCode:CHAR#
+     </isNotEqual>
+     <isEqual property="report" compareValue="TRUE">
+            PP.PCAT_CODE = #prodCode:CHAR#
+     </isEqual>
+     <isNotNull prepend="AND" property="jokenSetList">
+            EXISTS (SELECT JO.JGI_NO
+            FROM DPS_C_JGI_JOKEN JO
+            WHERE JO.JGI_NO = JM.JGI_NO
+            <isNotNull property="jokenSetList">
+                <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                    #jokenSetList[].dbValue#
+                </iterate>
+            </isNotNull>
+            )
+      </isNotNull>
+       <isNotNull property="jgiKbList">
+           <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               #jgiKbList[].dbValue#
+           </iterate>
+       </isNotNull>
+      <isNotNull prepend="AND" property="sosCd3">
+        JM.SOS_CD3 = #sosCd3:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd4">
+        JM.SOS_CD4 = #sosCd4:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="insType">
+        DRM.INS_TYPE = #insType:CHAR#
+      </isNotNull>
+      <isNotNull property="insTypeList">
+           <iterate prepend="AND DRM.INS_TYPE IN" open="(" close=")" conjunction=","  property="insTypeList">
+               #insTypeList[].dbValue#
+           </iterate>
+      </isNotNull>
+
+    <!-- mod Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する -->
+    <!--
+    <isNotEqual property="report" compareValue="TRUE">
+      GROUP BY JM.JGI_NO ,PROD_CODE, DECODE(INS_TYPE,'3','2',INS_TYPE)
+    </isNotEqual>
+    <isEqual property="report" compareValue="TRUE">
+      GROUP BY JM.JGI_NO ,PP.PCAT_CODE, DECODE(INS_TYPE,'3','2',INS_TYPE)
+    </isEqual>
+    -->
+    <isNotEqual property="report" compareValue="TRUE">
+      GROUP BY JM.JGI_NO ,DRM.PROD_CODE,T1.PROD_NAME, DECODE(INS_TYPE,'3','2',INS_TYPE)
+    </isNotEqual>
+    <isEqual property="report" compareValue="TRUE">
+      <!-- mod Start 2022/5/11 H.Futagami バックログNo.13　帳票バグ対応 -->
+      <!-- GROUP BY JM.JGI_NO ,PP.PCAT_CODE,T1.PROD_NAME, DECODE(INS_TYPE,'3','2',INS_TYPE)-->
+      GROUP BY JM.JGI_NO ,PP.PCAT_CODE, DECODE(INS_TYPE,'3','2',INS_TYPE)
+      <!-- mod Start 2022/5/11 H.Futagami バックログNo.13　帳票バグ対応 -->
+    </isEqual>
+    <!-- mod End 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する -->
+
+    <isPropertyAvailable property="sortString">
+      <isNotEqual property="report" compareValue="TRUE">
+        <!-- $sortString$ ワクチンにて雑Pを合算するため -->
+        ORDER BY DECODE(INS_TYPE,'3','2',INS_TYPE), MIN(BR_CODE), MIN(DIST_SEQ), MIN(DIST_CODE), MIN(TEAM_CODE), MIN(SHOKUSEI_CD), MIN(SHOKUSHU_CD), JGI_NO
+      </isNotEqual>
+      <isEqual property="report" compareValue="TRUE">
+        ORDER BY DECODE(INS_TYPE,'3','2',INS_TYPE), MIN(BR_CODE), MIN(DIST_SEQ), MIN(DIST_CODE), MIN(TEAM_CODE), MIN(SHOKUSEI_CD), MIN(SHOKUSHU_CD), JGI_NO
+      </isEqual>
+    </isPropertyAvailable>
+
+  </select>
+
+  <select id="selectBySos" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+			MIN(SEQ_KEY) SEQ_KEY
+			,JM.JGI_NO
+        <isNotEqual property="report" compareValue="TRUE">
+			,PP.PROD_CODE
+        </isNotEqual>
+        <isEqual property="report" compareValue="TRUE">
+			,PP.PCAT_CODE PROD_CODE
+        </isEqual>
+			,DECODE(INS_TYPE,'3','2',INS_TYPE) INS_TYPE
+			,MIN(SLOPPY_CHARGE_FLG) SLOPPY_CHARGE_FLG
+			,<include refid="recordReport"/>
+     FROM DPS_I_DELIVERY_RESULT_MR DRM
+          INNER JOIN DPS_C_VI_JGI_MST JM
+       ON DRM.JGI_NO = JM.JGI_NO
+          INNER JOIN DPS_C_SOS_MST SM
+       ON JM.SOS_CD = SM.SOS_CD
+     <isNotEqual property="report" compareValue="TRUE">
+          INNER JOIN DPS_C_PLANNED_PROD PP
+       ON DRM.PROD_CODE = PP.PROD_CODE
+     </isNotEqual>
+     <isEqual property="report" compareValue="TRUE">
+          INNER JOIN DPS_C_VI_CPROD_XLS PP
+       ON DRM.PROD_CODE = PP.PROD_CODE
+     </isEqual>
+    WHERE
+       PP.PLAN_TARGET_FLG = '1'
+       <isNotNull prepend="AND" property="jokenSetList">
+            EXISTS (SELECT JO.JGI_NO
+            FROM DPS_C_JGI_JOKEN JO
+            WHERE JO.JGI_NO = JM.JGI_NO
+            <isNotNull property="jokenSetList">
+                <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                    #jokenSetList[].dbValue#
+                </iterate>
+            </isNotNull>
+            )
+       </isNotNull>
+       <isNotNull property="jgiKbList">
+           <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               #jgiKbList[].dbValue#
+           </iterate>
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd3">
+        JM.SOS_CD3 = #sosCd3:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd4">
+        JM.SOS_CD4 = #sosCd4:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="insType">
+        DRM.INS_TYPE = #insType:CHAR#
+      </isNotNull>
+      <isNotNull property="insTypeList">
+           <iterate prepend="AND DRM.INS_TYPE IN" open="(" close=")" conjunction=","  property="insTypeList">
+               #insTypeList[].dbValue#
+           </iterate>
+      </isNotNull>
+      <isNotNull prepend="AND" property="category">
+        PP.CATEGORY = #category:CHAR#
+      </isNotNull>
+
+    <isNotEqual property="report" compareValue="TRUE">
+		GROUP BY JM.JGI_NO ,PP.PROD_CODE, DECODE(INS_TYPE,'3','2',INS_TYPE)
+    </isNotEqual>
+    <isEqual property="report" compareValue="TRUE">
+        GROUP BY JM.JGI_NO ,PP.PCAT_CODE, DECODE(INS_TYPE,'3','2',INS_TYPE)
+    </isEqual>
+
+    <isPropertyAvailable property="sortString">
+      <isNotEqual property="report" compareValue="TRUE">
+        <!-- $sortString$  ワクチンにて雑Pを合算するため-->
+        ORDER BY MIN(BR_CODE), MIN(DIST_SEQ), MIN(DIST_CODE), MIN(TEAM_CODE), MIN(SHOKUSEI_CD), MIN(SHOKUSHU_CD), JGI_NO
+      </isNotEqual>
+      <isEqual property="report" compareValue="TRUE">
+        ORDER BY MIN(BR_CODE), MIN(DIST_SEQ), MIN(DIST_CODE), MIN(TEAM_CODE), MIN(SHOKUSEI_CD), MIN(SHOKUSHU_CD), JGI_NO, MIN(SORT_ID)
+      </isEqual>
+    </isPropertyAvailable>
+  </select>
+
+  <select id="selectSummary" resultMap="resultSumMap" parameterClass="java.util.Map" >
+   SELECT SUM(DRM.DELIVERY_RECORD_01) AS DELIVERY_RECORD_01
+         ,SUM(DRM.DELIVERY_RECORD_02) AS DELIVERY_RECORD_02
+         ,SUM(DRM.DELIVERY_RECORD_03) AS DELIVERY_RECORD_03
+         ,SUM(DRM.DELIVERY_RECORD_04) AS DELIVERY_RECORD_04
+         ,SUM(DRM.DELIVERY_RECORD_05) AS DELIVERY_RECORD_05
+         ,SUM(DRM.DELIVERY_RECORD_06) AS DELIVERY_RECORD_06
+         ,SUM(DRM.DELIVERY_RECORD_07) AS DELIVERY_RECORD_07
+         ,SUM(DRM.DELIVERY_RECORD_08) AS DELIVERY_RECORD_08
+         ,SUM(DRM.DELIVERY_RECORD_09) AS DELIVERY_RECORD_09
+         ,SUM(DRM.DELIVERY_RECORD_10) AS DELIVERY_RECORD_10
+         ,SUM(DRM.DELIVERY_RECORD_11) AS DELIVERY_RECORD_11
+         ,SUM(DRM.DELIVERY_RECORD_12) AS DELIVERY_RECORD_12
+         ,SUM(DRM.DELIVERY_RECORD_13) AS DELIVERY_RECORD_13
+         ,SUM(DRM.DELIVERY_RECORD_14) AS DELIVERY_RECORD_14
+         ,SUM(DRM.DELIVERY_RECORD_15) AS DELIVERY_RECORD_15
+         ,SUM(DRM.DELIVERY_RECORD_16) AS DELIVERY_RECORD_16
+         ,SUM(DRM.DELIVERY_RECORD_17) AS DELIVERY_RECORD_17
+         ,SUM(DRM.DELIVERY_RECORD_18) AS DELIVERY_RECORD_18
+         ,SUM(DRM.DELIVERY_RECORD_19) AS DELIVERY_RECORD_19
+         ,SUM(DRM.DELIVERY_RECORD_20) AS DELIVERY_RECORD_20
+         ,SUM(DRM.DELIVERY_RECORD_21) AS DELIVERY_RECORD_21
+         ,SUM(DRM.DELIVERY_RECORD_22) AS DELIVERY_RECORD_22
+         ,SUM(DRM.DELIVERY_RECORD_23) AS DELIVERY_RECORD_23
+         ,SUM(DRM.DELIVERY_RECORD_24) AS DELIVERY_RECORD_24
+         ,SUM(DRM.PRE_FAR_ADVANCE_PERIOD) AS PRE_FAR_ADVANCE_PERIOD
+         ,SUM(DRM.FAR_ADVANCE_PERIOD) AS FAR_ADVANCE_PERIOD
+         ,SUM(DRM.ADVANCE_PERIOD) AS ADVANCE_PERIOD
+         ,SUM(DRM.CURRENT_PERIOD) AS CURRENT_PERIOD
+         ,SUM(DRM.CURRENT_PLAN_VALUE) AS CURRENT_PLAN_VALUE
+     FROM DPS_I_DELIVERY_RESULT_MR DRM
+          INNER JOIN DPS_C_VI_JGI_MST JM
+       ON DRM.JGI_NO = JM.JGI_NO
+    WHERE DRM.PROD_CODE = #prodCode:CHAR#
+     <isNotNull prepend="AND" property="jokenSetList">
+            EXISTS (SELECT JO.JGI_NO
+            FROM DPS_C_JGI_JOKEN JO
+            WHERE JO.JGI_NO = JM.JGI_NO
+            <isNotNull property="jokenSetList">
+                <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                    #jokenSetList[].dbValue#
+                </iterate>
+            </isNotNull>
+            )
+      </isNotNull>
+       <isNotNull property="jgiKbList">
+           <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               #jgiKbList[].dbValue#
+           </iterate>
+       </isNotNull>
+      <isNotNull prepend="AND" property="sosCd3">
+        JM.SOS_CD3 = #sosCd3:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd4">
+        JM.SOS_CD4 = #sosCd4:VARCHAR#
+      </isNotNull>
+<!-- add Start 2022/7/13 H.Futagami 2022年4月組織変更対応 検索条件にカテゴリ追加（結合条件：職種コード） -->
+      <isNotNull prepend="AND" property="category">
+       EXISTS (SELECT 'X'
+       FROM DPS_C_PLANNED_CTG CTG
+           ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+       WHERE CTG.CATEGORY = #category:CHAR#
+       AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+       AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+       AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+       )
+       </isNotNull>
+<!-- add End 2022/7/13 H.Futagami 2022年4月組織変更対応 検索条件にカテゴリ追加（結合条件：職種コード） -->
+      <isNotNull prepend="AND" property="insType">
+        DRM.INS_TYPE = #insType:CHAR#
+      </isNotNull>
+      <isNotNull property="insTypeList">
+           <iterate prepend="AND DRM.INS_TYPE IN" open="(" close=")" conjunction=","  property="insTypeList">
+               #insTypeList[].dbValue#
+           </iterate>
+      </isNotNull>
+  </select>
+
+</sqlMap>

@@ -1,0 +1,180 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS301C02_DATA_R"))
+    #set( $dataList = $form.getRequestData("DPS301C02_DATA_R").getDetailDtoList())
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+
+#set( $totalCount = 1)
+<rows>
+#foreach($detailData in $dataList)
+
+    #set( $teamCount = $velocityCount)
+    #foreach($freeIndex in $detailData.mrPlanFreeIndexList)
+
+        ## チーム名
+        #set( $teamName = "")
+        #if($detailData.teamName)
+            #set($teamName = $!{detailData.teamName})
+        #end
+
+        ## 従業員名
+        #set( $jgiName = "")
+        #if($freeIndex.jgiName)
+            #set($jgiName = $!{freeIndex.jgiName} + "（" + $!{freeIndex.shokushuName} + "）")
+        #end
+
+        ## フリー項目名称UH
+        #set( $indexFreeValueUh1 = "")
+        #set( $indexFreeValueUh1Type = "ed")
+        #if($freeIndex.indexFreeValueUh1)
+            #set($indexFreeValueUh1 = $!{freeIndex.indexFreeValueUh1})
+            #set($indexFreeValueUh1Type = "edn" )
+        #end
+        #set( $indexFreeValueUh2 = "")
+        #set( $indexFreeValueUh2Type = "ed")
+        #if($freeIndex.indexFreeValueUh2)
+            #set($indexFreeValueUh2 = $!{freeIndex.indexFreeValueUh2})
+            #set($indexFreeValueUh2Type = "edn" )
+        #end
+        #set( $indexFreeValueUh3 = "")
+        #set( $indexFreeValueUh3Type = "ed")
+        #if($freeIndex.indexFreeValueUh3)
+            #set($indexFreeValueUh3 = $!{freeIndex.indexFreeValueUh3})
+            #set($indexFreeValueUh3Type = "edn" )
+        #end
+
+        ## フリー項目名称P
+        #set( $indexFreeValueP1 = "")
+        #set( $indexFreeValueP1Type = "ed")
+        #if($freeIndex.indexFreeValueP1)
+            #set($indexFreeValueP1 = $!{freeIndex.indexFreeValueP1})
+            #set($indexFreeValueP1Type = "edn" )
+        #end
+        #set( $indexFreeValueP2 = "")
+        #set( $indexFreeValueP2Type = "ed")
+        #if($freeIndex.indexFreeValueP2)
+            #set($indexFreeValueP2 = $!{freeIndex.indexFreeValueP2})
+            #set($indexFreeValueP2Type = "edn" )
+        #end
+        #set( $indexFreeValueP3 = "")
+        #set( $indexFreeValueP3Type = "ed")
+        #if($freeIndex.indexFreeValueP3)
+            #set($indexFreeValueP3 = $!{freeIndex.indexFreeValueP3})
+            #set($indexFreeValueP3Type = "edn" )
+        #end
+
+        ## 非表示
+        #set( $seqKey = "")
+        #if($freeIndex.seqKey)
+            #set($seqKey = $freeIndex.seqKey)
+        #end
+        #set( $jgiNo = "")
+        #if($freeIndex.jgiNo)
+            #set($jgiNo = $freeIndex.jgiNo)
+        #end
+        #set( $prodCode = "")
+        #if($freeIndex.prodCode)
+            #set($prodCode = $freeIndex.prodCode)
+        #end
+        #set( $upDateTime = "")
+        #if($freeIndex.upDate)
+            #set($upDateTime = $freeIndex.upDate.time)
+        #end
+
+        <row id="$totalCount">
+            ##行情報
+            <userdata name="rowType">input</userdata>
+            <userdata name="subTotalId">$teamCount</userdata>
+
+            <cell></cell>
+            #if($velocityCount == 1)
+                <cell style="border-bottom:0px">$teamName</cell>
+            #else
+                <cell style="border-bottom:0px"></cell>
+            #end
+            <cell >$jgiName</cell>
+            <cell class="inputB" type="$indexFreeValueUh1Type">$indexFreeValueUh1</cell>
+            <cell ></cell>
+            <cell ></cell>
+            <cell class="inputB" type="$indexFreeValueUh2Type">$indexFreeValueUh2</cell>
+            <cell ></cell>
+            <cell ></cell>
+            <cell class="inputB" type="$indexFreeValueUh3Type">$indexFreeValueUh3</cell>
+            <cell ></cell>
+            <cell ></cell>
+            <cell class="inputB" type="$indexFreeValueP1Type">$indexFreeValueP1</cell>
+            <cell ></cell>
+            <cell ></cell>
+            <cell class="inputB" type="$indexFreeValueP2Type">$indexFreeValueP2</cell>
+            <cell ></cell>
+            <cell ></cell>
+            <cell class="inputB" type="$indexFreeValueP3Type">$indexFreeValueP3</cell>
+            <cell ></cell>
+            <cell ></cell>
+
+            ##送信情報
+            <userdata name="updateRowId">$seqKey,$jgiNo,$prodCode,$upDateTime</userdata>
+
+            #set( $totalCount = $totalCount + 1)
+        </row>
+    #end
+
+    #チーム合計行
+    <row id="$totalCount">
+        <userdata name="rowType">subTotal</userdata>
+        <userdata name="subTotalId">$teamCount</userdata>
+        <cell ></cell>
+        <cell ></cell>
+        <cell class="sumTeam" >計</cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" ></cell>
+        <cell class="sumTeam" ></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" ></cell>
+        <cell class="sumTeam" ></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" ></cell>
+        <cell class="sumTeam" ></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" ></cell>
+        <cell class="sumTeam" ></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" ></cell>
+        <cell class="sumTeam" ></cell>
+        <cell class="sumTeam" type="ron"></cell>
+        <cell class="sumTeam" ></cell>
+        <cell class="sumTeam" ></cell>
+    </row>
+    #set( $totalCount = $totalCount + 1)
+#end
+
+##営業所合計行
+<row id="$totalCount">
+    <userdata name="rowType">total</userdata>
+    <userdata name="subTotalId">none</userdata>
+    <cell ></cell>
+    <cell style="border-right:0px;" align="left" class="sumOfficeTokuG">計</cell>
+    <cell style="border-left:0px;" class="sumOfficeTokuG" ></cell>
+    <cell class="sumOfficeTokuG" type="ron"></cell>
+    <cell class="sumOfficeTokuG" ></cell>
+    <cell class="sumOfficeTokuG" ></cell>
+    <cell class="sumOfficeTokuG" type="ron"></cell>
+    <cell class="sumOfficeTokuG" ></cell>
+    <cell class="sumOfficeTokuG" ></cell>
+    <cell class="sumOfficeTokuG" type="ron"></cell>
+    <cell class="sumOfficeTokuG" ></cell>
+    <cell class="sumOfficeTokuG" ></cell>
+    <cell class="sumOfficeTokuG" type="ron"></cell>
+    <cell class="sumOfficeTokuG" ></cell>
+    <cell class="sumOfficeTokuG" ></cell>
+    <cell class="sumOfficeTokuG" type="ron"></cell>
+    <cell class="sumOfficeTokuG" ></cell>
+    <cell class="sumOfficeTokuG" ></cell>
+    <cell class="sumOfficeTokuG" type="ron"></cell>
+    <cell class="sumOfficeTokuG" ></cell>
+    <cell class="sumOfficeTokuG" ></cell>
+</row>
+</rows>
+
+#end

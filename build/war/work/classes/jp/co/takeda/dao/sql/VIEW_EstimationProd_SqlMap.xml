@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_EstimationProd_SqlMap" >
+
+  <resultMap id="resultMapList" class="jp.co.takeda.model.view.EstimationProd">
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result column="PROD_TYPE" property="prodType" jdbcType="VARCHAR" />
+    <result column="YAKKOU_SIJOU_NAME" property="yakkouSijouName" jdbcType="VARCHAR" />
+    <result column="STATUS" property="mrPlanStatus" jdbcType="CHAR" />
+    <result column="EST_START_DATE" property="estStartDate" jdbcType="TIMESTAMP" />
+    <result column="EST_END_DATE" property="estEndDate" jdbcType="TIMESTAMP" />
+    <result column="LAST_UPDATE" property="freeIndexLastUpdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <!-- 組織、対象区分集約検索一覧 -->
+  <select id="selectList" resultMap="resultMapList" parameterClass="java.util.Map" >
+    SELECT #sosCd:VARCHAR# AS SOS_CD
+          ,PR.PROD_CODE
+          ,PR.PROD_NAME
+          ,PR.PROD_TYPE
+          ,YS.YAKKOU_SIJOU_NAME
+          ,MPS.STATUS
+          ,MPS.EST_START_DATE
+          ,MPS.EST_END_DATE
+          ,TMP_MPFI.LAST_UPDATE
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM (((DPS_C_PLANNED_PROD PR
+           LEFT JOIN DPS_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PR.PROD_CODE = CM.DATA_CD
+    <isNotNull property="mrCat">
+           INNER JOIN DPS_C_MR_PROD_FIELD PF ON PR.PROD_CODE = PF.PROD_CODE AND PF.MR_CAT = #mrCat:VARCHAR#
+    </isNotNull>
+           LEFT OUTER JOIN DPS_I_YAKKOU_SIJOU YS
+        ON PR.YAKKOU_SIJOU_CODE = YS.YAKKOU_SIJOU_CODE)
+           LEFT OUTER JOIN DPS_I_MR_PLAN_STATUS MPS
+        ON PR.PROD_CODE = MPS.PROD_CODE AND MPS.SOS_CD = #sosCd:VARCHAR#)
+           LEFT OUTER JOIN (
+		       SELECT PROD_CODE
+		             ,MAX(MPFI.UP_DATE) LAST_UPDATE
+		         FROM (DPS_I_MR_PLAN_FREE_INDEX MPFI
+		              INNER JOIN DPS_C_JGI_MST JM
+		           ON MPFI.JGI_NO = JM.JGI_NO AND JM.SOS_CD3 = #sosCd:VARCHAR#)
+             GROUP BY PROD_CODE
+           ) TMP_MPFI ON PR.PROD_CODE = TMP_MPFI.PROD_CODE)
+     WHERE PR.CATEGORY = #category:CHAR#
+       AND PR.SALES = #sales:CHAR#
+       AND PR.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+     ORDER BY DATA_SEQ
+          ,PR.GROUP_CODE
+          ,PR.STAT_PROD_CODE
+          ,PR.PROD_CODE
+  </select>
+
+</sqlMap>

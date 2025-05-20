@@ -1,0 +1,27 @@
+#set($pageTitle = $text.get("dps400C02","title"))
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+
+<script language="javascript">
+<!--
+## リンク移動
+function executeLink() {
+    var actionPath = '$link.setAction('dps400C00F00')';
+    document.dps400C02Form.action = actionPath;
+    document.dps400C02Form.submit();
+}
+//-->
+</script>
+#tabbar("sienSisetuTokuyaku", "dps400C00F00")
+<div id="tabBox" class="label">
+<form name="dps400C02Form" method="post">
+<div align="left" style="float: left;width: 80%;">
+    施設特約店別計画の配分処理を開始しました。<br>
+    実行結果はTakedaCompassの「アテンション」またはトップ画面の「お知らせ」にてご確認下さい。
+</div>
+<div align="right" style="float: right;width: 20%;">
+    <a href="#" onclick="executeLink()">一覧へ戻る</a>
+</div>
+#token()
+<input type="hidden" name="sosCd3" value="$!form.bean.getSosCd3()" />
+</form>
+</div>

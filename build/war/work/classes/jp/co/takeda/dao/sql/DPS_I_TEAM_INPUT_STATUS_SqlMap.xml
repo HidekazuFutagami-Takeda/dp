@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_TEAM_INPUT_STATUS_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.TeamInputStatus" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INPUT_STATE" property="inputStateForMrPlan" jdbcType="CHAR" />
+    <result column="MR_PLAN_INPUT_DATE" property="mrPlanInputDate" jdbcType="TIMESTAMP" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,SOS_CD
+          ,PROD_CODE
+          ,INPUT_STATE
+          ,MR_PLAN_INPUT_DATE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_TEAM_INPUT_STATUS
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.TeamInputStatus" >
+    SELECT SEQ_KEY
+          ,SOS_CD
+          ,PROD_CODE
+          ,INPUT_STATE
+          ,MR_PLAN_INPUT_DATE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_TEAM_INPUT_STATUS
+     WHERE SOS_CD = #sosCd:VARCHAR#
+       AND PROD_CODE = #prodCode:CHAR#
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.TeamInputStatus" >
+    INSERT INTO DPS_I_TEAM_INPUT_STATUS
+          (SEQ_KEY
+          ,SOS_CD
+          ,PROD_CODE
+          ,INPUT_STATE
+          ,MR_PLAN_INPUT_DATE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (ORADPX01.SEQ_DPS_I_TEAM_INPUT_STATUS.NEXTVAL
+          ,#sosCd:VARCHAR#
+          ,#prodCode:CHAR#
+          ,#inputStateForMrPlan:CHAR#
+          ,#mrPlanInputDate:TIMESTAMP#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.TeamInputStatus" >
+    UPDATE DPS_I_TEAM_INPUT_STATUS
+       SET SOS_CD = #sosCd:VARCHAR#
+          ,PROD_CODE = #prodCode:CHAR#
+          ,INPUT_STATE = #inputStateForMrPlan:CHAR#
+          ,MR_PLAN_INPUT_DATE = #mrPlanInputDate:TIMESTAMP#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_TEAM_INPUT_STATUS
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </delete>
+
+</sqlMap>

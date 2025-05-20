@@ -1,0 +1,24 @@
+#set( $layout = "errorPageLayout.vm" )
+<center>
+<div id="errorPage">
+<br><center><span class="errorTitle">システムエラーが発生しました。</span></center><br><br>
+#if ($errors.exist())
+#foreach ($e in $errors.all)
+<span class="errorText">　・$e</span><br>
+#end
+#end
+#if (!$!form.bean.isDialogueFlg())
+<a href="$!service.getHomeAndNaviPath()">ホームへ</a>
+#end
+<br>
+<br>
+<span class="errorText">
+※ 問題が解決しない場合は、サービスデスクにお問い合わせください。<br>
+</span>
+<br>
+<br>
+#if ($form.bean.isDialogueFlg())
+<input type="button" name="close" value="閉じる" onclick="window.close();" />
+#end
+</div>
+</center>

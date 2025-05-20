@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_DistributionElement_SqlMap" >
+
+  <resultMap id="resultMapList" class="jp.co.takeda.model.view.DistributionElement" >
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="INS_TYPE" property="insType" jdbcType="CHAR" />
+    <result column="INS_NO" property="insNo" jdbcType="VARCHAR" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="SPECIAL_INS_PLAN_DFLG" property="specialInsPlanFlg" jdbcType="CHAR" />
+    <result column="EXCEPT_DIST_INS_FLG" property="exceptDistInsFlg" jdbcType="CHAR" />
+    <result column="DEL_INS_FLG" property="delInsFlg" jdbcType="CHAR" />
+    <result column="WEIGHTING_FLG" property="weightingFlg" jdbcType="CHAR" />
+    <result column="SUM_RESULT" property="sumResult" jdbcType="BIGINT" />
+    <result column="INS_FORMAL_NAME" property="insFormalName" jdbcType="VARCHAR" /> <!-- add 2019/01/30 S.Hayashi B19-0013_DPX_削除施設配分除外対応 -->
+  </resultMap>
+
+  <!-- 医薬・配分要素取得 -->
+  <select id="selectList" resultMap="resultMapList" parameterClass="java.util.Map" >
+    WITH
+    <!-- □ 翌期計画品目-->
+    	YOKUHIN AS (
+    		SELECT PROD_CODE, YAKKOU_SIJOU_CODE
+    		FROM DPS_C_PLANNED_PROD
+    		WHERE PROD_CODE = #prodCode:CHAR#
+    	)
+    <!-- □ 従業員の選択 (★テンポラリ★)-->
+    	, JYUGYOUIN AS (
+    		SELECT JGI_NO
+                  ,BR_CODE
+                  ,DIST_SEQ
+                  ,DIST_CODE
+                  ,TEAM_CODE
+                  ,SHOKUSEI_CD
+                  ,SHOKUSHU_CD
+    		  FROM DPS_C_VI_JGI_MST JM
+                   INNER JOIN DPS_C_SOS_MST SM
+                ON JM.SOS_CD = SM.SOS_CD
+     	     WHERE KENMU_KB = 0
+               <isNotNull prepend="AND" property="jgiKbList">
+                   <iterate prepend="JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+                       #jgiKbList[].dbValue#
+                   </iterate>
+               </isNotNull>
+               <isNotNull prepend="AND" property="jokenSetList">
+               EXISTS (SELECT JO.JGI_NO
+               FROM DPS_C_JGI_JOKEN JO
+               WHERE JO.JGI_NO = JM.JGI_NO
+               <isNotNull property="jokenSetList">
+                   <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                       #jokenSetList[].dbValue#
+                   </iterate>
+               </isNotNull>
+               )
+               </isNotNull>
+               <isNotNull prepend="AND" property="jgiNo">
+                   JGI_NO = #jgiNo:INTEGER#
+               </isNotNull>
+               <isNotNull prepend="AND" property="sosCd3">
+                   SOS_CD3 = #sosCd3:VARCHAR#
+               </isNotNull>
+               <isNotNull prepend="AND" property="sosCd4">
+                   SOS_CD4 = #sosCd4:VARCHAR#
+               </isNotNull>
+    	)
+    <!-- □ 配分除外施設を配分除外品目の製品コードとして設定する。-->
+    	, JOGAI AS (
+    		SELECT
+    			<!-- [配分除外施設・品目]品目固定コードがnullの場合は品目固定コードとして割り当てる-->
+    			NVL(PROD_CODE, (SELECT PROD_CODE FROM YOKUHIN)) AS PROD_CODE,
+    			DPS_I_EXCEPT_DIST_INS.INS_NO
+    		FROM DPS_I_EXCEPT_DIST_INS
+    		WHERE (PROD_CODE = (SELECT PROD_CODE FROM YOKUHIN) OR PROD_CODE IS NULL)
+    		AND EXCEPT_FLG = '1'
+    	)
+    <!-- □ 特定施設個別計画をサマリーとする。-->
+    	, TOKUTEISISETU AS (
+    		SELECT
+    			DPS_I_SPECIAL_INS_PLAN.PROD_CODE,
+    			DPS_I_SPECIAL_INS_PLAN.JGI_NO,
+    			DPS_I_SPECIAL_INS_PLAN.INS_NO,
+    			<!-- [特定施設個別計画]対象区分⇒計画立案対象区分-->
+    			<!-- CASE HO_INS_TYPE	親子紐づけ-->
+    			CASE NVL(OINS.HO_INS_TYPE, INS.HO_INS_TYPE)
+    				WHEN '1' THEN '1'
+    				WHEN '2' THEN '1'
+    				WHEN '3' THEN '2'
+    				WHEN '4' THEN '3'
+    			END AS INS_TYPE,
+    			<!-- [特定施設個別計画]合計値 -->
+    			SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_Y
+    		FROM DPS_I_SPECIAL_INS_PLAN
+    			<!-- 従業員 join (in) 従業員番号-->
+    			INNER JOIN JYUGYOUIN
+    			ON DPS_I_SPECIAL_INS_PLAN.JGI_NO = JYUGYOUIN.JGI_NO
+    			<!-- 施設 join (in) 施設コード-->
+    			INNER JOIN DPS_C_INS_MST INS
+    			ON DPS_I_SPECIAL_INS_PLAN.INS_NO = INS.INS_NO
+    			<!-- 翌期計画品目 join (in) 品目固定コード-->
+    			INNER JOIN YOKUHIN
+    			ON DPS_I_SPECIAL_INS_PLAN.PROD_CODE = YOKUHIN.PROD_CODE
+    			<!-- 親子紐づけ-->
+				LEFT JOIN DPS_C_SY_COM_INS_OYAKO OYK
+				ON OYK.INS_NO = INS.INS_NO AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+				LEFT JOIN DPS_C_INS_MST OINS
+				ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+			WHERE DPS_I_SPECIAL_INS_PLAN.PLAN_TYPE = '2'
+			<!-- GROUP BY DPS_I_SPECIAL_INS_PLAN.PROD_CODE, DPS_I_SPECIAL_INS_PLAN.JGI_NO, DPS_I_SPECIAL_INS_PLAN.INS_NO, HO_INS_TYPE	親子紐づけ-->
+			GROUP BY DPS_I_SPECIAL_INS_PLAN.PROD_CODE, DPS_I_SPECIAL_INS_PLAN.JGI_NO, DPS_I_SPECIAL_INS_PLAN.INS_NO, NVL(OINS.HO_INS_TYPE, INS.HO_INS_TYPE)
+    	)
+    <!-- □ 重点先 -->
+    	, DIST_WEIGHTING AS (
+    		SELECT
+    		    DISTINCT
+    			WEIGHTING.PROD_CODE,
+    			CIM.INS_NO,
+    			1 AS WEIGHTING_FLG
+    		FROM JYUGYOUIN
+    			 INNER JOIN DPS_C_MR_INS_PROD_ALL MI
+    		  ON JYUGYOUIN.JGI_NO = MI.MR_NO AND MI.MAIN_MR = '0'
+    			 INNER JOIN DPS_C_COM_INS_MARKET CIM
+    		  ON MI.INS_NO = CIM.INS_NO
+    			 INNER JOIN DPS_I_DIST_WEIGHTING WEIGHTING
+    		  ON MI.PROD_CODE = WEIGHTING.PROD_CODE
+    		 AND CIM.SET_CD = WEIGHTING.MARKET_CLASS
+    		 AND CIM.SET_VALUE = WEIGHTING.MARKET_TYPE
+    	   WHERE MI.PROD_CODE = (SELECT PROD_CODE FROM YOKUHIN)
+    	     AND RELEV_TYPE = '013'
+    	     AND RELEV_CD = '00'
+             AND DEL_FLG = 0
+    	     AND CIM.SET_VALUE IN ('1','2')
+    	)
+    <!-- ■ 過去実績-->
+    	, KAKO_SUMMARY AS (
+    		SELECT
+    			DPS_I_DELIVERY_RESULT.PROD_CODE,
+    			DPS_I_DELIVERY_RESULT.JGI_NO,
+    			DPS_I_DELIVERY_RESULT.INS_TYPE,
+    			DPS_I_DELIVERY_RESULT.INS_NO,
+    			DPS_I_DELIVERY_RESULT.TMS_TYTEN_CD,
+    			DELIVERY_RECORD_01,
+    			DELIVERY_RECORD_02,
+    			DELIVERY_RECORD_03,
+    			DELIVERY_RECORD_04,
+    			DELIVERY_RECORD_05,
+    			DELIVERY_RECORD_06,
+    			DELIVERY_RECORD_07,
+    			DELIVERY_RECORD_08,
+    			DELIVERY_RECORD_09,
+    			DELIVERY_RECORD_10,
+    			DELIVERY_RECORD_11,
+    			DELIVERY_RECORD_12,
+    			DELIVERY_RECORD_13,
+    			DELIVERY_RECORD_14,
+    			DELIVERY_RECORD_15,
+    			DELIVERY_RECORD_16,
+    			DELIVERY_RECORD_17,
+    			DELIVERY_RECORD_18,
+    			DELIVERY_RECORD_19,
+    			DELIVERY_RECORD_20,
+    			DELIVERY_RECORD_21,
+    			DELIVERY_RECORD_22,
+    			DELIVERY_RECORD_23,
+    			DELIVERY_RECORD_24,
+    			<!-- 特定施設フラグ-->
+    			CASE
+    			    WHEN TOKUTEISISETU.INS_NO IS NULL THEN '0'
+    			    ELSE '1'
+    			END AS TOKUTEI_FLG,
+    			<!-- 配分除外施設フラグ-->
+    			CASE
+    			    WHEN JOGAI.INS_NO IS NULL THEN '0'
+    			    ELSE '1'
+    			END AS JOGAI_FLG,
+    			<!-- 削除施設フラグ-->
+    			CASE
+    			    WHEN SISETSU.DEL_FLG = 0 AND SISETSU.REQ_FLG = 0 THEN '0'
+    			    WHEN INSTRC(SISETSU.INS_ABBR_NAME, '●', 1, 1)=1  THEN '1'
+                    WHEN INSTRC(SISETSU.INS_ABBR_NAME, '〇', 1, 1)=1  THEN '1'
+    			    ELSE '1'
+    			END AS DEL_INS_FLG,
+    			<!-- 重点先施設フラグ-->
+    			CASE
+    			    WHEN WEIGHTING_FLG IS NULL THEN '0'
+    			    ELSE '1'
+    			END AS WEIGHTING_FLG
+
+     		FROM DPS_I_DELIVERY_RESULT
+    			<!-- 従業員 join (in) 従業員コード-->
+    			INNER JOIN JYUGYOUIN
+    			ON JYUGYOUIN.JGI_NO = DPS_I_DELIVERY_RESULT.JGI_NO
+    			<!-- 施設情報 join (in) 施設コード-->
+    			INNER JOIN DPS_C_INS_MST SISETSU
+    			ON DPS_I_DELIVERY_RESULT.INS_NO = SISETSU.INS_NO
+    			<!-- 特定施設個別計画 join (left) 施設コード-->
+    			LEFT JOIN TOKUTEISISETU
+    			ON DPS_I_DELIVERY_RESULT.INS_NO = TOKUTEISISETU.INS_NO
+    			<!-- 配分除外品目 join (left) 施設コード-->
+    			LEFT JOIN JOGAI
+    			ON DPS_I_DELIVERY_RESULT.INS_NO = JOGAI.INS_NO
+    			<!-- 重点先 join (left) 施設コード-->
+    			LEFT JOIN DIST_WEIGHTING
+    			ON DPS_I_DELIVERY_RESULT.INS_NO = DIST_WEIGHTING.INS_NO
+    			<!-- 配分品目-->
+    		WHERE DPS_I_DELIVERY_RESULT.PROD_CODE = #refProdCode:CHAR#
+    	)
+    <!-- □ 過去実績行列入れ替え-->
+    	, KAKO_TRANS AS (
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_01 AS DELIVERY_RECORD, '01' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_02 AS DELIVERY_RECORD, '02' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_03 AS DELIVERY_RECORD, '03' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_04 AS DELIVERY_RECORD, '04' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_05 AS DELIVERY_RECORD, '05' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_06 AS DELIVERY_RECORD, '06' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_07 AS DELIVERY_RECORD, '07' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_08 AS DELIVERY_RECORD, '08' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_09 AS DELIVERY_RECORD, '09' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_10 AS DELIVERY_RECORD, '10' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_11 AS DELIVERY_RECORD, '11' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_12 AS DELIVERY_RECORD, '12' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_13 AS DELIVERY_RECORD, '13' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_14 AS DELIVERY_RECORD, '14' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_15 AS DELIVERY_RECORD, '15' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_16 AS DELIVERY_RECORD, '16' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_17 AS DELIVERY_RECORD, '17' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_18 AS DELIVERY_RECORD, '18' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_19 AS DELIVERY_RECORD, '19' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_20 AS DELIVERY_RECORD, '20' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_21 AS DELIVERY_RECORD, '21' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_22 AS DELIVERY_RECORD, '22' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_23 AS DELIVERY_RECORD, '23' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_24 AS DELIVERY_RECORD, '24' AS REF_PERIOD FROM KAKO_SUMMARY
+    	)
+    <!-- □ 過去実績の比率算出-->
+        , SUM AS (
+    		SELECT
+    			PROD_CODE,
+    			<!-- 従業員コード-->
+    			JGI_NO,
+    			<!-- 施設出力対象区分(対象が合計の場合は'T'とする。ROLLUPでの結合対応)-->
+    			INS_TYPE,
+    			INS_NO,
+    			TMS_TYTEN_CD,
+    			TOKUTEI_FLG AS SPECIAL_INS_PLAN_DFLG,
+    			JOGAI_FLG AS EXCEPT_DIST_INS_FLG,
+    			DEL_INS_FLG,
+    			WEIGHTING_FLG,
+    			<!-- 合計値-->
+    			SUM(DELIVERY_RECORD) AS SUM_RESULT
+    		FROM KAKO_TRANS
+    			<!-- 配分品目-->
+    		WHERE KAKO_TRANS.PROD_CODE = #refProdCode:CHAR#
+    			<!-- 参照期間-->
+    		  AND REF_PERIOD BETWEEN #refFrom:CHAR# AND #refTo:CHAR#
+              <iterate prepend="AND INS_TYPE IN" open="(" close=")" conjunction=","  property="insType">
+                  #insType[].dbValue#
+              </iterate>
+    		GROUP BY PROD_CODE, JGI_NO, INS_TYPE, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG
+         )
+         SELECT SUM.PROD_CODE
+               ,SUM.JGI_NO
+               ,SUM.INS_TYPE
+               ,SUM.INS_NO
+               ,SUM.TMS_TYTEN_CD
+               ,SUM.SPECIAL_INS_PLAN_DFLG
+               ,SUM.EXCEPT_DIST_INS_FLG
+               ,SUM.DEL_INS_FLG
+               ,SUM.WEIGHTING_FLG
+               ,SUM.SUM_RESULT
+               ,INS.INS_FORMAL_NAME <!-- add 2019/01/30 S.Hayashi B19-0013_DPX_削除施設配分除外対応 -->
+           FROM SUM
+                INNER JOIN DPS_C_JGI_MST JM
+             ON SUM.JGI_NO = JM.JGI_NO
+                INNER JOIN DPS_C_SOS_MST SM
+             ON JM.SOS_CD = SM.SOS_CD
+                INNER JOIN DPS_C_INS_MST INS
+             ON SUM.INS_NO = INS.INS_NO
+          ORDER BY BR_CODE, DIST_SEQ, DIST_CODE, TEAM_CODE, SHOKUSEI_CD, SHOKUSHU_CD, JGI_NO ,HO_INS_TYPE, RELN_INS_NO, RELN_INS_CODE, TMS_TYTEN_CD
+  </select>
+
+  <!-- ワクチン・配分要素取得 -->
+  <select id="selectListForVac" resultMap="resultMapList" parameterClass="java.util.Map" >
+    WITH
+    <!-- □ 翌期計画品目-->
+        YOKUHIN AS (
+            SELECT PROD_CODE, YAKKOU_SIJOU_CODE
+            FROM DPS_C_PLANNED_PROD
+            WHERE PROD_CODE = #prodCode:CHAR#
+        )
+    <!-- □ 従業員の選択 (★テンポラリ★)-->
+        , JYUGYOUIN AS (
+            SELECT JGI_NO
+                  ,BR_CODE
+                  ,DIST_SEQ
+                  ,DIST_CODE
+                  ,TEAM_CODE
+                  ,SHOKUSEI_CD
+                  ,SHOKUSHU_CD
+              FROM DPS_C_JGI_MST JM
+                   INNER JOIN DPS_C_SOS_MST SM
+                ON JM.SOS_CD = SM.SOS_CD
+             WHERE KENMU_KB = 0
+               AND JGI_NO = #jgiNo:INTEGER#
+        )
+    <!-- □ 配分除外施設を配分除外品目の製品コードとして設定する。-->
+    	, JOGAI AS (
+    		SELECT
+    			<!-- [配分除外施設・品目]品目固定コードがnullの場合は品目固定コードとして割り当てる-->
+    			NVL(PROD_CODE, (SELECT PROD_CODE FROM YOKUHIN)) AS PROD_CODE,
+    			DPS_I_EXCEPT_DIST_INS.INS_NO
+    		FROM DPS_I_EXCEPT_DIST_INS
+    		WHERE PROD_CODE = (SELECT PROD_CODE FROM YOKUHIN) OR PROD_CODE IS NULL
+    		<!-- 配分除外フラグ = 1  -->
+    		AND EXCEPT_FLG = '1'
+    	)
+    <!-- □ 特定施設個別計画をサマリーとする。-->
+        , TOKUTEISISETU AS (
+            SELECT
+                DPS_I_SPECIAL_INS_PLAN.PROD_CODE,
+                DPS_I_SPECIAL_INS_PLAN.JGI_NO,
+                DPS_I_SPECIAL_INS_PLAN.INS_NO,
+                <!-- [特定施設個別計画]合計値 -->
+                SUM(PLANNED_VALUE_B) AS PLANNED_VALUE_B
+            FROM DPS_I_SPECIAL_INS_PLAN
+                <!-- 従業員 join (in) 従業員番号-->
+                INNER JOIN JYUGYOUIN
+                ON DPS_I_SPECIAL_INS_PLAN.JGI_NO = JYUGYOUIN.JGI_NO
+                <!-- 施設 join (in) 施設コード-->
+                INNER JOIN DPS_C_INS_MST
+                ON DPS_I_SPECIAL_INS_PLAN.INS_NO = DPS_C_INS_MST.INS_NO
+                <!-- 翌期計画品目 join (in) 品目固定コード-->
+                INNER JOIN YOKUHIN
+                ON DPS_I_SPECIAL_INS_PLAN.PROD_CODE = YOKUHIN.PROD_CODE
+           WHERE DPS_I_SPECIAL_INS_PLAN.PLAN_TYPE = '2'
+           GROUP BY DPS_I_SPECIAL_INS_PLAN.PROD_CODE, DPS_I_SPECIAL_INS_PLAN.JGI_NO, DPS_I_SPECIAL_INS_PLAN.INS_NO
+        )
+    <!-- □ 重点先 -->
+        , DIST_WEIGHTING AS (
+            SELECT
+                AT.INS_NO,
+                AT.ACTIVITY_TYPE
+            FROM JYUGYOUIN
+                 INNER JOIN DPS_C_MR_INS MI
+              ON JYUGYOUIN.JGI_NO = MI.MR_NO
+                 INNER JOIN DPS_V_ACTIVITY_TYPE AT
+              ON MI.INS_NO = AT.INS_NO
+        )
+    <!-- ■ 過去実績-->
+        , KAKO_SUMMARY AS (
+            SELECT
+                DPS_I_DELIVERY_RESULT.PROD_CODE,
+                DPS_I_DELIVERY_RESULT.JGI_NO,
+                DPS_I_DELIVERY_RESULT.INS_NO,
+                DPS_I_DELIVERY_RESULT.TMS_TYTEN_CD,
+                DELIVERY_RECORD_01,
+                DELIVERY_RECORD_02,
+                DELIVERY_RECORD_03,
+                DELIVERY_RECORD_04,
+                DELIVERY_RECORD_05,
+                DELIVERY_RECORD_06,
+                DELIVERY_RECORD_07,
+                DELIVERY_RECORD_08,
+                DELIVERY_RECORD_09,
+                DELIVERY_RECORD_10,
+                DELIVERY_RECORD_11,
+                DELIVERY_RECORD_12,
+                DELIVERY_RECORD_13,
+                DELIVERY_RECORD_14,
+                DELIVERY_RECORD_15,
+                DELIVERY_RECORD_16,
+                DELIVERY_RECORD_17,
+                DELIVERY_RECORD_18,
+                DELIVERY_RECORD_19,
+                DELIVERY_RECORD_20,
+                DELIVERY_RECORD_21,
+                DELIVERY_RECORD_22,
+                DELIVERY_RECORD_23,
+                DELIVERY_RECORD_24,
+                <!-- 特定施設フラグ-->
+                CASE
+                    WHEN TOKUTEISISETU.INS_NO IS NULL THEN '0'
+                    ELSE '1'
+                END AS TOKUTEI_FLG,
+                <!-- 配分除外施設フラグ-->
+                CASE
+                    WHEN JOGAI.INS_NO IS NULL THEN '0'
+                    ELSE '1'
+                END AS JOGAI_FLG,
+                <!-- 削除施設フラグ-->
+                CASE
+                    WHEN SISETSU.DEL_FLG = 0 AND SISETSU.REQ_FLG = 0 THEN '0'
+                    WHEN INSTRC(SISETSU.INS_ABBR_NAME, '●', 1, 1)=1  THEN '1'
+                    WHEN INSTRC(SISETSU.INS_ABBR_NAME, '〇', 1, 1)=1  THEN '1'
+                    ELSE '1'
+                END AS DEL_INS_FLG,
+                <!-- 重点先施設フラグ-->
+                CASE
+                    WHEN ACTIVITY_TYPE = '1'  THEN '1'
+                    ELSE '0'
+                END AS WEIGHTING_FLG
+
+            FROM DPS_I_DELIVERY_RESULT
+                <!-- 従業員 join (in) 従業員コード-->
+                INNER JOIN JYUGYOUIN
+                ON JYUGYOUIN.JGI_NO = DPS_I_DELIVERY_RESULT.JGI_NO
+                <!-- 施設情報 join (in) 施設コード-->
+                INNER JOIN DPS_C_INS_MST SISETSU
+                ON DPS_I_DELIVERY_RESULT.INS_NO = SISETSU.INS_NO
+                <!-- 特定施設個別計画 join (left) 施設コード-->
+                LEFT JOIN TOKUTEISISETU
+                ON DPS_I_DELIVERY_RESULT.INS_NO = TOKUTEISISETU.INS_NO
+                <!-- 重点先 join (left) 施設コード-->
+                LEFT JOIN DIST_WEIGHTING
+                ON DPS_I_DELIVERY_RESULT.INS_NO = DIST_WEIGHTING.INS_NO
+                <!-- 配分品目-->
+            WHERE DPS_I_DELIVERY_RESULT.PROD_CODE = #refProdCode:CHAR#
+        )
+    <!-- □ 過去実績行列入れ替え-->
+        , KAKO_TRANS AS (
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_01 AS DELIVERY_RECORD, '01' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_02 AS DELIVERY_RECORD, '02' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_03 AS DELIVERY_RECORD, '03' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_04 AS DELIVERY_RECORD, '04' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_05 AS DELIVERY_RECORD, '05' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_06 AS DELIVERY_RECORD, '06' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_07 AS DELIVERY_RECORD, '07' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_08 AS DELIVERY_RECORD, '08' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_09 AS DELIVERY_RECORD, '09' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_10 AS DELIVERY_RECORD, '10' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_11 AS DELIVERY_RECORD, '11' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_12 AS DELIVERY_RECORD, '12' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_13 AS DELIVERY_RECORD, '13' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_14 AS DELIVERY_RECORD, '14' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_15 AS DELIVERY_RECORD, '15' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_16 AS DELIVERY_RECORD, '16' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_17 AS DELIVERY_RECORD, '17' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_18 AS DELIVERY_RECORD, '18' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_19 AS DELIVERY_RECORD, '19' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_20 AS DELIVERY_RECORD, '20' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_21 AS DELIVERY_RECORD, '21' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_22 AS DELIVERY_RECORD, '22' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_23 AS DELIVERY_RECORD, '23' AS REF_PERIOD FROM KAKO_SUMMARY
+            UNION
+            SELECT PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG, DELIVERY_RECORD_24 AS DELIVERY_RECORD, '24' AS REF_PERIOD FROM KAKO_SUMMARY
+        )
+    <!-- □ 過去実績の比率算出-->
+        , SUM AS (
+            SELECT
+                PROD_CODE,
+                <!-- 従業員コード-->
+                JGI_NO,
+                INS_NO,
+                TMS_TYTEN_CD,
+                TOKUTEI_FLG AS SPECIAL_INS_PLAN_DFLG,
+                JOGAI_FLG AS EXCEPT_DIST_INS_FLG,
+                DEL_INS_FLG,
+                WEIGHTING_FLG,
+                <!-- 合計値-->
+                SUM(DELIVERY_RECORD) AS SUM_RESULT
+            FROM KAKO_TRANS
+                <!-- 配分品目-->
+            WHERE KAKO_TRANS.PROD_CODE = #refProdCode:CHAR#
+                <!-- 参照期間-->
+              AND REF_PERIOD BETWEEN #refFrom:CHAR# AND #refTo:CHAR#
+            GROUP BY PROD_CODE, JGI_NO, INS_NO, TMS_TYTEN_CD, TOKUTEI_FLG, JOGAI_FLG, DEL_INS_FLG, WEIGHTING_FLG
+         )
+         SELECT SUM.PROD_CODE
+               ,SUM.JGI_NO
+               ,NULL AS INS_TYPE
+               ,SUM.INS_NO
+               ,SUM.TMS_TYTEN_CD
+               ,SUM.SPECIAL_INS_PLAN_DFLG
+               ,SUM.EXCEPT_DIST_INS_FLG
+               ,SUM.DEL_INS_FLG
+               ,SUM.WEIGHTING_FLG
+               ,SUM.SUM_RESULT
+               ,INS.INS_FORMAL_NAME <!-- add 2019/01/30 S.Hayashi B19-0013_DPX_削除施設配分除外対応 -->
+           FROM SUM
+                INNER JOIN DPS_C_JGI_MST JM
+             ON SUM.JGI_NO = JM.JGI_NO
+                INNER JOIN DPS_C_SOS_MST SM
+             ON JM.SOS_CD = SM.SOS_CD
+                INNER JOIN DPS_C_INS_MST INS
+             ON SUM.INS_NO = INS.INS_NO
+          ORDER BY BR_CODE, DIST_SEQ, DIST_CODE, TEAM_CODE, SHOKUSEI_CD, SHOKUSHU_CD, JGI_NO ,RELN_INS_NO, RELN_INS_CODE, TMS_TYTEN_CD
+  </select>
+
+</sqlMap>

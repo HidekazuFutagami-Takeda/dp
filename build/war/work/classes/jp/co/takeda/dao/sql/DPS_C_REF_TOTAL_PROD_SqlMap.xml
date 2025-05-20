@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_C_REF_TOTAL_PROD_SqlMap">
+
+    <resultMap id="resultMap" class="jp.co.takeda.model.RefTotalProd">
+        <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+        <result column="STAT_PROD_CODE" property="statProdCode" jdbcType="CHAR" />
+        <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+    <!-- 検索 ユニークキー-->
+    <select id="selectUk" resultMap="resultMap" parameterClass="java.util.Map" >
+        SELECT PROD_CODE
+               ,STAT_PROD_CODE
+               ,PROD_NAME
+          FROM DPS_C_REF_TOTAL_PROD
+         WHERE PROD_CODE = #prodCode:VARCHAR#
+    </select>
+
+    <!-- 検索 -->
+    <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map">
+        SELECT PROD_CODE
+               ,STAT_PROD_CODE
+               ,PROD_NAME
+        FROM DPS_C_PLANNED_PROD
+        WHERE SALES = #sales:CHAR#
+        AND PLAN_TARGET_FLG = '1'
+        <isNotNull prepend="AND" property="category">
+            CATEGORY = #category:CHAR#
+        </isNotNull>
+        <isPropertyAvailable property="sortString">
+            $sortString$
+        </isPropertyAvailable>
+        UNION
+        SELECT PROD_CODE
+               ,STAT_PROD_CODE
+               ,PROD_NAME
+        FROM DPS_C_REF_TOTAL_PROD
+        WHERE SALES = #sales:CHAR#
+        <isNotNull prepend="AND" property="category">
+            CATEGORY = #category:CHAR#
+        </isNotNull>
+        <isPropertyAvailable property="sortString">
+            $sortString$
+        </isPropertyAvailable>
+    </select>
+
+</sqlMap>

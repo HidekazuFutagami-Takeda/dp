@@ -1,0 +1,165 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS601C01_DATA_R"))
+    #set( $resultDataList = $form.getRequestData("DPS601C01_DATA_R"))
+#end
+#if ($resultDataList && $resultDataList.size() > 0)
+#set($q = '"' )
+#set($bgEnd = "class='statusEnd'")
+#set($bgIng = "class='statusIng'")
+#set($bgNot = "class='statusNot'")
+#set($decimalFormat = $form.bean.getDefaultRateFormat())
+$!consts.getDhtmlxGridXmlHeader()
+
+<rows>
+#foreach($resultData in $resultDataList)
+
+    ##施設医師別計ステータスサマリ
+    #set($insDocPlanStatSum = ${resultData.insDocPlanStatSum})
+
+    ## --------------------------------
+    ##施設医師別計画配分状況
+    ## --------------------------------
+    #set($codeAndValueInsDocPlanDist = $progress.progressInsDocPlanDistStatus($!{insDocPlanStatSum}))
+    #set($insDocPlanDistStatus = $codeAndValueInsDocPlanDist.value)
+    ## -- 配分開始時間
+    #set( $distStartDate = "")
+    #if($insDocPlanStatSum.distStartDate)
+        #set($distStartDate = $!format.toString($!{insDocPlanStatSum.distStartDate}, 'MM/dd HH:mm'))
+    #end
+    ## -- 配分終了時間
+    #set( $distEndDate = "")
+    #if($insDocPlanStatSum.distEndDate)
+        #set($distEndDate = $!format.toString($!{insDocPlanStatSum.distEndDate}, 'MM/dd HH:mm'))
+    #end
+    ## -- 配分状況
+    #if($!codeAndValueInsDocPlanDist.code.equals("NOT"))
+        #set($insDocPlanDistClass = $bgNot)
+        #if($insDocPlanStatSum.distStartDate)
+            #set($insDocPlanDistStatus = $!insDocPlanDistStatus)
+        #end
+    #elseif($!codeAndValueInsDocPlanDist.code.equals("PARTLY_END"))
+        #set($insDocPlanDistClass = $bgNot)
+        #if($insDocPlanStatSum.distEndDate)
+            #set($insDocPlanDistStatus = $!insDocPlanDistStatus + "<br>" + $distEndDate)
+        #end
+    #elseif($!codeAndValueInsDocPlanDist.code.equals("END"))
+        #set($insDocPlanDistClass = $bgEnd)
+        #if($form.bean.jgiNoTran && $form.bean.jgiNoTran !="")
+            #set($insDocPlanDistStatus = $!insDocPlanDistStatus + "<br>" + $distEndDate)
+        #else
+            #set($insDocPlanDistStatus = $!insDocPlanDistStatus + "<br>" + $distEndDate)
+        #end
+    #end
+    ## --------------------------------
+    ##施設医師別計画ＭＲ公開
+    ## --------------------------------
+    #set($codeAndValueInsDocPlanMrOpen = $progress.progressInsDocPlanMrOpenStatus($!{insDocPlanStatSum}))
+    #set($insDocPlanMrOpenStatus = $codeAndValueInsDocPlanMrOpen.value)
+    ## -- 公開状況
+    #if($!codeAndValueInsDocPlanMrOpen.code.equals("NOT"))
+        #set($insDocPlanMrOpenClass = $bgNot)
+    #elseif($!codeAndValueInsDocPlanMrOpen.code.equals("ING"))
+        #set($insDocPlanMrOpenClass = $bgIng)
+    #elseif($!codeAndValueInsDocPlanMrOpen.code.equals("PARTLY_END"))
+        #set($insDocPlanMrOpenClass = $bgNot)
+        #set($insDocPlanMrOpenStatus = $!insDocPlanMrOpenStatus + "<br>" + $!format.toString($insDocPlanStatSum.insDocOpenDate, 'MM/dd HH:mm'))
+    #elseif($!codeAndValueInsDocPlanMrOpen.code.equals("END"))
+        #set($insDocPlanMrOpenClass = $bgEnd)
+        #set($insDocPlanMrOpenStatus = $!insDocPlanMrOpenStatus + "<br>" + $!format.toString($insDocPlanStatSum.insDocOpenDate, 'MM/dd HH:mm'))
+    #end
+    ## --------------------------------
+    ##施設医師別計画ＭＲ確定
+    ## --------------------------------
+    #set($codeAndValueInsDocPlanMrFix = $progress.progressInsDocPlanMrFixStatus($!{insDocPlanStatSum}))
+    #set($insDocPlanMrFixStatus = $codeAndValueInsDocPlanMrFix.value)
+    ## -- 確定状況
+    #if($!codeAndValueInsDocPlanMrFix.code.equals("NOT"))
+        #set($insDocPlanMrFixClass = $bgNot)
+    #elseif($!codeAndValueInsDocPlanMrFix.code.equals("ING"))
+        #set($insDocPlanMrFixClass = $bgIng)
+    #elseif($!codeAndValueInsDocPlanMrFix.code.equals("PARTLY_END"))
+        #set($insDocPlanMrFixClass = $bgNot)
+        #set($insDocPlanMrFixStatus = $!insDocPlanMrFixStatus + "<br>" + $!format.toString($insDocPlanStatSum.insDocFixDate, 'MM/dd HH:mm'))
+    #elseif($!codeAndValueInsDocPlanMrFix.code.equals("END"))
+        #set($insDocPlanMrFixClass = $bgEnd)
+        #set($insDocPlanMrFixStatus = $!insDocPlanMrFixStatus + "<br>" + $!format.toString($insDocPlanStatSum.insDocFixDate, 'MM/dd HH:mm'))
+    #end
+    ## --------------------------------
+    ## 非表示データ
+    ## --------------------------------
+    ## -- 品目固定コード
+    #set($prodCode = "")
+    #if($resultData.prodCode)
+        #set($prodCode = $!{resultData.prodCode})
+    #end
+    ## -- 施設医師別計画ステータス最終更新日
+    #set( $lastUpdate = "")
+    #if($resultData.lastUpdate)
+        #set($lastUpdate = $!{resultData.lastUpdate.time})
+    #end
+    ## -- 担当者別計画：計画値表示フラグ(設定ユーザが営業所長以上、または、ALの場合担当者別計画のAL公開以降、MRの場合は担当者別計画確定)
+    #set( $isMrPlanOpen = false)
+    #if($resultData.isMrPlanOpen)
+        #set( $isMrPlanOpen = $resultData.isMrPlanOpen)
+    #end
+    ## -- 施設特約店別計画：計画値表示フラグ(設定ユーザが営業所長以上、または、すべて確定されている場合は、計画値表示)
+    #set( $isOpen = false)
+##  #if($form.bean.rank == "1" || $insDocPlanStatSum.planOpened == $insDocPlanStatSum.totalCount)
+    #if($form.bean.rank == "1" || ($insDocPlanStatSum.planCompleted == $insDocPlanStatSum.totalCount &&  $isMrPlanOpen))
+        #set( $isOpen = true)
+    #else
+        #set($insDocPlanMrOpenClass = $bgNot)
+        #set($insDocPlanMrFixClass = $bgNot)
+    #end
+    <row id='$velocityCount'>
+        <cell style="height:45;">1</cell>
+        <cell style="height:45;">$!{resultData.prodName}</cell>
+        ## 担当者まで特定している場合は、「編集リンク」表示
+        #if($form.bean.jgiNoTran && $form.bean.jgiNoTran !="")
+            #if($isOpen)
+                #set($oWinUrl = $link.setAction("dps601C02F00").addQueryData('sosCd3',$form.bean.sosCd3Tran).addQueryData('sosCd4',$form.bean.sosCd4Tran).addQueryData('jgiNo',$form.bean.jgiNoTran).addQueryData('prodCode',$prodCode))
+                <cell style="height:45;"><![CDATA[<a href='#' onclick='cs_openEditDialog($!{q}$!{oWinUrl}&clickRowId=$!{q} + getCurScrollPos(),dps601C0XF05);'>参照</a>]]></cell>
+            #else
+                <cell style="height:45;"></cell>
+            #end
+        #end
+        <cell style="height:45;" $insDocPlanDistClass><![CDATA[$!insDocPlanDistStatus]]></cell>
+##        <cell style="height:45;" $insDocPlanMrOpenClass><![CDATA[$!insDocPlanMrOpenStatus]]></cell>
+##        <cell style="height:45;" $insDocPlanMrFixClass><![CDATA[$!insDocPlanMrFixStatus]]></cell>
+        #if($isOpen)
+            <cell style="height:45;#setMinusStyle($!{resultData.mrPlanPlannedValueUh})">$format.parseMoneyToThousandUnit($!{resultData.mrPlanPlannedValueUh})</cell>
+            <cell style="height:45;#setMinusStyle($!{resultData.insDocPlanPlannedValueUh})">$format.parseMoneyToThousandUnit($!{resultData.insDocPlanPlannedValueUh})</cell>
+            <cell style="height:45;#setSagakuStyle($!{resultData.sagakuUh})">$format.parseMoneyToThousandUnit($!{resultData.sagakuUh})</cell>
+            <userdata name="pUH">$format.parseMoneyToThousandUnit($!{resultData.insDocPlanPlannedValueUh})</userdata>
+            <userdata name="sUH">$format.parseMoneyToThousandUnit($!{resultData.sagakuUh})</userdata>
+            <cell style="height:45;#setMinusStyle($!{resultData.mrPlanPlannedValueP})">$format.parseMoneyToThousandUnit($!{resultData.mrPlanPlannedValueP})</cell>
+            <cell style="height:45;#setMinusStyle($!{resultData.insDocPlanPlannedValueP})">$format.parseMoneyToThousandUnit($!{resultData.insDocPlanPlannedValueP})</cell>
+            <cell style="height:45;#setSagakuStyle($!{resultData.sagakuP})">$format.parseMoneyToThousandUnit($!{resultData.sagakuP})</cell>
+            <userdata name="pP">$format.parseMoneyToThousandUnit($!{resultData.insDocPlanPlannedValueP})</userdata>
+            <userdata name="sP">$format.parseMoneyToThousandUnit($!{resultData.sagakuP})</userdata>
+        #else
+	        #if($isMrPlanOpen)
+	            <cell style="height:45;#setMinusStyle($!{resultData.mrPlanPlannedValueUh})">$format.parseMoneyToThousandUnit($!{resultData.mrPlanPlannedValueUh})</cell>
+	        #else
+    	        <cell style="height:45;"></cell>
+	        #end
+            <cell style="height:45;"></cell>
+            <cell style="height:45;"></cell>
+            <userdata name="pUH"></userdata>
+            <userdata name="sUH"></userdata>
+	        #if($isMrPlanOpen)
+	            <cell style="height:45;#setMinusStyle($!{resultData.mrPlanPlannedValueP})">$format.parseMoneyToThousandUnit($!{resultData.mrPlanPlannedValueP})</cell>
+	        #else
+    	        <cell style="height:45;"></cell>
+	        #end
+            <cell style="height:45;"></cell>
+            <cell style="height:45;"></cell>
+            <userdata name="pP"></userdata>
+            <userdata name="sP"></userdata>
+        #end
+        ##送信情報
+        <userdata name="rowIdList">$prodCode,$resultData.prodName,$lastUpdate</userdata>
+    </row>
+  #end
+</rows>
+#end

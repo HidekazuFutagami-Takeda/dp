@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_I_INS_WS_PLAN_SqlMap" >
+  <resultMap id="resultMap" class="jp.co.takeda.model.ManageInsWsPlan" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="CAL_YEAR" property="calYear" jdbcType="CHAR" />
+    <result column="CAL_TERM" property="calTerm" jdbcType="CHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INS_NO" property="insNo" jdbcType="VARCHAR" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="PLANNED_1_VALUE_Y" property="implPlan.planned1ValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_1_VALUE_T" property="implPlan.planned1ValueT" jdbcType="BIGINT" />
+    <result column="PLANNED_2_VALUE_Y" property="implPlan.planned2ValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_2_VALUE_T" property="implPlan.planned2ValueT" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_1_VALUE_Y" property="implPlan.befPlanned1ValueY" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_1_VALUE_T" property="implPlan.befPlanned1ValueT" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_2_VALUE_Y" property="implPlan.befPlanned2ValueY" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_2_VALUE_T" property="implPlan.befPlanned2ValueT" jdbcType="BIGINT" />
+    <result column="DEL_FLG" property="delFlg" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="IS_PG_ID" property="isPgId" jdbcType="VARCHAR" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="UP_PG_ID" property="upPgId" jdbcType="VARCHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result column="INS_ABBR_NAME" property="insAbbrName" jdbcType="VARCHAR" />
+    <result column="TRADE_TYPE" property="tradeType" jdbcType="VARCHAR" />
+    <result column="REQ_FLG" property="reqFlg" jdbcType="INTEGER" />
+    <result column="INS_DEL_FLG" property="insDelFlg" jdbcType="INTEGER" />
+    <result column="TMS_TYTEN_MEI_KJ" property="tmsTytenName" jdbcType="VARCHAR" />
+    <result column="INS_CLASS" property="insClass" jdbcType="VARCHAR" />
+    <result column="OLD_INSR_FLG" property="oldInsrFlg" jdbcType="VARCHAR" />
+    <result column="JGI_NO" property="jgiMst.jgiNo" jdbcType="INTEGER" />
+    <result column="JGI_NAME" property="jgiMst.jgiName" jdbcType="VARCHAR" />
+    <result column="SOS_CD2" property="jgiMst.sosCd2" jdbcType="VARCHAR" />
+    <result column="SOS_CD3" property="jgiMst.sosCd3" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="column">
+     SEQ_KEY
+          ,CAL_YEAR
+          ,CAL_TERM
+          ,PROD_CODE
+          ,INS_NO
+          ,TMS_TYTEN_CD
+          ,PLANNED_1_VALUE_Y
+          ,PLANNED_1_VALUE_T
+          ,PLANNED_2_VALUE_Y
+          ,PLANNED_2_VALUE_T
+          ,BEF_PLANNED_1_VALUE_Y
+          ,BEF_PLANNED_1_VALUE_T
+          ,BEF_PLANNED_2_VALUE_Y
+          ,BEF_PLANNED_2_VALUE_T
+          ,DEL_FLG
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,IS_PG_ID
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+          ,UP_PG_ID
+          ,NULL AS PROD_NAME
+          ,NULL AS INS_ABBR_NAME
+          ,NULL AS TRADE_TYPE
+          ,NULL AS REQ_FLG
+          ,NULL AS INS_DEL_FLG
+          ,NULL AS TMS_TYTEN_MEI_KJ
+          ,NULL AS INS_CLASS
+          ,NULL AS OLD_INSR_FLG
+          ,NULL AS JGI_NO
+          ,NULL AS JGI_NAME
+          ,NULL AS SOS_CD2
+          ,NULL AS SOS_CD3
+  </sql>
+
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT <include refid="column"/>
+      FROM DPM_I_INS_WS_PLAN
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND CAL_YEAR = #calYear:CHAR#
+       AND CAL_TERM = #calTerm:CHAR#
+  </select>
+
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.ManageInsWsPlan" >
+    SELECT <include refid="column"/>
+      FROM DPM_I_INS_WS_PLAN
+     WHERE CAL_YEAR = #calYear:CHAR#
+       AND CAL_TERM = #calTerm:CHAR#
+       AND PROD_CODE = #prodCode:CHAR#
+       AND INS_NO = #insNo:VARCHAR#
+       AND TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+  </select>
+
+  <select id="selectListByProd" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH IWP AS (
+        SELECT
+              IWP.SEQ_KEY
+             ,IWP.CAL_YEAR
+             ,IWP.CAL_TERM
+             ,IWP.PROD_CODE
+             ,IWP.INS_NO
+             ,IWP.TMS_TYTEN_CD
+             ,IWP.PLANNED_1_VALUE_Y
+             ,IWP.PLANNED_1_VALUE_T
+             ,IWP.PLANNED_2_VALUE_Y
+             ,IWP.PLANNED_2_VALUE_T
+             ,IWP.BEF_PLANNED_1_VALUE_Y
+             ,IWP.BEF_PLANNED_1_VALUE_T
+             ,IWP.BEF_PLANNED_2_VALUE_Y
+             ,IWP.BEF_PLANNED_2_VALUE_T
+             ,IWP.DEL_FLG
+             ,IWP.IS_JGI_NO
+             ,IWP.IS_JGI_NAME
+             ,IWP.IS_DATE
+             ,IWP.IS_PG_ID
+             ,IWP.UP_JGI_NO
+             ,IWP.UP_JGI_NAME
+             ,IWP.UP_DATE
+             ,IWP.UP_PG_ID
+             ,TMS.TMS_TYTEN_MEI_KJ
+        FROM DPM_I_INS_WS_PLAN IWP
+             INNER JOIN (<include refid="COMMON_SqlMap.tmsView"/>) TMS
+          ON IWP.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+          <isNotNull property="tmsTytenCd" prepend="AND">
+             IWP.TMS_TYTEN_CD LIKE #tmsTytenCd:CHAR# ESCAPE '~'
+          </isNotNull>
+        WHERE IWP.CAL_YEAR = '$calYear$'
+          AND IWP.CAL_TERM = '$calTerm.dbValue$'
+          AND IWP.PROD_CODE = #prodCode:CHAR#
+          AND IWP.DEL_FLG = '0'
+     )
+    SELECT IWP.SEQ_KEY
+          ,IWP.CAL_YEAR
+          ,IWP.CAL_TERM
+          ,#prodCode:CHAR# AS PROD_CODE
+          ,INS.INS_NO
+          ,IWP.TMS_TYTEN_CD
+          ,IWP.PLANNED_1_VALUE_Y
+          ,IWP.PLANNED_1_VALUE_T
+          ,IWP.PLANNED_2_VALUE_Y
+          ,IWP.PLANNED_2_VALUE_T
+          ,IWP.BEF_PLANNED_1_VALUE_Y
+          ,IWP.BEF_PLANNED_1_VALUE_T
+          ,IWP.BEF_PLANNED_2_VALUE_Y
+          ,IWP.BEF_PLANNED_2_VALUE_T
+          ,IWP.DEL_FLG
+          ,IWP.IS_JGI_NO
+          ,IWP.IS_JGI_NAME
+          ,IWP.IS_DATE
+          ,IWP.IS_PG_ID
+          ,IWP.UP_JGI_NO
+          ,IWP.UP_JGI_NAME
+          ,IWP.UP_DATE
+          ,IWP.UP_PG_ID
+          ,NULL AS PROD_NAME
+          ,INS.INS_ABBR_NAME
+          ,INS.TRADE_TYPE
+          ,INS.REQ_FLG
+          ,INS.DEL_FLG AS INS_DEL_FLG
+          ,IWP.TMS_TYTEN_MEI_KJ
+          ,INS.INS_CLASS
+          ,INS.OLD_INSR_FLG
+          ,NULL AS JGI_NO
+          ,NULL AS JGI_NAME
+          ,NULL AS SOS_CD2
+          ,NULL AS SOS_CD3
+          ,OYK.INS_NO
+          ,INS.INS_ABBR_NAME
+          ,DECODE(#tgtInsKb:CHAR#,'1',OINS.HO_INS_TYPE,OINS.HO_INS_TYPE_Z) AS OINS_HO_INS_TYPE
+          ,OINS.RELN_INS_NO AS OINS_RELN_INS_NO
+          ,NVL(OYK.MAIN_INS_NO,'0') AS MAIN_INS_NO
+          ,DECODE(#tgtInsKb:CHAR#,'1',INS.HO_INS_TYPE,INS.HO_INS_TYPE_Z) AS INS_HO_INS_TYPE
+          ,INS.RELN_INS_NO
+          ,INS.RELN_INS_CODE
+      FROM DPM_C_VI_INS_MST INS
+           LEFT JOIN DPM_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+           LEFT JOIN DPM_C_VI_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+           INNER JOIN DPM_C_MR_INS_PROD MIP ON INS.INS_NO = MIP.INS_NO AND MIP.PROD_CODE = #prodCode:CHAR#
+           INNER JOIN DPM_C_VI_JGI_MST JM ON MIP.MR_NO = JM.JGI_NO
+           INNER JOIN DPM_C_VI_SOS_MST SM ON JM.SOS_CD = SM.SOS_CD AND JM.ETC_SOS_FLG = SM.ETC_SOS_FLG
+       <isNotNull property="allInsFlg">
+           LEFT JOIN IWP
+       </isNotNull>
+       <isNull property="allInsFlg">
+           INNER JOIN IWP
+       </isNull>
+        ON INS.INS_NO = IWP.INS_NO
+       AND IWP.CAL_YEAR = '$calYear$'
+       AND IWP.CAL_TERM = '$calTerm.dbValue$'
+       AND IWP.PROD_CODE = #prodCode:CHAR#
+       AND IWP.DEL_FLG = '0'
+     WHERE INS.HO_INS_TYPE != '4'
+       <isNotNull prepend="AND" property="jgiKbList">
+       <iterate prepend="JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+           '$jgiKbList[].dbValue$'
+       </iterate>
+       </isNotNull>
+       <isNotNull prepend="AND" property="jokenSetList">
+           EXISTS (
+               SELECT JO.JGI_NO
+               FROM DPS_S_SY_M_JGI_JOKEN JO
+               WHERE JO.JGI_NO = JM.JGI_NO
+               <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                   #jokenSetList[].dbValue#
+               </iterate>
+           )
+       </isNotNull>
+       <isNotNull property="jgiNo" prepend="AND">
+           MIP.MR_NO = #jgiNo:INTEGER#
+       </isNotNull>
+       <isNotNull prepend="AND" property="hoInsTypeList">
+           <!-- <iterate prepend="INS.HO_INS_TYPE IN" open="(" close=")" conjunction=","  property="hoInsTypeList"> -->
+           <!-- NSG親子紐づけ -->
+           <iterate prepend="NVL(OINS.HO_INS_TYPE, INS.HO_INS_TYPE) IN" open="(" close=")" conjunction=","  property="hoInsTypeList">
+               #hoInsTypeList[].dbValue#
+           </iterate>
+       </isNotNull>
+       <isNotNull property="relnInsNo" prepend="AND">
+           INS.RELN_INS_NO = #relnInsNo:VARCHAR#
+       </isNotNull>
+       <isNotNull property="sosCd3" prepend="AND">
+           JM.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotNull>
+       <isNotNull property="sosCd4" prepend="AND">
+           JM.SOS_CD4 = #sosCd4:VARCHAR#
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <select id="selectListByInsWs" resultMap="resultMap" parameterClass="java.util.Map" >
+  WITH INS_WS_PLAN AS (
+    SELECT IWP.SEQ_KEY
+          ,IWP.CAL_YEAR
+          ,IWP.CAL_TERM
+          ,IWP.PROD_CODE
+          ,IWP.INS_NO
+          ,IWP.TMS_TYTEN_CD
+          ,IWP.PLANNED_1_VALUE_Y
+          ,IWP.PLANNED_1_VALUE_T
+          ,IWP.PLANNED_2_VALUE_Y
+          ,IWP.PLANNED_2_VALUE_T
+          ,IWP.BEF_PLANNED_1_VALUE_Y
+          ,IWP.BEF_PLANNED_1_VALUE_T
+          ,IWP.BEF_PLANNED_2_VALUE_Y
+          ,IWP.BEF_PLANNED_2_VALUE_T
+          ,IWP.DEL_FLG
+          ,IWP.IS_JGI_NO
+          ,IWP.IS_JGI_NAME
+          ,IWP.IS_DATE
+          ,IWP.IS_PG_ID
+          ,IWP.UP_JGI_NO
+          ,IWP.UP_JGI_NAME
+          ,IWP.UP_DATE
+          ,IWP.UP_PG_ID
+          ,INS.INS_ABBR_NAME
+          ,INS.TRADE_TYPE
+          ,INS.REQ_FLG
+          ,INS.DEL_FLG AS INS_DEL_FLG
+          ,INS.INS_CLASS
+          ,INS.OLD_INSR_FLG
+      FROM DPM_I_INS_WS_PLAN IWP
+           INNER JOIN DPM_C_VI_INS_MST INS ON IWP.INS_NO = INS.INS_NO
+     WHERE IWP.CAL_YEAR = '$calYear$'
+       AND IWP.CAL_TERM = '$calTerm.dbValue$'
+       AND IWP.INS_NO = #insNo:VARCHAR#
+       AND IWP.TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+       <isEqual property="tgtInsKb" compareValue="1">
+          AND INS.HO_INS_TYPE != '4'
+       </isEqual>
+       <isNull property="allProdFlg" prepend="AND">
+           IWP.DEL_FLG = '0'
+       </isNull>
+  )
+    SELECT IWP.SEQ_KEY
+          ,IWP.CAL_YEAR
+          ,IWP.CAL_TERM
+          ,PP.PROD_CODE
+          ,#insNo:VARCHAR# AS INS_NO
+          ,#tmsTytenCd:CHAR# AS TMS_TYTEN_CD
+          ,IWP.PLANNED_1_VALUE_Y
+          ,IWP.PLANNED_1_VALUE_T
+          ,IWP.PLANNED_2_VALUE_Y
+          ,IWP.PLANNED_2_VALUE_T
+          ,IWP.BEF_PLANNED_1_VALUE_Y
+          ,IWP.BEF_PLANNED_1_VALUE_T
+          ,IWP.BEF_PLANNED_2_VALUE_Y
+          ,IWP.BEF_PLANNED_2_VALUE_T
+          ,IWP.DEL_FLG
+          ,IWP.IS_JGI_NO
+          ,IWP.IS_JGI_NAME
+          ,IWP.IS_DATE
+          ,IWP.IS_PG_ID
+          ,IWP.UP_JGI_NO
+          ,IWP.UP_JGI_NAME
+          ,IWP.UP_DATE
+          ,IWP.UP_PG_ID
+          ,PP.PROD_NAME
+          ,IWP.INS_ABBR_NAME
+          ,IWP.TRADE_TYPE
+          ,IWP.REQ_FLG
+          ,IWP.INS_DEL_FLG
+          ,NULL AS TMS_TYTEN_MEI_KJ
+          ,IWP.INS_CLASS
+          ,IWP.OLD_INSR_FLG
+          ,MIP.MR_NO AS JGI_NO
+          ,JM.JGI_NAME
+          ,JM.SOS_CD2
+          ,JM.SOS_CD3
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPM_C_PLANNED_PROD PP
+           LEFT JOIN DPM_C_CD_MST CM ON CM.DATA_CD = PP.PROD_CODE
+                                      AND CM.DATA_KBN = 'sort_prod'
+           INNER JOIN DPM_C_MR_INS_PROD MIP ON MIP.INS_NO = #insNo:VARCHAR# AND PP.PROD_CODE = MIP.PROD_CODE
+           INNER JOIN DPM_C_VI_JGI_MST  JM  ON JM.JGI_NO  = MIP.MR_NO
+       <isNotNull property="allProdFlg">
+           LEFT JOIN INS_WS_PLAN IWP
+       </isNotNull>
+       <isNull property="allProdFlg">
+           INNER JOIN INS_WS_PLAN IWP
+       </isNull>
+        ON IWP.PROD_CODE = PP.PROD_CODE
+       AND IWP.CAL_YEAR = PP.CAL_YEAR
+       AND IWP.CAL_TERM = PP.CAL_TERM
+       AND IWP.INS_NO = #insNo:VARCHAR#
+       AND IWP.TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+       <isNull property="allProdFlg" prepend="AND">
+           IWP.DEL_FLG = '0'
+       </isNull>
+     WHERE PP.PLAN_LEVEL_INS_WS = '1'
+       AND PP.SALES = #sales:CHAR#
+       AND PP.CAL_YEAR = '$calYear$'
+       AND PP.CAL_TERM = '$calTerm.dbValue$'
+       <isNotNull property="category" prepend="AND">
+           PP.CATEGORY = #category:CHAR#
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <insert id="insert" parameterClass="jp.co.takeda.model.ManageInsWsPlan" >
+    INSERT INTO DPM_I_INS_WS_PLAN
+          (SEQ_KEY
+          , CAL_YEAR
+          , CAL_TERM
+          , PROD_CODE
+          , INS_NO
+          , TMS_TYTEN_CD
+          , PLANNED_1_VALUE_Y
+          , PLANNED_1_VALUE_T
+          , PLANNED_2_VALUE_Y
+          , PLANNED_2_VALUE_T
+          , BEF_PLANNED_1_VALUE_Y
+          , BEF_PLANNED_1_VALUE_T
+          , BEF_PLANNED_2_VALUE_Y
+          , BEF_PLANNED_2_VALUE_T
+          , DEL_FLG
+          , IS_JGI_NO
+          , IS_JGI_NAME
+          , IS_DATE
+          , IS_PG_ID
+          , UP_JGI_NO
+          , UP_JGI_NAME
+          , UP_DATE
+          , UP_PG_ID)
+    VALUES (ORADPX01.SEQ_DPM_I_INS_WS_PLAN.NEXTVAL
+          , #calYear:CHAR#
+          , #calTerm:CHAR#
+          , #prodCode:CHAR#
+          , #insNo:VARCHAR#
+          , #tmsTytenCd:CHAR#
+          , #implPlan.planned1ValueY:BIGINT#
+          , #implPlan.planned1ValueT:BIGINT#
+          , #implPlan.planned2ValueY:BIGINT#
+          , #implPlan.planned2ValueT:BIGINT#
+          , #implPlan.befPlanned1ValueY:BIGINT#
+          , #implPlan.befPlanned1ValueT:BIGINT#
+          , #implPlan.befPlanned2ValueY:BIGINT#
+          , #implPlan.befPlanned2ValueT:BIGINT#
+          , #delFlg:CHAR#
+          , #isJgiNo:INTEGER#
+          , #isJgiName:VARCHAR#
+          , SYSTIMESTAMP
+          , #isPgId:VARCHAR#
+          , #upJgiNo:INTEGER#
+          , #upJgiName:VARCHAR#
+          , SYSTIMESTAMP
+          , #upPgId:VARCHAR#)
+  </insert>
+
+  <update id="update" parameterClass="jp.co.takeda.model.ManageInsWsPlan" >
+    UPDATE DPM_I_INS_WS_PLAN
+       SET DEL_FLG = #delFlg:CHAR#
+          ,PLANNED_1_VALUE_Y = #implPlan.planned1ValueY:BIGINT#
+          ,PLANNED_1_VALUE_T = #implPlan.planned1ValueT:BIGINT#
+          ,PLANNED_2_VALUE_Y = #implPlan.planned2ValueY:BIGINT#
+          ,PLANNED_2_VALUE_T = #implPlan.planned2ValueT:BIGINT#
+          ,BEF_PLANNED_1_VALUE_Y = #implPlan.befPlanned1ValueY:BIGINT#
+          ,BEF_PLANNED_1_VALUE_T = #implPlan.befPlanned1ValueT:BIGINT#
+          ,BEF_PLANNED_2_VALUE_Y = #implPlan.befPlanned2ValueY:BIGINT#
+          ,BEF_PLANNED_2_VALUE_T = #implPlan.befPlanned2ValueT:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+          ,UP_PG_ID = #upPgId:VARCHAR#
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+</sqlMap>

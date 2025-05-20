@@ -1,0 +1,351 @@
+#set($pageTitle = $text.get("dps301C00","title"))
+#set($bodyOnloadMethod = "dps301C00F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dps301C00x01.vm")
+#set($GridObjName = "dps301C00Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps301C00CoverId")
+#set( $dataList = $form.getRequestData("DPS301C00_DATA_R"))
+<script language="javascript">
+<!--
+var ${GridObjName};
+var editFlg = false;
+## 初期表示＋読込処理
+function dps301C00F00() {
+    doInitGrid();
+    if (document.getElementById("dps301C00x01.vm")) {
+        var loadXMLString = document.getElementById("dps301C00x01.vm").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+    sosApply("$!security.defaultSosCd", "$!security.defaultJgiNo", "02");
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+        ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        ${GridObjName}.setHeader("選択,品目名称,製品区分,試算状況<br>(開始日時/終了日時),薬効市場,本部案/エリア案,フリー項目<br>(最終更新日),試算パラメータ,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan");
+##        ${GridObjName}.setHeader("選択,品目名称,製品区分,試算状況<br>(開始日時/終了日時),薬効市場,本部案/営業所案,フリー項目<br>(最終更新日),試算パラメータ,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan");
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        ${GridObjName}.attachHeader("#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,編集<br>(最終更新日),比率,試算品目,製品区分,実績参照期間,実績参照品目1,実績参照品目2,実績参照品目3");
+        ${GridObjName}.setInitWidths("30,120,60,130,125,100,120,120,90,120,60,110,120,120,120");
+        ${GridObjName}.setColAlign("center,left,center,center,center,center,center,center,center,left,center,center,left,left,left");
+        ${GridObjName}.setColTypes("ch,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
+        ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+        ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+        ${GridObjName}.enableDistributedParsing(true,50,230);
+        ${GridObjName}.enableMultiline(true);
+        ${GridObjName}.enableAutoHeight(true, getGridHeight('dps301C00', $!gridHeight));
+        ${GridObjName}.enableAutoWidth(false);
+        ##${GridObjName}.objBox.style.overflowX="scroll";
+        ##${GridObjName}.objBox.style.overflowY="scroll";
+        ${GridObjName}.setStyle("","height:35px;","","");
+        ${GridObjName}.setSizes();
+        ${GridObjName}.init();
+        ${GridObjName}.splitAt(2);
+        ${GridObjName}.enableBlockSelection();
+        ${GridObjName}.forceLabelSelection(true);
+        ${GridObjName}.setCSVDelimiter("\t");
+        ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+            if(!(currentCellMove(${GridObjName},keycode))){return false;}
+            copyBlock(${GridObjName}, keycode, ctrl, shift);
+            return true;
+        });
+}
+## 範囲指定コピー
+function onKeyPressed(code, ctrl, shift) {
+    return copyBlock(${GridObjName}, code, ctrl, shift);
+}
+## リンク移動
+function executeLink(actionPath,sosCd3,prodCode) {
+    document.dps301C00Form.sosCd3.value = sosCd3;
+    document.dps301C00Form.prodCode.value = prodCode;
+    document.dps301C00Form.action = actionPath;
+    document.dps301C00Form.submit();
+}
+## 検索時入力チェック
+function searchValidation() {
+    ## [必須] 組織
+    value = document.dps301C00Form.sosCd3.value;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    errorMsg = '$text.get("DPC1024E",["組織","エリア"])';
+##    errorMsg = '$text.get("DPC1024E",["組織","営業所"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    addErrorInfo(!isEntered(value), errorMsg);
+    ## [必須] カテゴリ
+    value = document.getElementById("category").value;
+    errorMsg = '$text.get("DPC1003E",["カテゴリ"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    return validation();
+}
+## 試算処理実行時チェック
+function executeValidation() {
+    ## [必須] 組織
+    value = document.dps301C00Form.sosCd3.value;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    errorMsg = '$text.get("DPC1024E",["組織","エリア"])';
+##    errorMsg = '$text.get("DPC1024E",["組織","営業所"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    addErrorInfo(!isEntered(value), errorMsg);
+    ## [必須] 品目選択
+    var checkedRows = ${GridObjName}.getCheckedRows(0);
+    errorMsg = '$text.get("DPC1006E",["品目"])';
+    addErrorInfo(!isEntered(checkedRows), errorMsg);
+    return validation();
+}
+##検索処理
+function dps301C00F05() {
+    ##入力チェック
+    if (!searchValidation()) {
+        return;
+    }
+    var actionPath = '$link.setAction('dps301C00F05')';
+    document.dps301C00Form.action = actionPath;
+    document.dps301C00Form.submit();
+    dps301C04F00 = blockIt;
+    dps301C00F05 = blockIt;
+}
+##試算処理実行
+function dps301C00F10() {
+    ##入力チェック
+    if (!executeValidation()) {
+        return;
+    }
+    ##確認
+    if (!confirm('$text.get("DPS301C00.001","dialogue")')) {
+        return;
+    }
+    ##試算前の指数確認
+    if(!checkResult()){
+        return;
+    }
+    ##送信データ作成
+    addCheckRowIdList(document.dps301C00Form, ${GridObjName}, 'rowIdList', 'updateRowId', 0);
+    ##送信
+    var actionPath = '$link.setAction('dps301C00F10Execute')';
+    document.dps301C00Form.action = actionPath;
+    document.dps301C00Form.submit();
+    dps301C00F05 = blockIt;
+    dps301C04F00 = blockIt;
+}
+
+##実績・未獲得市場確認
+function checkResult(){
+    ##チェックONの品目固定コードを取得し、連結
+    var checkProdCode = "";
+    var checkedRows = ${GridObjName}.getCheckedRows(0);
+    if (checkedRows != "") {
+        var rowIdList = checkedRows.split(",");
+        for ( var i = 0; i < rowIdList.length; i++) {
+            var userData = ${GridObjName}.getUserData(rowIdList[i], 'updateRowId');
+            if(userData == null){continue;}
+            var userDataArr = userData.split(",");
+            checkProdCode = checkProdCode.concat(userDataArr[0]);
+            if(i != rowIdList.length - 1){
+                checkProdCode = checkProdCode.concat(",");
+            }
+        }
+    }
+    ##GET送信
+    var sosCd3 = document.dps301C00Form.sosCd3.value;
+    var url ="$link.setAction('dps301C00F15Execute')";
+    url = url.concat("?sFlg=true");
+    url = url.concat("&sosCd3=").concat(sosCd3);
+    url = url.concat("&checkProdCode=").concat(checkProdCode);
+    ##結果からメッセージ作成
+    var targetProdNameArr = false;
+    var message = "";
+    try {
+        var text = getPage(url);
+        var obj = JSON.parse(text);
+        messageList = obj.messageList;
+        var arr = messageList.split(",");
+        for( var i=0; i<arr.length; i++ ){
+            if(arr[i] == ""){continue;}
+            if (!confirm(arr[i])) {
+                return false;
+            }else{
+                continue;
+            }
+        }
+    } catch(e) {
+    }
+    return true;
+}
+##試算処理方法確認ダイアログ起動
+function dps301C04F00() {
+    ##実行フラグを初期化
+    document.dps301C00Form.calcFlg.value = "false";
+    ##チェックボックスの状態を取得
+    var allProdOnFlg = isAllCheckboxOn(${GridObjName},0);
+    ##入力チェック
+    if (!executeValidation()) {
+        return;
+    }
+    ##初回試算時の判定
+    #if(!$!form.bean.calcType || $!form.bean.calcType.equals(""))
+        var calcFirstFlg = true;
+    #else
+        var calcFirstFlg = false;
+    #end
+    if (calcFirstFlg && !allProdOnFlg){
+        ##確認
+        alert('$text.get("DPS301C00.004","dialogue")');
+        return;
+    }
+    var url ="$link.setAction('dps301C04F00')";
+    url = url.concat("?calcType=").concat(document.dps301C00Form.calcType.value);
+    url = url.concat("&allProdOnFlg=").concat(allProdOnFlg);
+    url = url.concat("&sosCd3=").concat("$!form.bean.sosCd3");
+    var childWindow = window.open(url,'comWindow',"width=500px,height=400px");
+    ## 子画面が閉じるまで待機
+    var interval = setInterval(function(){
+        if(childWindow.closed){
+            clearInterval(interval);
+            if(document.dps301C00Form.calcFlg.value == "true"){
+                dps301C00F10();
+            }
+        }
+    }, 200);
+}
+
+##チェックボックスのALL・ON確認
+function isAllCheckboxOn(grid,columnId){
+    rowNum = grid.getRowsNum();
+    for ( var i = 0; i < rowNum; i++) {
+        var rowId = grid.getRowId(i);
+        if(grid.cells(rowId, columnId).isDisabled()) {
+            continue;
+        }
+        var value = grid.cells(rowId, columnId).getValue();
+        if(value == 0){
+            return false;
+        }
+    }
+    return true;
+}
+
+## 組織・従業員選択後の処理
+function changeSos(sosCd, jgiNo, sosMaxSrchGetValue, etcSosFlg) {
+	let memorizer = new CategoryAndProdCodeMemorizerForDps();
+
+	sosApply(sosCd, jgiNo, sosMaxSrchGetValue, etcSosFlg);
+	changeCategory();
+    memorizer.undoCategoryCodeValue();
+
+}
+
+## カテゴリリストの変更処理
+## 組織・担当者を変更した時
+function changeCategory() {
+	var form = document.dps301C00Form;
+	## 選択した組織のカテゴリ
+    var sosCategoryAry = document.getElementById('sosCategory').value.split(',');
+
+    ## 組織コードの取得
+    var sosCd;
+    if(isEntered(form.sosCd3.value)){
+      sosCd = form.sosCd3.value;
+    } else {
+      sosCd = null;
+    }
+
+    ## 計画対象カテゴリ領域より、立案レベルを条件にカテゴリを取得
+    var planLvCtgList = [];
+    planLvCtgList = [
+                      #foreach($val in $service.getDpsCategoryByPlanLevel($form.getField("DPS301C00_PLANLEVEL_MR")))
+                      , '$val'
+                      #end
+                      ];
+
+	## 選択した組織のカテゴリは、このタイミングでvelocityで取得できないので、カテゴリを一旦全て取得
+    var categoryList = [
+                      #foreach($codeAndValue in $service.getDpsCategoryPlanList(null, '1', false))
+                      , { text: '$codeAndValue.value', value: '$codeAndValue.code' }
+                      #end
+                     ];
+
+    ## カテゴリのselectbox
+	var prodCategory = document.getElementsByName('category')[0];
+	## 一旦selectboxのoptionを削除
+	while(category.lastChild)
+	{
+		category.removeChild(category.lastChild);
+	}
+
+	## optionを作成
+	var option;
+	document.createElement('option');
+
+	## 組織選択時
+	## 選択した組織のカテゴリのみ残す
+    for (var i = 1; i < categoryList.length; i++){
+    	for(var j = 0; j < sosCategoryAry.length; j++) {
+    		if (categoryList[i].value == sosCategoryAry[j] && planLvCtgList.includes(categoryList[i].value)) {
+				option = document.createElement('option');
+				option.setAttribute('value', categoryList[i].value);
+				option.innerHTML = categoryList[i].text;
+    			prodCategory.appendChild(option);
+    		}
+		}
+    }
+}
+
+//-->
+</script>
+#tabbar("sienSosiki", "dps301C00F00")
+<div id="tabBox">
+<form name="dps301C00Form" method="post">
+<div align="left" style="float: left; width: 50%;">
+<table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+        <td class="gridIndex" style="width: 150px;">組織*</td>
+        ##<td colspan="2">#sosDialogDps("01", "02", "02", "DPS301")</td>
+        <td colspan="2">#sosDialogExt2("changeSos","01", "02", "02", "DPS301")</td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width:150px;">カテゴリ*</td>
+        <td>
+        <table  cellspacing="0" cellpadding="0">
+            <tr>
+                 <td>#select ("category",  $!form.bean.prodCategoryList, $!form.bean.category)</td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+</table>
+<table style="margin-top: 0px; margin-bottom: 0px;">
+    <tr>
+        <td><input type="button" value="検索" style="width: 80px;" onclick="dps301C00F05()" /></td>
+        #if ($!security.hasAuthEdit("DPS301"))
+          #if ($!form.bean.existSearchDataFlag)
+            <td><input type="button" value="試算処理を実行" style="width: 120px;" onclick="dps301C04F00()" /></td>
+          #else
+            <td><input type="button" value="試算処理を実行" style="width: 120px;" onclick="dps301C04F00()" disabled /></td>
+          #end
+        #end
+    </tr>
+</table>
+#if ($!form.bean.existSearchDataFlag)
+<a href='#' onClick='allCheckboxChange(${GridObjName},0,true)' class="allCheckboxChange">すべての品目を選択</a>
+<a href='#' onClick='allCheckboxChange(${GridObjName},0,false)' class="allCheckboxChange">すべての品目を解除</a>
+#end
+<br>
+</div>
+#loadingGridDiv4("${GridObjName}", "${CoverId}", "width: 100%; clear: both;")
+<div class="guide">
+※編集をクリックすると、試算パラメータ編集画面を表示します。<br>
+※試算処理を実行をクリックすると、選択した品目の試算処理を開始します。<br>
+</div>
+#token()
+##試算タイプ
+<input type="hidden" id="calcType" name="calcType" value="$!form.bean.calcType" />
+##試算処理起動フラグ
+<input type="hidden" id="calcFlg" name="calcFlg" value="false" />
+<input type="hidden" id="prodCode" name="prodCode" value="" />
+</form>
+</div>

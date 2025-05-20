@@ -1,0 +1,352 @@
+#set($pageTitle = $text.get("dps400C00","title"))
+#set($bodyOnloadMethod = "dps400C00F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dps400C00x01.vm")
+#set($searchResultExist = $form.getRequestData("DPS400C00_DATA_R_SEARCH_RESULT_EXIST"))
+
+#set($vaccineCode = $service.getShienVaccineCode())
+
+##参照権限
+#set($canEdit = false)
+#if ($form.bean.category == $vaccineCode)
+    #if($!security.hasAuthEdit("DPS400C00"))
+        #set($canEdit = true)
+    #end
+#else
+    #if($!security.hasAuthEdit("DPS400C00"))
+        #set($canEdit = true)
+    #end
+#end
+
+<script language="javascript">
+<!--
+var category = "$!form.bean.category";
+#set($GridObjName = "dps400C00Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps400C00CoverId")
+var ${GridObjName};
+
+## 初期表示＋読込処理
+function dps400C00F00() {
+
+    let element = document.getElementById('cb');
+
+    category = document.getElementById("category").value;
+
+    ## ワクチンの場合
+    if(category == "$vaccineCode"){
+        console.log("ワクチン");
+        ## mod start 2023/2/10 h.Futagami 初期チェックを入れる
+        ## element.checked = false;
+        element.checked = true;
+        ## mod start 2023/2/10 h.Futagami 初期チェックを入れる
+    }
+    ## 医薬の場合
+    else
+    {
+        console.log("医薬");
+        element.checked = true;
+    }
+
+    ## グリッド生成
+    doInitGrid();
+    ## 検索結果データの読込
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+    ## 組織設定
+    sosApply("$!security.defaultSosCd", "$!security.defaultJgiNo", "02");
+}
+
+## DHTMLXGrid生成
+function doInitGrid() {
+        ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+       ${GridObjName}.setHeader("temp,選択,品目名称,製品区分,配分状況<br>(開始日時-終了日時),本部案/エリア案,配分基準,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan");
+##       ${GridObjName}.setHeader("temp,選択,品目名称,製品区分,配分状況<br>(開始日時-終了日時),本部案/営業所案,配分基準,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan");
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+#if(!($!form.bean.category == "$vaccineCode"))
+        ${GridObjName}.attachHeader("temp,#rspan,#rspan,#rspan,#rspan,#rspan,編集<br>(最終更新日時),UH,#cspan,#cspan,#cspan,#cspan,#cspan,P,#cspan,#cspan,#cspan,#cspan,#cspan");
+#else
+        ${GridObjName}.attachHeader("temp,#rspan,#rspan,#rspan,#rspan,#rspan,編集<br>(最終更新日時),UH,#cspan,#cspan,#cspan,#cspan,#cspan,P(含ﾜｸﾁﾝ施設),#cspan,#cspan,#cspan,#cspan,#cspan");
+#end
+        ${GridObjName}.attachHeader("temp,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,配分品目,製品区分,実績参照期間,参照品目1,参照品目2,参照品目3,配分品目,製品区分,実績参照期間,参照品目1,参照品目2,参照品目3");
+        ## mod Start 2021/7/2 H.Kaneko Step4UAT課題137
+        ##${GridObjName}.setInitWidths("0,30,120,60,130,100,125,120,60,110,120,120,120,120,60,110,120,120,120");
+        ${GridObjName}.setInitWidths("0,30,120,60,110,50,110,120,60,105,120,120,120,120,60,105,120,120,120");
+        ## mod End 2021/7/2 H.Kaneko Step4UAT課題137
+        ${GridObjName}.setColAlign("center,center,left,center,center,center,center,left,center,center,left,left,left,left,center,center,left,left,left");
+        #if($form.bean.category == "1")
+        ${GridObjName}.setColTypes("ro,ch,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
+        #else
+        ${GridObjName}.setColTypes("ro,ch,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
+        #end
+        ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+        ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+        ${GridObjName}.enableDistributedParsing(true,50,260);
+        ${GridObjName}.enableAutoHeight(true, getGridHeight('dps400C00', $!gridHeight));
+        ${GridObjName}.enableMultiline(true);
+        ${GridObjName}.enableBlockSelection();
+        ${GridObjName}.forceLabelSelection(true);
+        ${GridObjName}.setCSVDelimiter("\t");
+        ${GridObjName}.setStyle("","height:35px;","","");
+        ${GridObjName}.setSizes();
+        ${GridObjName}.init();
+        ${GridObjName}.splitAt(3);
+        ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+            if(!(currentCellMove(${GridObjName},keycode))){return false;}
+            copyBlock(${GridObjName}, keycode, ctrl, shift);
+            return true;
+        });
+        ${GridObjName}.attachEvent("onRowCreated",function(id){
+            ##var cell = ${GridObjName}.cells(id,0);
+            var cell = ${GridObjName}.cells(id,1);
+            if (cell.getAttribute("disabled")) cell.setDisabled(true);
+        });
+}
+
+## リンク移動
+function executeLink(actionPath,sosCd3,prodCode,category) {
+    document.dps400C00Form.sosCd3.value = sosCd3;
+    document.dps400C00Form.prodCode.value = prodCode;
+    document.dps400C00Form.category.value = category;
+    document.dps400C00Form.action = actionPath;
+    document.dps400C00Form.submit();
+}
+
+##検索処理
+function dps400C00F05() {
+    ##入力チェック
+    if (!searchValidation()) {
+        return;
+    }
+    var actionPath = '$link.setAction('dps400C00F05')';
+    document.dps400C00Form.action = actionPath;
+    document.dps400C00Form.submit();
+    execute = blockIt;
+    dps400C00F05 = blockIt;
+}
+
+## 検索時入力チェック
+function searchValidation() {
+    ## [必須] 組織
+    category = document.dps400C00Form.category.value;
+    ## ワクチン以外の場合、組織選択を必須
+    if(category != "$vaccineCode"){
+        value = document.dps400C00Form.sosCd3.value;
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        errorMsg = '$text.get("DPC1024E",["組織","エリア"])';
+##        errorMsg = '$text.get("DPC1024E",["組織","営業所"])';
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        addErrorInfo(!isEntered(value), errorMsg);
+    }
+
+    ## [必須] カテゴリ
+    value = document.dps400C00Form.category.value;
+    errorMsg = '$text.get("DPC1003E",["カテゴリ"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    return validation();
+}
+
+## 「配分処理を実行」処理
+function dps400C00F10Execute() {
+    execute('$text.get("DPS400C00.001","dialogue")', '$link.setAction("dps400C00F10Execute")');
+}
+
+## 「配分処理を実行」処理
+function dps400C00F15Execute() {
+    execute('$text.get("DPS400C00.002","dialogue")', '$link.setAction("dps400C00F15Execute")');
+}
+
+## 「配分処理を実行」処理
+function dps400C00F20xecute() {
+    execute('$text.get("DPS400C00.001","dialogue")', '$link.setAction("dps400C00F20Execute")');
+}
+
+## 更新処理
+function execute(confirmMsg, actionPath) {
+    ##入力チェック
+    if (!executeValidation()) {
+        return;
+    }
+    ##確認
+    if (!confirm(confirmMsg)) {
+        return;
+    }
+    ##配分処理と同時にMRに公開フラグ
+    form = document.dps400C00Form;
+    var element = document.createElement('input');
+	element.type  = 'hidden';
+	element.name  = 'isMrOpenCheck';
+	element.value = 0;
+	if (document.getElementById("cb").checked){
+	    element.value = 1;
+	}
+	form.appendChild(element);
+    ##送信データ作成
+##  addCheckRowIdList(document.dps400C00Form, ${GridObjName}, 'rowIdList', 'updateRowId', 0);
+    addCheckRowIdList(document.dps400C00Form, ${GridObjName}, 'rowIdList', 'updateRowId', 1);
+    ##送信
+    document.dps400C00Form.action = actionPath;
+    document.dps400C00Form.submit();
+    dps400C00F05 = blockIt;
+    execute = blockIt;
+}
+
+## 更新時入力チェック
+function executeValidation() {
+    ## [必須] 品目選択
+##  var checkedRows = ${GridObjName}.getCheckedRows(0);
+    var checkedRows = ${GridObjName}.getCheckedRows(1);
+    errorMsg = '$text.get("DPC1006E",["品目"])';
+    addErrorInfo(!isEntered(checkedRows), errorMsg);
+    return validation();
+}
+
+## 組織・従業員選択後の処理
+function changeSos(sosCd, jgiNo, sosMaxSrchGetValue) {
+	let memorizer = new CategoryAndProdCodeMemorizerForDps();
+
+    sosApply(sosCd, jgiNo, sosMaxSrchGetValue, false);
+
+    changeCategory();
+    memorizer.undoCategoryCodeValue();
+}
+
+## カテゴリリストの変更処理
+## 組織・担当者を変更した時
+function changeCategory() {
+    var form = document.dps400C00Form;
+    ## 選択した組織のカテゴリ
+    var sosCategoryAry = document.getElementById('sosCategory').value.split(',');
+
+    ## 組織コードの取得
+    var sosCd;
+    if(isEntered(form.sosCd3.value)){
+      sosCd = form.sosCd3.value;
+    } else {
+      sosCd = null;
+    }
+
+    ## 計画対象カテゴリ領域より、立案レベルを条件にカテゴリを取得
+    var planLvCtgList = [];
+    if (isEntered(form.sosCd3.value)) {
+      planLvCtgList = [
+                      #foreach($val in $service.getDpsCategoryByPlanLevel($form.getField("DPS400C00_PLANLEVEL_INS_WS")))
+                      , '$val'
+                      #end
+                      ];
+    }
+
+    ## 選択した組織のカテゴリは、このタイミングでvelocityで取得できないので、カテゴリを一旦全て取得
+    var categoryList = [
+                      #foreach($codeAndValue in $service.getDpsCategoryPlanList(null, '1', false))
+                      , { text: '$codeAndValue.value', value: '$codeAndValue.code' }
+                      #end
+                     ];
+
+    ## カテゴリのselectbox
+    var prodCategory = document.getElementsByName('category')[0];
+    ## 一旦selectboxのoptionを削除
+    while(prodCategory.lastChild)
+    {
+        prodCategory.removeChild(prodCategory.lastChild);
+    }
+
+    ## optionを作成
+    var option;
+    document.createElement('option');
+
+    ## 組織選択時
+    ## 選択した組織のカテゴリのみ残す
+    for (var i = 1; i < categoryList.length; i++){
+        for(var j = 0; j < sosCategoryAry.length; j++) {
+            if (categoryList[i].value == sosCategoryAry[j] && planLvCtgList.includes(categoryList[i].value)) {
+                option = document.createElement('option');
+                option.setAttribute('value', categoryList[i].value);
+                option.innerHTML = categoryList[i].text;
+                prodCategory.appendChild(option);
+            }
+        }
+    }
+}
+//-->
+</script>
+
+#tabbar("sienSisetuTokuyaku", "dps400C00F00")
+<div id="tabBox">
+
+<form name="dps400C00Form" method="post">
+<div align="left" style="float: left;width: 50%;">
+<table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+        <td class="gridIndex" style="width:150px;">組織*</td>
+        <td colspan="2" >#sosDialogExt2("changeSos", "01", "02", "02", "DPS400C00")</td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width:150px;">カテゴリ*</td>
+        <td>
+        <table  cellspacing="0" cellpadding="0">
+            <tr>
+                <td>#select ("category", $!form.bean.prodCategoryList, $!form.bean.category)</td>
+               ## <td>#selectWithFunc ("category", $!form.bean.prodCategoryList, $!form.bean.category","dps400C00F05()")</td>
+                <td style="padding-left:5px"><input type="button" value="検索" style="width:80px;" onclick="dps400C00F05()" /></td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+</table>
+</div>
+<div align="left" style="float: left;width: 100%;">
+## MMP品
+## #if($form.bean.category == "1")
+##    <div class="guide">※MMP品の配分処理は、施設特約店別計画の編集画面より実行してください。</div>
+## 仕入品
+## #else
+    <table style="margin-top:2px;">
+        <tr>
+            <td>
+                <fieldset style="padding:2px 15px 2px 15px;">
+                    <legend><label>配分処理業務状況</label></legend>
+                    <label for="cb">配分処理と同時にMRに公開</label>
+                    #if (!($form.bean.isMrOpenCheck))
+                    <input type="checkbox" name="isMrOpenCheck" id="cb" checked />
+                    #else
+                    <input type="checkbox" name="isMrOpenCheck" id="cb" />
+                    #end
+                    #if ($canEdit)
+                        #if ($searchResultExist)
+                            <input type="button" value="配分処理を実行" onclick="dps400C00F10Execute()" />
+                        #else
+                            <input type="button" value="配分処理を実行" onclick="dps400C00F10Execute()" disabled />
+                        #end
+                    #end
+                </fieldset>
+            </td>
+        </tr>
+    </table>
+    <div class="guide">
+    ※【配分処理を実行】ボタンをクリックすると、選択した品目の配分処理を開始します。<br>
+    </div>
+##  <a href='#' onClick='allCheckboxChange(${GridObjName},0,true)' class="allCheckboxChange">すべての品目を選択</a>
+##  <a href='#' onClick='allCheckboxChange(${GridObjName},0,false)' class="allCheckboxChange">すべての品目を解除</a>
+    <a href='#' onClick='allCheckboxChange(${GridObjName},1,true)' class="allCheckboxChange">すべての品目を選択</a>
+    <a href='#' onClick='allCheckboxChange(${GridObjName},1,false)' class="allCheckboxChange">すべての品目を解除</a>
+## #end
+</div>
+##loadingGridDiv2("${GridObjName}", "${CoverId}", "")
+## mod Start 2021/7/5 H.Kaneko Step4UAT課題137
+###loadingGridDiv4("${GridObjName}", "${CoverId}", "width: 100%; clear: both;")
+#loadingGridDiv4("${GridObjName}", "${CoverId}", "width: 117.5%; clear: both; transform: scale(0.85); transform-origin:0 0;")
+## mod End 2021/7/5 H.Kaneko Step4UAT課題137
+<div class="guide">※編集リンクをクリックすると、配分基準編集画面を表示します。</div>
+#token()
+<input type="hidden" id="prodCode" name="prodCode" value="" />
+</form>
+</div>

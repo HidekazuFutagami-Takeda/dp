@@ -1,0 +1,234 @@
+## -------------------------------
+## 営業所まで特定した場合
+## -------------------------------
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS302C00_DATA_R_SEARCH_RESULT"))
+    #set( $dto = $form.getRequestData("DPS302C00_DATA_R_SEARCH_RESULT"))
+    #set( $dataList = $form.getRequestData("DPS302C00_DATA_R_SEARCH_RESULT").resultList)
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#foreach($resultObj in $dataList)
+    ## 計画対象品目データ変数(NULLの場合は空白を表示)
+    ## 品目コード
+    #set( $prodCode = "")
+        #if($resultObj.prodCode)
+            #set( $prodCode = $resultObj.prodCode)
+        #end
+    ## 品目名
+    #set( $prodName = "")
+        #if($resultObj.prodName)
+            #set( $prodName = $resultObj.prodName)
+        #end
+    ## 担当者別計画ステータス シーケンスキー
+    #set( $statusSeqKey = "")
+        #if($resultObj.statusSeqKey)
+            #set( $statusSeqKey = $resultObj.statusSeqKey)
+        #end
+    ## 担当者別計画ステータス 最終更新日時
+    #set( $statusUpDate = "")
+        #if($resultObj.statusUpDate)
+            #set( $statusUpDate = $resultObj.statusUpDate.Time)
+        #end
+    ## 試算状況
+    #set( $estimateColor = "")
+    #set( $estimateStr   = "")
+        #if( $resultObj.IsStatusEstimating || $resultObj.IsStatusEstimated || $resultObj.IsStatusTeamPlanOpened || $resultObj.IsStatusTeamPlanCompleted || $resultObj.IsStatusMrPlanOpened || $resultObj.IsStatusMrPlanInputFinished || $resultObj.IsStatusMrPlanCompleted )
+            #if( $resultObj.IsStatusEstimating )
+                #set( $estimateColor = "#F5F5F5" )
+                #set( $estimateStr   = "試算中" )
+            #else
+                #set( $estimateColor = "#CCFFFF" )
+                #set( $estimateStr   = "試算済<br>$!format.toString($resultObj.estEndDate, 'MM/dd HH:mm')" )
+            #end
+        #else
+            #set( $estimateColor = "#F5F5F5" )
+            #set( $estimateStr   = "" )
+        #end
+    ## チーム別計画 公開
+    #set( $teamPlanOpenColor = "")
+    #set( $teamPlanOpenStr   = "")
+        #if( $resultObj.IsStatusEstimated || $resultObj.IsStatusTeamPlanOpened || $resultObj.IsStatusTeamPlanCompleted || $resultObj.IsStatusMrPlanOpened || $resultObj.IsStatusMrPlanInputFinished || $resultObj.IsStatusMrPlanCompleted )
+            #if( $resultObj.IsStatusEstimated )
+                #set( $teamPlanOpenColor = "#FFF555" )
+                #set( $teamPlanOpenStr   = "" )
+            #else
+                #set( $teamPlanOpenColor = "#CCFFFF" )
+                #set( $teamPlanOpenStr   = "公開中<br>#writeLastUpDate3($resultObj.teamPlanOpenDate,'-')")
+            #end
+        #else
+            #set( $teamPlanOpenColor = "#F5F5F5" )
+            #set( $teamPlanOpenStr   = "" )
+        #end
+    ## チーム別計画 確定
+    #set( $teamPlanFixColor = "")
+    #set( $teamPlanFixStr   = "")
+        #if( $resultObj.IsStatusTeamPlanOpened || $resultObj.IsStatusTeamPlanCompleted || $resultObj.IsStatusMrPlanOpened || $resultObj.IsStatusMrPlanInputFinished || $resultObj.IsStatusMrPlanCompleted )
+            #if( $resultObj.IsStatusTeamPlanOpened )
+                #set( $teamPlanFixColor = "#FFF555" )
+                #set( $teamPlanFixStr   = "" )
+            #else
+                #set( $teamPlanFixColor = "#CCFFFF" )
+                #set( $teamPlanFixStr   = "確定<br>#writeLastUpDate3($resultObj.teamPlanFixDate,'-')")
+            #end
+        #else
+            #set( $teamPlanFixColor = "#F5F5F5" )
+            #set( $teamPlanFixStr   = "" )
+        #end
+    ## 担当者別計画 公開
+    #set( $mrPlanOpenColor = "")
+    #set( $mrPlanOpenStr   = "")
+        #if( $resultObj.IsStatusTeamPlanCompleted || $resultObj.IsStatusMrPlanOpened || $resultObj.IsStatusMrPlanInputFinished || $resultObj.IsStatusMrPlanCompleted )
+            #if( $resultObj.IsStatusTeamPlanCompleted )
+                #set( $mrPlanOpenColor = "#FFF555" )
+                #set( $mrPlanOpenStr   = "" )
+            #else
+                #set( $mrPlanOpenColor = "#CCFFFF" )
+                #set( $mrPlanOpenStr   = "公開中<br>#writeLastUpDate3($resultObj.mrPlanOpenDate,'-')")
+            #end
+        #else
+            #set( $mrPlanOpenColor = "#F5F5F5" )
+            #set( $mrPlanOpenStr   = "" )
+        #end
+    ## 担当者別計画 AL修正
+    #set( $mrPlanALColor = "")
+    #set( $mrPlanALStr   = "")
+    #if( $resultObj.IsStatusMrPlanOpened || $resultObj.IsStatusMrPlanInputFinished || $resultObj.IsStatusMrPlanCompleted )
+        #if( $resultObj.IsStatusMrPlanOpened )
+            #if($resultObj.IsStatusMrPlanInputting )
+                #set( $mrPlanALColor = "#FFF555" )
+                #set( $mrPlanALStr   = "一部入力完了<br>#writeLastUpDate3($!resultObj.mrPlanInputDate,'-')" )
+            #else
+                #set( $mrPlanALColor = "#FFF555" )
+                #set( $mrPlanALStr   = "" )
+            #end
+        #else
+        #set( $mrPlanALColor = "#CCFFFF" )
+            #if ($resultObj.mrPlanInputDate)
+                #set( $mrPlanALStr   = "入力完了<br>#writeLastUpDate3($resultObj.mrPlanInputDate,'-')")
+            #else
+                #set( $mrPlanALStr   = "入力完了" )
+            #end
+        #end
+    #else
+        #set( $mrPlanALColor = "#F5F5F5" )
+        #set( $mrPlanALStr   = "" )
+    #end
+    ## 担当者別計画 確定
+    #set( $mrPlanFixColor = "")
+    #set( $mrPlanFixStr   = "")
+        #if( $resultObj.IsStatusMrPlanInputFinished || $resultObj.IsStatusMrPlanCompleted )
+            #if( $resultObj.IsStatusMrPlanInputFinished )
+                #set( $mrPlanFixColor = "#FFF555" )
+                #set( $mrPlanFixStr   = "" )
+            #else
+                #set( $mrPlanFixColor = "#CCFFFF" )
+                #set( $mrPlanFixStr   = "確定<br>#writeLastUpDate3($resultObj.mrPlanFixDate,'-')")
+            #end
+        #else
+            #set( $mrPlanFixColor = "#F5F5F5" )
+            #set( $mrPlanFixStr   = "" )
+        #end
+    ## UH 調整金額背景色
+    #set( $uhTuneColor = "#F4A460" )
+    ## 営業所計画 UH
+    #set( $uhOfficePlanAmount = "　")
+        #if( $resultObj.UhOfficePlanAmount )
+            #set( $uhOfficePlanAmount = $resultObj.UhOfficePlanAmount )
+        #else
+            #set( $uhTuneColor = "#FFFFFF" )
+        #end
+    ## 担当者別計画(積上) UH
+    #set( $uhMrPlanAmount = "　")
+        #if( $resultObj.UhMrPlanAmount )
+            #set( $uhMrPlanAmount = $resultObj.UhMrPlanAmount )
+        #else
+            #set( $uhTuneColor = "#FFFFFF" )
+        #end
+    ## P 調整金額背景色
+    #set( $pTuneColor = "#F4A460" )
+    ## 営業所計画 P
+    #set( $pOfficePlanAmount = "　")
+        #if( $resultObj.POfficePlanAmount )
+            #set( $pOfficePlanAmount = $resultObj.POfficePlanAmount )
+        #else
+            #set( $pTuneColor = "#FFFFFF" )
+        #end
+    ## 担当者別計画(積上) P
+    #set( $pMrPlanAmount = "　")
+        #if( $resultObj.PMrPlanAmount )
+            #set( $pMrPlanAmount = $resultObj.PMrPlanAmount )
+        #else
+            #set( $pTuneColor = "#FFFFFF" )
+        #end
+    ## リンク先の制御
+    #set( $linkName = "")
+    ## 試算済み、チーム別計画公開の場合はチーム別計画編集画面
+    #if( $resultObj.isStatusEstimated || $resultObj.isStatusTeamPlanOpened )
+        #set( $linkName = "dps302C02F00")
+    #end
+    ## チーム別計画確定以降の場合は担当者別計画編集画面
+    #if( $resultObj.isStatusTeamPlanCompleted
+         || $resultObj.isStatusMrPlanOpened
+         || $resultObj.isStatusMrPlanInputFinished
+         || $resultObj.isStatusMrPlanCompleted )
+        #set( $linkName = "dps302C03F00")
+    #end
+    <row id='$velocityCount'>
+    	## mod Start 2021/7/8 H.Kaneko Step4UAT課題223
+        ##<cell style="height:45;"></cell>
+        <cell style="height:35px;"></cell>
+        ## mod End 2021/7/8 H.Kaneko Step4UAT課題223
+        ## 試算前、試算中の場合、リンク無
+        #if($linkName == "")
+        ## mod Start 2021/7/8 H.Kaneko Step4UAT課題223
+        ##<cell style="height:45;">$prodName</cell>
+        <cell style="height:35px;">$prodName</cell>
+        ## mod End 2021/7/8 H.Kaneko Step4UAT課題223
+        #else
+        ## mod Start 2021/7/8 H.Kaneko Step4UAT課題223
+        ##<cell style="height:45;"><![CDATA[<a href='#' onClick='cs_openEditDialog("$link.setAction($linkName).addQueryData('sosCd3',$form.bean.sosCd3).addQueryData('sosCd4',$form.bean.sosCd4).addQueryData('prodCode',$prodCode).addQueryData('insType','1').addQueryData('clickRowId', $!velocityCount).addQueryData('category',$form.bean.category)",dps302C00F05);'>$prodName</a>]]></cell>
+        <cell style="height:35px;"><![CDATA[<a href='#' onClick='cs_openEditDialog("$link.setAction($linkName).addQueryData('sosCd3',$form.bean.sosCd3).addQueryData('sosCd4',$form.bean.sosCd4).addQueryData('prodCode',$prodCode).addQueryData('insType','1').addQueryData('clickRowId', $!velocityCount).addQueryData('category',$form.bean.category)",dps302C00F05);'>$prodName</a>]]></cell>
+        ## mod End 2021/7/8 H.Kaneko Step4UAT課題223
+        #end
+        ## mod Start 2021/7/8 H.Kaneko Step4UAT課題223
+        ##<cell style="height:45;background-color:$estimateColor"><![CDATA[$estimateStr]]></cell>
+        ##<cell style="height:45;background-color:$teamPlanOpenColor"><![CDATA[$teamPlanOpenStr]]></cell>
+        ##<cell style="height:45;background-color:$teamPlanFixColor"><![CDATA[$teamPlanFixStr]]></cell>
+        ##<cell style="height:45;background-color:$mrPlanOpenColor"><![CDATA[$mrPlanOpenStr]]></cell>
+        ##<cell style="height:45;background-color:$mrPlanALColor"><![CDATA[$mrPlanALStr]]></cell>
+        ##<cell style="height:45;background-color:$mrPlanFixColor"><![CDATA[$mrPlanFixStr]]></cell>
+        ##<cell style="height:45;">$uhOfficePlanAmount</cell>
+        ##<cell style="height:45;">$uhMrPlanAmount</cell>
+        ##<cell style="height:45;background-color:$uhTuneColor">$!resultObj.uhOfficeSagaku</cell>
+        ##<cell style="height:45;">$pOfficePlanAmount</cell>
+        ##<cell style="height:45;">$pMrPlanAmount</cell>
+        ##<cell style="height:45;background-color:$pTuneColor">$!resultObj.pOfficeSagaku</cell>
+        <cell style="height:35px;background-color:$estimateColor"><![CDATA[$estimateStr]]></cell>
+        <cell style="height:35px;background-color:$teamPlanOpenColor"><![CDATA[$teamPlanOpenStr]]></cell>
+        <cell style="height:35px;background-color:$teamPlanFixColor"><![CDATA[$teamPlanFixStr]]></cell>
+        <cell style="height:35px;background-color:$mrPlanOpenColor"><![CDATA[$mrPlanOpenStr]]></cell>
+        <cell style="height:35px;background-color:$mrPlanALColor"><![CDATA[$mrPlanALStr]]></cell>
+        <cell style="height:35px;background-color:$mrPlanFixColor"><![CDATA[$mrPlanFixStr]]></cell>
+        <cell style="height:35px;">$uhOfficePlanAmount</cell>
+        <cell style="height:35px;">$uhMrPlanAmount</cell>
+        <cell style="height:35px;background-color:$uhTuneColor">$!resultObj.uhOfficeSagaku</cell>
+        <cell style="height:35px;">$pOfficePlanAmount</cell>
+        <cell style="height:35px;">$pMrPlanAmount</cell>
+        <cell style="height:35px;background-color:$pTuneColor">$!resultObj.pOfficeSagaku</cell>
+        ## mod End 2021/7/8 H.Kaneko Step4UAT課題223
+        ## 更新行ID [シーケンスキー,最終更新日時,品目固定コード,品目名称]
+        <userdata name="updateRowId">$statusSeqKey,$statusUpDate,$prodCode,$prodName</userdata>
+        ## 品目コード・名称
+        <userdata name="prodCode">$prodCode</userdata>
+        <userdata name="prodName">$prodName</userdata>
+        ## チーム差額
+        <userdata name="uhTeamSagaku">$!resultObj.uhTeamSagaku</userdata>
+        <userdata name="pTeamSagaku">$!resultObj.pTeamSagaku</userdata>
+        <userdata name="uhTeamOfficeSagaku">$!resultObj.uhTeamOfficeSagaku</userdata>
+        <userdata name="pTeamOfficeSagaku">$!resultObj.pTeamOfficeSagaku</userdata>
+    </row>
+#end
+</rows>
+#end

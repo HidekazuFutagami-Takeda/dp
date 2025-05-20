@@ -1,0 +1,581 @@
+##dpm401C00.vm (医)施設特約店品目別計画編集画面
+#set($pageTitle = $text.get("dpm401C00","title"))
+#set($bodyOnloadMethod = "dpm401C00F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dpm401C00x01.vm")
+#set($GridObjName = "dpm401C00Grid")
+#set($GridObjName2 = "dpm401C00Grid2")
+#set($CoverId = "dpm401C00CoverId")
+#set($dataList = $form.getRequestData("DPM401C00_DATA_R"))
+#set($headerData = $form.getRequestData("DPM401C00_INPUT_DATA_R"))
+#set($searchTaiGaiFlgTok = false)
+#if($headerData)
+    #set($resultInsInfo  = $headerData.getInsMstResultDto())
+    #set($searchTaiGaiFlgTok = $headerData.getPlanTaiGaiFlgTok())
+#end
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+
+## カテゴリ：ワクチンのコード取得
+#set($vaccineCode = $service.getVaccineCode())
+
+## カテゴリリスト
+#set($categoryList = $service.getDpmCategoryList($form.bean.sosCategory,false))
+##set($categoryList = $form.bean.prodCategoryList)
+
+## カテゴリ名
+#set($prodCategory = "")
+#if($form.bean.prodCategory)
+	#foreach($codeAndValue in $categoryList)
+	    #if($codeAndValue.code == $form.bean.prodCategory)
+	        #set($prodCategory = "$codeAndValue.value")
+	    #end
+	#end
+#end
+
+## 全MRフラグ
+#set($mrflg = $!form.bean.mrFlg)
+
+<script language="javascript">
+<!--
+document.getElementById("closeWindow").value = "true";
+var startTime = new Date();
+var ${GridObjName};
+var ${GridObjName2};
+var editFlg = false;
+var inspos = 0;
+var tmsWidth = 100;
+
+## --- 編集中セル値の登録時チェック用 ---
+const BEFORE_EDIT = 0;
+const EDITOR_IS_OPENING = 1;
+const EDITOR_IS_CLOSED = 2;
+window.cellEditStage = BEFORE_EDIT;
+window.editedValue = 0;
+## --------------------------------------
+
+
+##初期表示＋読込処理
+function dpm401C00F00() {
+    window.name = "self";
+    doInitGrid();
+    doInitGrid2();
+    #if ($!headerData)
+    var addtext = "$!headerData.getProdCategoryName()計";
+    ${GridObjName2}.addRow("1", addtext, 0);
+    ${GridObjName2}.setUserData("1","rowType","total");
+    ${GridObjName2}.setUserData("1","subTotalId","none");
+    ${GridObjName2}.setCellTextStyle("1", 0, "border-width: 1px 0px 1px 1px;");
+    ${GridObjName2}.setCellTextStyle("1", 1, "border-width: 1px 1px 1px 0px;");
+    for (i = 0; i <= 3; i++) {
+        if (i == 0) {
+            ${GridObjName2}.cells("1", i).cell.className = "textL psumB";
+        } else {
+            ${GridObjName2}.cells("1", i).cell.className = "psumB";
+        }
+    }
+    #end
+    if (document.getElementById("dpm401C00x01.vm")) {
+        var loadXMLString = document.getElementById("dpm401C00x01.vm").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+            for (columnId = 0; columnId <= 3; columnId++) {
+                if(columnId == 0){
+                    ${GridObjName2}.cells("1", columnId).cell.className = "textL psumB";
+                }else{
+                    ${GridObjName2}.cells("1", columnId).cell.className = "psumB";
+                }
+                if(columnId >= 1 && columnId <= 3){
+                    setAllRowSumOtherGrid(${GridObjName},${GridObjName2},columnId);
+                }
+            }
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+
+        #if($form.bean.tmsTytenCdPart && $form.bean.tmsTytenCdPart != "")
+            var value = "$form.bean.tmsTytenCdPart";
+            #set($tytenName = $headerData.getTmsTytenName())
+            #set($tytenCd = $headerData.getTmsTytenCd())
+            #if($tytenName && $tytenCd)
+               dpm401C00TytenSearchApply("$!tytenCd", "$!tytenName", "$searchTaiGaiFlgTok");
+               document.getElementById("tmsTytenCdPart").value = value;
+            #end
+        #end
+    }
+}
+function doInitGrid() {
+    if (${GridObjName} == null) {
+        ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+        ${GridObjName}.setHeader(",,,");
+        ${GridObjName}.setInitWidths("220,90,90,90");
+        ${GridObjName}.setColAlign("left,right,right,right");
+        ${GridObjName}.setColTypes("ro,ron,ron,edn");
+        ${GridObjName}.enableResizing("false,false,false,false");
+        ${GridObjName}.enableTooltips("false,false,false,false");
+        ${GridObjName}.setNumberFormat("0,000",1);
+        ${GridObjName}.setNumberFormat("0,000",2);
+        ${GridObjName}.setNumberFormat("0,000",3);
+        ${GridObjName}.enableDistributedParsing(true,150,50);
+        ${GridObjName}.enableAutoHeight(true, getGridHeight('dpm401C00', $!gridHeight));
+        ${GridObjName}.setSizes();
+        ${GridObjName}.setNoHeader(true);
+        ${GridObjName}.init();
+        ${GridObjName}.enableEditEvents(true, false, true);
+        ${GridObjName}.enableBlockSelection();
+        ${GridObjName}.forceLabelSelection(true);
+        ${GridObjName}.setCSVDelimiter("\t");
+
+        ##  --- 編集中に登録ボタンが押された場合のチェッカー
+        window.editValueChecker = new EditingValueChecker(${GridObjName},'$text.get("DPC1036E",[""])' );
+
+        ${GridObjName}.attachEvent("onEditCell",function(stage,rowId,columnId,newvalue,oldvalue){
+			## --- 編集中に登録ボタンが押された場合のチェック用に値とstageを保持 ---
+			window.editValueChecker.saveState(stage,newvalue);
+            if(stage == 0){
+                if(isSumRow(rowId) == "true"){
+                    return false;
+                }
+            }
+            if(stage == 1){
+                editFlg=true;
+                setIme(${GridObjName},rowId,columnId,"inactive",10);
+            }
+            if(stage == 2){
+            	if(newvalue.toString() != oldvalue.toString()){
+                    intCheck(${GridObjName},rowId,columnId,newvalue);
+                    tyChangeRate = ${GridObjName}.getUserData(rowId,"tyChangeRate");
+                    calcYBaseValue(${GridObjName}, rowId, columnId, rowId, columnId-2, tyChangeRate);
+                    setAllRowSumOtherGrid(${GridObjName},${GridObjName2},columnId);
+                    sumDetailValue(${GridObjName},${GridObjName2},1);
+            	}
+            }
+            return true;
+            });
+        ${GridObjName}.attachEvent("onBeforeSelect",function(newId,oldId){
+            if(event.type == "click"){
+                currentCellSetStyle = function(){};
+            }else{
+                currentCellSetStyle = function(rowId,cellInd){${GridObjName}.editCell();};
+            }
+    	    ${GridObjName}.editStop();
+            return true;
+            });
+        ${GridObjName}.attachEvent("onRowSelect",function(rowId,columnId){
+            currentCellSetStyle(rowId,columnId);
+            });
+        ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+            if(!(currentCellMove(${GridObjName},keycode))){return false;}
+            copyBlock(${GridObjName}, keycode, ctrl, shift, new Array("3"));
+            if (keycode == 86 && ctrl) {
+                ${GridObjName}.forEachRow(function(id){
+                    tyChangeRate = ${GridObjName}.getUserData(id,"tyChangeRate");
+                    calcYBaseValue(${GridObjName}, id, 3, id, 1, tyChangeRate);
+                })
+                setAllRowSumOtherGrid(${GridObjName},${GridObjName2},3);
+                sumDetailValue(${GridObjName},${GridObjName2},1);
+                editFlg = true;
+            }
+            return true;
+            });
+        ${GridObjName}.attachEvent("onMouseOver",function(rowId,columnId){
+            var title = "";
+            if(columnId == 3){
+                title = ${GridObjName}.getUserData(rowId,"toolTip");
+                if(title == null){
+                    title = "";
+                }
+                ${GridObjName}.cells(rowId,columnId).cell.title = title;
+            }
+        });
+    }
+}
+
+function doInitGrid2() {
+
+     var category = document.getElementById("prodCategory").value;
+
+    if (${GridObjName2} == null) {
+        ${GridObjName2} = createDhtmlXGrid("${GridObjName2}");
+        ${GridObjName2}.setHeader("施設特約店計画　$!security.getPlannedTypeName()　$!dataList.getProdCategoryName(),#cspan,#cspan,#cspan");
+        ## カテゴリ：ワクチンでの分岐
+        if (category == "$vaccineCode") {
+        	${GridObjName2}.attachHeader("品目名称,B価ベース,S価ベース,#cspan",["","","border-bottom-width:0px;",""],null);
+    	}else{
+        	${GridObjName2}.attachHeader("品目名称,Y価ベース,S価ベース,#cspan",["","","border-bottom-width:0px;",""],null);
+    	}
+        ${GridObjName2}.attachHeader("#rspan,#rspan,,修正欄",["","","border-top-width:0px;","border-top-color:#93afba;"],null);
+        ${GridObjName2}.setInitWidths("220,90,90,90");
+        ${GridObjName2}.setColAlign("left,right,right,right");
+        ${GridObjName2}.setColTypes("ro,ron,ron,ron");
+        ${GridObjName2}.enableResizing("false,false,false,false");
+        ${GridObjName2}.enableTooltips("false,false,false,false");
+        ${GridObjName2}.setNumberFormat("0,000",1);
+        ${GridObjName2}.setNumberFormat("0,000",2);
+        ${GridObjName2}.setNumberFormat("0,000",3);
+        ${GridObjName2}.enableDistributedParsing(true,150,50);
+        ${GridObjName2}.enableAutoHeight(true, 100);
+        ${GridObjName2}.objBox.style.overflowX="hidden";
+        ${GridObjName2}.objBox.style.overflowY="hidden";
+        ${GridObjName2}.init();
+        ${GridObjName2}.enableEditEvents(true, false, true);
+        ${GridObjName2}.enableBlockSelection();
+        ${GridObjName2}.forceLabelSelection(true);
+        ${GridObjName2}.setCSVDelimiter("\t");
+        ${GridObjName2}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+            copyBlock(${GridObjName2}, keycode, ctrl, shift, new Array("3"));
+            return true;
+            });
+        ${GridObjName2}.attachEvent("onBeforeSelect",function(newId,oldId){return;});
+    }
+}
+
+## 明細行の指定列の値を合計して、集計行に表示する
+function sumDetailValue(detailGrid, sumGrid, columnId) {
+    var rowNum = detailGrid.getRowsNum();
+    var allSum = 0;
+    var val = "";
+    for ( var i = 0; i < rowNum; i++) {
+         var id = detailGrid.getRowId(i);
+         val = detailGrid.cells(id, columnId).getValue();
+         if (val != "") {
+             allSum = allSum + val - 0;
+         }
+    }
+    sumGrid.cells(1, columnId).setValue(allSum);
+}
+
+## 【検索】特約店選択ダイアログを開く
+function openTytenSearchDialog(){
+    var url = '${link.setAction("dpm912C00F00")}?tmsSelectMode=$tmsselect.getGrayAndEnableButtonMode()&tytenApplyFuncName=dpm401C00TytenSearchApply';
+    openModalWindowW(url);
+}
+
+## 【検索】特約店選択ダイアログ コールバック
+function dpm401C00TytenSearchApply(tytenCd, tytenName){
+    if(arguments != 'undefined' &&  arguments != null && arguments.length == 3 && arguments[2]) {
+        if (arguments[2] == 'true') {
+            tytenName = '${tmsselect.planTaiGaiLabel}' + tytenName;
+        }
+    }
+    document.getElementById("tmsTytenCd").value = tytenCd;
+    document.getElementById("tmsTytenCdPart").value = tytenCd;
+    document.getElementById("tmsTytenName").value = tytenName;
+    document.getElementById("tmsTytenNameLabel").innerHTML = "<label>" + tytenName + "</label>";
+}
+
+## 【検索】特約店選択ダイアログ 初期化
+function dpm401C00TytenSearchClear(){
+    document.getElementById("tmsTytenCd").value = "";
+    document.getElementById("tmsTytenName").value = "";
+    document.getElementById("tmsTytenNameLabel").innerHTML = "<label>　</label>";
+}
+
+## 【検索】施設選択画面呼出
+function dpm911C00F00() {
+    var func = "dpm401C00InsApply";
+    var insPtn = "01";
+    var ptn = "01";
+    var min = "02";
+    var max = "04";
+    ##全MR担当は、担当者まで表示
+    if ($mrflg) {
+        var jgiNo = '';
+        jgiNo = "$!form.bean.jgiNo";
+    	var url ='$link.setAction('dpm911C00F00')' + '?insApplyFuncName=' + func + '&insSelectPtnType=' + insPtn + '&sosSrchPtnType=' + ptn + '&sosMinSrchValue=' + min + '&sosMaxSrchGetValue=' + max + '&paramInsType=&sosInitSosCodeValue=&paramJgiNo=' + jgiNo + '&sosSearchNonFlg=false&paramJtnFlg=false&disableMallInsSelect=true';
+    }else{
+    	var url ='$link.setAction('dpm911C00F00')' + '?insApplyFuncName=' + func + '&insSelectPtnType=' + insPtn + '&sosSrchPtnType=' + ptn + '&sosMinSrchValue=' + min + '&sosMaxSrchGetValue=' + max + '&paramInsType=&sosInitSosCodeValue=&paramJgiNo=&sosSearchNonFlg=false&paramJtnFlg=false&disableMallInsSelect=true';
+    }
+    var args = new Array();
+    openModalWindowW(url, func, args);
+}
+
+## 【検索】施設選択ダイアログ コールバック
+function dpm401C00InsApply(insNo, jgiNo, insName){
+    document.getElementById("insNo").value = insNo;
+    document.getElementById("insNameLabel").innerHTML = "<label>" + insName + "</label>";
+}
+
+## 【検索】施設選択ダイアログ 初期化
+function dpm401C00InsClear(){
+    document.getElementById("insNameLabel").innerHTML = "<label>　</label>";
+}
+
+##集計行か判断する
+function isSumRow(RowId){
+	return ${GridObjName}.getUserData(RowId,"sumRowFlg");
+}
+##カレントセルのスタイルを指定する。
+function currentCellSetStyle(rowId,cellInd){
+    ${GridObjName}.editCell();
+}
+
+## 検索処理
+function dpm401C00F05() {
+    if (searchValidation()) {
+    	if(linkClick()){
+            var actionPath = "$link.setAction('dpm401C00F05')";
+            document.dpm401C00F05Form.action = actionPath;
+            document.dpm401C00F05Form.submit();
+            dpm401C00F05 = blockIt;
+            dpm401C00F10 = blockIt;
+    	}
+    }
+}
+
+## 検索時入力チェック
+function searchValidation() {
+    ## 入力フォーム
+    var form = document.dpm401C00F05Form;
+    var value = "";
+    var existError = false;
+    ## [必須] 施設コード
+    var value = form.insNo.value;
+    errorMsg = '$text.get("DPC1003E",["施設コード"])';
+    existError = addErrorInfo(!isEntered(value), errorMsg);
+    ## [数値] 施設コード
+    if(!existError){
+        value = form.insNo.value;
+        errorMsg = '$text.get("DPC1004E",["施設コード","半角数字"])';
+        existError = addErrorInfo(!(isNumber(value)), errorMsg);
+    }
+    ## [必須] 特約店
+    var value = form.tmsTytenCdPart.value;
+    errorMsg = '$text.get("DPC1003E",["特約店"])';
+    existError = addErrorInfo(!isEntered(value), errorMsg);
+    ## [数値] 特約店コード
+    if(!existError){
+        value = form.tmsTytenCd.value;
+        value2 = form.tmsTytenCdPart.value;
+        errorMsg = '$text.get("DPC1004E",["特約店コード","半角数字"])';
+        existError = addErrorInfo(!(isNumber(value) || isNumber(value2)), errorMsg);
+    }
+    ## [桁数] 特約店コード
+    if(!existError){
+        value = form.tmsTytenCdPart.value;
+        errorMsg = '$text.get("DPC1027E",["特約店コード","13"])';
+        existError = addErrorInfo(!isFixLength(value,13), errorMsg);
+    }
+    ## [必須] カテゴリ
+    value = form.prodCategory.value;
+    errorMsg = '$text.get("DPC1003E",["カテゴリ"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+    ## [必須] 計画
+    value = form.planData.value;
+    errorMsg = '$text.get("DPC1003E",["計画"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    return validation();
+}
+
+##登録処理
+function dpm401C00F10() {
+
+    ## --- 編集中セル値の登録時チェック ---
+	if(window.editValueChecker.isValid() == false){
+		return;
+	}
+
+    ##入力チェック
+    if (!executeValidation()) {
+        return;
+    }
+    ##確認
+    if (!confirm('$text.get("DPM401C00.001","dialogue")')) {
+        return;
+    }
+    form = document.dpm401C00F10Form;
+    rowNum = ${GridObjName}.getRowsNum();
+    try{
+    var iflg = false;
+    for ( var i = 0; i < rowNum; i++) {
+        ##//i番目の列のrowIdを取得
+        var rowId = ${GridObjName}.getRowId(i);
+        ##//指定項目のみ取得し、hiddenをformに追加
+        ##//集計行じゃない場合
+        if(${GridObjName}.getUserData(rowId, "rowType") == "input"){
+            var value = ${GridObjName}.cells(rowId, 3).getValue();
+            if ($searchTaiGaiFlgTok && value != 'undefined' && value != null && value != '') {
+                alert('$text.get("DPM999C00.001","dialogue")');
+                return;
+            }
+            var rowIdList = ${GridObjName}.getUserData(rowId, "rowIdList");
+            var sendvalue = rowIdList + "," + value;
+            var element = document.createElement('input');
+            element.type = "hidden";
+            element.name = "rowIdList";
+            element.value = sendvalue;
+            form.appendChild(element);
+        }
+    }
+    }catch(e){
+        alert(rowId);
+    }
+    form.target = "self";
+    form.submit();
+    dpm401C00F05 = blockIt;
+    dpm401C00F10 = blockIt;
+}
+## 更新時入力チェック
+function executeValidation() {
+    var rowNum = ${GridObjName}.getRowsNum();
+    for (i = 0; i < rowNum; i++) {
+        var id = ${GridObjName}.getRowId(i);
+        ## メッセージ準備
+        var rowInfo = "";
+        rowInfo = ${GridObjName}.getUserData(id, "prodName");
+        ## エラーチェック
+        if(${GridObjName}.getUserData(id,"rowType") == "input"){
+        	## [T価ベース]
+            var checkValue = ${GridObjName}.cells(id, 3).getValue().toString();
+            amountValidationNotTailCheck("", checkValue, 10, true, rowInfo);
+        	## [Y価ベース]
+            var tyChangeRate = ${GridObjName}.getUserData(id,"tyChangeRate");
+            var checkValue = getYBaseValue(checkValue, tyChangeRate);
+            amountValidationNotTailCheckNotInputNotDisp(rowInfo, checkValue, 10, true, "");
+        }
+    }
+    return validation();
+}
+
+## 出力処理
+function dpm401C00F14(){
+    if (!searchValidation()) {
+        return;
+    }
+
+    ##確認
+    if (!confirm('$text.get("DPM401C00.005","dialogue")')) {
+        return;
+    }
+
+    ##送信
+    var actionPath = '$link.setAction('dpm401C00F14Output')';
+    document.dpm401C00F05Form.action = actionPath;
+    document.dpm401C00F05Form.submit();
+
+    return false;
+}
+
+##リンク移動確認
+function linkClick(){
+    if(editFlg){
+        var answer = window.confirm('$text.get("DPC999C99.001","dialogue")');
+        if(!answer){
+            return false;
+        }
+    }
+    return true;
+}
+//-->
+</script>
+
+<div id="noTabBox">
+<form name="dpm401C00F05Form" action="$link.setAction('dpm401C00F05')" method="post" style="padding:0px;margin-bottom:5px;">
+<input type="hidden" id="insNoTran" name="insNoTran" value="$!form.bean.insNoTran">
+<input type="hidden" id="tmsTytenCdTran" name="tmsTytenCdTran" value="$!form.bean.tmsTytenCdTran">
+<input type="hidden" id="tmsTytenCdPartTran" name="tmsTytenCdPartTran" value="$!form.bean.tmsTytenCdPartTran">
+<input type="hidden" id="prodCategoryTran" name="prodCategoryTran" value="$!form.bean.prodCategoryTran">
+<input type="hidden" id="planDataTran" name="planDataTran" value="$!form.bean.planDataTran">
+<input type="hidden" id="vaccineCodeTran" name="vaccineCodeTran" value="$vaccineCode">
+<table class="gridLine" cellspacing="0" cellpadding="1">
+     <tr>
+        <td class="gridIndex" style="width: 150px;">カテゴリ*</td>
+        <td style="padding-right: 21px">#select ("prodCategory", $!form.bean.prodCategoryList, $!form.bean.prodCategory)</td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width: 150px;">施設</td>
+        <td>
+        <table cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
+            <tr>
+                <td>
+                <table class="gridLine" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 270px;">
+                            <nobr><label id="insNameLabel">$!form.bean.insName　</label></nobr>
+                            <input type="hidden" name="insName" id="insName" value="$!form.bean.insName" />
+                        </td>
+                    </tr>
+                </table>
+                </td>
+                <td style="padding: 0px 5px 0px 5px"><input type="button" value="選択" style="width: 80px;" onclick="dpm911C00F00()"/></td>
+                <td class="gridIndex" style="width: 150px;">施設コード*</td>
+                <td>
+                    <input type="text" name="insNo" id="insNo" value="$!form.bean.insNo" size="20" maxlength="14"style="ime-mode: disabled" onkeyup="dpm401C00InsClear();" />
+                </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+        <tr>
+        <td class="gridIndex" style="width: 150px;">特約店</td>
+        <td>
+        <table cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
+            <tr>
+                <td>
+                <table class="gridLine" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 270px;">
+                            <nobr><label id="tmsTytenNameLabel">$!form.bean.tmsTytenName　</label></nobr>
+                            <input type="hidden" name="tmsTytenName" id="tmsTytenName" value="$!form.bean.tmsTytenName" />
+                            <input type="hidden" name="tmsTytenCd" id="tmsTytenCd" value="$!form.bean.tmsTytenCd" />
+                        </td>
+                    </tr>
+                </table>
+                </td>
+                <td style="padding: 0px 5px 0px 5px"><input type="button" value="選択" style="width: 80px;" onclick="openTytenSearchDialog()"/></td>
+                <td class="gridIndex" style="width: 150px;">特約店コード*</td>
+                <td>
+                    <input type="text" name="tmsTytenCdPart" id="tmsTytenCdPart" value="$!form.bean.tmsTytenCdPart" size="20" maxlength="13" style="ime-mode:disabled" onkeyup="dpm401C00TytenSearchClear()"/>
+                </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width: 150px;">計画*</td>
+        <td style="padding: 0px 7px 0px 0px;">
+        #if($form.bean.planData == "0")
+            <label><input type="radio" name="planData" value="0" checked />計画あり</label>
+            <label><input type="radio" name="planData" value="1" />全品目</label>
+        #else
+            <label><input type="radio" name="planData" value="0" />計画あり</label>
+            <label><input type="radio" name="planData" value="1" checked />全品目</label>
+        #end
+        </td>
+    </tr>
+</table>
+<table style="margin-top: 2px; margin-bottom: 2px; float: left; width: 100%;">
+    <tr>
+        <td>
+            <input type="button" value="表示" style="width: 80px;" onclick="dpm401C00F05()" />
+            #if($!security.hasAuthEdit("DPM40"))
+	            #if ($dataList)
+	                #if ($dataList.enableEntry)
+		                <input type="button" value="登録" style="width: 80px;" onclick="dpm401C00F10()" />
+		                ## 削除予定施設の場合、登録不可
+	                #else
+	                	<input type="button" value="登録" style="width: 80px;" onclick="dpm401C00F10()" disabled />
+	                #end
+	            #else
+	            	<input type="button" value="登録" style="width: 80px;" onclick="dpm401C00F10()" disabled />
+	            #end
+            #end
+            #if ($dataList)
+            	<input type="button" value="ダウンロード" style="width: 120px;" onclick="dpm401C00F14()" />
+            #else
+                <input type="button" value="ダウンロード" style="width: 120px;" disabled />
+            #end
+          </td>
+        <td style="text-align: right; vertical-align: bottom;"><label>$consts.tableHeader</label></td>
+    </tr>
+</table>
+<div id="${GridObjName2}" style="width: 98%; clear: both;"></div>
+#loadingGridDiv2("${GridObjName}", "${CoverId}" ,"width: 98%; clear: both;")
+#token()
+</form>
+</div>
+<div style="display: none;">
+<form name="dpm401C00F10Form" action="$!{link.setAction('dpm401C00F10Excecute')}" method="post">
+    #token()
+</form>
+</div>

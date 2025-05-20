@@ -1,0 +1,382 @@
+#set($pageTitle = $text.get("dpm400C00","title"))
+#set($bodyOnloadMethod = "dpm400C00F01()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dpm400C00x01.vm")
+#set($CoverId = "dpm400C00CoverId")
+#set( $dataList = $form.getRequestData("DPM400C00_DATA_R"))
+#set( $headerData = $form.getRequestData("DPM400C00_INPUT_DATA_R"))
+
+#if($headerData)
+    #set($resultInsInfo  = $headerData.getInsMstResultDto())
+#end
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+
+## 府県名
+#set($shikuchosonMeiKj = "")
+#if($!form.bean.shikuchosonMeiKj && $!form.bean.shikuchosonMeiKj != "")
+    #set($shikuchosonMeiKj = $!form.bean.shikuchosonMeiKj)
+#end
+## 市区町村名
+#set($fukenMeiKj = "")
+#if($!form.bean.fukenMeiKj && $!form.bean.fukenMeiKj != "")
+    #set($fukenMeiKj = $!form.bean.fukenMeiKj)
+#end
+
+<script language="javascript">
+<!--
+document.getElementById("closeWindow").value = "true";
+var startTime = new Date();
+var editFlg = false;
+var inspos = 0;
+var tmsWidth = 100;
+
+##初期表示＋読込処理
+function dpm400C00F01() {
+    window.name = "self";
+
+    doInitGrid();
+    doInitGrid2();
+    #if($!headerData)
+    var addtext = "表示施設特約店計"
+    ${GridObjName2}.addRow("1", addtext, 0);
+    ${GridObjName2}.setUserData("1","rowType","total");
+    ${GridObjName2}.setUserData("1","subTotalId","none");
+    var tyChangeRate = "$!dataList.getTyChangeRate()";
+    ${GridObjName2}.setUserData("","tyChangeRate",tyChangeRate);
+    for (i = 0; i <= 7; i++) {
+        if(i == 0){
+            ${GridObjName2}.cells("1", i).cell.className = "psumB textL";
+        }else{
+            ${GridObjName2}.cells("1", i).cell.className = "psumB";
+        }
+    }
+    #end
+    if (document.getElementById("dpm400C00x01.vm")) {
+        var loadXMLString = document.getElementById("dpm400C00x01.vm").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+            ${GridObjName}.setUserData("1","hrange",${GridObjName}.getUserData("","srowids"));
+            for (columnId = 0; columnId <= 7; columnId++) {
+                if(columnId == 0){
+                    ${GridObjName2}.cells("1", columnId).cell.className = "psumB textL";
+                }else{
+                    ${GridObjName2}.cells("1", columnId).cell.className = "psumB";
+                }
+                if(columnId >= 5 && columnId <= 7){
+                    setSumOtherGrid(${GridObjName},${GridObjName2},columnId);
+                }
+            }
+            doCalcYBaseValue(${GridObjName2}, 1, 7, true);
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+        ## 担当者・施設のセット
+        #if($resultInsInfo)
+            document.getElementById("insNameLabel").innerHTML = "<label>$resultInsInfo.insName</label>";
+            sosApply("", "$resultInsInfo.jgiNo", "04");
+        #else
+            ## 担当者選択時
+            #if ($form.bean.jgiNo && $form.bean.jgiNo != "")
+                sosApply("", "$form.bean.jgiNo", "04","$form.bean.etcSosFlg");
+            ## チーム選択時
+            #elseif ($form.bean.sosCd4 && $form.bean.sosCd4 != "")
+                sosApply("$form.bean.sosCd4", "", "04","$form.bean.etcSosFlg");
+            ## 営業所選択時
+            #elseif ($form.bean.sosCd3 && $form.bean.sosCd3 != "")
+                sosApply("$form.bean.sosCd3", "", "04","$form.bean.etcSosFlg");
+            ## 支店選択時
+            #elseif ($form.bean.sosCd2 && $form.bean.sosCd2 != "")
+                sosApply("$form.bean.sosCd2", "", "04","$form.bean.etcSosFlg");
+            ## 全社選択時
+            #else
+                sosApply("", "", "04","$form.bean.etcSosFlg");
+            #end
+        #end
+
+        ## 組織配下の担当者ではない場合は、組織検索に設定ユーザの組織を設定
+        #if (!$dataList.mySosMr)
+    	    document.getElementById('initSosCodeValue').value = '$!security.defaultSosCd';
+        #end
+
+        #if($form.bean.tmsTytenCdPart && $form.bean.tmsTytenCdPart != "")
+            var value = "$form.bean.tmsTytenCdPart";
+            #set($tytenName = $headerData.getTmsTytenName())
+            #set($tytenCd = $headerData.getTmsTytenCd())
+            #if($tytenName && $tytenCd)
+               dpm400C00TytenSearchApply("$!tytenCd", "$!tytenName");
+               document.getElementById("tmsTytenCdPart").value = value;
+            #end
+        #end
+    }
+
+    var category = document.getElementById("prodCategory").value;
+
+	##TODO ワクチンで切り替えを行う
+
+    ## ワクチン以外の場合(メイン画面の制御)
+    ## 重点先/一般先
+    document.getElementById("activityType_tr").style.display='none'
+    ## 市区町村
+    document.getElementById("addr_tr").style.display='none'
+    ## （ワ）ボタン
+    document.getElementById("vaccine_button_td").style.display='none'
+    ## ボタン
+    document.getElementById("no_vaccine_button_td").style.display=''
+    ## 対象区分
+    document.getElementById("insType_tr").style.display=''
+    ## 計画
+    document.getElementById("planData_tr").style.display=''
+
+    ## カテゴリ初期化
+    initializeCategory();
+
+}
+function doInitGrid() {
+    if (${GridObjName} == null) {
+        ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+        ${GridObjName}.setHeader(",,,,,,,");
+        ##//ColumnId(ActionFormのフィールド名と一致させる)
+        ${GridObjName}.setInitWidths("130,80,330,90,50,90,90,90");
+        ${GridObjName}.setColAlign("left,center,left,left,center,right,right,right");
+        ${GridObjName}.setColTypes("ro,ro,ro,ro,ro,ron,ron,edn");
+        ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false");
+        ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false");
+        ${GridObjName}.setNumberFormat("0,000",5);
+        ${GridObjName}.setNumberFormat("0,000",6);
+        ${GridObjName}.setNumberFormat("0,000",7);
+        ${GridObjName}.enableDistributedParsing(true,150,50);
+        ${GridObjName}.enableAutoHeight(true, getGridHeight('dpm400C00', $!gridHeight));
+        ${GridObjName}.setSizes();
+        ${GridObjName}.setNoHeader(true);
+        ${GridObjName}.init();
+        ${GridObjName}.enableEditEvents(true, false, true);
+        ${GridObjName}.enableBlockSelection();
+        ${GridObjName}.forceLabelSelection(true);
+        ${GridObjName}.setCSVDelimiter("\t");
+
+        ##  --- 編集中に登録ボタンが押された場合のチェッカー
+        window.editValueChecker = new EditingValueChecker(${GridObjName},'$text.get("DPC1036E",[""])' );
+
+        ${GridObjName}.attachEvent("onEditCell",function(stage,rowId,columnId,newvalue,oldvalue){
+    		## --- 編集中に登録ボタンが押された場合のチェック用に値とstageを保持 ---
+    		window.editValueChecker.saveState(stage,newvalue);
+
+            if(stage == 0){
+                if(isSumRow(rowId) == "true"){
+                    return false;
+                }
+            }
+            if(stage == 1){
+                editFlg=true;
+                setIme(${GridObjName},rowId,columnId,"inactive",10);
+            }
+            if(stage == 2){
+                if(newvalue.toString() != oldvalue.toString()){
+                    intCheck(${GridObjName},rowId,columnId,newvalue);
+                    setSumOtherGrid(${GridObjName},${GridObjName2},columnId);
+                    doCalcYBaseValue(${GridObjName}, rowId, 7, false);
+                    doCalcYBaseValue(${GridObjName}, getSubTotalIdDown(${GridObjName},rowId), 7, false);
+                    doCalcYBaseValue(${GridObjName2}, 1, 7, true);
+                }
+            }
+            return true;
+        });
+        ${GridObjName}.attachEvent("onBeforeSelect",function(newId,oldId){
+            if(event.type == "click"){
+                currentCellSetStyle = function(){};
+            }else{
+                currentCellSetStyle = function(rowId,cellInd){${GridObjName}.editCell();};
+            }
+            ${GridObjName}.editStop();
+            return true;
+            });
+        ${GridObjName}.attachEvent("onRowSelect",function(rowId,columnId){
+            currentCellSetStyle(rowId,columnId);
+            });
+        ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+            if(!(currentCellMove(${GridObjName},keycode))){return false;}
+            copyBlock(${GridObjName}, keycode, ctrl, shift, new Array("7"));
+            if (keycode == 86 && ctrl) {
+                setSumOtherGrid(${GridObjName},${GridObjName2},7);
+                ${GridObjName}.forEachRow(function(id){
+                    doCalcYBaseValue(${GridObjName}, id, 7, false);
+                })
+                doCalcYBaseValue(${GridObjName2}, 1, 7, true);
+                editFlg = true;
+            }
+            return true;
+            });
+        ${GridObjName}.attachEvent("onMouseOver",function(rowId,columnId){
+            var title = "";
+            if(columnId == 7 && (${GridObjName}.getUserData(rowId,"rowType") == "input")){
+                title = ${GridObjName}.getUserData(rowId,"toolTip");
+                if(title == null){
+                    title = "";
+                }
+                ${GridObjName}.cells(rowId,columnId).cell.title = title;
+            }
+        });
+    }
+}
+
+function doInitGrid2() {
+    if (${GridObjName2} == null) {
+        ${GridObjName2} = createDhtmlXGrid("${GridObjName2}");
+        ${GridObjName2}.setHeader("施設特約店計画　$!security.getPlannedTypeName()　$!dataList.getProdName(),#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan");
+        ${GridObjName2}.attachHeader("施設名称,施設固定<br>コード,特約店名称,ＴＭＳ特約店<br>コード,特約店<br>追加,Ｙ価ベース,Ｓ価ベース,#cspan",["","","","","","","border-bottom-width:0px;",""],null);
+        ${GridObjName2}.attachHeader("#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,,修正欄",["","","","","","","border-top-width:0px;",""],null);
+        ${GridObjName2}.setInitWidths("130,80,330,90,50,90,90,90");
+        ${GridObjName2}.setColAlign("left,center,left,left,center,right,right,right");
+        ${GridObjName2}.setColTypes("ro,ro,ro,ro,ro,ron,ron,ron");
+        ${GridObjName2}.enableResizing("false,false,false,false,false,false,false,false");
+        ${GridObjName2}.enableTooltips("false,false,false,false,false,false,false,false");
+        ${GridObjName2}.setNumberFormat("0,000",5);
+        ${GridObjName2}.setNumberFormat("0,000",6);
+        ${GridObjName2}.setNumberFormat("0,000",7);
+        ${GridObjName2}.enableDistributedParsing(true,150,50);
+        ${GridObjName2}.enableAutoHeight(true, 100);
+        ${GridObjName2}.objBox.style.overflowX="hidden";
+        ${GridObjName2}.objBox.style.overflowY="hidden";
+        ${GridObjName2}.init();
+        ${GridObjName2}.enableEditEvents(true, false, true);
+        ${GridObjName2}.enableBlockSelection();
+        ${GridObjName2}.forceLabelSelection(true);
+        ${GridObjName2}.setCSVDelimiter("\t");
+        ${GridObjName2}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+            copyBlock(${GridObjName2}, keycode, ctrl, shift, new Array("7"));
+            return true;
+            });
+        ${GridObjName2}.attachEvent("onBeforeSelect",function(newId,oldId){return;});
+    }
+}
+
+## T価ベースの計算処理
+function doCalcYBaseValue(grid, rowId, colId, isSum){
+    var tyChangeRate = 0;
+    if(isSum){
+        tyChangeRate = grid.getUserData("","tyChangeRate");
+    }else{
+        tyChangeRate = grid.getUserData(rowId,"tyChangeRate");
+    }
+    calcYBaseValue(grid, rowId, colId, rowId, colId-2, tyChangeRate);
+}
+
+##特約店追加
+function dpm400C00TytenApply(TytenCd,TytenName) {
+    try{
+    var args = TytenCd.split(",");
+    var args2 = TytenName.split(",");
+    if(!(args == "")) {
+        var bid = inspos;
+        var srowids = ${GridObjName}.getUserData("","srowids").split(",");
+        var srowid = srowids[inspos];
+        var srangeid = ${GridObjName}.getUserData(srowid,"srange").split(",");
+        var checkCdList = ${GridObjName}.getUserData(srowid,"checkCdList").split(",");
+        var insposid = srangeid[srangeid.length-1];
+        var insposindex = ${GridObjName}.getRowIndex(insposid);
+        inspos = insposindex + 1;
+        var newids = "";
+        ${GridObjName}.addRow(9999,"",(inspos));
+        for(i=0; i<args.length; i++){
+            for(j=0;j<checkCdList.length;j++){
+                if(args[i] == checkCdList[j]){
+                    ${GridObjName}.deleteRow(9999);
+                    inspos = bid;
+                    return "登録済み、または追加済みです";
+                }
+            }
+            newid = ${GridObjName}.getRowsNum();
+            if(arguments != 'undefined' &&  arguments != null && arguments.length == 3 && arguments[2]) {
+                if (arguments[2] == 'true') {
+                    ${GridObjName}.setUserData(newid,"planTaiGaiFlgTok",arguments[2]);
+                    args2[i] = '$tmsselect.getPlanTaiGaiLabel()' + args2[i];
+                }
+            }
+            text = getData(args[i],args2[i]);
+            var upId = ${GridObjName}.getRowId(inspos - 1);
+            var addFlg = false;
+            ##//上の行の特約店名が空白なら施設名、ボタンをtextに追加して空白行削除
+            if(${GridObjName}.cells(upId,2).getValue() == ""){
+                text = ${GridObjName}.cells(upId,0).getValue() + "," + ${GridObjName}.cells(upId,1).getValue() + "," + text +  "," + ${GridObjName}.cells(upId,4).getValue();
+                var _insName = ${GridObjName}.getUserData(upId,"insName");
+                var _rowIdListArray = ${GridObjName}.getUserData(upId,"rowIdList").split(",");
+                _rowIdListArray[2] = args[i];
+                _rowIdListArray[3] = null;
+                _rowIdListArray[4] = null;
+                _rowIdListArray[5] = null;
+                ${GridObjName}.deleteRow(upId);
+                newid = upId;
+                upId = upId - 1;
+                inspos = inspos -1;;
+                ${GridObjName}.setUserData(newid,"insName",_insName);
+                ${GridObjName}.setUserData(newid,"rowIdList",_rowIdListArray.join(","));
+                addFlg = true;
+            }else{
+                text = ",," + text;
+            }
+            ${GridObjName}.addRow(newid,text,(inspos + i));
+            setStyle(newid,upId,addFlg);
+            newids = newids + "," + newid;
+            ${GridObjName}.deleteRow(9999);
+            if(!addFlg){
+                ${GridObjName}.setUserData(newid,"insName",${GridObjName}.getUserData(upId,"insName"));
+                var rowIdListArray = ${GridObjName}.getUserData(upId,"rowIdList").split(",");
+                rowIdListArray[2] = args[i];
+                rowIdListArray[3] = null;
+                rowIdListArray[4] = null;
+                rowIdListArray[5] = null;
+                ${GridObjName}.setUserData(newid,"rowIdList",rowIdListArray.join(","));
+            }
+            ${GridObjName}.setUserData(srowid,"srange",(srangeid + newids));
+            ${GridObjName}.setUserData(srowid,"checkCdList",(checkCdList + "," + args[i]));
+            ${GridObjName}.setUserData(newid,"bid",bid);
+            ${GridObjName}.setUserData(newid,"rowType","input");
+            ${GridObjName}.setUserData(newid,"subTotalId",bid);
+            ${GridObjName}.setUserData(newid,"tmsTytenName",args2[i]);
+            ${GridObjName}.setUserData(newid,"tmsTytenCd",args[i]);
+            ${GridObjName}.setUserData(newid,"sumRowFlg","false");
+            ${GridObjName}.setUserData(newid,"tyChangeRate","$!dataList.getTyChangeRate()");
+            intCheck(${GridObjName},newid,7,"");
+        }
+    }
+    }catch(e) {
+        ##return null;
+    }
+}
+
+##特約店データ取得
+function getData(TytenCd,TytenName) {
+    var result = TytenName + "," + TytenCd;
+    return result;
+}
+##追加した行にスタイルを設定
+function setStyle(newid,upId,addFlg){
+	colnum = ${GridObjName}.getColumnsNum();
+    for(j=0;j<colnum;j++){
+        if((j < 2 && j>=0) || j==4){
+	        ${GridObjName}.setCellTextStyle(newid, j, "border-width: 0px 1px 0px 1px;");
+        }
+        if(j==7){
+        	${GridObjName}.cells(newid,j).cell.className = "inputB2";
+	    }else if(!addFlg){
+            var className = ${GridObjName}.cells(upId,j).cell.className;
+	    	${GridObjName}.cells(newid,j).cell.className = className;
+        }else{
+        	${GridObjName}.cells(newid,j).cell.className = "";
+        }
+    }
+}
+
+##集計行か判断する
+function isSumRow(RowId){
+	return ${GridObjName}.getUserData(RowId,"sumRowFlg");
+}
+##カレントセルのスタイルを指定する。
+function currentCellSetStyle(rowId,cellInd){
+    ${GridObjName}.editCell();
+}
+//-->
+</script>
+<div id="${GridObjName2}" style="width: 99.5%; clear: both;"></div>
+#loadingGridDiv2("${GridObjName}", "${CoverId}" ,"width: 99.5%; clear: both;")
+

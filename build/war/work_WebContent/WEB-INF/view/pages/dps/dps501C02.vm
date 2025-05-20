@@ -1,0 +1,84 @@
+## (ワ)特約店別計画スライド画面
+#set($pageTitle = $text.get("dps501C02","title"))
+#set($bodyOnloadMethod = "dps501C02F00()")
+#if($form.getRequestData("DPS501C02_DATA_R"))
+    #set($resultData = $form.getRequestData("DPS501C02_DATA_R"))
+#end
+
+<script language="javascript">
+<!--
+## 初期表示
+function dps501C02F00(){
+}
+
+## スライド処理実行
+function dps501C02F05Execute(){
+    ##確認
+    if (!confirm('$text.get("DPS501C02.001","dialogue")')) {
+        return;
+    }
+    ##送信
+    var actionPath = '$link.setAction('dps501C02F05Execute')';
+    document.dps501C02Form.action = actionPath;
+    document.dps501C02Form.submit();
+    dps501C02F05Execute = blockIt;
+}
+//-->
+</script>
+
+#tabbar("sienTokuyaku", "dps501C02F00")
+<div id="tabBox">
+<form name="dps501C02Form" method="post">
+## 検索条件
+    <div align="left" style="float: left;width: 50%;">
+        <table class="gridLine" cellspacing="0" cellpadding="1">
+        <tr>
+            <td class="gridIndex" style="width:150px;">スライド実施状態</td>
+            <td>
+                <table  cellspacing="0" cellpadding="0">
+                <tr>
+                    <td style="padding: 0px 5px 0px 5px;">
+                        #if($resultData.statusSlideForWs)
+                            <label>
+                            #set($slideStatus = $!resultData.statusSlideForWs.toString())
+                            #set($slideStartDate = $!resultData.slideStartDate)
+                            #set($slideEndDate = $!resultData.slideEndDate)
+                            #if($slideStatus.equals("NONE"))
+                                スライド前
+                            #elseif($slideStatus.equals("SLIDING"))
+                                スライド中<br/>
+                                ($format.toString($slideStartDate ,"MM/dd HH:mm") -)
+                            #elseif($slideStatus.equals("SLIDED"))
+                                スライド済<br/>
+                                ($format.toString($slideStartDate ,"MM/dd HH:mm") - $format.toString($slideEndDate ,"MM/dd HH:mm"))
+                            #end
+                            </label>
+                        #end
+                    </td>
+                </tr>
+                </table>
+            </td>
+        </tr>
+        </table>
+        <table style="margin-top:6px;margin-bottom:6px;">
+        <tr>
+            <td>
+                #if($!security.hasAuthEdit("DPS501"))
+                #if($resultData.statusSlideForWs)
+                #if($slideStatus.equals("NONE") && $!security.sysManage.wsEndFlg)
+                <input type="button" value="スライドする" style="width:100px;" onclick="dps501C02F05Execute()" />
+                #else
+                <input type="button" value="スライドする" style="width:100px;" onclick="" disabled />
+                #end
+                #end
+                #end
+            </td>
+        </tr>
+        </table>
+    </div>
+    <div class="label" align="right" style="float: right;width: 40%;">
+        #upDateInfo($!resultData.getUpUserName(), $!resultData.getUpDate())
+    </div>
+#token()
+</form>
+</div>

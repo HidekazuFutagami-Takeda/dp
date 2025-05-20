@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_TEAM_PLAN_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.TeamPlan" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="SPECIAL_INS_PLAN_VALUE_UH_Y" property="specialInsPlanValueUhY" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_UH_1" property="theoreticalValueUh1" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_UH_2" property="theoreticalValueUh2" jdbcType="BIGINT" />
+    <result column="OFFICE_VALUE_UH_Y" property="officeValueUhY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_UH_Y" property="plannedValueUhY" jdbcType="BIGINT" />
+    <result column="SPECIAL_INS_PLAN_VALUE_P_Y" property="specialInsPlanValuePY" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_P_1" property="theoreticalValueP1" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_P_2" property="theoreticalValueP2" jdbcType="BIGINT" />
+    <result column="OFFICE_VALUE_P_Y" property="officeValuePY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_P_Y" property="plannedValuePY" jdbcType="BIGINT" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultSumMap" class="jp.co.takeda.model.TeamPlan" >
+    <result column="SPECIAL_INS_PLAN_VALUE_UH_Y" property="specialInsPlanValueUhY" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_UH_1" property="theoreticalValueUh1" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_UH_2" property="theoreticalValueUh2" jdbcType="BIGINT" />
+    <result column="OFFICE_VALUE_UH_Y" property="officeValueUhY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_UH_Y" property="plannedValueUhY" jdbcType="BIGINT" />
+    <result column="SPECIAL_INS_PLAN_VALUE_P_Y" property="specialInsPlanValuePY" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_P_1" property="theoreticalValueP1" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_P_2" property="theoreticalValueP2" jdbcType="BIGINT" />
+    <result column="OFFICE_VALUE_P_Y" property="officeValuePY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_P_Y" property="plannedValuePY" jdbcType="BIGINT" />
+  </resultMap>
+
+  <resultMap id="chosei" class="java.util.HashMap" >
+    <result column="CHOSEI_UH_FLG" property="choseiUhFlg" jdbcType="CHAR" javaType="Boolean"/>
+    <result column="CHOSEI_P_FLG" property="choseiPFlg" jdbcType="CHAR" javaType="Boolean"/>
+  </resultMap>
+
+  <!-- columnList -->
+  <sql id="columnList">
+          TP.SEQ_KEY
+          ,TP.SOS_CD
+          ,TP.PROD_CODE
+          ,TP.SPECIAL_INS_PLAN_VALUE_UH_Y
+          ,TP.THEORETICAL_VALUE_UH_1
+          ,TP.THEORETICAL_VALUE_UH_2
+          ,TP.OFFICE_VALUE_UH_Y
+          ,TP.PLANNED_VALUE_UH_Y
+          ,TP.SPECIAL_INS_PLAN_VALUE_P_Y
+          ,TP.THEORETICAL_VALUE_P_1
+          ,TP.THEORETICAL_VALUE_P_2
+          ,TP.OFFICE_VALUE_P_Y
+          ,TP.PLANNED_VALUE_P_Y
+          ,TP.IS_JGI_NO
+          ,TP.IS_JGI_NAME
+          ,TP.IS_DATE
+          ,TP.UP_JGI_NO
+          ,TP.UP_JGI_NAME
+          ,TP.UP_DATE
+  </sql>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT <include refid="columnList" />
+      FROM DPS_I_TEAM_PLAN TP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.TeamPlan" >
+    SELECT <include refid="columnList" />
+      FROM DPS_I_TEAM_PLAN TP
+     WHERE SOS_CD = #sosCd:VARCHAR#
+      AND PROD_CODE = #prodCode:CHAR#
+  </select>
+  
+  <!-- 帳票用検索ユニークキー -->
+  <select id="selectUkReport" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+          MIN(TP.SEQ_KEY) SEQ_KEY
+          ,TP.SOS_CD
+          ,PP.PCAT_CODE PROD_CODE
+          ,SUM(TP.SPECIAL_INS_PLAN_VALUE_UH_Y) SPECIAL_INS_PLAN_VALUE_UH_Y
+          ,SUM(TP.THEORETICAL_VALUE_UH_1) THEORETICAL_VALUE_UH_1
+          ,SUM(TP.THEORETICAL_VALUE_UH_2) THEORETICAL_VALUE_UH_2
+          ,SUM(TP.OFFICE_VALUE_UH_Y) OFFICE_VALUE_UH_Y
+          ,SUM(TP.PLANNED_VALUE_UH_Y) PLANNED_VALUE_UH_Y
+          ,SUM(TP.SPECIAL_INS_PLAN_VALUE_P_Y) SPECIAL_INS_PLAN_VALUE_P_Y
+          ,SUM(TP.THEORETICAL_VALUE_P_1) THEORETICAL_VALUE_P_1
+          ,SUM(TP.THEORETICAL_VALUE_P_2) THEORETICAL_VALUE_P_2
+          ,SUM(TP.OFFICE_VALUE_P_Y) OFFICE_VALUE_P_Y
+          ,SUM(TP.PLANNED_VALUE_P_Y) PLANNED_VALUE_P_Y
+          ,MIN(TP.IS_JGI_NO) IS_JGI_NO
+          ,MIN(TP.IS_JGI_NAME) IS_JGI_NAME
+          ,MIN(TP.IS_DATE) IS_DATE
+          ,MIN(TP.UP_JGI_NO) UP_JGI_NO
+          ,MIN(TP.UP_JGI_NAME) UP_JGI_NAME
+          ,MIN(TP.UP_DATE) UP_DATE
+      FROM DPS_I_TEAM_PLAN TP
+           INNER JOIN DPS_C_VI_CPROD_XLS PP
+        ON TP.PROD_CODE = PP.PROD_CODE
+     WHERE SOS_CD = #sosCd4:VARCHAR#
+       AND PP.PCAT_CODE = #prodCode:CHAR#
+  GROUP BY TP.SOS_CD, PP.PCAT_CODE
+  </select>
+
+  <!-- 検索 -->
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT <include refid="columnList" />
+      FROM DPS_I_TEAM_PLAN TP
+           INNER JOIN DPS_C_SOS_MST SM
+        ON TP.SOS_CD = SM.SOS_CD
+     WHERE SM.UP_SOS_CD = #sosCd3:VARCHAR#
+      AND PROD_CODE = #prodCode:CHAR#
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 検索/最終更新情報 -->
+  <select id="getLastUpDate" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT <include refid="columnList" />
+      FROM (
+        SELECT <include refid="columnList" />
+          FROM DPS_I_TEAM_PLAN TP
+               INNER JOIN DPS_C_SOS_MST SM
+            ON TP.SOS_CD = SM.SOS_CD
+         WHERE SM.UP_SOS_CD = #sosCd3:VARCHAR#
+          AND PROD_CODE = #prodCode:CHAR#
+         ORDER BY UP_DATE DESC
+         ) TP
+    WHERE ROWNUM = 1
+  </select>
+
+  <!-- 検索サマリー -->
+  <select id="selectSummary" resultMap="resultSumMap" parameterClass="java.util.Map" >
+    SELECT SUM(TP.SPECIAL_INS_PLAN_VALUE_UH_Y) AS SPECIAL_INS_PLAN_VALUE_UH_Y
+          ,SUM(TP.THEORETICAL_VALUE_UH_1) AS THEORETICAL_VALUE_UH_1
+          ,SUM(TP.THEORETICAL_VALUE_UH_2) AS THEORETICAL_VALUE_UH_2
+          ,SUM(TP.OFFICE_VALUE_UH_Y) AS OFFICE_VALUE_UH_Y
+          ,SUM(TP.PLANNED_VALUE_UH_Y) AS PLANNED_VALUE_UH_Y
+          ,SUM(TP.SPECIAL_INS_PLAN_VALUE_P_Y) AS SPECIAL_INS_PLAN_VALUE_P_Y
+          ,SUM(TP.THEORETICAL_VALUE_P_1) AS THEORETICAL_VALUE_P_1
+          ,SUM(TP.THEORETICAL_VALUE_P_2) AS THEORETICAL_VALUE_P_2
+          ,SUM(TP.OFFICE_VALUE_P_Y) AS OFFICE_VALUE_P_Y
+          ,SUM(TP.PLANNED_VALUE_P_Y) AS PLANNED_VALUE_P_Y
+      FROM DPS_I_TEAM_PLAN TP
+           INNER JOIN DPS_C_SOS_MST SM
+        ON TP.SOS_CD = SM.SOS_CD
+     WHERE SM.UP_SOS_CD = #sosCd3:VARCHAR#
+      AND PROD_CODE = #prodCode:CHAR#
+  </select>
+
+  <!-- 登録 (試算) -->
+  <insert id="insertByEst" parameterClass="jp.co.takeda.model.TeamPlan" >
+    INSERT INTO DPS_I_TEAM_PLAN
+          (SEQ_KEY
+          ,SOS_CD
+          ,PROD_CODE
+          ,SPECIAL_INS_PLAN_VALUE_UH_Y
+          ,THEORETICAL_VALUE_UH_1
+          ,THEORETICAL_VALUE_UH_2
+          ,SPECIAL_INS_PLAN_VALUE_P_Y
+          ,THEORETICAL_VALUE_P_1
+          ,THEORETICAL_VALUE_P_2
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (ORADPX01.SEQ_DPS_I_TEAM_PLAN.NEXTVAL
+          ,#sosCd:VARCHAR#
+          ,#prodCode:CHAR#
+          ,#specialInsPlanValueUhY:BIGINT#
+          ,#theoreticalValueUh1:BIGINT#
+          ,#theoreticalValueUh2:BIGINT#
+          ,#specialInsPlanValuePY:BIGINT#
+          ,#theoreticalValueP1:BIGINT#
+          ,#theoreticalValueP2:BIGINT#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 更新 (試算)-->
+  <update id="updateByEst" parameterClass="jp.co.takeda.model.TeamPlan" >
+    UPDATE DPS_I_TEAM_PLAN
+       SET SPECIAL_INS_PLAN_VALUE_UH_Y = #specialInsPlanValueUhY:BIGINT#
+          ,THEORETICAL_VALUE_UH_1 = #theoreticalValueUh1:BIGINT#
+          ,THEORETICAL_VALUE_UH_2 = #theoreticalValueUh2:BIGINT#
+          ,SPECIAL_INS_PLAN_VALUE_P_Y = #specialInsPlanValuePY:BIGINT#
+          ,THEORETICAL_VALUE_P_1 = #theoreticalValueP1:BIGINT#
+          ,THEORETICAL_VALUE_P_2 = #theoreticalValueP2:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </update>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.TeamPlan" >
+    UPDATE DPS_I_TEAM_PLAN
+       SET OFFICE_VALUE_UH_Y = #officeValueUhY:BIGINT#
+          ,PLANNED_VALUE_UH_Y = #plannedValueUhY:BIGINT#
+          ,OFFICE_VALUE_P_Y = #officeValuePY:BIGINT#
+          ,PLANNED_VALUE_P_Y = #plannedValuePY:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 更新 -->
+  <update id="updateUh" parameterClass="jp.co.takeda.model.TeamPlan" >
+    UPDATE DPS_I_TEAM_PLAN
+       SET OFFICE_VALUE_UH_Y = #officeValueUhY:BIGINT#
+          ,PLANNED_VALUE_UH_Y = #plannedValueUhY:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 更新 -->
+  <update id="updateP" parameterClass="jp.co.takeda.model.TeamPlan" >
+    UPDATE DPS_I_TEAM_PLAN
+       SET OFFICE_VALUE_P_Y = #officeValuePY:BIGINT#
+          ,PLANNED_VALUE_P_Y = #plannedValuePY:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 調整金額有無 -->
+  <select id="getChosei" parameterClass="java.util.Map" resultMap="chosei">
+    SELECT CASE COUNT(CHOSEI_UH)
+             WHEN 0 THEN '0'
+             ELSE '1'
+           END CHOSEI_UH_FLG
+          ,CASE COUNT(CHOSEI_P)
+             WHEN 0 THEN '0'
+             ELSE '1'
+           END CHOSEI_P_FLG
+    FROM
+    (
+    SELECT TP.SOS_CD
+          ,CASE NVL(PLANNED_VALUE_UH_Y,0) - MR_UH
+             WHEN 0 THEN NULL
+             ELSE '1'
+           END CHOSEI_UH
+          ,CASE NVL(PLANNED_VALUE_P_Y,0) - MR_P
+             WHEN 0 THEN NULL
+             ELSE '1'
+           END CHOSEI_P
+      FROM DPS_I_TEAM_PLAN TP
+           INNER JOIN DPS_C_SOS_MST SM
+        ON TP.SOS_CD = SM.SOS_CD
+           INNER JOIN
+           (
+            SELECT SOS_CD4 AS SOS_CD
+                  ,NVL(SUM(PLANNED_VALUE_UH_Y),0) AS MR_UH
+                  ,NVL(SUM(PLANNED_VALUE_P_Y),0) AS MR_P
+              FROM DPS_I_MR_PLAN MP
+                   INNER JOIN DPS_C_JGI_MST JM
+                ON MP.JGI_NO = JM.JGI_NO
+             WHERE SOS_CD3 = #sosCd3:VARCHAR#
+               AND PROD_CODE = #prodCode:CHAR#
+            GROUP BY SOS_CD4
+            ) MP
+        ON TP.SOS_CD = MP.SOS_CD
+     WHERE SM.UP_SOS_CD = #sosCd3:VARCHAR#
+       AND PROD_CODE = #prodCode:CHAR#
+    )
+  </select>
+
+  <!-- 積上げ更新 -->
+  <update id="updateByMrPlanSum" parameterClass="java.util.Map">
+    UPDATE DPS_I_TEAM_PLAN
+       SET UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+          ,OFFICE_VALUE_UH_Y =  (SELECT NVL(SUM(MIP.OFFICE_VALUE_UH_Y),0)
+                                   FROM DPS_I_MR_PLAN MIP
+                                        INNER JOIN DPS_C_JGI_MST JM
+                                     ON MIP.JGI_NO = JM.JGI_NO
+                                  WHERE JM.SOS_CD4 = #sosCd4:VARCHAR#
+                                    AND PROD_CODE = #prodCode:CHAR#)
+          ,OFFICE_VALUE_P_Y =   (SELECT NVL(SUM(MIP.OFFICE_VALUE_P_Y),0)
+                                   FROM DPS_I_MR_PLAN MIP
+                                        INNER JOIN DPS_C_JGI_MST JM
+                                     ON MIP.JGI_NO = JM.JGI_NO
+                                  WHERE JM.SOS_CD4 = #sosCd4:VARCHAR#
+                                    AND PROD_CODE = #prodCode:CHAR#)
+          ,PLANNED_VALUE_UH_Y = (SELECT NVL(SUM(MIP.PLANNED_VALUE_UH_Y),0)
+                                   FROM DPS_I_MR_PLAN MIP
+                                        INNER JOIN DPS_C_JGI_MST JM
+                                     ON MIP.JGI_NO = JM.JGI_NO
+                                  WHERE JM.SOS_CD4 = #sosCd4:VARCHAR#
+                                    AND PROD_CODE = #prodCode:CHAR#)
+          ,PLANNED_VALUE_P_Y =  (SELECT NVL(SUM(MIP.PLANNED_VALUE_P_Y),0)
+                                   FROM DPS_I_MR_PLAN MIP
+                                        INNER JOIN DPS_C_JGI_MST JM
+                                     ON MIP.JGI_NO = JM.JGI_NO
+                                  WHERE JM.SOS_CD4 = #sosCd4:VARCHAR#
+                                    AND PROD_CODE = #prodCode:CHAR#)
+          WHERE SOS_CD = #sosCd4:VARCHAR#
+            AND PROD_CODE = #prodCode:CHAR#
+  </update>
+
+</sqlMap>

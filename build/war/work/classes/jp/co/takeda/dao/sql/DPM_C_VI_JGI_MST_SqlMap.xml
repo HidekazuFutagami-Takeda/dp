@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_C_VI_JGI_MST_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.JgiMst" >
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="SOS_CD2" property="sosCd2" jdbcType="VARCHAR" />
+    <result column="SOS_CD3" property="sosCd3" jdbcType="VARCHAR" />
+    <result column="SOS_CD4" property="sosCd4" jdbcType="VARCHAR" />
+    <result column="SHOKUSEI_CD" property="shokuseiCd" jdbcType="VARCHAR" />
+    <result column="SHOKUSHU_CD" property="shokushuCd" jdbcType="VARCHAR" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="JGI_KB" property="jgiKb" jdbcType="VARCHAR" />
+    <result column="ETC_SOS_FLG" property="etcSosFlg" jdbcType="CHAR" nullValue="0"/>
+  </resultMap>
+
+  <!-- 検索 -->
+  <select id="selectReal" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT JGI_NO
+          ,JGI_NAME
+          ,SOS_CD2
+          ,SOS_CD3
+          ,SOS_CD4
+          ,SHOKUSEI_CD
+          ,SHOKUSHU_CD
+          ,SOS_CD
+          ,JGI_KB
+          ,ETC_SOS_FLG
+      FROM DPM_C_VI_JGI_MST
+     WHERE JGI_NO = #jgiNo:INTEGER#
+       AND KENMU_KB = 0
+  </select>
+
+  <select id="selectRealBySosCd" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT JM.JGI_NO
+          ,JM.JGI_NAME
+          ,JM.SOS_CD2
+          ,JM.SOS_CD3
+          ,JM.SOS_CD4
+          ,JM.SHOKUSEI_CD
+          ,JM.SHOKUSHU_CD
+          ,JM.SOS_CD
+          ,JM.JGI_KB
+          ,JM.ETC_SOS_FLG
+      FROM
+           DPM_C_VI_JGI_MST JM
+           INNER JOIN DPM_C_VI_SOS_MST SM ON JM.SOS_CD = SM.SOS_CD
+           <isNotNull prepend="AND" property="isShiten">
+             SM.ETC_SOS_FLG = JM.ETC_SOS_FLG
+           </isNotNull>
+     WHERE KENMU_KB = 0
+       <isNotNull property="jgiKbList">
+           <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               #jgiKbList[].dbValue#
+           </iterate>
+       </isNotNull>
+       <isNotNull prepend="AND" property="sosLvl">
+           EXISTS (SELECT JO.JGI_NO
+                     FROM DPS_S_SY_M_JGI_JOKEN JO
+                     INNER JOIN DPM_C_JKN_GRP JG ON JG.JOKEN_SET_CD = JO.JOKEN_SET_CD
+                     WHERE JO.JGI_NO = JM.JGI_NO
+                     AND JG.SOS_LVL = #sosLvl.dbValue#
+                  )
+       </isNotNull>
+       <isNotEmpty prepend="AND" property="sosCd">
+           JM.SOS_CD = #sosCd:VARCHAR#
+       </isNotEmpty>
+       <isNotEmpty prepend="AND" property="sosCd1">
+           JM.SOS_CD1 = #sosCd1:VARCHAR#
+       </isNotEmpty>
+       <isNotEmpty prepend="AND" property="sosCd2">
+           JM.SOS_CD2 = #sosCd2:VARCHAR#
+       </isNotEmpty>
+       <isNotEmpty prepend="AND" property="sosCd3">
+           JM.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotEmpty>
+       <isNotEmpty prepend="AND" property="sosCd4">
+           JM.SOS_CD4 = #sosCd4:VARCHAR#
+       </isNotEmpty>
+      ORDER BY SM.BR_CODE, SM.DIST_SEQ, SM.DIST_CODE, SM.TEAM_CODE, JM.SHOKUSEI_CD, JM.SHOKUSHU_CD, DECODE(JM.JGI_KB, '1','0', JM.JGI_KB), JM.JGI_NO
+  </select>
+
+</sqlMap>

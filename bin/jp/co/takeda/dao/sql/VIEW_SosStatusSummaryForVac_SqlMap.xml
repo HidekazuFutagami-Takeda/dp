@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_SosStatusSummaryForVac_SqlMap" >
+
+  <resultMap id="insWsPlanStatSum" class="jp.co.takeda.model.view.InsWsPlanStatSum" >
+    <result column="INS_WS_PLAN_NONE" property="none" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_DISTING" property="disting" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_DISTED" property="disted" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_OPENED" property="planOpened" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_COMPLETED" property="planCompleted" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_COUNT" property="totalCount" jdbcType="INTEGER" />
+    <result column="INS_WS_DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_OPEN_DATE" property="insWsOpenDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_FIX_DATE" property="insWsFixDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.view.SosStatusSummaryForVac" >
+    <result property="insWsPlanStatSum" resultMap="VIEW_SosStatusSummaryForVac_SqlMap.insWsPlanStatSum" />
+  </resultMap>
+
+  <!-- 検索/ステータスサマリー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH INS_WS_PLAN_STAT AS (SELECT
+                  COUNT(CASE WHEN IWPS.STATUS IS NULL THEN 1 ELSE NULL END) AS INS_WS_PLAN_NONE
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '1' THEN 1 ELSE NULL END) AS INS_WS_PLAN_DISTING
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '2' THEN 1 ELSE NULL END) AS INS_WS_PLAN_DISTED
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '3' THEN 1 ELSE NULL END) AS INS_WS_PLAN_OPENED
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '4' THEN 1 ELSE NULL END) AS INS_WS_PLAN_COMPLETED
+                  ,COUNT(JM.JGI_NO) AS INS_WS_PLAN_COUNT
+                  ,MAX(DIST_START_DATE) AS INS_WS_DIST_START_DATE
+                  ,MAX(DIST_END_DATE) AS INS_WS_DIST_END_DATE
+                  ,MAX(INS_WS_OPEN_DATE) AS INS_WS_OPEN_DATE
+                  ,MAX(INS_WS_FIX_DATE) AS INS_WS_FIX_DATE
+              FROM DPS_C_VI_JGI_MST JM
+                   LEFT OUTER JOIN DPS_C_PLANNED_PROD PP
+                ON 
+               <isNotNull property="jgiKbList">
+                   <iterate prepend="JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+                       #jgiKbList[].dbValue#
+                   </iterate>
+               </isNotNull>
+               <isNotNull prepend="AND" property="jokenSetList">
+               EXISTS (
+                   SELECT JO.JGI_NO
+                   FROM DPS_C_JGI_JOKEN JO
+                   WHERE JO.JGI_NO = JM.JGI_NO
+                       <isNotNull property="jokenSetList">
+                       <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                       #jokenSetList[].dbValue#
+                       </iterate>
+                       </isNotNull>
+               )
+               </isNotNull>
+                   LEFT OUTER JOIN DPS_V_INS_WS_PLAN_STATUS IWPS
+                ON IWPS.JGI_NO = JM.JGI_NO
+               AND IWPS.PROD_CODE = PP.PROD_CODE
+             WHERE PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+               AND PP.SALES = #sales:CHAR#
+             )
+    SELECT INS_WS_PLAN_NONE
+          ,INS_WS_PLAN_DISTING
+          ,INS_WS_PLAN_DISTED
+          ,INS_WS_PLAN_OPENED
+          ,INS_WS_PLAN_COMPLETED
+          ,INS_WS_PLAN_COUNT
+          ,INS_WS_DIST_START_DATE
+          ,INS_WS_DIST_END_DATE
+          ,INS_WS_OPEN_DATE
+          ,INS_WS_FIX_DATE
+      FROM INS_WS_PLAN_STAT
+    </select>
+
+</sqlMap>

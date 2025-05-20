@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_WsPlanStatusSummary_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.view.WsPlanStatusSummary" >
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="CATEGORY" property="category" jdbcType="VARCHAR" />
+    <result column="BUMON_SEI_NAME" property="bumonSeiName" jdbcType="VARCHAR" />
+    <result column="WS_PLAN_NONE" property="none" jdbcType="INTEGER" />
+    <result column="WS_PLAN_DIST_STATUS_NONE" property="distNone" jdbcType="INTEGER" />
+    <result column="WS_PLAN_DISTING" property="disting" jdbcType="INTEGER" />
+    <result column="WS_PLAN_DISTED" property="disted" jdbcType="INTEGER" />
+    <result column="SLIDE_STATUS_NONE" property="slideNone" jdbcType="INTEGER" />
+    <result column="SLIDING" property="sliding" jdbcType="INTEGER" />
+    <result column="SLIDED" property="slided" jdbcType="INTEGER" />
+    <result column="WS_PLAN_COUNT" property="totalCount" jdbcType="INTEGER" />
+    <result column="WS_DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+    <result column="WS_DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+    <result column="SLIDE_START_DATE" property="slideStartDate" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+    <result column="SLIDE_END_DATE" property="slideEndDate" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+  </resultMap>
+
+  <!-- 検索/ステータスサマリー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH WS_PLAN_STAT AS (
+            SELECT SM1.SOS_CD
+                  ,COUNT(CASE WHEN WPS.DIST_STATUS IS NULL AND WPS.SLIDE_STATUS IS NULL THEN 1 ELSE NULL END) AS WS_PLAN_NONE
+                  ,COUNT(CASE WHEN WPS.DIST_STATUS >= '0' THEN 1 ELSE NULL END) AS WS_PLAN_DIST_STATUS_NONE
+                  ,COUNT(CASE WHEN WPS.DIST_STATUS >= '1' THEN 1 ELSE NULL END) AS WS_PLAN_DISTING
+                  ,COUNT(CASE WHEN WPS.DIST_STATUS >= '2' THEN 1 ELSE NULL END) AS WS_PLAN_DISTED
+                  ,COUNT(CASE WHEN WPS.SLIDE_STATUS >= '0' THEN 1 ELSE NULL END) AS SLIDE_STATUS_NONE
+                  ,COUNT(CASE WHEN WPS.SLIDE_STATUS >= '1' THEN 1 ELSE NULL END) AS SLIDING
+                  ,COUNT(CASE WHEN WPS.SLIDE_STATUS >= '2' THEN 1 ELSE NULL END) AS SLIDED
+                  ,COUNT(PP.PROD_CODE) AS WS_PLAN_COUNT
+                  ,MAX(DIST_START_DATE) AS WS_DIST_START_DATE
+                  ,MAX(DIST_END_DATE) AS WS_DIST_END_DATE
+                  ,MAX(SLIDE_START_DATE) AS SLIDE_START_DATE
+                  ,MAX(SLIDE_END_DATE) AS SLIDE_END_DATE
+
+              FROM (SELECT * FROM DPS_C_SOS_MST WHERE SOS_CD = #sosCd2:VARCHAR#) SM1
+   LEFT OUTER JOIN (SELECT * FROM DPS_C_PLANNED_PROD DPP
+                             INNER JOIN DPS_C_VI_SOS_CTG SC ON DPP.category = SC.category
+                            WHERE DPP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+                              AND DPP.SALES = #sales:CHAR#
+                              AND DPP.CATEGORY = #category:CHAR#
+                              AND DPP.PLAN_LEVEL_WS = '1'
+                              AND SC.SOS_CD = #sosCd2:VARCHAR#
+                   ) PP
+                ON 1 = 1 <!-- 直積（PPが0件の場合でもレコードは残す）-->
+   LEFT OUTER JOIN DPS_I_WS_PLAN_STATUS WPS
+                ON WPS.SOS_CD = SM1.SOS_CD
+               AND WPS.PROD_CODE = PP.PROD_CODE
+             GROUP BY SM1.SOS_CD
+           )
+    SELECT SM.SOS_CD
+          ,#category:CHAR# AS CATEGORY
+          ,SM.BUMON_SEI_NAME
+          ,WS_PLAN_NONE
+          ,WS_PLAN_DIST_STATUS_NONE
+          ,WS_PLAN_DISTING
+          ,WS_PLAN_DISTED
+          ,SLIDE_STATUS_NONE
+          ,SLIDING
+          ,SLIDED
+          ,WS_PLAN_COUNT
+          ,WS_DIST_START_DATE
+          ,WS_DIST_END_DATE
+          ,SLIDE_START_DATE
+          ,SLIDE_END_DATE
+      FROM DPS_C_SOS_MST SM
+           INNER JOIN WS_PLAN_STAT WPS
+        ON SM.SOS_CD = WPS.SOS_CD
+    </select>
+  <select id="selectListSumByCategory" resultMap="resultMap" parameterClass="java.util.Map" >
+<![CDATA[
+    WITH WS_PLAN_STAT AS (
+            SELECT
+                   PP.CATEGORY AS CATEGORY
+                  ,COUNT(CASE WHEN WPS.DIST_STATUS IS NULL AND WPS.SLIDE_STATUS IS NULL THEN 1 ELSE NULL END) AS WS_PLAN_NONE
+                  ,COUNT(CASE WHEN WPS.DIST_STATUS >= '0' THEN 1 ELSE NULL END) AS WS_PLAN_DIST_STATUS_NONE
+                  ,COUNT(CASE WHEN WPS.DIST_STATUS >= '1' THEN 1 ELSE NULL END) AS WS_PLAN_DISTING
+                  ,COUNT(CASE WHEN WPS.DIST_STATUS >= '2' THEN 1 ELSE NULL END) AS WS_PLAN_DISTED
+                  ,COUNT(CASE WHEN WPS.SLIDE_STATUS >= '0' THEN 1 ELSE NULL END) AS SLIDE_STATUS_NONE
+                  ,COUNT(CASE WHEN WPS.SLIDE_STATUS >= '1' THEN 1 ELSE NULL END) AS SLIDING
+                  ,COUNT(CASE WHEN WPS.SLIDE_STATUS >= '2' THEN 1 ELSE NULL END) AS SLIDED
+                  ,COUNT(PP.PROD_CODE) AS WS_PLAN_COUNT
+                  ,MAX(DIST_START_DATE) AS WS_DIST_START_DATE
+                  ,MAX(DIST_END_DATE) AS WS_DIST_END_DATE
+                  ,MAX(SLIDE_START_DATE) AS SLIDE_START_DATE
+                  ,MAX(SLIDE_END_DATE) AS SLIDE_END_DATE
+
+              FROM  (SELECT * FROM DPS_C_PLANNED_PROD
+                            WHERE PLAN_TARGET_FLG = '1'
+                              AND PLAN_LEVEL_WS = '1'
+                              AND category <>
+                              (select  DATA_CD FROM DPS_C_CD_MST
+                                WHERE DATA_KBN = 'vaccine')
+                   ) PP
+             LEFT JOIN DPS_I_WS_PLAN_STATUS WPS
+	         ON WPS.PROD_CODE = PP.PROD_CODE
+             GROUP BY PP.CATEGORY
+           ),
+
+    WS_PLAN_STAT_V AS (
+            SELECT
+                   PP.CATEGORY AS CATEGORY
+                  ,COUNT(CASE WHEN WPS.DIST_STATUS IS NULL AND WPS.SLIDE_STATUS IS NULL THEN 1 ELSE NULL END) AS WS_PLAN_NONE
+                  ,COUNT(CASE WHEN WPS.DIST_STATUS >= '0' THEN 1 ELSE NULL END) AS WS_PLAN_DIST_STATUS_NONE
+                  ,COUNT(CASE WHEN WPS.DIST_STATUS >= '1' THEN 1 ELSE NULL END) AS WS_PLAN_DISTING
+                  ,COUNT(CASE WHEN WPS.DIST_STATUS >= '2' THEN 1 ELSE NULL END) AS WS_PLAN_DISTED
+                  ,COUNT(CASE WHEN WPV.SLIDE_STATUS >= '0' THEN 1 ELSE NULL END) AS SLIDE_STATUS_NONE
+                  ,COUNT(CASE WHEN WPV.SLIDE_STATUS >= '1' THEN 1 ELSE NULL END) AS SLIDING
+                  ,COUNT(CASE WHEN WPV.SLIDE_STATUS >= '2' THEN 1 ELSE NULL END) AS SLIDED
+                  ,COUNT(PP.PROD_CODE) AS WS_PLAN_COUNT
+                  ,MAX(WPS.DIST_START_DATE) AS WS_DIST_START_DATE
+                  ,MAX(WPS.DIST_END_DATE) AS WS_DIST_END_DATE
+                  ,MAX(WPV.SLIDE_START_DATE) AS SLIDE_START_DATE
+                  ,MAX(WPV.SLIDE_END_DATE) AS SLIDE_END_DATE
+
+              FROM  (SELECT * FROM DPS_C_PLANNED_PROD
+                            WHERE PLAN_TARGET_FLG = '1'
+                              AND PLAN_LEVEL_WS = '1'
+                              AND CATEGORY =
+                              (SELECT  DATA_CD FROM DPS_C_CD_MST
+                                WHERE DATA_KBN = 'vaccine')
+
+                   ) PP
+             LEFT JOIN DPS_V_WS_PLAN_STATUS WPV
+	         ON WPV.PROD_CODE = PP.PROD_CODE
+             LEFT JOIN DPS_I_WS_PLAN_STATUS WPS
+	         ON WPS.PROD_CODE = PP.PROD_CODE
+             GROUP BY PP.CATEGORY
+           )
+    SELECT NULL AS SOS_CD
+          ,CATEGORY
+          ,NULL AS BUMON_SEI_NAME
+          ,WS_PLAN_NONE
+          ,WS_PLAN_DIST_STATUS_NONE
+          ,WS_PLAN_DISTING
+          ,WS_PLAN_DISTED
+          ,SLIDE_STATUS_NONE
+          ,SLIDING
+          ,SLIDED
+          ,WS_PLAN_COUNT
+          ,WS_DIST_START_DATE
+          ,WS_DIST_END_DATE
+          ,SLIDE_START_DATE
+          ,SLIDE_END_DATE
+      FROM (
+	      select * from WS_PLAN_STAT
+	      UNION
+	      select * from WS_PLAN_STAT_V) WS_PLAN_STAT_U
+      INNER JOIN
+	      (SELECT DATA_CD FROM DPS_C_CD_MST
+	      WHERE DATA_KBN = 'category'
+	      ORDER BY DATA_VALUE
+	      ) CATORDER
+      ON CATORDER.DATA_CD = WS_PLAN_STAT_U.CATEGORY
+]]>
+    </select>
+
+</sqlMap>

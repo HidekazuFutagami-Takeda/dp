@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="VIEW_TmsTytenPlanDistProd_SqlMap" >
+
+<resultMap id="resultMap" class="jp.co.takeda.model.view.TmsTytenPlanDistProd">
+  <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+  <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+  <result column="DIST_STATUS" property="statusDistForWs" jdbcType="CHAR" />
+  <result column="DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+  <result column="DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+  <result column="SUM_PLANNED_VALUE_UH_Y" property="sumPlannedValueUhY" jdbcType="BIGINT" />
+  <result column="SUM_PLANNED_VALUE_P_Y" property="sumPlannedValuePY" jdbcType="BIGINT" />
+</resultMap>
+
+<!-- 特約店別計画配分対象品目取得 -->
+<select id="searchTmsTytenPlanDistProd" resultMap="resultMap" parameterClass="java.util.Map" >
+SELECT
+  PP.PROD_CODE,
+  PP.PROD_NAME,
+  WPS.DIST_STATUS,
+  WPS.DIST_START_DATE,
+  WPS.DIST_END_DATE,
+  SUM(OP.PLANNED_VALUE_UH_Y) AS SUM_PLANNED_VALUE_UH_Y,
+  SUM(OP.PLANNED_VALUE_P_Y) AS SUM_PLANNED_VALUE_P_Y,
+  NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+FROM
+ DPS_C_PLANNED_PROD PP
+   LEFT OUTER JOIN
+    (DPS_C_SOS_MST SM
+       INNER JOIN
+         DPS_I_OFFICE_PLAN OP
+           ON SM.SOS_CD = OP.SOS_CD AND SM.UP_SOS_CD = #sosCd2:VARCHAR#
+    )
+      ON PP.PROD_CODE = OP.PROD_CODE
+        LEFT OUTER JOIN
+          DPS_I_WS_PLAN_STATUS WPS
+            ON PP.PROD_CODE = WPS.PROD_CODE AND WPS.SOS_CD = #sosCd2:VARCHAR#
+    LEFT OUTER JOIN DPS_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD
+WHERE
+  PP.CATEGORY = #category:CHAR#
+  AND PP.SALES = #sales:CHAR#
+  AND PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+  AND PP.PLAN_LEVEL_WS = '1'
+GROUP BY
+  DATA_SEQ,
+  PP.PROD_CODE,
+  PP.PROD_NAME,
+  GROUP_CODE,
+  STAT_PROD_CODE,
+  WPS.DIST_STATUS,
+  WPS.DIST_START_DATE,
+  WPS.DIST_END_DATE
+<isPropertyAvailable property="sortString">
+$sortString$
+</isPropertyAvailable>
+</select>
+</sqlMap>

@@ -1,0 +1,359 @@
+#set($layout = "nothingLayout.vm" )
+#if ($form.getRequestData("DPS302C01_DATA_R_LIST_RESULT"))
+    #set($dataList = $form.getRequestData("DPS302C01_DATA_R_LIST_RESULT"))
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+## 空文字
+#set($emptyStr = "")
+## セルスタイルの用意
+#set($s1 = "border-width:1px 0px 4px 1px;border-bottom-style:double;")
+#set($s2 = "border-width:1px 1px 4px 0px;border-bottom-style:double;")
+#set($s3 = "border-width:1px 1px 4px 1px;border-bottom-style:double;")
+#set($s4 = "border-width:1px 0px 1px 1px;")
+#set($s5 = "border-width:1px 1px 1px 0px;")
+#set($s6 = "border-width:1px 1px 0px 1px;")
+#set($s7 = "border-width:0px 1px 0px 1px;")
+#set($s8 = "border-width:0px 1px 1px 1px;")
+<rows>
+#set($oldSosName = $emptyStr)
+#set($decimalFormat = $form.bean.getDefaultRateFormat())
+#foreach($resultObj in $dataList)
+    ## 組織コード
+    #set($sosCd = $emptyStr)
+    #if($resultObj.sosCd)
+        #set($sosCd = $resultObj.sosCd)
+    #end
+    ## 組織名
+    #set($sosName = $emptyStr)
+    #if($resultObj.sosName)
+        #set($sosName = $resultObj.sosName)
+    #end
+    ## 従業員番号
+    #set($jgiNo = $emptyStr)
+    #if($resultObj.jgiNo)
+        #set($jgiNo = $resultObj.jgiNo)
+    #end
+    ## 従業員名
+    #set($jgiName = $emptyStr)
+    #if($resultObj.jgiName)
+        #set($jgiName = $resultObj.jgiName + "（" + $resultObj.shokushuName + "）" )
+    #end
+    ## 特定施設個別計画
+    #set($specialInsPlanValue = $emptyStr)
+    #if($resultObj.specialInsPlanValue)
+        #set($specialInsPlanValue = $resultObj.specialInsPlanValue)
+    #end
+    ## 理論計画1 増分
+    #set($planForUp1 = $emptyStr)
+    #if($resultObj.planForUp1)
+        #set($planForUp1 = $resultObj.planForUp1)
+    #end
+    ## 理論計画1 計画
+    #set($theoreticalValue1 = $emptyStr)
+    #if($resultObj.theoreticalValue1)
+        #set($theoreticalValue1 = $resultObj.theoreticalValue1)
+    #end
+    ## 理論計画1 前同比
+    #set($lastSameRatio1 = $emptyStr)
+    #if($resultObj.lastSameRatio1)
+        #set($lastSameRatio1 = $!format.doubleToString($resultObj.lastSameRatio1, $decimalFormat))
+    #end
+    ## 理論計画2 増分
+    #set($planForUp2 = $emptyStr)
+    #if($resultObj.planForUp2)
+        #set($planForUp2 = $resultObj.planForUp2)
+    #end
+    ## 理論計画2 計画
+    #set($theoreticalValue2 = $emptyStr)
+    #if($resultObj.theoreticalValue2)
+        #set($theoreticalValue2 = $resultObj.theoreticalValue2)
+    #end
+    ## 理論計画2 前同比
+    #set($lastSameRatio2 = $emptyStr)
+    #if($resultObj.lastSameRatio2)
+        #set($lastSameRatio2 = $!format.doubleToString($resultObj.lastSameRatio2, $decimalFormat))
+    #end
+    ## 試算指数合計 所内構成比
+    #set($sumOfficeRatio = $emptyStr)
+    #if($resultObj.sumOfficeRatio)
+        #set($sumOfficeRatio = $!format.doubleToString($resultObj.sumOfficeRatio, $decimalFormat))
+    #end
+    ## 試算指数合計 チーム内構成比
+    #set($sumTeamRatio = $emptyStr)
+    #if($resultObj.sumTeamRatio)
+        #set($sumTeamRatio = $!format.doubleToString($resultObj.sumTeamRatio, $decimalFormat))
+    #end
+    ## 未獲得市場 未獲得市場値
+    #set($mikakutokuValue = $emptyStr)
+    #if($resultObj.mikakutokuValue)
+        #set($mikakutokuValue = $resultObj.mikakutokuValue)
+    #end
+    ## 未獲得市場 所内構成比
+    #set($mikakutokuRatioOffice = $emptyStr)
+    #if($resultObj.mikakutokuRatioOffice)
+        #set($mikakutokuRatioOffice = $!format.doubleToString($resultObj.mikakutokuRatioOffice, $decimalFormat))
+    #end
+    ## 未獲得市場 チーム内構成比
+    #set($mikakutokuRatioTeam = $emptyStr)
+    #if($resultObj.mikakutokuRatioTeam)
+        #set($mikakutokuRatioTeam = $!format.doubleToString($resultObj.mikakutokuRatioTeam, $decimalFormat))
+    #end
+    ## 納入実績 納入実績値
+    #set($deliveryValue = $emptyStr)
+    #if($resultObj.deliveryValue)
+        #set($deliveryValue = $resultObj.deliveryValue)
+    #end
+    ## 納入実績 所内構成比
+    #set($deliveryRatioOffice = $emptyStr)
+    #if($resultObj.deliveryRatioOffice)
+        #set($deliveryRatioOffice = $!format.doubleToString($resultObj.deliveryRatioOffice, $decimalFormat))
+    #end
+    ## 納入実績 チーム内構成比
+    #set($deliveryRatioTeam = $emptyStr)
+    #if($resultObj.deliveryRatioTeam)
+        #set($deliveryRatioTeam = $!format.doubleToString($resultObj.deliveryRatioTeam, $decimalFormat))
+    #end
+    ## フリー項目1 フリー項目値
+    #set($free1Value = $emptyStr)
+    #if($resultObj.free1Value)
+        #set($free1Value = $resultObj.free1Value)
+    #end
+    ## フリー項目1 所内構成比
+    #set($free1RatioOffice = $emptyStr)
+    #if($resultObj.free1RatioOffice)
+        #set($free1RatioOffice = $!format.doubleToString($resultObj.free1RatioOffice, $decimalFormat))
+    #end
+    ## フリー項目1 チーム内構成比
+    #set($free1RatioTeam = $emptyStr)
+    #if($resultObj.free1RatioTeam)
+        #set($free1RatioTeam = $!format.doubleToString($resultObj.free1RatioTeam, $decimalFormat))
+    #end
+    ## フリー項目2 フリー項目値
+    #set($free2Value = $emptyStr)
+    #if($resultObj.free2Value)
+        #set($free2Value = $resultObj.free2Value)
+    #end
+    ## フリー項目2 所内構成比
+    #set($free2RatioOffice = $emptyStr)
+    #if($resultObj.free2RatioOffice)
+        #set($free2RatioOffice = $!format.doubleToString($resultObj.free2RatioOffice, $decimalFormat))
+    #end
+    ## フリー項目2 チーム内構成比
+    #set($free2RatioTeam = $emptyStr)
+    #if($resultObj.free2RatioTeam)
+        #set($free2RatioTeam = $!format.doubleToString($resultObj.free2RatioTeam, $decimalFormat))
+    #end
+    ## フリー項目3 フリー項目値
+    #set($free3Value = $emptyStr)
+    #if($resultObj.free3Value)
+        #set($free3Value = $resultObj.free3Value)
+    #end
+    ## フリー項目3 所内構成比
+    #set($free3RatioOffice = $emptyStr)
+    #if($resultObj.free3RatioOffice)
+        #set($free3RatioOffice = $!format.doubleToString($resultObj.free3RatioOffice, $decimalFormat))
+    #end
+    ## フリー項目3 チーム内構成比
+    #set($free3RatioTeam = $emptyStr)
+    #if($resultObj.free3RatioTeam)
+        #set($free3RatioTeam = $!format.doubleToString($resultObj.free3RatioTeam, $decimalFormat))
+    #end
+    ## 営業所計画部フラグ
+    #set($isOfficeRow = false)
+    #if ($resultObj.isOfficeRow)
+        #set($isOfficeRow = $resultObj.isOfficeRow)
+    #end
+    ## チーム別計画部フラグ
+    #set($isTeamRow = false)
+    #if ($resultObj.isTeamRow)
+        #set($isTeamRow = $resultObj.isTeamRow)
+    #end
+    ## チーム別計画部合計行フラグ
+    #set($isTeamSumRow = false)
+    #if ($resultObj.isTeamSumRow)
+        #set($isTeamSumRow = $resultObj.isTeamSumRow)
+    #end
+    ## 担当者別計画部フラグ
+    #set($isMrRow = false)
+    #if ($resultObj.isMrRow)
+        #set($isMrRow = $resultObj.isMrRow)
+    #end
+    ## 担当者別計画部合計行フラグ
+    #set($isMrSumRow = false)
+    #if ($resultObj.isMrSumRow)
+        #set($isMrSumRow = $resultObj.isMrSumRow)
+    #end
+    ## チーム表示の場合は営業所計画部フラグとチーム別計画部合計行フラグをOFF(非表示)
+    #if ($form.bean.isTeamRank)
+        #set($isOfficeRow = false)
+        #set($isTeamSumRow = false)
+    #end
+    ## 営業所計画部
+    #if($isOfficeRow)
+    <row id='$velocityCount'>
+        <cell></cell>
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        <cell style="$s1">エリア計</cell>
+##        <cell style="$s1">営業所計</cell>
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        <cell style="$s2"></cell>
+        <cell style="$s3 #setMinusStyle($specialInsPlanValue)">$specialInsPlanValue</cell>
+        <cell style="$s3 #setMinusStyle($planForUp1)">$planForUp1</cell>
+        <cell style="$s3 #setMinusStyle($theoreticalValue1)">$theoreticalValue1</cell>
+        <cell style="$s3 #setMinusStyle($lastSameRatio1)">$lastSameRatio1</cell>
+        <cell style="$s3 #setMinusStyle($planForUp2)">$planForUp2</cell>
+        <cell style="$s3 #setMinusStyle($theoreticalValue2)">$theoreticalValue2</cell>
+        <cell style="$s3 #setMinusStyle($lastSameRatio2)">$lastSameRatio2</cell>
+        <cell style="$s3 #setMinusStyle($sumOfficeRatio)">$sumOfficeRatio</cell>
+        <cell style="$s3 #setMinusStyle($sumTeamRatio)">$sumTeamRatio</cell>
+        <cell style="$s3 #setMinusStyle($mikakutokuValue)">$mikakutokuValue</cell>
+        <cell style="$s3 #setMinusStyle($mikakutokuRatioOffice)">$mikakutokuRatioOffice</cell>
+        <cell style="$s3 #setMinusStyle($mikakutokuRatioTeam)">$mikakutokuRatioTeam</cell>
+        <cell style="$s3 #setMinusStyle($deliveryValue)">$deliveryValue</cell>
+        <cell style="$s3 #setMinusStyle($deliveryRatioOffice)">$deliveryRatioOffice</cell>
+        <cell style="$s3 #setMinusStyle($deliveryRatioTeam)">$deliveryRatioTeam</cell>
+        <cell style="$s3 #setMinusStyle($free1Value)">$free1Value</cell>
+        <cell style="$s3 #setMinusStyle($free1RatioOffice)">$free1RatioOffice</cell>
+        <cell style="$s3 #setMinusStyle($free1RatioTeam)">$free1RatioTeam</cell>
+        <cell style="$s3 #setMinusStyle($free2Value)">$free2Value</cell>
+        <cell style="$s3 #setMinusStyle($free2RatioOffice)">$free2RatioOffice</cell>
+        <cell style="$s3 #setMinusStyle($free2RatioTeam)">$free2RatioTeam</cell>
+        <cell style="$s3 #setMinusStyle($free3Value)">$free3Value</cell>
+        <cell style="$s3 #setMinusStyle($free3RatioOffice)">$free3RatioOffice</cell>
+        <cell style="$s3 #setMinusStyle($free3RatioTeam)">$free3RatioTeam</cell>
+    </row>
+    ## チーム別計画部
+    #elseif($isTeamRow)
+    <row id='$velocityCount'>
+        <cell></cell>
+        <cell style="$s4">$sosName</cell>
+        <cell style="$s5"></cell>
+        <cell style="#setMinusStyle($specialInsPlanValue)">$specialInsPlanValue</cell>
+        <cell style="#setMinusStyle($planForUp1)">$planForUp1</cell>
+        <cell style="#setMinusStyle($theoreticalValue1)">$theoreticalValue1</cell>
+        <cell style="#setMinusStyle($lastSameRatio1)">$lastSameRatio1</cell>
+        <cell style="#setMinusStyle($planForUp2)">$planForUp2</cell>
+        <cell style="#setMinusStyle($theoreticalValue2)">$theoreticalValue2</cell>
+        <cell style="#setMinusStyle($lastSameRatio2)">$lastSameRatio2</cell>
+        <cell style="#setMinusStyle($sumOfficeRatio)">$sumOfficeRatio</cell>
+        <cell style="#setMinusStyle($sumTeamRatio)">$sumTeamRatio</cell>
+        <cell style="#setMinusStyle($mikakutokuValue)">$mikakutokuValue</cell>
+        <cell style="#setMinusStyle($mikakutokuRatioOffice)">$mikakutokuRatioOffice</cell>
+        <cell style="#setMinusStyle($mikakutokuRatioTeam)">$mikakutokuRatioTeam</cell>
+        <cell style="#setMinusStyle($deliveryValue)">$deliveryValue</cell>
+        <cell style="#setMinusStyle($deliveryRatioOffice)">$deliveryRatioOffice</cell>
+        <cell style="#setMinusStyle($deliveryRatioTeam)">$deliveryRatioTeam</cell>
+        <cell style="#setMinusStyle($free1Value)">$free1Value</cell>
+        <cell style="#setMinusStyle($free1RatioOffice)">$free1RatioOffice</cell>
+        <cell style="#setMinusStyle($free1RatioTeam)">$free1RatioTeam</cell>
+        <cell style="#setMinusStyle($free2Value)">$free2Value</cell>
+        <cell style="#setMinusStyle($free2RatioOffice)">$free2RatioOffice</cell>
+        <cell style="#setMinusStyle($free2RatioTeam)">$free2RatioTeam</cell>
+        <cell style="#setMinusStyle($free3Value)">$free3Value</cell>
+        <cell style="#setMinusStyle($free3RatioOffice)">$free3RatioOffice</cell>
+        <cell style="#setMinusStyle($free3RatioTeam)">$free3RatioTeam</cell>
+    </row>
+    ## チーム別計画部合計行
+    #elseif($isTeamSumRow)
+    <row id='$velocityCount'>
+        <cell></cell>
+        <cell class="sumOfficeTokuG" style="$s1">計</cell>
+        <cell class="sumOfficeTokuG" style="$s2"></cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($specialInsPlanValue)">$specialInsPlanValue</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($planForUp1)">$planForUp1</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($theoreticalValue1)">$theoreticalValue1</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($lastSameRatio1)">$lastSameRatio1</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($planForUp2)">$planForUp2</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($theoreticalValue2)">$theoreticalValue2</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($lastSameRatio2)">$lastSameRatio2</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($sumOfficeRatio)">$sumOfficeRatio</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($sumTeamRatio)">$sumTeamRatio</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($mikakutokuValue)">$mikakutokuValue</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($mikakutokuRatioOffice)">$mikakutokuRatioOffice</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($mikakutokuRatioTeam)">$mikakutokuRatioTeam</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($deliveryValue)">$deliveryValue</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($deliveryRatioOffice)">$deliveryRatioOffice</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($deliveryRatioTeam)">$deliveryRatioTeam</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($free1Value)">$free1Value</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($free1RatioOffice)">$free1RatioOffice</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($free1RatioTeam)">$free1RatioTeam</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($free2Value)">$free2Value</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($free2RatioOffice)">$free2RatioOffice</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($free2RatioTeam)">$free2RatioTeam</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($free3Value)">$free3Value</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($free3RatioOffice)">$free3RatioOffice</cell>
+        <cell class="sumOfficeTokuG" style="$s3 #setMinusStyle($free3RatioTeam)">$free3RatioTeam</cell>
+    </row>
+    ## 担当者別計画部
+    #elseif($isMrRow)
+    <row id='$velocityCount'>
+    <cell></cell>
+    #if($oldSosName == $sosName)
+        <cell style="$s7"></cell>
+    #else
+        <cell style="$s6">$sosName</cell>
+    #end
+        <cell>$jgiName</cell>
+        <cell style="#setMinusStyle($specialInsPlanValue)">$specialInsPlanValue</cell>
+        <cell style="#setMinusStyle($planForUp1)">$planForUp1</cell>
+        <cell style="#setMinusStyle($theoreticalValue1)">$theoreticalValue1</cell>
+        <cell style="#setMinusStyle($lastSameRatio1)">$lastSameRatio1</cell>
+        <cell style="#setMinusStyle($planForUp2)">$planForUp2</cell>
+        <cell style="#setMinusStyle($theoreticalValue2)">$theoreticalValue2</cell>
+        <cell style="#setMinusStyle($lastSameRatio2)">$lastSameRatio2</cell>
+        <cell style="#setMinusStyle($sumOfficeRatio)">$sumOfficeRatio</cell>
+        <cell style="#setMinusStyle($sumTeamRatio)">$sumTeamRatio</cell>
+        <cell style="#setMinusStyle($mikakutokuValue)">$mikakutokuValue</cell>
+        <cell style="#setMinusStyle($mikakutokuRatioOffice)">$mikakutokuRatioOffice</cell>
+        <cell style="#setMinusStyle($mikakutokuRatioTeam)">$mikakutokuRatioTeam</cell>
+        <cell style="#setMinusStyle($deliveryValue)">$deliveryValue</cell>
+        <cell style="#setMinusStyle($deliveryRatioOffice)">$deliveryRatioOffice</cell>
+        <cell style="#setMinusStyle($deliveryRatioTeam)">$deliveryRatioTeam</cell>
+        <cell style="#setMinusStyle($free1Value)">$free1Value</cell>
+        <cell style="#setMinusStyle($free1RatioOffice)">$free1RatioOffice</cell>
+        <cell style="#setMinusStyle($free1RatioTeam)">$free1RatioTeam</cell>
+        <cell style="#setMinusStyle($free2Value)">$free2Value</cell>
+        <cell style="#setMinusStyle($free2RatioOffice)">$free2RatioOffice</cell>
+        <cell style="#setMinusStyle($free2RatioTeam)">$free2RatioTeam</cell>
+        <cell style="#setMinusStyle($free3Value)">$free3Value</cell>
+        <cell style="#setMinusStyle($free3RatioOffice)">$free3RatioOffice</cell>
+        <cell style="#setMinusStyle($free3RatioTeam)">$free3RatioTeam</cell>
+    </row>
+    ##現ループの組織名称を保持
+    #set($oldSosName = $sosName)
+    ## 担当者別計画部合計行
+    #elseif($isMrSumRow)
+    <row id='$velocityCount'>
+        <cell></cell>
+        <cell style="$s8"></cell>
+        <cell class="sumTeam">計</cell>
+        <cell class="sumTeam" style="#setMinusStyle($specialInsPlanValue)">$specialInsPlanValue</cell>
+        <cell class="sumTeam" style="#setMinusStyle($planForUp1)">$planForUp1</cell>
+        <cell class="sumTeam" style="#setMinusStyle($theoreticalValue1)">$theoreticalValue1</cell>
+        <cell class="sumTeam" style="#setMinusStyle($lastSameRatio1)">$lastSameRatio1</cell>
+        <cell class="sumTeam" style="#setMinusStyle($planForUp2)">$planForUp2</cell>
+        <cell class="sumTeam" style="#setMinusStyle($theoreticalValue2)">$theoreticalValue2</cell>
+        <cell class="sumTeam" style="#setMinusStyle($lastSameRatio2)">$lastSameRatio2</cell>
+        <cell class="sumTeam" style="#setMinusStyle($sumOfficeRatio)">$sumOfficeRatio</cell>
+        <cell class="sumTeam" style="#setMinusStyle($sumTeamRatio)">$sumTeamRatio</cell>
+        <cell class="sumTeam" style="#setMinusStyle($mikakutokuValue)">$mikakutokuValue</cell>
+        <cell class="sumTeam" style="#setMinusStyle($mikakutokuRatioOffice)">$mikakutokuRatioOffice</cell>
+        <cell class="sumTeam" style="#setMinusStyle($mikakutokuRatioTeam)">$mikakutokuRatioTeam</cell>
+        <cell class="sumTeam" style="#setMinusStyle($deliveryValue)">$deliveryValue</cell>
+        <cell class="sumTeam" style="#setMinusStyle($deliveryRatioOffice)">$deliveryRatioOffice</cell>
+        <cell class="sumTeam" style="#setMinusStyle($deliveryRatioTeam)">$deliveryRatioTeam</cell>
+        <cell class="sumTeam" style="#setMinusStyle($free1Value)">$free1Value</cell>
+        <cell class="sumTeam" style="#setMinusStyle($free1RatioOffice)">$free1RatioOffice</cell>
+        <cell class="sumTeam" style="#setMinusStyle($free1RatioTeam)">$free1RatioTeam</cell>
+        <cell class="sumTeam" style="#setMinusStyle($free2Value)">$free2Value</cell>
+        <cell class="sumTeam" style="#setMinusStyle($free2RatioOffice)">$free2RatioOffice</cell>
+        <cell class="sumTeam" style="#setMinusStyle($free2RatioTeam)">$free2RatioTeam</cell>
+        <cell class="sumTeam" style="#setMinusStyle($free3Value)">$free3Value</cell>
+        <cell class="sumTeam" style="#setMinusStyle($free3RatioOffice)">$free3RatioOffice</cell>
+        <cell class="sumTeam" style="#setMinusStyle($free3RatioTeam)">$free3RatioTeam</cell>
+    </row>
+    #end
+#end
+</rows>
+#end

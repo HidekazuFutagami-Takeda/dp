@@ -1,0 +1,63 @@
+## ------------------------------------
+## 子画面ウィンドウの帳票[作成中]画面
+## ------------------------------------
+#set($layout = "nothingLayout.vm" )
+#set($category = $form.bean.category)
+#parse("WEB-INF/view/cmn/xhtml.vm")
+<html>
+#parse("WEB-INF/view/cmn/headerInfo.vm")
+<body onload="window.focus();">
+
+<div class="clear"></div>
+<div id="messageArea">
+#allMessage()
+</div>
+
+<script language="javascript">
+<!--
+## 読取画像
+## 初期表示＋読込処理
+function ${form.bean.getActionPath()}() {
+    document.${form.bean.getActionPath()}.action = '$link.setAction("${form.bean.getActionPath()}Output")';
+    document.${form.bean.getActionPath()}.submit();
+    return false;
+}
+## キー入力無効
+window.document.onkeydown = function () {
+    event.keyCode = null;
+    return false;
+}
+//-->
+</script>
+
+<form name="${form.bean.getActionPath()}" method="post">
+<div class="label">
+<table align="center" width="100%" height="200px" border="0" cellpadding="5" style="text-align: center;">
+    <tr>
+        <td>
+            #set($loadingImg = "<img src='$link.getContextPath()/cmn/images/loading.gif' />")
+            ${loadingImg}$text.get("DPC999C99.004","dialogue")
+        </td>
+    </tr>
+</table>
+</div>
+##(医)関係会社別帳票
+<input type="hidden" name="insWsOutputSosCd" id="insWsOutputSosCd" value="$!form.bean.insWsOutputSosCd" />
+##①担当者別品目別計画一覧
+<input type="hidden" name="mrPlanMMPListOutputCd" id="mrPlanMMPListOutputCd" value="$!form.bean.mrPlanMMPListOutputCd" />
+<input type="hidden" name="mrPlanOutputDivision" id="mrPlanOutputDivision" value="$!form.bean.mrPlanOutputDivision" />
+##②品目別担当者別計画検討表
+<input type="hidden" name="reviewProdMrOutputCd" id="reviewProdMrOutputCd" value="$!form.bean.reviewProdMrOutputCd" />
+##③担当者別品目別計画検討表
+<input type="hidden" name="reviewMrProdOutputCd" id="reviewMrProdOutputCd" value="$!form.bean.reviewMrProdOutputCd" />
+##④チーム担当者計画検討表
+<input type="hidden" name="teamMrOutputSosCd" id="teamMrOutputSosCd" value="$!form.bean.teamMrOutputSosCd" />
+<input type="hidden" name="category" id="category" value="$!form.bean.category" />
+</form>
+<script language="javascript">
+<!--
+${form.bean.getActionPath()}();
+//-->
+</script>
+</body>
+</html>

@@ -1,0 +1,299 @@
+#set($pageTitle = $text.get("dpm300C01","title"))
+#set($bodyOnloadMethod = "dpm300C01F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dpm300C01x01.vm")
+
+#set($CoverId = "dpm300C01CoverId")
+#set( $dataListVaccine = $form.getRequestData("DPM300C01_DATA_R"))
+#set( $headerDataVaccine = $form.getRequestData("DPM300C01_INPUT_DATA_R"))
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+<script language="javascript">
+<!--
+document.getElementById("closeWindow").value = "true";
+var startTime = new Date();
+var editFlg = false;
+var inspos = 0;
+var tmsWidth = 100;
+
+##初期表示＋読込処理
+function dpm300C01F00() {
+    window.name = "self";
+    doInitGrid();
+    doInitGrid2();
+    #if($!headerDataVaccine)
+	    var addtext = "$!headerDataVaccine.getTmsTytenName()　計,$!headerDataVaccine.getTmsTytenCd()";
+	    ${GridObjName2}.addRow("1", addtext, 0);
+	    ${GridObjName2}.setUserData("1","rowType","total");
+	    ${GridObjName2}.setUserData("1","subTotalId","none");
+	    for (i = 0; i <= 14; i++) {
+	        if (i == 0) {
+	            ${GridObjName2}.cells("1", i).cell.className = "textL sumShitenToku";
+	        } else {
+	            ${GridObjName2}.cells("1", i).cell.className = "sumShitenToku";
+	        }
+	    }
+	    ${GridObjName2}.entBox.style.height="125px";
+    #end
+    if (document.getElementById("dpm300C01x01.vm")) {
+        var loadXMLString = document.getElementById("dpm300C01x01.vm").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+            for (columnId = 0; columnId <= 14; columnId++) {
+                if(columnId == 0){
+                    ${GridObjName2}.cells("1", columnId).cell.className = "textL sumShitenToku";
+                }else{
+                    ${GridObjName2}.cells("1", columnId).cell.className = "sumShitenToku";
+                }
+                if(columnId >= 3 && columnId <= 14){
+                    #if($form.bean.tmsTytenCdPart && $form.bean.tmsTytenCdPart.length() == 13)
+                        setAllRowSumOtherGrid(${GridObjName},${GridObjName2},columnId)
+                    #else
+                        setSumOtherGrid(${GridObjName},${GridObjName2},columnId);
+                    #end
+                }
+            }
+            ${GridObjName}.forEachRow(function(id){
+	            ## B価　合計計算 明細グリッド
+	            ${GridObjName}.cells(id,12).setValue(${GridObjName}.cells(id,3).getValue());
+	            ## T価　合計計算 明細グリッド
+	            ${GridObjName}.cells(id,13).setValue(${GridObjName}.cells(id,4).getValue());
+	            ## T価【修正値】　合計計算 明細グリッド
+	            ${GridObjName}.cells(id,14).setValue(${GridObjName}.cells(id,5).getValue());
+            });
+            ## B価　合計計算 集計グリッド
+            ${GridObjName2}.cells(1,12).setValue(${GridObjName2}.cells(1,3).getValue());
+            ## T価　合計計算 集計グリッド
+            ${GridObjName2}.cells(1,13).setValue(${GridObjName2}.cells(1,4).getValue());
+            ## T価【修正値】　合計計算 集計グリッド
+            ${GridObjName2}.cells(1,14).setValue(${GridObjName2}.cells(1,5).getValue());
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+        #if($form.bean.tmsTytenCdPart)
+            var value = "$form.bean.tmsTytenCdPart";
+            #set($tytenName = $headerDataVaccine.getTmsTytenName())
+            #set($tytenCd = $headerDataVaccine.getTmsTytenCd())
+            #if($tytenName && $tytenCd)
+               dpm300C00TytenApply("$!tytenCd", "$!tytenName");
+               document.dpm300C00F05Form.tmsTytenCdPart.value = value;
+            #end
+        #end
+
+    }
+
+    ## データ部とヘッダーのずれ修正 ############
+    #correctMisalignedHeader(${GridObjName} ${GridObjName2})
+
+}
+function doInitGrid() {
+    if (${GridObjName} == null) {
+        ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+        ${GridObjName}.setHeader(",,,,,,,,,,,,,,");
+        ${GridObjName}.setInitWidths("230,110,60,90,90,90,90,90,90,90,90,90,90,90,90");
+## mod Start 2022/7/21  Y.Taniguchi 障害対応No.6 計画管理の特約店別計画編集画面で、Y価ベース欄が中央揃えになっている
+        ${GridObjName}.setColAlign("left,left,right,right,right,right,right,right,right,right,right,right,right,right,right");
+## mod End 2022/7/21  Y.Taniguchi 障害対応No.6 計画管理の特約店別計画編集画面で、Y価ベース欄が中央揃えになっている
+        ${GridObjName}.setColTypes("ro,ro,ro,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron");
+        ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+        ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+        ${GridObjName}.setNumberFormat("0,000",3);
+        ${GridObjName}.setNumberFormat("0,000",4);
+        ${GridObjName}.setNumberFormat("0,000",5);
+        ${GridObjName}.setNumberFormat("0,000",6);
+        ${GridObjName}.setNumberFormat("0,000",7);
+        ${GridObjName}.setNumberFormat("0,000",8);
+        ${GridObjName}.setNumberFormat("0,000",9);
+        ${GridObjName}.setNumberFormat("0,000",10);
+        ${GridObjName}.setNumberFormat("0,000",11);
+        ${GridObjName}.setNumberFormat("0,000",12);
+        ${GridObjName}.setNumberFormat("0,000",13);
+        ${GridObjName}.setNumberFormat("0,000",14);
+        ${GridObjName}.enableDistributedParsing(true,150,50);
+        ${GridObjName}.enableAutoHeight(true, getGridHeight('dpm300C01', $!gridHeight));
+        ${GridObjName}.setSizes();
+        ${GridObjName}.setNoHeader(true);
+        ${GridObjName}.init();
+        ${GridObjName}.splitAt(3);
+        ${GridObjName}.enableEditEvents(true, false, true);
+        ${GridObjName}.enableBlockSelection();
+        ${GridObjName}.forceLabelSelection(true);
+        ${GridObjName}.setCSVDelimiter("\t");
+
+        ##  --- 編集中に登録ボタンが押された場合のチェッカー
+        window.editValueChecker = new EditingValueChecker(${GridObjName},'$text.get("DPC1036E",[""])' );
+
+        ${GridObjName}.attachEvent("onEditCell",function(stage,rowId,columnId,newvalue,oldvalue){
+
+            ## --- 編集中に登録ボタンが押された場合のチェック用に値とstageを保持 ---
+    		window.editValueChecker.saveState(stage,newvalue);
+
+            if(stage == 0){
+                if(isSumRow(rowId) != "input"){
+                    return false;
+                }
+            }
+            if(stage == 1){
+                editFlg=true;
+                setIme(${GridObjName},rowId,columnId,"inactive",10);
+            }
+            if(stage == 2){
+                intCheck(${GridObjName},rowId,columnId,newvalue);
+                ## B価ベース計算処理
+                doCalcBaseValue(${GridObjName}, rowId, 5);
+                ## B価ベースの値 四捨五入
+                value1 = Math.round(${GridObjName}.cells(rowId,3).getValue());
+                if (value1 == 0){
+                	value1 = null;
+                }
+                ${GridObjName}.cells(rowId,3).setValue(value1);
+                ## B価　合計計算 明細グリッド
+	            ${GridObjName}.cells(rowId,12).setValue(${GridObjName}.cells(rowId,3).getValue());
+	            ## T価【修正値】　合計計算 明細グリッド
+	            ${GridObjName}.cells(rowId,14).setValue(${GridObjName}.cells(rowId,5).getValue());
+                #if($form.bean.tmsTytenCdPart && $form.bean.tmsTytenCdPart.length() == 13)
+                    setAllRowSumOtherGrid(${GridObjName},${GridObjName2},columnId);
+                    setAllRowSumOtherGrid(${GridObjName},${GridObjName2},columnId-2);
+                    setAllRowSumOtherGrid(${GridObjName},${GridObjName2},12);
+                    setAllRowSumOtherGrid(${GridObjName},${GridObjName2},14);
+                #else
+                    setSumOtherGrid(${GridObjName},${GridObjName2},columnId);
+                    setSumOtherGrid(${GridObjName},${GridObjName2},columnId-2);
+                    setSumOtherGrid(${GridObjName},${GridObjName2},12);
+                    setSumOtherGrid(${GridObjName},${GridObjName2},14);
+                #end
+            }
+            return true;
+            });
+        ${GridObjName}.attachEvent("onBeforeSelect",function(newId,oldId){
+            if(event.type == "click"){
+                currentCellSetStyle = function(){};
+            }else{
+                currentCellSetStyle = function(rowId,cellInd){${GridObjName}.editCell();};
+            }
+    	    ${GridObjName}.editStop();
+            return true;
+            });
+        ${GridObjName}.attachEvent("onRowSelect",function(rowId,columnId){
+            currentCellSetStyle(rowId,columnId);
+            });
+        ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+            if(!(currentCellMove(${GridObjName},keycode,5,11))){return false;}
+            copyBlock(${GridObjName}, keycode, ctrl, shift, new Array("5"));
+            if (keycode == 86 && ctrl) {
+                ${GridObjName}.forEachRow(function(id){
+                    doCalcBaseValue(${GridObjName}, id, 5);
+                })
+                #if($form.bean.tmsTytenCdPart && $form.bean.tmsTytenCdPart.length() == 13)
+                    setAllRowSumOtherGrid(${GridObjName},${GridObjName2},3);
+                    setAllRowSumOtherGrid(${GridObjName},${GridObjName2},5);
+                    setAllRowSumOtherGrid(${GridObjName},${GridObjName2},12);
+                    setAllRowSumOtherGrid(${GridObjName},${GridObjName2},14);
+                #else
+                    setSumOtherGrid(${GridObjName},${GridObjName2},3);
+                    setSumOtherGrid(${GridObjName},${GridObjName2},5);
+                    setSumOtherGrid(${GridObjName},${GridObjName2},12);
+                    setSumOtherGrid(${GridObjName},${GridObjName2},14);
+                #end
+                editFlg = true;
+            }
+            return true;
+            });
+        ${GridObjName}.attachEvent("onMouseOver",function(rowId,columnId){
+            var title = "";
+            if(${GridObjName}.getUserData(rowId,"rowType") == "input"){
+                if(columnId == 5){
+                    title = ${GridObjName}.getUserData(rowId,"toolTip");
+                    if(title == null){
+                        title = "";
+                    }
+                    ${GridObjName}.cells(rowId,columnId).cell.title = title;
+                }
+            }
+        });
+        ${GridObjName}.attachEvent("onScroll",function(sLeft,sTop){
+            ${GridObjName2}.objBox.scrollLeft=${GridObjName}.objBox.scrollLeft
+        });
+    }
+}
+
+function doInitGrid2() {
+    if (${GridObjName2} == null) {
+        ${GridObjName2} = createDhtmlXGrid("${GridObjName2}");
+
+##        ${GridObjName2}.setHeader("特約店計画　$!security.getPlannedTypeName()　$!dataListVaccine.getProdName(),#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan");
+##        ${GridObjName2}.attachHeader("特約店名称,TMS特約店コード,,,#cspan,#cspan,,#cspan,#cspan,,#cspan,#cspan,合計,#cspan,#cspan",["","","","","","","","","","","","","","",""],null);
+##        ##${GridObjName2}.attachHeader("#rspan,#rspan,#rspan,B価ベース,S価ベース,,B価ベース,S価ベース,,B価ベース,S価ベース,,B価ベース,S価ベース,",["","","","","border-bottom-width:0px;border-right:0px;","border-left:0px;","","border-bottom-width:0px;;border-right:0px;","border-left:0px;","","border-bottom-width:0px;border-right:0px;","border-left:0px;","","border-bottom-width:0px;border-right:0px;","border-left:0px;"],null);
+##        ##${GridObjName2}.attachHeader("#rspan,#rspan,#rspan,#rspan,,修正欄,#rspan,,修正欄,#rspan,,修正欄,#rspan,,修正欄",["","","","","border-top-width:0px;","","","border-top-width:0px;","","","border-top-width:0px;","","","border-top-width:0px;",""],null);
+##        ${GridObjName2}.attachHeader("#rspan,#rspan,#rspan,B価ベース,S価ベース,,,,,,,,B価ベース,S価ベース,",["","","","","border-bottom-width:0px;border-right:0px;","border-left:0px;","","border-bottom-width:0px;;border-right:0px;","border-left:0px;","","border-bottom-width:0px;border-right:0px;","border-left:0px;","","border-bottom-width:0px;border-right:0px;","border-left:0px;"],null);
+##        ${GridObjName2}.attachHeader("#rspan,#rspan,#rspan,#rspan,,修正欄,#rspan,,,#rspan,,,#rspan,,修正欄",["","","","","border-top-width:0px;","","","border-top-width:0px;","","","border-top-width:0px;","","","border-top-width:0px;",""],null);
+
+
+        ${GridObjName2}.setHeader("特約店計画　$!security.getPlannedTypeName()　$!dataListVaccine.getProdName(),#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan");
+        ${GridObjName2}.attachHeader("特約店名称,TMS特約店コード,,,#cspan,#cspan,,#cspan,#cspan,,#cspan,#cspan,合計,#cspan,#cspan",["","","","","","","","","","","","","","",""],null);
+## mod Start 2022/7/21  Y.Taniguchi 障害対応No.6 計画管理の特約店別計画編集画面で、Y価ベース欄が中央揃えになっている
+        ${GridObjName2}.attachHeader("#rspan,#rspan,#rspan,B価ベース,S価ベース,,,,,,,,B価ベース,S価ベース,",["","","","vertical-align:top;border-right:0px;","border-bottom-width:0px;border-right:0px;","border-left:0px;","vertical-align:top;border-right:0px;","border-bottom-width:0px;border-right:0px;","border-left:0px;","vertical-align:top;border-right:0px;","border-bottom-width:0px;border-right:0px;","border-left:0px;","vertical-align:top;border-right:0px;","border-bottom-width:0px;border-right:0px;","border-left:0px;"],null);
+## mod End 2022/7/21  Y.Taniguchi 障害対応No.6 計画管理の特約店別計画編集画面で、Y価ベース欄が中央揃えになっている
+        ${GridObjName2}.attachHeader("#rspan,#rspan,#rspan,#rspan,,修正欄,#rspan,,,#rspan,,,#rspan,,修正欄",["","","","","border-top-width:0px;","","","border-top-width:0px;","","","border-top-width:0px;","","","border-top-width:0px;",""],null);
+
+
+##		${GridObjName2}.setHeader("特約店計画　$!security.getPlannedTypeName()　$!dataListVaccine.getProdName(),#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan");
+##		${GridObjName2}.attachHeader("特約店名称,TMS特約店コード,#rspan,#rspan,S価ベース,#cspan,#rspan,#cspan,#cspan,#rspan,#cspan,#cspan,合計,#cspan,#cspan",["","","","","","","","","","","","","","",""],null);
+##		${GridObjName2}.attachHeader("#rspan,#rspan,#rspan,B価ベース,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,B価ベース,S価ベース,#rspan",["","","","","border-bottom-width:0px;border-right:0px;","border-left:0px;","","border-bottom-width:0px;;border-right:0px;","border-left:0px;","","border-bottom-width:0px;border-right:0px;","border-left:0px;","","border-bottom-width:0px;border-right:0px;","border-left:0px;"],null);
+##		${GridObjName2}.attachHeader("#rspan,#rspan,#rspan,#rspan,#rspan,修正欄,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,修正欄",["","","","","border-top-width:0px;","","","border-top-width:0px;","","","border-top-width:0px;","","","border-top-width:0px;",""],null);
+
+
+        ${GridObjName2}.setInitWidths("230,110,60,90,90,90,90,90,90,90,90,90,90,90,90");
+## mod Start 2022/7/21  Y.Taniguchi 障害対応No.6 計画管理の特約店別計画編集画面で、Y価ベース欄が中央揃えになっている
+        ${GridObjName2}.setColAlign("left,left,right,right,right,right,right,right,right,right,right,right,right,right,right");
+## mod Start 2022/7/21  Y.Taniguchi 障害対応No.6 計画管理の特約店別計画編集画面で、Y価ベース欄が中央揃えになっている
+        ${GridObjName2}.setColTypes("ro,ro,ro,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron");
+        ${GridObjName2}.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+        ${GridObjName2}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+        ${GridObjName2}.setNumberFormat("0,000",3);
+        ${GridObjName2}.setNumberFormat("0,000",4);
+        ${GridObjName2}.setNumberFormat("0,000",5);
+        ${GridObjName2}.setNumberFormat("0,000",6);
+        ${GridObjName2}.setNumberFormat("0,000",7);
+        ${GridObjName2}.setNumberFormat("0,000",8);
+        ${GridObjName2}.setNumberFormat("0,000",9);
+        ${GridObjName2}.setNumberFormat("0,000",10);
+        ${GridObjName2}.setNumberFormat("0,000",11);
+        ${GridObjName2}.setNumberFormat("0,000",12);
+        ${GridObjName2}.setNumberFormat("0,000",13);
+        ${GridObjName2}.setNumberFormat("0,000",14);
+        ${GridObjName2}.enableDistributedParsing(true,150,50);
+        ##${GridObjName2}.enableAutoHeight(true);
+        ##${GridObjName2}.objBox.style.overflowX="hidden";
+        ##${GridObjName2}.objBox.style.overflowY="hidden";
+        ${GridObjName2}.init();
+        ${GridObjName2}.splitAt(3);
+        ${GridObjName2}.enableEditEvents(true, false, true);
+        ${GridObjName2}.enableBlockSelection();
+        ${GridObjName2}.forceLabelSelection(true);
+        ${GridObjName2}.setCSVDelimiter("\t");
+        ${GridObjName2}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+            copyBlock(${GridObjName2}, keycode, ctrl, shift, new Array("4,6"));
+            return true;
+            });
+        ${GridObjName2}.attachEvent("onBeforeSelect",function(newId,oldId){return;});
+    }
+}
+##集計行か判断する
+function isSumRow(RowId){
+    return ${GridObjName}.getUserData(RowId,"rowType");
+}
+## B価ベースの計算処理
+function doCalcBaseValue(grid, rowId, colId){
+    var tbChangeRate = grid.getUserData(rowId,"tbChangeRate");
+    calcYBaseValue(grid, rowId, colId, rowId, colId-2, tbChangeRate);
+}
+
+##カレントセルのスタイルを指定する。
+function currentCellSetStyle(rowId,cellInd){
+    ${GridObjName}.editCell();
+}
+
+//-->
+</script>
+<div id="${GridObjName2}" style="width: 99.5%; clear: both;"></div>
+#loadingGridDiv2("${GridObjName}", "${CoverId}" ,"width: 99.5%; clear: both;")

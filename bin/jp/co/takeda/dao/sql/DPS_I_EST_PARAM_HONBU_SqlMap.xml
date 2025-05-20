@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_EST_PARAM_HONBU_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.EstParamHonbu" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="ESTIMATION_BASE" property="estimationParam.estimationBase" jdbcType="CHAR" />
+    <result column="INDEX_RYH_RTSU" property="estimationParam.indexRyhRtsu" jdbcType="INTEGER" />
+    <result column="INDEX_MIKAKUTOKU" property="estimationParam.indexMikakutoku" jdbcType="INTEGER" />
+    <result column="INDEX_DELIVERY" property="estimationParam.indexDelivery" jdbcType="INTEGER" />
+    <result column="INDEX_FREE_1" property="estimationParam.indexFree1" jdbcType="INTEGER" />
+    <result column="INDEX_FREE_2" property="estimationParam.indexFree2" jdbcType="INTEGER" />
+    <result column="INDEX_FREE_3" property="estimationParam.indexFree3" jdbcType="INTEGER" />
+    <result column="INDEX_FREE_NAME_1" property="estimationParam.indexFreeName1" jdbcType="VARCHAR" />
+    <result column="INDEX_FREE_NAME_2" property="estimationParam.indexFreeName2" jdbcType="VARCHAR" />
+    <result column="INDEX_FREE_NAME_3" property="estimationParam.indexFreeName3" jdbcType="VARCHAR" />
+    <result column="REF_PROD_CODE" property="baseParam.refProdCode" jdbcType="CHAR" />
+    <result column="REF_PROD_NAME" property="baseParam.refProdInfo.prodName" jdbcType="VARCHAR" />
+    <result column="REF_PROD_TYPE" property="baseParam.refProdInfo.prodType" jdbcType="VARCHAR" />
+    <result column="REF_FROM" property="baseParam.refFrom" jdbcType="CHAR" />
+    <result column="REF_TO" property="baseParam.refTo" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_1" property="baseParam.resultRefProdCode1" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_2" property="baseParam.resultRefProdCode2" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_3" property="baseParam.resultRefProdCode3" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_4" property="baseParam.resultRefProdCode4" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_NAME_1" property="baseParam.resultRefProdName1" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_NAME_2" property="baseParam.resultRefProdName2" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_NAME_3" property="baseParam.resultRefProdName3" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_NAME_4" property="baseParam.resultRefProdName4" jdbcType="VARCHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="columnList">
+           EPH.SEQ_KEY
+          ,EPH.PROD_CODE
+          ,EPH.ESTIMATION_BASE
+          ,EPH.INDEX_RYH_RTSU
+          ,EPH.INDEX_MIKAKUTOKU
+          ,EPH.INDEX_DELIVERY
+          ,EPH.INDEX_FREE_1
+          ,EPH.INDEX_FREE_2
+          ,EPH.INDEX_FREE_3
+          ,EPH.INDEX_FREE_NAME_1
+          ,EPH.INDEX_FREE_NAME_2
+          ,EPH.INDEX_FREE_NAME_3
+          ,EPH.REF_PROD_CODE
+          ,REF_PP.PROD_NAME AS REF_PROD_NAME
+          ,REF_PP.PROD_TYPE AS REF_PROD_TYPE
+          ,EPH.REF_FROM
+          ,EPH.REF_TO
+          ,EPH.RESULT_REF_PROD_CODE_1
+          ,RESULT_PP1.PROD_NAME AS RESULT_REF_PROD_NAME_1
+          ,EPH.RESULT_REF_PROD_CODE_2
+          ,RESULT_PP2.PROD_NAME AS RESULT_REF_PROD_NAME_2
+          ,EPH.RESULT_REF_PROD_CODE_3
+          ,RESULT_PP3.PROD_NAME AS RESULT_REF_PROD_NAME_3
+          ,EPH.RESULT_REF_PROD_CODE_4
+          ,RESULT_PP4.PROD_NAME AS RESULT_REF_PROD_NAME_4
+          ,EPH.IS_JGI_NO
+          ,EPH.IS_JGI_NAME
+          ,EPH.IS_DATE
+          ,EPH.UP_JGI_NO
+          ,EPH.UP_JGI_NAME
+          ,EPH.UP_DATE
+  </sql>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH REF_PROD AS (<include refid="COMMON_SqlMap.refProd"/>)
+    SELECT <include refid="columnList"/>
+      FROM DPS_I_EST_PARAM_HONBU EPH
+           LEFT OUTER JOIN REF_PROD REF_PP
+        ON EPH.REF_PROD_CODE = REF_PP.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP1
+        ON EPH.RESULT_REF_PROD_CODE_1 = RESULT_PP1.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP2
+        ON EPH.RESULT_REF_PROD_CODE_2 = RESULT_PP2.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP3
+        ON EPH.RESULT_REF_PROD_CODE_3 = RESULT_PP3.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP4
+        ON EPH.RESULT_REF_PROD_CODE_4 = RESULT_PP4.PROD_CODE
+     WHERE EPH.SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.EstParamHonbu" >
+    WITH REF_PROD AS (<include refid="COMMON_SqlMap.refProd"/>)
+    SELECT <include refid="columnList"/>
+      FROM DPS_I_EST_PARAM_HONBU EPH
+           LEFT OUTER JOIN REF_PROD REF_PP
+        ON EPH.REF_PROD_CODE = REF_PP.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP1
+        ON EPH.RESULT_REF_PROD_CODE_1 = RESULT_PP1.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP2
+        ON EPH.RESULT_REF_PROD_CODE_2 = RESULT_PP2.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP3
+        ON EPH.RESULT_REF_PROD_CODE_3 = RESULT_PP3.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP4
+        ON EPH.RESULT_REF_PROD_CODE_4 = RESULT_PP4.PROD_CODE
+     WHERE EPH.PROD_CODE = #prodCode:CHAR#
+  </select>
+
+</sqlMap>

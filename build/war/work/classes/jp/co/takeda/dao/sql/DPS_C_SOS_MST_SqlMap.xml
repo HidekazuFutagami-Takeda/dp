@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_C_SOS_MST_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.SosMst" >
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="BR_CODE" property="brCode" jdbcType="CHAR" />
+    <result column="DIST_SEQ" property="distSeq" jdbcType="CHAR" />
+    <result column="DIST_CODE" property="distCode" jdbcType="CHAR" />
+    <result column="TEAM_CODE" property="teamCode" jdbcType="CHAR" />
+    <result column="BUMON_SEI_NAME" property="bumonSeiName" jdbcType="VARCHAR" />
+    <result column="BUMON_RYAKU_NAME" property="bumonRyakuName" jdbcType="VARCHAR" />
+    <result column="SOS_NAME" property="sosName" jdbcType="VARCHAR" />
+    <result column="UP_SOS_CD" property="upSosCd" jdbcType="VARCHAR" />
+    <result column="BUMON_RANK" property="bumonRank" jdbcType="INTEGER" />
+    <!-- result column="SEIKEI_SOS_FLG" property="seikeiSosFlg" jdbcType="CHAR" nullValue="0"/ -->
+    <result column="ONC_SOS_FLG" property="oncSosFlg" jdbcType="CHAR" nullValue="0"/>
+    <result column="UNDER_SOS_CNT" property="underSosCnt" jdbcType="INTEGER" />	<!-- add 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援） -->
+    <result column="SUB_CATEGORY" property="sosSubCategory" jdbcType="CHAR"/>	<!-- add 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援） -->
+  </resultMap>
+
+<!-- add Start 2022/6/27  Y.Taniguchi バックログNo.15　ワクチンの場合、選択した都道府県に紐づく“特約店（本店）”のみ表示 -->
+   <resultMap id="resultBumonMap" class="jp.co.takeda.model.SosMst" >
+    <result column="SOS_CD" property="addrCodePref" jdbcType="VARCHAR" />
+  </resultMap>
+<!-- add End 2022/6/27  Y.Taniguchi バックログNo.15　ワクチンの場合、選択した都道府県に紐づく“特約店（本店）”のみ表示 -->
+
+  <resultMap id="resultCategoryMap" class="jp.co.takeda.model.SosMstCtg" >
+    <result column="CATEGORY_CD" property="categoryCd" jdbcType="CHAR" />
+    <result column="CATEGORY_NAME" property="categoryName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="resultDistPlanningListMap" class="jp.co.takeda.model.DistPlanningListDLSummary" >
+    <result column="BRDIST_CODE" property="brDistCd" jdbcType="VARCHAR" />
+    <result column="BRDIST_NAME" property="brDistNm" jdbcType="VARCHAR" />
+    <result column="STAT_PROD_CODE" property="statProdCd" jdbcType="CHAR" />
+    <result column="PROD_NAME" property="prodNm" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <!-- 検索 -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SM.SOS_CD
+          ,SM.BR_CODE
+          ,SM.DIST_SEQ
+          ,SM.DIST_CODE
+          ,SM.TEAM_CODE
+          ,SM.BUMON_SEI_NAME
+          ,SM.BUMON_RYAKU_NAME
+          ,SM.SOS_NAME
+          ,SM.UP_SOS_CD
+          ,SM.BUMON_RANK
+          ,SM.ONC_SOS_FLG
+          ,SM.UNDER_SOS_CNT
+          ,SM.SUB_CATEGORY
+      FROM DPS_C_SOS_MST SM
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="sosCd">
+        SM.SOS_CD = #sosCd:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="brCode">
+        SM.BR_CODE = #brCode:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="distCode">
+        SM.DIST_CODE = #distCode:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="bumonRank">
+        SM.BUMON_RANK = #bumonRank:INTEGER#
+      </isNotNull>
+<!-- mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　パラメータ名変更（shitenとtokuyakutenに分けずにsosgrpで統一） -->
+<!--  <isNotNull prepend="AND" property="shiten"> -->
+<!--    EXISTS (SELECT SOS_CD FROM DPS_C_SOS_GRP_M SGRP WHERE SGRP.SOS_CD = SM.SOS_CD AND SGRP.SOS_GROP = #shiten:VARCHAR#) -->
+<!--  </isNotNull> -->
+<!--  <isNotNull prepend="AND" property="tokuyakuten"> -->
+<!--    EXISTS (SELECT SOS_CD FROM DPS_C_SOS_GRP_M SGRP WHERE SGRP.SOS_CD = SM.SOS_CD AND SGRP.SOS_GROP = #tokuyakuten:VARCHAR#) -->
+<!--  </isNotNull> -->
+      <isNotNull prepend="AND" property="sosgrp">
+        EXISTS (SELECT SOS_CD FROM DPS_C_SOS_GRP_M SGRP WHERE SGRP.SOS_CD = SM.SOS_CD AND SGRP.SOS_GROP = #sosgrp:VARCHAR#)
+      </isNotNull>
+<!-- mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　パラメータ名変更（shitenとtokuyakutenに分けずにsosgrpで統一） -->
+    </dynamic>
+  </select>
+
+<!-- add Start 2022/6/27  Y.Taniguchi バックログNo.15　ワクチンの場合、選択した都道府県に紐づく“特約店（本店）”のみ表示 -->
+   <select id="selectBumon" resultMap="resultBumonMap" parameterClass="java.util.Map" >
+    SELECT SOS_CD
+      FROM DPS_C_RYUTSU_TDFKN
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="addrCodePref">
+        TDFKN_CD = #addrCodePref:VARCHAR#
+      </isNotNull>
+    </dynamic>
+  </select>
+<!-- add End 2022/6/27  Y.Taniguchi バックログNo.15　ワクチンの場合、選択した都道府県に紐づく“特約店（本店）”のみ表示 -->
+
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SM.SOS_CD
+          ,SM.BR_CODE
+          ,SM.DIST_SEQ
+          ,SM.DIST_CODE
+          ,SM.TEAM_CODE
+          ,SM.BUMON_SEI_NAME
+          ,SM.BUMON_RYAKU_NAME
+          ,SM.SOS_NAME
+          ,SM.UP_SOS_CD
+          ,SM.BUMON_RANK
+          ,SM.ONC_SOS_FLG
+          ,SM.UNDER_SOS_CNT
+          ,SM.SUB_CATEGORY
+      FROM DPS_C_SOS_MST SM
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="upSosCd">
+        SM.UP_SOS_CD = #upSosCd:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosgrp">
+        EXISTS     (SELECT SOS_CD FROM DPS_C_SOS_GRP_M SGRP WHERE SGRP.SOS_CD = SM.SOS_CD AND SGRP.SOS_GROP = #sosgrp:VARCHAR#)
+      </isNotNull>
+      <isNotNull prepend="AND" property="excludeSosgrp">
+        NOT EXISTS (SELECT SOS_CD FROM DPS_C_SOS_GRP_M SGRP WHERE SGRP.SOS_CD = SM.SOS_CD AND SGRP.SOS_GROP = #excludeSosgrp:VARCHAR#)
+      </isNotNull>
+      <isNotNull prepend="AND" property="bumonRank">
+        SM.BUMON_RANK = #bumonRank:INTEGER# + 1
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCategory">
+        EXISTS     (SELECT SOS_CD FROM DPS_C_VI_SOS_CTG CTG WHERE CTG.SOS_CD = SM.SOS_CD AND CATEGORY = #sosCategory:VARCHAR# )
+      </isNotNull>
+      <isNotNull prepend="AND" property="allCategory">
+        EXISTS     (SELECT SOS_CD FROM DPS_C_VI_SOS_CTG CTG WHERE CTG.SOS_CD = SM.SOS_CD )
+      </isNotNull>
+    </dynamic>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <select id="selectSosCategoryList" resultMap="resultCategoryMap" parameterClass="java.util.Map" >
+    SELECT SC.CATEGORY AS CATEGORY_CD
+          ,CM.DATA_NAME AS CATEGORY_NAME
+      FROM DPS_C_VI_SOS_CTG SC
+          INNER JOIN DPS_C_CD_MST CM ON CM.DATA_KBN = 'category' AND CM.DATA_CD = SC.CATEGORY
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="sosCd">
+        SOS_CD = #sosCd#
+      </isNotNull>
+    </dynamic>
+    ORDER BY CM.DATA_SEQ
+  </select>
+
+  <select id="selectDistPlanningList" resultMap="resultDistPlanningListMap" parameterClass="java.util.Map" >
+    SELECT CONCAT(SOS3.BR_CODE, SOS3.DIST_CODE) AS BRDIST_CODE
+          ,CONCAT(SOS2.BUMON_SEI_NAME, CONCAT('  ', SOS3.BUMON_SEI_NAME)) AS BRDIST_NAME
+          ,PROD.STAT_PROD_CODE
+          ,PROD.PROD_NAME
+          ,NVL2(CMST.DATA_SEQ, CMST.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPS_C_SOS_MST SOS3
+          ,DPS_C_VI_SOS_CTG SOSCTG
+          ,DPS_C_PLANNED_PROD PROD
+          ,DPS_C_PLANNED_CTG PRODCTG
+          ,DPS_C_CD_MST CMST
+          ,(SELECT * FROM DPS_C_SOS_MST) SOS2
+      WHERE SOS3.SOS_CD = SOSCTG.SOS_CD
+          AND SOSCTG.CATEGORY = PROD.CATEGORY
+          AND PROD.CATEGORY = PRODCTG.CATEGORY
+          AND PROD.PROD_CODE = CMST.DATA_CD(+)
+          AND SOS3.UP_SOS_CD = SOS2.SOS_CD
+          AND PROD.PLAN_LEVEL_OFFICE = '1'
+          AND PRODCTG.PLAN_LEVEL_OFFICE = '1'
+     <isNotNull prepend="AND" property="sos_cd1">
+           SOS3.UP_SOS_CD IN (SELECT SOS_CD FROM DPS_C_SOS_MST WHERE UP_SOS_CD = #sos_cd1:CHAR#)
+     </isNotNull>
+     <isNotNull prepend="AND" property="sos_cd2">
+           SOS3.UP_SOS_CD = #sos_cd2:CHAR#
+     </isNotNull>
+     <isNotNull prepend="AND" property="sos_cd3">
+           SOS3.SOS_CD = #sos_cd3:CHAR#
+     </isNotNull>
+     <isNotNull prepend="AND" property="category">
+           PROD.CATEGORY = #category:CHAR#
+     </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <select id="selectDistPlanningListExceptCategory" resultMap="resultDistPlanningListMap" parameterClass="java.util.Map" >
+    SELECT CONCAT(SOS3.BR_CODE, SOS3.DIST_CODE) AS BRDIST_CODE
+          ,CONCAT(SOS2.BUMON_SEI_NAME, CONCAT('  ', SOS3.BUMON_SEI_NAME)) AS BRDIST_NAME
+          ,PROD.STAT_PROD_CODE
+          ,PROD.PROD_NAME
+          ,NVL2(CMST.DATA_SEQ, CMST.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPS_C_SOS_MST SOS3
+          ,DPS_C_VI_SOS_CTG SOSCTG
+          ,DPS_C_PLANNED_PROD PROD
+          ,DPS_C_PLANNED_CTG PRODCTG
+          <!-- mod start 2022/07/07 H.Futagami DATA_KBN(sort_prod_ws)を追加したことによる対応 -->
+          <!-- ,DPS_C_CD_MST CMST -->
+          ,(SELECT * FROM DPS_C_CD_MST WHERE DATA_KBN ='sort_prod') CMST
+          <!-- mod End 2022/07/07 H.Futagami DATA_KBN(sort_prod_ws)を追加したことによる対応 -->
+          ,(SELECT * FROM DPS_C_SOS_MST) SOS2
+      WHERE SOS3.SOS_CD = SOSCTG.SOS_CD
+          AND SOSCTG.CATEGORY = PROD.CATEGORY
+          AND PROD.CATEGORY = PRODCTG.CATEGORY
+          AND PROD.PROD_CODE = CMST.DATA_CD(+)
+          AND SOS3.UP_SOS_CD = SOS2.SOS_CD
+          AND PROD.PLAN_LEVEL_OFFICE = '1'
+          AND PRODCTG.PLAN_LEVEL_OFFICE = '1'
+     <isNotNull prepend="AND" property="sos_cd1">
+           SOS3.UP_SOS_CD IN (SELECT SOS_CD FROM DPS_C_SOS_MST WHERE UP_SOS_CD = #sos_cd1:CHAR#)
+     </isNotNull>
+     <isNotNull prepend="AND" property="sos_cd2">
+           SOS3.UP_SOS_CD = #sos_cd2:CHAR#
+     </isNotNull>
+     <isNotNull prepend="AND" property="sos_cd3">
+           SOS3.SOS_CD = #sos_cd3:CHAR#
+     </isNotNull>
+     <isNotNull prepend="AND" property="category">
+           PROD.CATEGORY != #category:CHAR#
+     </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+</sqlMap>

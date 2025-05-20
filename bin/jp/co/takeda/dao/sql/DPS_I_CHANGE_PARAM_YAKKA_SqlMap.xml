@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_CHANGE_PARAM_YAKKA_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.ChangeParamYakka" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="CAL_YEAR" property="calYear" jdbcType="CHAR" />
+    <result column="CAL_TERM" property="calTerm" jdbcType="CHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="CHANGE_RATE_UH" property="changeRateUh" jdbcType="BIGINT" />
+    <result column="CHANGE_RATE_P" property="changeRateP" jdbcType="BIGINT" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,CAL_YEAR
+          ,CAL_TERM
+          ,PROD_CODE
+          ,CHANGE_RATE_UH
+          ,CHANGE_RATE_P
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_CHANGE_PARAM_YAKKA
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.ChangeParamYakka" >
+    SELECT SEQ_KEY
+          ,CAL_YEAR
+          ,CAL_TERM
+          ,PROD_CODE
+          ,CHANGE_RATE_UH
+          ,CHANGE_RATE_P
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_CHANGE_PARAM_YAKKA
+     WHERE CAL_YEAR = #calYear:CHAR#
+       AND CAL_TERM = #calTerm:CHAR#
+       AND PROD_CODE = #prodCode:CHAR#
+  </select>
+
+  <!-- 最終更新日取得 -->
+  <select id="getLastUpDate" resultClass="java.sql.Timestamp" parameterClass="java.util.Map" >
+    SELECT MAX(UP_DATE) UP_DATE
+      FROM DPS_I_CHANGE_PARAM_YAKKA
+     WHERE CAL_YEAR = #calYear:CHAR#
+       AND CAL_TERM = #calTerm:CHAR#
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.ChangeParamYakka" >
+    INSERT INTO DPS_I_CHANGE_PARAM_YAKKA
+          (SEQ_KEY
+          ,CAL_YEAR
+          ,CAL_TERM
+          ,PROD_CODE
+          ,CHANGE_RATE_UH
+          ,CHANGE_RATE_P
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (ORADPX01.SEQ_DPS_I_CHANGE_PARAM_YAKKA.NEXTVAL
+          ,#calYear:CHAR#
+          ,#calTerm:CHAR#
+          ,#prodCode:CHAR#
+          ,#changeRateUh:BIGINT#
+          ,#changeRateP:BIGINT#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.ChangeParamYakka" >
+    UPDATE DPS_I_CHANGE_PARAM_YAKKA
+       SET CHANGE_RATE_UH = #changeRateUh:BIGINT#
+          ,CHANGE_RATE_P = #changeRateP:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_CHANGE_PARAM_YAKKA
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </delete>
+
+</sqlMap>

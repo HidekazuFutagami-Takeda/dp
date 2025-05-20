@@ -1,0 +1,1056 @@
+## --------------------------------
+## ERROR OR INFO MESSAGE
+## --------------------------------
+#macro (allMessage)
+#if (!$!form.bean.isDialogueFlg())
+#set($serviceStopAnnounceMsgKey = $consts.getServiceStopAnnounceMSGKey())
+#if($serviceStopAnnounceMsgKey)
+    #set($serviceStopAnnounce = $form.getRequestDataByBoxKey($serviceStopAnnounceMsgKey))
+    #if ($!serviceStopAnnounce)
+    <span class="infoMessage">$!serviceStopAnnounce</span><br>
+    #end
+#end
+#end
+#if ($errors.exist())
+    #if ($errors.size > 5)
+        <div style="height:98px; overflow-y:scroll;">
+    #end
+    <table>
+    #foreach ($e in $errors.all)
+        <tr>
+            <td class="errorMessage">$e</td>
+        </tr>
+    #end
+    </table>
+    #if ($errors.size > 5)
+        </div>
+    #end
+#elseif ($messages.exist())
+    #foreach ($m in $messages.all)
+        #set($messageCnt = $velocityCount)
+    #end
+    #if ($messageCnt > 5)
+        <div style="height:98px; overflow-y:scroll;">
+    #end
+    <table>
+    #foreach ($m in $messages.all)
+        <tr>
+            <td class="infoMessage">$m</td>
+        </tr>
+    #end
+    </table>
+    #if ($messageCnt > 5)
+        </div>
+    #end
+#end
+#end
+
+## --------------------------------
+## TABBAR
+## --------------------------------
+## @param $tabPattern "sienSosiki","sienSisetuTokuyaku","sienTokuyaku"のいずれか
+## @param $tabLinkPath パス
+#macro (tabbar $tabPattern, $tabLinkPath)
+<div class="tabLinkBox">
+#if ($tabPattern.equals("sienSosiki"))
+    #set($tabList = $!menu.getSienSosikiList())
+#elseif ($tabPattern.equals("sienSisetuTokuyaku"))
+    #set($tabList = $!menu.getSienSisetuTokuyakuList())
+#elseif ($tabPattern.equals("sienTokuyaku"))
+    #set($tabList = $!menu.getSienTokuyakuList())
+#elseif ($tabPattern.equals("sienKeikakuZyunbi"))
+    #set($tabList = $!menu.getPlanningPreparationList())
+#end
+#if ($tabList)
+#foreach($codeAndValue in $tabList)
+    #set ($entry = $codeAndValue.code)
+    #set ($paramsIndex = $entry.indexOf("?"))
+    #if($paramsIndex != -1)
+    #set($entry = $entry.substring(0, $paramsIndex))
+    #end
+    #if ($tabLinkPath == $entry)
+        #set($tabSwitch = "tab_on")
+    #else
+        #set($tabSwitch = "tab_off")
+    #end
+    <div class="$tabSwitch" ><a href="$codeAndValue.code" tabindex="-1">$codeAndValue.value.replace("<br>", "")</a></div>
+#end
+#end
+</div>
+#end
+
+## --------------------------------
+## SELECT BOX
+## --------------------------------
+#macro (select $keyName, $codeAndValues, $formValue)
+<select name="$keyName" id="$keyName">
+#foreach($codeAndValue in $codeAndValues)
+    #if($formValue)
+        #if($codeAndValue.code == $formValue)
+            <option value="$codeAndValue.code" selected>$codeAndValue.value</option>
+        #else
+            <option value="$codeAndValue.code">$codeAndValue.value</option>
+        #end
+    #else
+        <option value="$codeAndValue.code">$codeAndValue.value</option>
+    #end
+#end
+</select>
+#end
+#macro (selectWithFunc $keyName, $codeAndValues, $formValue, $funcName)
+<select name="$keyName" id="$keyName" onChange="$funcName">
+#foreach($codeAndValue in $codeAndValues)
+    #if($formValue)
+        #if($codeAndValue.code == $formValue)
+            <option value="$codeAndValue.code" selected>$codeAndValue.value</option>
+        #else
+            <option value="$codeAndValue.code">$codeAndValue.value</option>
+        #end
+    #else
+        <option value="$codeAndValue.code">$codeAndValue.value</option>
+    #end
+#end
+</select>
+#end
+#macro (selectDisabled $keyName, $codeAndValues, $formValue)
+<select name="$keyName" id="$keyName" disabled>
+#foreach($codeAndValue in $codeAndValues)
+    #if($formValue)
+        #if($codeAndValue.code == $formValue)
+            <option value="$codeAndValue.code" selected>$codeAndValue.value</option>
+        #else
+            <option value="$codeAndValue.code">$codeAndValue.value</option>
+        #end
+    #else
+        <option value="$codeAndValue.code">$codeAndValue.value</option>
+    #end
+#end
+</select>
+#end
+## --------------------------------
+## CODE_AND_VALUES TOOL
+## --------------------------------
+#macro (getValueFromCode, $codeAndValues, $code)
+    #foreach($codeAndValue in $codeAndValues)
+        #if($code)
+            #if($codeAndValue.code == $code)
+                $codeAndValue.value
+            #end
+        #end
+    #end
+#end
+
+## --------------------------------
+## SOS DIALOG
+## --------------------------------
+## 通常の組織選択ダイアログ呼び出し用。
+## @param sosSrchPtnType 検索パターン
+## @param sosMinSrchValue 最小検索範囲
+## @param sosMaxSrchGetValue 最大検索範囲
+#macro (sosDialog $sosSrchPtnType, $sosMinSrchValue, $sosMaxSrchGetValue)
+#sosDialogExt($sosSrchPtnType, $sosMinSrchValue, $sosMaxSrchGetValue, $security.hasSosJgi($sosMaxSrchGetValue))
+#end
+
+## --------------------------------
+## SOS DIALOG(DPS)
+## --------------------------------
+## 通常の組織選択ダイアログ呼び出し用。
+## @param sosSrchPtnType 検索パターン
+## @param sosMinSrchValue 最小検索範囲
+## @param sosMaxSrchGetValue 最大検索範囲
+#macro (sosDialogDps $sosSrchPtnType, $sosMinSrchValue, $sosMaxSrchGetValue, $screenId)
+#sosDialogExt($sosSrchPtnType, $sosMinSrchValue, $sosMaxSrchGetValue, $security.hasSosJgi($sosMaxSrchGetValue, $screenId))
+#end
+
+## --------------------------------
+## SOS DIALOG EXT
+## --------------------------------
+## 選択ボタンの表示・非表示を権限に依らず制御する場合に使用する。
+## @param sosSrchPtnType 検索パターン
+## @param sosMinSrchValue 最小検索範囲
+## @param sosMaxSrchGetValue 最大検索範囲
+## @param sosBtnFlg 選択ボタン表示フラグ
+#macro (sosDialogExt $sosSrchPtnType, $sosMinSrchValue, $sosMaxSrchGetValue, $sosBtnFlg)
+#sosDialogBase("sosApply",$sosSrchPtnType, $sosMinSrchValue, $sosMaxSrchGetValue, $sosBtnFlg)
+#end
+
+## --------------------------------
+## SOS DIALOG EXT2
+## --------------------------------
+## 独自に呼び出し元で定義した関数を渡す場合に使用する。
+## @param sosSrchPtnType 検索パターン
+## @param sosMinSrchValue 最小検索範囲
+## @param sosMaxSrchGetValue 最大検索範囲
+## @param sosBtnFlg 選択ボタン表示フラグ
+#macro (sosDialogExt2 $sosApply, $sosSrchPtnType, $sosMinSrchValue, $sosMaxSrchGetValue, $screenId)
+#sosDialogBase($sosApply,$sosSrchPtnType, $sosMinSrchValue, $sosMaxSrchGetValue, $security.hasSosJgi($sosMaxSrchGetValue, $screenId))
+#end
+
+## --------------------------------
+## SOS DIALOG EXT3
+## --------------------------------
+## 選択全表示をする場合に使用する。
+## @param sosSrchPtnType 検索パターン
+## @param sosMinSrchValue 最小検索範囲
+## @param sosMaxSrchGetValue 最大検索範囲
+#macro (sosDialogExt3 $sosSrchPtnType, $sosMinSrchValue, $sosMaxSrchGetValue)
+#sosDialogBase2("sosApply",$sosSrchPtnType, $sosMinSrchValue, $sosMaxSrchGetValue, "true", "true")
+#end
+
+## --------------------------------
+## SOS DIALOG BASE
+## --------------------------------
+## 全てのパラメータを指定する場合に使用する。
+## @param sosApply 呼び出し元関数名
+## @param sosSrchPtnType 検索パターン
+## @param sosMinSrchValue 最小検索範囲
+## @param sosMaxSrchGetValue 最大検索範囲
+## @param sosBtnFlg 選択ボタン表示フラグ
+#macro (sosDialogBase $sosApply, $sosSrchPtnType, $sosMinSrchValue, $sosMaxSrchGetValue, $sosBtnFlg)
+#sosDialogBase2($sosApply, $sosSrchPtnType, $sosMinSrchValue, $sosMaxSrchGetValue, $sosBtnFlg, "false")
+#end
+
+## --------------------------------
+## SOS DIALOG BASE
+## --------------------------------
+## 全てのパラメータを指定する場合に使用する。
+## @param sosApply 呼び出し元関数名
+## @param sosSrchPtnType 検索パターン
+## @param sosMinSrchValue 最小検索範囲
+## @param sosMaxSrchGetValue 最大検索範囲
+## @param sosBtnFlg 選択ボタン表示フラグ
+## @param sosAllDispFlg 全表示可フラグ
+#macro (sosDialogBase2 $sosApply, $sosSrchPtnType, $sosMinSrchValue, $sosMaxSrchGetValue, $sosBtnFlg, $sosAllDispFlg)
+<input type="hidden" id="sosCd2" name="sosCd2" />
+<input type="hidden" id="sosCd3" name="sosCd3"  />
+<input type="hidden" id="sosCd4" name="sosCd4"  />
+<input type="hidden" id="jgiNo" name="jgiNo"  />
+<input type="hidden" id="initSosCodeValue" name="initSosCodeValue"  value="$!security.defaultSosCd"/>
+<input type="hidden" id="brCode" name="brCode"  />
+<input type="hidden" id="distCode" name="distCode"  />
+<input type="hidden" id="etcSosFlg" name="etcSosFlg"  />
+<input type="hidden" id="oncSosFlg" name="oncSosFlg"  />
+## add start 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+<input type="hidden" id="sosCategory" name="sosCategory"  />
+## add end 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+## add start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+<input type="hidden" id="sosSubCategory" name="sosSubCategory"  />
+<input type="hidden" id="underSosCnt" name="underSosCnt"  />
+## add end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+
+<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+<tr>
+    <td>
+        <table class="gridLine" cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+            <tr>
+                <td style="width:270px;padding:0 10px;">
+                    <nobr><label id="sos">　</label></nobr>
+                </td>
+            </tr>
+        </table>
+    </td>
+    <td style="padding-left:5px">
+    #if($sosBtnFlg)
+        <input type="button" value="選択" style="width:80px;"
+               onclick="openSosSearchDialog('$sosApply', '$!sosSrchPtnType', '$!sosMinSrchValue', '$!sosMaxSrchGetValue', '$!sosAllDispFlg')" />
+    #end
+    </td>
+</tr>
+</table>
+#end
+
+## --------------------------------
+## SOS DIALOG BASE （整形を含む）
+## --------------------------------
+## 全てのパラメータを指定する場合に使用する。
+## @param sosApply 呼び出し元関数名
+## @param sosSrchPtnType 検索パターン
+## @param sosMinSrchValue 最小検索範囲
+## @param sosMaxSrchGetValue 最大検索範囲
+## @param sosBtnFlg 選択ボタン表示フラグ
+## @param sosAllDispFlg 全表示可フラグ
+#macro (sosDialogBaseSeikei $sosApply, $sosSrchPtnType, $sosMinSrchValue, $sosMaxSrchGetValue, $sosBtnFlg, $sosAllDispFlg)
+<input type="hidden" id="sosCd2" name="sosCd2" />
+<input type="hidden" id="sosCd3" name="sosCd3"  />
+<input type="hidden" id="sosCd4" name="sosCd4"  />
+<input type="hidden" id="jgiNo" name="jgiNo"  />
+<input type="hidden" id="initSosCodeValue" name="initSosCodeValue"  value="$!security.defaultSosCd"/>
+<input type="hidden" id="brCode" name="brCode"  />
+<input type="hidden" id="distCode" name="distCode"  />
+<input type="hidden" id="etcSosFlg" name="etcSosFlg"  />
+<input type="hidden" id="oncSosFlg" name="oncSosFlg"  />
+## add start 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+<input type="hidden" id="sosCategory" name="sosCategory"  />
+## add end 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+## add start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+<input type="hidden" id="sosSubCategory" name="sosSubCategory"  />
+<input type="hidden" id="underSosCnt" name="underSosCnt"  />
+## add end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+
+<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+<tr>
+    <td>
+        <table class="gridLine" cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+            <tr>
+                <td style="width:270px;padding:0 10px;">
+                    <nobr><label id="sos">　</label></nobr>
+                </td>
+            </tr>
+        </table>
+    </td>
+    <td style="padding-left:5px">
+    #if($sosBtnFlg)
+        <input type="button" value="選択" style="width:80px;"
+               onclick="openSosSearchDialog_Seikei('$sosApply', '$!sosSrchPtnType', '$!sosMinSrchValue', '$!sosMaxSrchGetValue', '$!sosAllDispFlg')" />
+    #end
+    </td>
+</tr>
+</table>
+#end
+
+## --------------------------------
+## SOS DIALOG BASE （施設主担当検索）
+## --------------------------------
+## 全てのパラメータを指定する場合に使用する。
+## @param sosApply 呼び出し元関数名
+## @param sosSrchPtnType 検索パターン
+## @param sosMinSrchValue 最小検索範囲
+## @param sosMaxSrchGetValue 最大検索範囲
+## @param sosBtnFlg 選択ボタン表示フラグ
+## @param sosAllDispFlg 全表示可フラグ
+#macro (sosDialogBaseMainMr $sosApply, $jgiNo, $sosBtnFlg)
+<input type="hidden" id="sosCd2" name="sosCd2" />
+<input type="hidden" id="sosCd3" name="sosCd3"  />
+<input type="hidden" id="sosCd4" name="sosCd4"  />
+<input type="hidden" id="jgiNo" name="jgiNo"  />
+<input type="hidden" id="initSosCodeValue" name="initSosCodeValue"  value="$!security.defaultSosCd"/>
+<input type="hidden" id="brCode" name="brCode"  />
+<input type="hidden" id="distCode" name="distCode"  />
+<input type="hidden" id="etcSosFlg" name="etcSosFlg"  />
+<input type="hidden" id="oncSosFlg" name="oncSosFlg"  />
+## add start 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+<input type="hidden" id="sosCategory" name="sosCategory"  />
+## add end 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+## add start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+<input type="hidden" id="sosSubCategory" name="sosSubCategory"  />
+<input type="hidden" id="underSosCnt" name="underSosCnt"  />
+## add end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+
+<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+<tr>
+    <td>
+        <table class="gridLine" cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+            <tr>
+                <td style="width:270px;padding:0 10px;">
+                    <nobr><label id="sos">　</label></nobr>
+                </td>
+            </tr>
+        </table>
+    </td>
+    <td style="padding-left:5px">
+    #if($sosBtnFlg)
+        <input type="button" value="選択" style="width:80px;"
+               onclick="openSosSearchDialog_MainMr('$sosApply','$jgiNo')" />
+    #end
+    </td>
+</tr>
+</table>
+#end
+
+## --------------------------------
+## SOS DIALOG BASE （TL検索）
+## --------------------------------
+## 全てのパラメータを指定する場合に使用する。
+## @param sosApply 呼び出し元関数名
+## @param sosSrchPtnType 検索パターン
+## @param sosMinSrchValue 最小検索範囲
+## @param sosMaxSrchGetValue 最大検索範囲
+## @param sosBtnFlg 選択ボタン表示フラグ
+## @param sosAllDispFlg 全表示可フラグ
+#macro (sosDialogBaseTLSearch $sosApply, $jgiNo, $sosBtnFlg)
+<input type="hidden" id="sosCd2" name="sosCd2" />
+<input type="hidden" id="sosCd3" name="sosCd3"  />
+<input type="hidden" id="sosCd4" name="sosCd4"  />
+<input type="hidden" id="jgiNo" name="jgiNo"  />
+<input type="hidden" id="initSosCodeValue" name="initSosCodeValue"  value="$!security.defaultSosCd"/>
+<input type="hidden" id="brCode" name="brCode"  />
+<input type="hidden" id="distCode" name="distCode"  />
+<input type="hidden" id="etcSosFlg" name="etcSosFlg"  />
+<input type="hidden" id="oncSosFlg" name="oncSosFlg"  />
+## add start 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+<input type="hidden" id="sosCategory" name="sosCategory"  />
+## add end 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+## add start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+<input type="hidden" id="sosSubCategory" name="sosSubCategory"  />
+<input type="hidden" id="underSosCnt" name="underSosCnt"  />
+## add end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+
+<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+<tr>
+    <td>
+        <table class="gridLine" cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+            <tr>
+                <td style="width:270px;padding:0 10px;">
+                    <nobr><label id="sos">　</label></nobr>
+                </td>
+            </tr>
+        </table>
+    </td>
+    <td style="padding-left:5px">
+    #if($sosBtnFlg)
+        <input type="button" value="選択" style="width:80px;"
+               onclick="openSosSearchDialog_TLSearch('$sosApply','$jgiNo')" />
+    #end
+    </td>
+</tr>
+</table>
+#end
+
+## --------------------------------
+## UPDATE INFO
+## --------------------------------
+## @param upJgiName 更新者
+## @param upDate 更新日
+#macro (upDateInfo $upJgiName, $upDate)
+#if($upJgiName)
+    #set($upJgiNameText = $upJgiName)
+#else
+    #set($upJgiNameText = "-")
+#end
+#if($upDate)
+    #set($upDateText = $!{format.toString(${upDate},"yyyy/MM/dd HH:mm")})
+#else
+    #set($upDateText = "-")
+#end
+最終更新者:　${upJgiNameText}(${upDateText})<br>
+#end
+
+## --------------------------------
+## UPDATE INFO
+## --------------------------------
+## @param upDate 更新日
+## @param emptyStr 更新日がなかった場合の表示文字列
+#macro (writeLastUpDate  $upDate,$emptyStr)
+#if($upDate && $upDate != "")
+    #set($lastUpDateText = $!{format.toString(${upDate},"yyyy/MM/dd HH:mm")})
+#else
+    #set($lastUpDateText = $emptyStr)
+#end
+#if($lastUpDateText != "")
+    (${lastUpDateText})
+#end
+#end
+
+## --------------------------------
+## UPDATE toString
+## --------------------------------
+## @param upDate 更新日
+## @param emptyStr 更新日がなかった場合の表示文字列
+#macro (writeLastUpDate2  $upDate,$emptyStr)
+#if($upDate && $upDate != "")
+    #set($lastUpDateText = $!{format.toString(${upDate},"yyyy/MM/dd HH:mm")})
+#else
+    #set($lastUpDateText = $emptyStr)
+#end
+#if($lastUpDateText != "")
+    ${lastUpDateText}
+#end
+#end
+
+## --------------------------------
+## UPDATE toString
+## --------------------------------
+## @param upDate 更新日
+## @param emptyStr 更新日がなかった場合の表示文字列
+#macro (writeLastUpDate3  $upDate,$emptyStr)
+#if($upDate && $upDate != "")
+    #set($lastUpDateText = $!{format.toString(${upDate},"MM/dd HH:mm")})
+#else
+    #set($lastUpDateText = $emptyStr)
+#end
+#if($lastUpDateText != "")
+    ${lastUpDateText}
+#end
+#end
+
+## --------------------------------
+## SET ColType
+## --------------------------------
+## @param value 値
+## @param type1 valueが-時設定するColType
+## @param type2 valueが-以外の時設定するColType
+#macro (setColType $value, $type1 ,$type2)
+#if(!$value || $value == "-")$type1#else$type2#end
+#end
+
+## --------------------------------
+## SET SagakuStyle
+## --------------------------------
+## 調整金額のスタイルを設定する。
+## @param value 値
+#macro (setSagakuStyle $value)
+    #if($value)
+        #set ($num = $format.toNumber($value))
+        #if($num)
+            #if ($num < 0)
+                color:#FF0000;background-color:#F4A460;
+            #elseif($num > 0)
+                background-color:#F4A460;
+            #end
+        #end
+    #end
+#end
+
+## --------------------------------
+## SET MinusStyle
+## --------------------------------
+## マイナス値のスタイルを設定する。
+## @param value 値
+#macro (setMinusStyle $value)
+    #if($value && $format.isMinus($!value))
+        color:#FF0000;
+    #end
+#end
+
+## --------------------------------
+## SET MinusStyleTag
+## --------------------------------
+## マイナス値のスタイルを設定する。
+## @param value 値
+#macro (setMinusStyleTag $value)
+    #if($value && $format.isMinus($!value))
+        style='color:#FF0000;'
+    #end
+#end
+
+## --------------------------------
+## SET ExistValue
+## --------------------------------
+## @param value 値(存在する場合のみ表示)
+#macro (setExistValue $value)
+    #if($value)
+        $value
+    #end
+#end
+
+## --------------------------------
+## SET ExistValueType
+## --------------------------------
+## @param value 値
+## @param type 値が存在する場合のみdhtmlグリッドのセルタイプ
+#macro (setExistValueType $value,$type)
+    #if($value)
+        $type
+    #end
+#end
+
+## --------------------------------
+## DISP SEARCH COUNT
+## --------------------------------
+## @param pagingBean ページングビーン
+#macro (dispSearchCount $pagingBean)
+検索結果：　$pagingBean.getTotalSize()件中　$pagingBean.getStartNo()-&nbsp;$pagingBean.getEndNo()件
+#end
+
+## --------------------------------
+## DISP SEARCH PAGE
+## --------------------------------
+## @param pagingBean ページングビーン
+## @param funcName リンク関数名
+#macro (dispSearchPage $pagingBean, $funcName)
+<p class="pagination">
+#if( $pagingBean.isBefore() )
+<a href="#" onclick="${funcName}('$pagingBean.getBeforePageNo()')">&#171; 前</a>
+#end
+## ページリストが表示ページの前後10ページを表示する。
+#set($crntPageNoAfter = $pagingBean.crntPageNo + 10)
+#set($crntPageNoBefore = $pagingBean.crntPageNo - 10)
+#foreach($page in $pagingBean.getPageList())
+    #set( $pageNumber = $!format.parseInteger($!page.pageNo) )
+    #if( $!pageNumber <= $crntPageNoAfter && $!pageNumber >= $crntPageNoBefore )
+        #if( $page.isCrntFlg() )
+            $page.pageNo
+        #else
+            <a href="#" onclick="${funcName}('$page.pageNo')">$page.pageNo</a>
+        #end
+    #end
+#end
+#if( $pagingBean.isNext() )
+<a href="#" onclick="${funcName}('$pagingBean.getNextPageNo()')">次 &#187;</a>
+#end
+</p>
+#end
+
+## --------------------------------
+## SET TMS COLOR
+## --------------------------------
+## @param tmsMst 対象のTMS特約店情報(展開)
+#macro (setTmsColor $tmsMstTenkai)
+#set($tmsColor = "tmsNormal")
+#if( $tmsMstTenkai.endFlg )
+    #set($tmsColor = "tmsEnd")
+#end
+#if( $tmsMstTenkai.deliveryFlg )
+    #set($tmsColor = "tmsDelivery")
+#end
+$tmsColor#end
+
+## --------------------------------
+## SET TMS COLOR With TaiGaiFlg
+## --------------------------------
+## @param tmsMstTenkai 対象のTMS特約店情報(展開)
+#macro (setTmsColorWithTaiGaiFlg $tmsMstTenkai)
+#set($tmsColor = "tmsNormal")
+#if( $tmsMstTenkai.endFlg)
+    #set($tmsColor = "tmsEnd")
+#end
+#if( $tmsMstTenkai.deliveryFlg )
+    #set($tmsColor = "tmsDelivery")
+#end
+#if($tmsMstTenkai.tmsTytenMstUn.getPlanTaiGaiFlgRik())
+    #set($tmsColor = "tmsNormal")
+#end
+$tmsColor#end
+
+## --------------------------------
+## SET TMS COLOR With TaiGaiFlgTok
+## --------------------------------
+## @param tmsMstTenkai 対象のTMS特約店情報(展開)
+#macro (setTmsColorWithTaiGaiFlgTok $tmsMstTenkai)
+#set($tmsColor = "tmsNormal")
+#if( $tmsMstTenkai.endFlg)
+    #set($tmsColor = "tmsEnd")
+#end
+#if( $tmsMstTenkai.deliveryFlg )
+    #set($tmsColor = "tmsDelivery")
+#end
+#if($tmsMstTenkai.tmsTytenMstUn.getPlanTaiGaiFlgTok())
+    #set($tmsColor = "tmsNormal")
+#end
+$tmsColor#end
+
+## --------------------------------
+## CREATE TOKEN PARAMETER
+## --------------------------------
+#macro (token)
+<input type="hidden" name="$!form.getTokenName()" value="$!form.getToken()" />
+#end
+## --------------------------------------
+## LOADING GRID DIV STYLE1(FOR TOP)
+## --------------------------------------
+#macro (loadingGridDiv $GridObjName $coverId)
+<div style="position:relative">
+<div id="${GridObjName}" ></div>
+<div id="${coverId}" class="dhtmlxGrid_loading">
+#set($loadingImg = "<img src='$link.getContextPath()/cmn/images/loading.gif' />")
+${loadingImg}$text.get("DPC999C99.003","dialogue")
+</div>
+</div>
+#end
+## --------------------------------------
+## LOADING GRID DIV STYLE2(FOR NORMAL)
+## --------------------------------------
+#macro (loadingGridDiv2 $GridObjName $coverId $style)
+<div style="position:relative">
+<div id="${GridObjName}" style="${style}"></div>
+<div id="${coverId}" class="dhtmlxGrid_loading">
+#set($loadingImg = "<img src='$link.getContextPath()/cmn/images/loading.gif' />")
+${loadingImg}$text.get("DPC999C99.003","dialogue")
+</div>
+</div>
+#end
+## --------------------------------------
+## LOADING GRID DIV STYLE3(FOR LARGE DATA)
+## --------------------------------------
+#macro (loadingGridDiv3 $GridObjName $coverId $style)
+<div id="${GridObjName}" style="$!{style}"></div>
+<div id="${coverId}" class="dhtmlxGrid_loading">
+#set($loadingImg = "<img src='$link.getContextPath()/cmn/images/loading.gif' />")
+${loadingImg}$text.get("DPC999C99.003","dialogue")
+</div>
+#end
+## --------------------------------------
+## LOADING GRID DIV STYLE4(FOR Modeless)
+## --------------------------------------
+#macro (loadingGridDiv4 $GridObjName $coverId $style)
+<div style="position:relative; clear: both;">
+<div id="${GridObjName}" style="${style}"></div>
+<div id="${coverId}" class="dhtmlxGrid_loading">
+#set($loadingImg = "<img src='$link.getContextPath()/cmn/images/loading.gif' />")
+${loadingImg}$text.get("DPC999C99.003","dialogue")
+</div>
+</div>
+#end
+## --------------------------------
+## ProdType
+## --------------------------------
+## 処理なし
+## @param value 値(存在する場合のみ表示)
+#macro (dispProdType $value)
+#set($none = "")
+#end
+
+## --------------------------------
+## CREATE DUMMY PARAMETER
+## --------------------------------
+#macro (dummy)
+<input type="hidden" name="dummy" value="dummy" />
+#end
+
+## --------------------------------
+## CREATE PRODLIST CHANGE JS (PLANLEVEL)
+## --------------------------------
+## @param value フィールド名
+#macro (changeProdListLevel $value)
+## 品目カテゴリ選択処理
+#set($prodLevel = $form.getField($value))
+function changeProdCategoryLevel(form) {
+    var mmpArray   = [
+                      {}
+                      #foreach($codeAndValue in $service.getManageMMPProdList($form.getField("$value"), false))
+                      , { text: '$codeAndValue.value', value: '$codeAndValue.code' }
+                      #end
+                     ];
+    var shireArray = [
+                      {}
+                      #foreach($codeAndValue in $service.getManageShireProdList($form.getField("$value"),false))
+                      , { text: '$codeAndValue.value', value: '$codeAndValue.code' }
+                      #end
+                     ];
+    var oncArray   = [
+                      {}
+                      #foreach($codeAndValue in $service.getManageONCProdList($form.getField("$value"), false))
+                      , { text: '$codeAndValue.value', value: '$codeAndValue.code' }
+                      #end
+                     ];
+## add start 2018/1/1 M.Wada J17-0010_2018年4月組織変更対応
+    var spbuArray   = [
+                      {}
+                      #foreach($codeAndValue in $service.getManageSPBUProdList($form.getField("$value"), false))
+                      , { text: '$codeAndValue.value', value: '$codeAndValue.code' }
+                      #end
+                     ];
+## add end 2018/1/1 M.Wada J17-0010_2018年4月組織変更対応
+    var category = form.prodCategory.value;
+    var prodArray;
+    if (category == "1") {
+        prodArray = mmpArray;
+    }
+    else if (category == "2"){
+        prodArray = shireArray;
+    }
+## add start 2018/1/1 M.Wada J17-0010_2018年4月組織変更対応
+##    else {
+##        prodArray = oncArray;
+##   }
+    else if (category == "3"){
+        prodArray = oncArray;
+    }
+    else if (category == "4"){
+        prodArray = spbuArray;
+    }
+## add end 2018/1/1 M.Wada J17-0010_2018年4月組織変更対応
+    form.prodCode.length = prodArray.length - 1;
+    var i;
+    for (i = 1; i < prodArray.length; i++){
+        if (i == 1) {
+            form.prodCode.options[i-1].selected = true;
+        }
+        else {
+            form.prodCode.options[i-1].selected = false;
+        }
+        form.prodCode.options[i-1].text  = prodArray[i].text;
+        form.prodCode.options[i-1].value = prodArray[i].value;
+    }
+}
+#end
+
+## --------------------------------
+## CREATE PRODLIST CHANGE JS (PLANLEVEL AND CATEGORY)
+## --------------------------------
+## @param value フィールド名
+#macro (changeProdList $value)
+## 品目カテゴリ選択処理
+#set($prodLevel = $form.getField($value))
+#set($vaccineCode = $service.getVaccineCode())
+#set($jrnsCode = $service.getJrnsCode())
+## add Start 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加
+#set($categoryIyakuAll = $service.getCategoryIyakuAllCode())
+## add End 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加
+function changeProdCategoryList(form) {
+    var prodArray = [];
+	var category = document.getElementById("prodCategory").value;
+
+	## カテゴリがワクチンコードと一致する場合
+	if(category == '$vaccineCode') {
+    	prodArray = [
+        {}
+         #foreach($codeAndValue in $service.getManageVaccineProdModelList(null, $form.getField("$value"), false))
+         , { text: '$codeAndValue.prodName', value: '$codeAndValue.prodCode', category: '$codeAndValue.category' }
+         #end
+        ];
+    ## カテゴリがJRNSコードと一致する場合
+    } else if(category == '$jrnsCode') {
+
+    	prodArray = [
+        {}
+         #foreach($codeAndValue in $service.getManageJrnsProdModelList($form.getField("$value"), false))
+        , { text: '$codeAndValue.prodName', value: '$codeAndValue.prodCode', category: '$codeAndValue.category' }
+         #end
+        ];
+		// ★ JRNSカテゴリマスク 現在設定されているカテゴリから、マスク用リストを作る
+    	var options = document.getElementById('prodCategory').options;
+		var mask = [];
+		for(let i = 0; i < options.length ;i++ ){
+			if (options[i].value != '$jrnsCode' ) {
+				mask.push(options[i].value);
+			}
+		}
+        // ★ prodArrayにmask 適用
+		var maskedProdArray = [];
+		maskedProdArray.push({});
+		for(let i = 1;  i < prodArray.length ; i++ ){
+			if(mask.includes(prodArray[i].category)){
+				maskedProdArray.push(prodArray[i]);
+			}
+		}
+		prodArray = maskedProdArray;
+
+    ## カテゴリがワクチンコード、JRNSコード以外の場合
+    } else {
+    	prodArray = [
+        {}
+         #foreach($codeAndValue in $service.getManageIyakuProdModelList(null, $form.getField("$value"), false))
+        , { text: '$codeAndValue.prodName', value: '$codeAndValue.prodCode', category: '$codeAndValue.category' }
+         #end
+        ];
+    }
+
+	## 一旦selectboxのoptionを削除
+	while(form.prodCode.lastChild)
+	{
+		form.prodCode.removeChild(form.prodCode.lastChild);
+	}
+
+	## 選択済みの品目を保持
+	var selected = form.prodCode.value;
+	## optionを作成
+	var option;
+	document.createElement('option');
+
+    for (var i = 1; i < prodArray.length; i++) {
+         ## mod Start 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加
+    	 ## if (prodArray[i].category == category || category == '$jrnsCode') {
+    	 if (prodArray[i].category == category
+    	     || category == '$jrnsCode'
+    	     || (category == $categoryIyakuAll && prodArray[i].category != $vaccineCode) ) {
+    	 ## mod End 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加
+			option = document.createElement('option');
+			option.setAttribute('value', prodArray[i].value);
+			option.setAttribute('prodcategory', prodArray[i].category);
+			option.innerHTML = prodArray[i].text;
+			form.prodCode.appendChild(option);
+    	 }
+    }
+
+    var exist = false;
+	for (var i = 0; i < form.prodCode.options.length; i++) {
+		if (form.prodCode.options[i].value == selected) {
+		  form.prodCode.options[i].selected = true;
+		  exist = true;
+		}
+	}
+    if (!exist && form.prodCode.options.length != 0) {
+    	if(form.prodCode.options[0]){
+            form.prodCode.options[0].selected = true;
+    	}
+	}
+}
+#end
+## --------------------------------
+## CREATE PRODLIST CHANGE JS (PLANLEVEL AND CATEGORY)
+## --------------------------------
+## @param value フィールド名
+#macro (changeShienProdList $value)
+## 支援品目カテゴリ選択処理
+#set($prodLevel = $form.getField($value))
+#set($vaccineCode = $service.getShienVaccineCode())
+function changeShienProdCategoryList(form) {
+    var prodArray = [];
+	var category = document.getElementById("category").value;
+
+	## カテゴリがワクチンコードと一致する場合
+	if(category == '$vaccineCode') {
+    	prodArray = [
+        {}
+         #foreach($codeAndValue in $service.getShienVaccineProdModelList(null, $form.getField("$value"), false))
+         , { text: '$codeAndValue.prodName', value: '$codeAndValue.prodCode', category: '$codeAndValue.category' }
+         #end
+        ];
+    ## カテゴリがワクチンコード以外の場合
+    } else {
+    	prodArray = [
+        {}
+         #foreach($codeAndValue in $service.getShienIyakuProdModelList(null, $form.getField("$value"), false))
+        , { text: '$codeAndValue.prodName', value: '$codeAndValue.prodCode', category: '$codeAndValue.category' }
+         #end
+        ];
+    }
+
+	## 一旦selectboxのoptionを削除
+	while(form.prodCode.lastChild)
+	{
+		form.prodCode.removeChild(form.prodCode.lastChild);
+	}
+
+	## 選択済みの品目を保持
+	var selected = form.prodCode.value;
+	## optionを作成
+	var option;
+	document.createElement('option');
+
+    for (var i = 1; i < prodArray.length; i++) {
+    	if (prodArray[i].category == category) {
+			option = document.createElement('option');
+			option.setAttribute('value', prodArray[i].value);
+			option.innerHTML = prodArray[i].text;
+			form.prodCode.appendChild(option);
+    	}
+    }
+
+    var exist = false;
+	for (var i = 0; i < form.prodCode.options.length; i++) {
+		if (form.prodCode.options[i].value == selected) {
+		  form.prodCode.options[i].selected = true;
+		  exist = true;
+		}
+	}
+    if (!exist && form.prodCode.options.length != 0) {
+    	if(form.prodCode.options[0]){
+            form.prodCode.options[0].selected = true;
+    	}
+	}
+}
+#end
+## add Start 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+## --------------------------------
+## CREATE PRODLIST CHANGE JS (PLANLEVEL AND CATEGORY)
+## --------------------------------
+## @param value フィールド名
+#macro (changeProdDistributorList $value)
+## 品目カテゴリ選択処理
+#set($prodLevel = $form.getField($value))
+#set($vaccineCode = $service.getVaccineCode())
+#set($jrnsCode = $service.getJrnsCode())
+## add Start 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加
+#set($categoryIyakuAll = $service.getCategoryIyakuAllCode())
+## add End 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加
+function changeProdCategoryList(form) {
+    var prodArray = [];
+	var category = document.getElementById("prodCategory").value;
+
+	## カテゴリがワクチンコードと一致する場合
+	if(category == '$vaccineCode') {
+    	prodArray = [
+        {}
+         #foreach($codeAndValue in $service.getManageVaccineProdDistributorModelList(null, $form.getField("$value"), false))
+         , { text: '$codeAndValue.prodName', value: '$codeAndValue.prodCode', category: '$codeAndValue.category' }
+         #end
+        ];
+    ## カテゴリがJRNSコードと一致する場合
+    } else if(category == '$jrnsCode') {
+
+    	prodArray = [
+        {}
+         #foreach($codeAndValue in $service.getManageJrnsProdModelList($form.getField("$value"), false))
+        , { text: '$codeAndValue.prodName', value: '$codeAndValue.prodCode', category: '$codeAndValue.category' }
+         #end
+        ];
+		// ★ JRNSカテゴリマスク 現在設定されているカテゴリから、マスク用リストを作る
+    	var options = document.getElementById('prodCategory').options;
+		var mask = [];
+		for(let i = 0; i < options.length ;i++ ){
+			if (options[i].value != '$jrnsCode' ) {
+				mask.push(options[i].value);
+			}
+		}
+        // ★ prodArrayにmask 適用
+		var maskedProdArray = [];
+		maskedProdArray.push({});
+		for(let i = 1;  i < prodArray.length ; i++ ){
+			if(mask.includes(prodArray[i].category)){
+				maskedProdArray.push(prodArray[i]);
+			}
+		}
+		prodArray = maskedProdArray;
+
+    ## カテゴリがワクチンコード、JRNSコード以外の場合
+    } else {
+    	prodArray = [
+        {}
+         #foreach($codeAndValue in $service.getManageIyakuProdDistributorModelList(null, $form.getField("$value"), false))
+        , { text: '$codeAndValue.prodName', value: '$codeAndValue.prodCode', category: '$codeAndValue.category' }
+         #end
+        ];
+    }
+
+	## 一旦selectboxのoptionを削除
+	while(form.prodCode.lastChild)
+	{
+		form.prodCode.removeChild(form.prodCode.lastChild);
+	}
+
+	## 選択済みの品目を保持
+	var selected = form.prodCode.value;
+	## optionを作成
+	var option;
+	document.createElement('option');
+
+    for (var i = 1; i < prodArray.length; i++) {
+         ## mod Start 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加
+    	 ## if (prodArray[i].category == category || category == '$jrnsCode') {
+    	 if (prodArray[i].category == category
+    	     || category == '$jrnsCode'
+    	     || (category == $categoryIyakuAll && prodArray[i].category != $vaccineCode) ) {
+    	 ## mod End 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加
+			option = document.createElement('option');
+			option.setAttribute('value', prodArray[i].value);
+			option.setAttribute('prodcategory', prodArray[i].category);
+			option.innerHTML = prodArray[i].text;
+			form.prodCode.appendChild(option);
+    	 }
+    }
+
+    var exist = false;
+	for (var i = 0; i < form.prodCode.options.length; i++) {
+		if (form.prodCode.options[i].value == selected) {
+		  form.prodCode.options[i].selected = true;
+		  exist = true;
+		}
+	}
+    if (!exist && form.prodCode.options.length != 0) {
+    	if(form.prodCode.options[0]){
+            form.prodCode.options[0].selected = true;
+    	}
+	}
+}
+#end
+## add End 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+## --------------------------------
+## CORRECT MISALIGNED HEADER
+## --------------------------------
+## @param GridObjName1 データ部グリッド名
+## @param GridObjName2 ヘッダ部グリッド名
+#macro (correctMisalignedHeader $GridObjName1 $GridObjName2)
+	#set ( $d = "$")
+	(function($) {
+	    ${d}.fn.hasScrollBar = function() {
+	        return this.get(0).scrollHeight > this.get(0).clientHeight;
+	    }
+	})(jQuery);
+    if($('#${GridObjName1} .objbox').hasScrollBar()){
+		let rightLength = $('#${GridObjName2} .xhdr').parent()[1].clientWidth;
+		 $('#${GridObjName2} .xhdr').parent()[1].style.width = (rightLength - getScrollbarWidth()) + "px";
+    }
+#end
+

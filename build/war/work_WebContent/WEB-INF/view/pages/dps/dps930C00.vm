@@ -1,0 +1,93 @@
+## 計画立案準備計画のアップロード画面
+#set($pageTitle = $text.get("dps930C00","title"))
+#set($bodyOnloadMethod = "dps930Onload()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+
+#set($vaccineCode = $service.getShienVaccineCode())
+
+<script language="javascript">
+
+function dps930Onload(){
+    var uploadCtrlKbn = "$!form.bean.uploadCtrlKbn";
+
+    ## 正常処理
+    if (uploadCtrlKbn === '1') {
+        if (!confirm('$text.get("DPS930C00.002","dialogue")')) {
+            return false;
+        }
+        var actionPath = '$link.setAction('dps930C00F10Execute')';
+        document.dps930C00Form.action = actionPath;
+        document.dps930C00Form.submit();
+    ## エラー処理
+    } else if (uploadCtrlKbn === '2') {
+        var actionPath = '$link.setAction('dps930C00F10ErrorOutput')';
+        document.dps930C00Form.action = actionPath;
+        document.dps930C00Form.submit();
+    }
+}
+## アップロード処理
+function dps930C00F10(){
+    ##確認
+    if (!confirm('$text.get("DPS930C00.001","dialogue")')) {
+        return;
+    }
+    ##送信
+    var actionPath = '$link.setAction('dps930C00F10Output')';
+    document.dps930C00Form.action = actionPath;
+    document.dps930C00Form.submit();
+
+    return false;
+}
+
+</script>
+
+## 画面レイアウト
+#tabbar("sienKeikakuZyunbi", "dps930C00F00")
+<div id="tabBox">
+<form name="dps930C00Form" method="post" enctype="multipart/form-data">
+<table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+        <td class="gridIndex" style="width:150px;">ファイル種類*</td>
+        <td nowrap="nowrap">
+            #set($checked = "checked")
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            <label><input type="radio" name="fileType" value="01" $checked />エリア計画</label>
+##            <label><input type="radio" name="fileType" value="01" $checked />営業所計画</label>
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        </td>
+    </tr>
+    <tr>
+        <td class="gridIndex">ファイル名*</td>
+        <td>
+            <table>
+            <tr>
+                <td>
+                ## mod Start 2022/9/12  Y.Taniguchi バックログNo.13　POIバージョンアップ対応
+                ##  <input type="file" name="uploadFile" accept=".xls" style="width:700px;" />
+                    <input type="file" name="uploadFile" accept=".xlsx" style="width:700px;" />
+                ## mod End 2022/9/12  Y.Taniguchi バックログNo.13　POIバージョンアップ対応
+                </td>
+            </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+## ボタン
+<div align="left" style="float: left;width: 100%;">
+<table style="margin-top:4px; width: 100%;">
+    <tr>
+       <td style="width:80px;"><input type="button" value="アップロード" style="width:100px;" onclick="dps930C00F10()" " /></td>
+       <td></td>
+       <td style="width:80px;"><input type="button" value="閉じる" style="width:100px;" onclick="location.href='$link.getContextPath()/app/dps000C00F00'" /></td>
+
+       <td class="label" style="text-align:right;vertical-align:bottom;">&nbsp;&nbsp;&nbsp;</td>
+    </tr>
+</table>
+</div>
+
+## hidden項目
+##<input type="hidden" name="uploadCtrlKbn" id="uploadCtrlKbn" value="" />
+#token()
+</form>
+##</div>
+

@@ -1,0 +1,121 @@
+#set($contentsId = "freeSizeContents")
+#set( $layout = "dialogueLayout.vm" )
+#set($bodyOnloadMethod = "dps912C00F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($pageTitle = $text.get("dps912C00","title"))
+#if ($form.getRequestData("SOS_LIST_KEY_R"))
+    #set($listDto = $form.getRequestData("SOS_LIST_KEY_R"))
+    #set($dataList = $listDto.sosMstList)
+#else
+    #set($dataList = "")
+#end
+## 適用関数名
+#set ($tytenApplyFuncName = $form.bean.tytenApplyFuncName)
+
+<script language="javascript">
+<!--
+function dps912C00F00() {
+}
+## 検索クリック
+function dps912C00F00Search() {
+    if (dps912C00F00Validation()) {
+        var actionPath = '$link.setAction('dps912C01F05')';
+        document.dps912C00Form.action = actionPath;
+        document.dps912C00Form.submit();
+        dps912C00F00Search = blockIt;
+    }
+    return false;
+}
+## リンククリック
+function dps912C00F00Link(takedaSosCd2) {
+    document.getElementById("takedaSosCd2").value = takedaSosCd2;
+    var actionPath = '$link.setAction('dps912C01F00')';
+    document.dps912C00Form.action = actionPath;
+    document.dps912C00Form.submit();
+    return false;
+}
+## 画面入力チェック
+function dps912C00F00Validation() {
+    ## 入力フォーム
+    form = document.dps912C00Form;
+
+    ## [半角カナ] 本店名(半角カナ)
+    value = form.hontenMeiKn.value;
+    if (value) {
+        errorMsg = '$text.get("DPC1004E",["本店名(半角カナ)","半角カナ"])';
+        isAdded = addErrorInfo(!isHankakuKana(value), errorMsg);
+        if (!isAdded) {
+            ## [バイト数(15)]
+            limitByte = 15;
+            errorMsg = '$text.get("DPC1020E",["本店名(半角カナ)","' + limitByte + '"])';
+            addErrorInfo(!isByteInRange(value, limitByte), errorMsg);
+        }
+    }
+
+    return validation();
+}
+
+//-->
+</script>
+<div class="disp">
+<form name="dps912C00Form" method="post">
+<input type="hidden" name="tytenApplyFuncName" value="$tytenApplyFuncName" />
+<input type="hidden" name="takedaSosCd2" value="" id="takedaSosCd2"/>
+<table cellspacing="1" cellpadding="1" align="left" width="400">
+    <tr valign="top">
+        <td colspan="3">
+        <div align="center"><b>特約店選択</b></div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <table>
+                <tr>
+                    <td class="gridIndex" style="width:150px;">本店名(半角カナ)</td>
+                    <td><input type="text" name="hontenMeiKn" value="$!sanitizing.escape($!form.bean.hontenMeiKn)" size="20" maxlength="15" class="ime_on"/></td>
+                    <td><input type="button" value="検索" style="width:80px;" onclick="dps912C00F00Search()" /></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr valign="top">
+        <td width="300" align="left">
+        <div>
+        <table width="100%" class="gridLine" style="border-collapse:collapse;">
+            <tr>
+                <td nowrap class="gridIndex">
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（「特約店部」→「流通政策部」）
+                <div align="center">流通政策部</div>
+##                <div align="center">特約店部</div>
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（「特約店部」→「流通政策部」）
+                </td>
+            </tr>
+            <tr>
+                <td class="gridLine"><a href="#" onclick="dps912C00F00Link('');">全て</a></td>
+            </tr>
+            #foreach($sosMst in $dataList)
+            <tr>
+                <td class="gridLine"><a href="#" onclick="dps912C00F00Link('$sosMst.sosCd');">$sosMst.bumonSeiName</a></td>
+            </tr>
+            #end
+        </table>
+        </div>
+        </td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td valign="top" colspan="3">
+        <table width="100%" border="0" cellspacing="0" cellpadding="4" align="left">
+            <tr>
+                <td width="15%">
+                <div align="left"><input type="button" name="add_item2" value="閉じる" onClick="self.window.close()" style="width:80px;"></div>
+                </td>
+                <td></td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+</table>
+</form>
+</div>

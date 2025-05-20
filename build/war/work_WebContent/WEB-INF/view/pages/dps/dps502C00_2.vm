@@ -1,0 +1,107 @@
+<script language="javascript">
+#set($dataListFileName = "dps502C03x01.vm")
+var ${GridObjName};
+## 初期表示
+function dps502C03F00(){
+    #if($resultDetail)
+    ## グリッド初期化
+    doInitGrid();
+    ## グリッドデータ読み込み
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+    #end
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+## mod Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+    #if($form.bean.kaBaseKb == "1")
+    ${GridObjName}.setHeader("特約店名,品目名称,特約店別計画編集,施設積上(B),修正計画(B)");
+    #else
+    ${GridObjName}.setHeader("特約店名,品目名称,特約店別計画編集,施設積上(S),修正計画(S)");
+    #end
+## mod End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+    ${GridObjName}.setInitWidths("240,150,120,100,100");
+    ${GridObjName}.setColAlign("left,left,center,right,right");
+    #if($form.bean.tytenKisLevel == "06")
+    	${GridObjName}.setColTypes("ro,ro,ro,ron,edn");
+    #else
+    	${GridObjName}.setColTypes("ro,ro,ro,ron,ron");
+    #end
+    ${GridObjName}.enableResizing("false,false,false,false,false");
+    ${GridObjName}.enableTooltips("true,false,false,false,false");
+    ${GridObjName}.setNumberFormat("0,000",3);
+    ${GridObjName}.setNumberFormat("0,000",4);
+    ${GridObjName}.enableDistributedParsing(true,50,260);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps502C03', $!gridHeight));
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.enableEditEvents(true, false, true);
+    ${GridObjName}.init();
+
+    ##  --- 編集中に登録ボタンが押された場合のチェッカー
+    window.editValueChecker = new EditingValueChecker(${GridObjName},'$text.get("DPC1036E",[""])' );
+    ${GridObjName}.attachEvent("onEditCell",function(stage,rowId,cellInd,newvalue,oldvalue){
+		## --- 編集中に登録ボタンが押された場合のチェック用に値とstageを保持 ---
+		window.editValueChecker.saveState(stage,newvalue);
+        try{
+	        if(stage == 0){
+	            if(isSumRow(rowId) == "true"){
+	                return false;
+	            }
+	        }
+	        if(stage == 1){
+	            editFlg=true;
+	            setIme(${GridObjName},rowId,cellInd,"inactive",10);
+	        }
+	        if(stage == 2){
+	            intCheck(${GridObjName},rowId,cellInd,newvalue);
+	            setSum(${GridObjName},4);
+	        }
+	        return true;
+        }catch(e) {
+        }
+    });
+
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.attachEvent("onRowCreated",function(id){
+        var cell = ${GridObjName}.cells(id,0);
+        if (cell.getAttribute("disabled")) cell.setDisabled(true);
+    });
+}
+
+## 特約店選択ダイアログを開く
+function openTytenDialog(){
+    var url = '$link.setAction("dps912C00F00").addQueryData("tmsSelectMode","$tmsselect.getGrayAndEnableButtonMode()").addQueryData("tytenApplyFuncName","dps502C03TytenApply")';
+    openModalWindowW(url);
+
+}
+
+## 特約店選択ダイアログ コールバック
+function dps502C03TytenApply(tytenCd, tytenName){
+    document.getElementById("tmsTytenCdPart").value = removeZeroBlankFromEnd(tytenCd);
+    document.getElementById("tmsTytenName").value = tytenName;
+    document.getElementById("tmsTytenNameLabel").innerHTML = "<label>" + tytenName + "</label>";
+}
+
+## チェックされているラジオボタンのオブジェクトを取得
+function getCheckedRadioValue(objectArray){
+    for(i=0; i < objectArray.length; i++){
+        if(objectArray[i].checked){
+            return objectArray[i].value;
+        }
+    }
+    return "";
+}
+</script>

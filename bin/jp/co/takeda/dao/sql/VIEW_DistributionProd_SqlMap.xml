@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_DistributionProd_SqlMap" >
+
+  <!-- （施設医師配分品目用） -->
+  <resultMap id="insDocResultMapList" class="java.util.HashMap">
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result column="PROD_TYPE" property="prodType" jdbcType="VARCHAR" />
+    <result column="LAST_UP_DATE" property="statusLastUpdate" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+    <result property="insDocPlanStatSum" resultMap="VIEW_DistributionProd_SqlMap.insDocPlanStatSum" />
+  </resultMap>
+  <resultMap id="insDocPlanStatSum" class="jp.co.takeda.model.view.InsDocPlanStatSum" >
+    <result column="INS_DOC_PLAN_NONE" property="none" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_DISTING" property="disting" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_DISTED" property="disted" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_OPENED" property="planOpened" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_COMPLETED" property="planCompleted" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_STAT_COUNT" property="totalCount" jdbcType="INTEGER" />
+    <result column="INS_DOC_DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+    <result column="INS_DOC_DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+    <result column="INS_DOC_OPEN_DATE" property="insDocOpenDate" jdbcType="TIMESTAMP" />
+    <result column="INS_DOC_FIX_DATE" property="insDocFixDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <!-- （施設特約配分品目用） -->
+  <resultMap id="insWsResultMapList" class="jp.co.takeda.model.view.DistributionProd">
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result column="PROD_TYPE" property="prodType" jdbcType="VARCHAR" />
+    <result column="AHEAD_STATUS" property="insWsPlanStatus" jdbcType="CHAR" />
+    <result column="LAST_UP_DATE" property="statusLastUpdate" jdbcType="TIMESTAMP" />
+    <result property="insWsPlanStatSum" resultMap="VIEW_DistributionProd_SqlMap.insWsPlanStatSum" />
+  </resultMap>
+  <resultMap id="insWsPlanStatSum" class="jp.co.takeda.model.view.InsWsPlanStatSum" >
+    <result column="INS_WS_PLAN_NONE" property="none" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_DISTING" property="disting" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_DISTED" property="disted" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_OPENED" property="planOpened" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_COMPLETED" property="planCompleted" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_STAT_COUNT" property="totalCount" jdbcType="INTEGER" />
+    <result column="INS_WS_DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_OPEN_DATE" property="insWsOpenDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_FIX_DATE" property="insWsFixDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+
+  <!-- （施設医師配分品目）組織、対象区分集約検索一覧 -->
+  <select id="selectInsDocList" resultMap="insDocResultMapList" parameterClass="java.util.Map" >
+   WITH INSDOC_STATUS AS
+    (
+		SELECT JM.SOS_CD3 AS SOS_CD
+		      ,PP.PROD_CODE
+		      ,COUNT(CASE WHEN IDPS.STATUS IS NULL THEN 1 ELSE NULL END) AS INS_DOC_PLAN_NONE
+		      ,COUNT(CASE WHEN IDPS.STATUS >= '1' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_DISTING
+		      ,COUNT(CASE WHEN IDPS.STATUS >= '2' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_DISTED
+		      ,COUNT(CASE WHEN IDPS.STATUS >= '3' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_OPENED
+		      ,COUNT(CASE WHEN IDPS.STATUS >= '4' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_COMPLETED
+		      ,COUNT(JM.JGI_NO) AS INS_DOC_PLAN_STAT_COUNT
+		      ,MAX(IDPS.DIST_START_DATE) AS INS_DOC_DIST_START_DATE
+		      ,MAX(IDPS.DIST_END_DATE) AS INS_DOC_DIST_END_DATE
+		      ,MAX(IDPS.INS_DOC_OPEN_DATE) AS INS_DOC_OPEN_DATE
+		      ,MAX(IDPS.INS_DOC_FIX_DATE) AS INS_DOC_FIX_DATE
+		      ,MAX(IDPS.UP_DATE) AS LAST_UP_DATE
+		 FROM DPS_C_VI_JGI_MST JM
+		      LEFT OUTER JOIN DPS_C_PLANNED_PROD PP
+		          ON JM.SOS_CD3 = #sosCd:VARCHAR#
+              <isNotNull property="jgiKbList">
+                  <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+                      #jgiKbList[].dbValue#
+                  </iterate>
+              </isNotNull>
+              <isNotNull prepend="AND" property="jokenSetList">
+                  EXISTS (SELECT JO.JGI_NO
+                  FROM DPS_C_JGI_JOKEN JO
+                  WHERE JO.JGI_NO = JM.JGI_NO
+                  <isNotNull property="jokenSetList">
+                     <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                         #jokenSetList[].dbValue#
+                     </iterate>
+                  </isNotNull>
+                  )
+              </isNotNull>
+		      LEFT OUTER JOIN DPS_I_INS_DOC_PLAN_STATUS IDPS ON IDPS.JGI_NO = JM.JGI_NO
+		          AND IDPS.PROD_CODE = PP.PROD_CODE
+		WHERE PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+		  AND PP.SALES = #sales:CHAR#
+		  AND PP.CATEGORY = #category:CHAR#
+		  AND PP.PLAN_LEVEL_INS_DOC = '1'
+		GROUP BY JM.SOS_CD3,
+			     PP.PROD_CODE
+    )
+    SELECT
+		   IDPS.SOS_CD
+		  ,IDPS.PROD_CODE
+		  ,PP.PROD_NAME
+		  ,PP.PROD_TYPE
+		  ,IDPS.INS_DOC_PLAN_NONE
+		  ,IDPS.INS_DOC_PLAN_DISTING
+		  ,IDPS.INS_DOC_PLAN_DISTED
+		  ,IDPS.INS_DOC_PLAN_OPENED
+		  ,IDPS.INS_DOC_PLAN_COMPLETED
+		  ,IDPS.INS_DOC_PLAN_STAT_COUNT
+		  ,IDPS.INS_DOC_DIST_START_DATE
+		  ,IDPS.INS_DOC_DIST_END_DATE
+		  ,IDPS.INS_DOC_OPEN_DATE
+		  ,IDPS.INS_DOC_FIX_DATE
+		  ,IDPS.LAST_UP_DATE
+      FROM INSDOC_STATUS IDPS
+		   INNER JOIN DPS_C_PLANNED_PROD PP ON IDPS.PROD_CODE = PP.PROD_CODE
+       <isNotNull property="mrCat">
+		   INNER JOIN DPS_C_MR_PROD_FIELD PF ON PP.PROD_CODE = PF.PROD_CODE AND PF.MR_CAT = #mrCat:VARCHAR#
+       </isNotNull>
+	 ORDER BY
+		 PP.GROUP_CODE
+		,PP.STAT_PROD_CODE
+		,PP.PROD_CODE
+	</select>
+
+  <!-- （施設特約配分品目）組織、対象区分集約検索一覧 -->
+  <select id="selectInsWsList" resultMap="insWsResultMapList" parameterClass="java.util.Map" >
+	WITH INS_WS_PLAN_STAT AS (
+		SELECT
+			SOS_CD3 AS SOS_CD
+			,PP.PROD_CODE
+			,MAX(IWPS.STATUS) AS AHEAD_STATUS
+			,MAX(IWPS.UP_DATE) AS LAST_UP_DATE
+			,COUNT(CASE WHEN IWPS.STATUS IS NULL THEN 1 ELSE NULL END) AS INS_WS_PLAN_NONE
+			,COUNT(CASE WHEN IWPS.STATUS >= '1' THEN 1 ELSE NULL END) AS INS_WS_PLAN_DISTING
+			,COUNT(CASE WHEN IWPS.STATUS >= '2' THEN 1 ELSE NULL END) AS INS_WS_PLAN_DISTED
+			,COUNT(CASE WHEN IWPS.STATUS >= '3' THEN 1 ELSE NULL END) AS INS_WS_PLAN_OPENED
+			,COUNT(CASE WHEN IWPS.STATUS >= '4' THEN 1 ELSE NULL END) AS INS_WS_PLAN_COMPLETED
+			,COUNT(JM.JGI_NO) AS INS_WS_PLAN_STAT_COUNT
+			,MAX(IWPS.DIST_START_DATE) AS INS_WS_DIST_START_DATE
+			,MAX(IWPS.DIST_END_DATE) AS INS_WS_DIST_END_DATE
+			,MAX(IWPS.INS_WS_OPEN_DATE) AS INS_WS_OPEN_DATE
+			,MAX(IWPS.INS_WS_FIX_DATE) AS INS_WS_FIX_DATE
+		FROM
+			DPS_C_VI_JGI_MST JM
+			LEFT OUTER JOIN DPS_C_PLANNED_PROD PP
+				ON JM.SOS_CD3 = #sosCd:VARCHAR#
+               <isNotNull property="jgiKbList">
+                   <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+                       #jgiKbList[].dbValue#
+                   </iterate>
+               </isNotNull>
+               <isNotNull prepend="AND" property="jokenSetList">
+               EXISTS (SELECT JO.JGI_NO
+               FROM DPS_C_JGI_JOKEN JO
+               WHERE JO.JGI_NO = JM.JGI_NO
+               <isNotNull property="jokenSetList">
+                   <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                       #jokenSetList[].dbValue#
+                   </iterate>
+               </isNotNull>
+               )
+               </isNotNull>
+			LEFT OUTER JOIN DPS_I_INS_WS_PLAN_STATUS IWPS
+				ON IWPS.JGI_NO = JM.JGI_NO
+				AND IWPS.PROD_CODE = PP.PROD_CODE
+		WHERE
+			PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+		AND PP.SALES = #sales:CHAR#
+		AND PP.CATEGORY = #category:CHAR#
+		GROUP BY
+			JM.SOS_CD3,
+			PP.PROD_CODE
+	)
+	SELECT
+		 IWPS.SOS_CD
+		,IWPS.PROD_CODE
+		,PP.PROD_NAME
+		,PP.PROD_TYPE
+		,IWPS.AHEAD_STATUS
+		,IWPS.LAST_UP_DATE
+		,IWPS.INS_WS_PLAN_NONE
+		,IWPS.INS_WS_PLAN_DISTING
+		,IWPS.INS_WS_PLAN_DISTED
+		,IWPS.INS_WS_PLAN_OPENED
+		,IWPS.INS_WS_PLAN_COMPLETED
+		,IWPS.INS_WS_PLAN_STAT_COUNT
+		,IWPS.INS_WS_DIST_START_DATE
+		,IWPS.INS_WS_DIST_END_DATE
+		,IWPS.INS_WS_OPEN_DATE
+		,IWPS.INS_WS_FIX_DATE
+		,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+	FROM
+		INS_WS_PLAN_STAT IWPS
+		INNER JOIN DPS_C_PLANNED_PROD PP ON IWPS.PROD_CODE = PP.PROD_CODE
+       <isNotNull property="mrCat">
+		   INNER JOIN DPS_C_MR_PROD_FIELD PF ON PP.PROD_CODE = PF.PROD_CODE AND PF.MR_CAT = #mrCat:VARCHAR#
+       </isNotNull>
+       LEFT OUTER JOIN DPS_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD
+	ORDER BY
+	    DATA_SEQ
+		,PP.GROUP_CODE
+		,PP.STAT_PROD_CODE
+		,PP.PROD_CODE
+  </select>
+
+  <!-- （施設特約配分品目）組織、対象区分集約検索一覧 -->
+  <select id="selectInsAllWsList" resultMap="insWsResultMapList" parameterClass="java.util.Map" >
+	WITH INS_WS_PLAN_STAT AS (
+		SELECT
+			SOS_CD1 AS SOS_CD
+			,PP.PROD_CODE
+			,MAX(IWPS.STATUS) AS AHEAD_STATUS
+			,MAX(IWPS.UP_DATE) AS LAST_UP_DATE
+			,COUNT(CASE WHEN IWPS.STATUS IS NULL THEN 1 ELSE NULL END) AS INS_WS_PLAN_NONE
+			,COUNT(CASE WHEN IWPS.STATUS >= '1' THEN 1 ELSE NULL END) AS INS_WS_PLAN_DISTING
+			,COUNT(CASE WHEN IWPS.STATUS >= '2' THEN 1 ELSE NULL END) AS INS_WS_PLAN_DISTED
+			,COUNT(CASE WHEN IWPS.STATUS >= '3' THEN 1 ELSE NULL END) AS INS_WS_PLAN_OPENED
+			,COUNT(CASE WHEN IWPS.STATUS >= '4' THEN 1 ELSE NULL END) AS INS_WS_PLAN_COMPLETED
+			,COUNT(JM.JGI_NO) AS INS_WS_PLAN_STAT_COUNT
+			,MAX(IWPS.DIST_START_DATE) AS INS_WS_DIST_START_DATE
+			,MAX(IWPS.DIST_END_DATE) AS INS_WS_DIST_END_DATE
+			,MAX(IWPS.INS_WS_OPEN_DATE) AS INS_WS_OPEN_DATE
+			,MAX(IWPS.INS_WS_FIX_DATE) AS INS_WS_FIX_DATE
+		FROM
+			DPS_C_VI_JGI_MST JM
+			LEFT OUTER JOIN DPS_C_PLANNED_PROD PP
+				ON JM.SOS_CD1 = #sosCd:VARCHAR#
+               <isNotNull property="jgiKbList">
+                   <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+                       #jgiKbList[].dbValue#
+                   </iterate>
+               </isNotNull>
+               <isNotNull prepend="AND" property="jokenSetList">
+               EXISTS (SELECT JO.JGI_NO
+               FROM DPS_C_JGI_JOKEN JO
+               WHERE JO.JGI_NO = JM.JGI_NO
+               <isNotNull property="jokenSetList">
+                   <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                       #jokenSetList[].dbValue#
+                   </iterate>
+               </isNotNull>
+               )
+               </isNotNull>
+			LEFT OUTER JOIN DPS_I_INS_WS_PLAN_STATUS IWPS
+				ON IWPS.JGI_NO = JM.JGI_NO
+				AND IWPS.PROD_CODE = PP.PROD_CODE
+		WHERE
+			PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+		AND PP.SALES = #sales:CHAR#
+		AND PP.CATEGORY = #category:CHAR#
+		GROUP BY
+			JM.SOS_CD1,
+			PP.PROD_CODE
+	)
+	SELECT
+		 IWPS.SOS_CD
+		,IWPS.PROD_CODE
+		,PP.PROD_NAME
+		,PP.PROD_TYPE
+		,IWPS.AHEAD_STATUS
+		,IWPS.LAST_UP_DATE
+		,IWPS.INS_WS_PLAN_NONE
+		,IWPS.INS_WS_PLAN_DISTING
+		,IWPS.INS_WS_PLAN_DISTED
+		,IWPS.INS_WS_PLAN_OPENED
+		,IWPS.INS_WS_PLAN_COMPLETED
+		,IWPS.INS_WS_PLAN_STAT_COUNT
+		,IWPS.INS_WS_DIST_START_DATE
+		,IWPS.INS_WS_DIST_END_DATE
+		,IWPS.INS_WS_OPEN_DATE
+		,IWPS.INS_WS_FIX_DATE
+		,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+	FROM
+		INS_WS_PLAN_STAT IWPS
+		INNER JOIN DPS_C_PLANNED_PROD PP ON IWPS.PROD_CODE = PP.PROD_CODE
+       <isNotNull property="mrCat">
+		   INNER JOIN DPS_C_MR_PROD_FIELD PF ON PP.PROD_CODE = PF.PROD_CODE AND PF.MR_CAT = #mrCat:VARCHAR#
+       </isNotNull>
+       LEFT OUTER JOIN DPS_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD
+	ORDER BY
+	    DATA_SEQ
+		,PP.GROUP_CODE
+		,PP.STAT_PROD_CODE
+		,PP.PROD_CODE
+  </select>
+
+</sqlMap>

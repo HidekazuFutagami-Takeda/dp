@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_InsWsPlanForVacForRef_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.view.InsWsPlanForVacForRef" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INS_NO" property="insNo" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="DIST_VALUE_B" property="distValueB" jdbcType="BIGINT" />
+<!-- add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる -->
+    <result column="MODIFY_VALUE_B" property="modifyValueB" jdbcType="BIGINT" />
+<!-- add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる -->
+    <result column="PLANNED_VALUE_B" property="plannedValueB" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_VALUE_B" property="befPlannedValueB" jdbcType="BIGINT" />
+    <result column="SPECIAL_INS_PLAN_FLG" property="specialInsPlanFlg" jdbcType="CHAR" />
+    <result column="EXCEPT_DIST_INS_FLG" property="exceptDistInsFlg" jdbcType="CHAR" />
+    <result column="DEL_INS_FLG" property="delInsFlg" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="ACTIVITY_TYPE" property="activityType" jdbcType="CHAR" />
+    <result column="INS_ABBR_NAME" property="insAbbrName" jdbcType="VARCHAR" />
+    <result column="ADDR_CODE_PREF" property="addrCodePref" jdbcType="VARCHAR" />
+    <result column="ADDR_CODE_CITY" property="addrCodeCity" jdbcType="VARCHAR" />
+    <result column="SHIKUCHOSON_MEI_KJ" property="shikuchosonMeiKj" jdbcType="VARCHAR" />
+    <result column="TMS_TYTEN_MEI_KJ" property="tmsTytenName" jdbcType="VARCHAR" />
+    <result column="PRE_FAR_ADVANCE_PERIOD" property="monNnuSummary.preFarAdvancePeriod" jdbcType="BIGINT" />
+    <result column="FAR_ADVANCE_PERIOD" property="monNnuSummary.farAdvancePeriod" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD" property="monNnuSummary.advancePeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PERIOD" property="monNnuSummary.currentPeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PLAN_VALUE" property="monNnuSummary.currentPlanValue" jdbcType="BIGINT" />
+
+    <result column="PRE_FAR_ADVANCE_PERIOD1" property="monNnuSummary1.preFarAdvancePeriod" jdbcType="BIGINT" />
+    <result column="FAR_ADVANCE_PERIOD1" property="monNnuSummary1.farAdvancePeriod" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD1" property="monNnuSummary1.advancePeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PERIOD1" property="monNnuSummary1.currentPeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PLAN_VALUE1" property="monNnuSummary1.currentPlanValue" jdbcType="BIGINT" />
+
+    <result column="PRE_FAR_ADVANCE_PERIOD2" property="monNnuSummary2.preFarAdvancePeriod" jdbcType="BIGINT" />
+    <result column="FAR_ADVANCE_PERIOD2" property="monNnuSummary2.farAdvancePeriod" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD2" property="monNnuSummary2.advancePeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PERIOD2" property="monNnuSummary2.currentPeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PLAN_VALUE2" property="monNnuSummary2.currentPlanValue" jdbcType="BIGINT" />
+
+    <result column="PRE_FAR_ADVANCE_PERIOD3" property="monNnuSummary3.preFarAdvancePeriod" jdbcType="BIGINT" />
+    <result column="FAR_ADVANCE_PERIOD3" property="monNnuSummary3.farAdvancePeriod" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD3" property="monNnuSummary3.advancePeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PERIOD3" property="monNnuSummary3.currentPeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PLAN_VALUE3" property="monNnuSummary3.currentPlanValue" jdbcType="BIGINT" />
+
+    <result column="PLAN_TAI_GAI_FLG_TOK" property="planTaiGaiFlgTok" jdbcType="CHAR" />
+    <result column="PLAN_TAI_GAI_FLG_RIK" property="planTaiGaiFlgRik" jdbcType="CHAR" />
+
+  </resultMap>
+
+  <!-- 検索リスト -->
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+      WITH IWP AS (
+        SELECT * FROM DPS_I_INS_WS_PLAN
+         WHERE JGI_NO = #jgiNo:INTEGER#
+           AND PROD_CODE = #prodCode:CHAR#
+        )
+        ,DELI AS (
+        SELECT * FROM DPS_I_DELIVERY_RESULT
+         <!--  納入実績は従業員番号を条件にしない -->
+         <!-- WHERE JGI_NO = #jgiNo:INTEGER# -->
+           WHERE PROD_CODE = #prodCode:CHAR#
+        )
+        <isNotNull property="resultRefProdCode1">
+        ,DELI1 AS (
+        SELECT * FROM DPS_I_DELIVERY_RESULT
+         <!--  納入実績は従業員番号を条件にしない -->
+         <!-- WHERE JGI_NO = #jgiNo:INTEGER# -->
+           WHERE PROD_CODE = #prodCode:CHAR#
+        )
+        </isNotNull>
+        <isNotNull property="resultRefProdCode2">
+        ,DELI2 AS (
+        SELECT * FROM DPS_I_DELIVERY_RESULT
+         <!--  納入実績は従業員番号を条件にしない -->
+         <!-- WHERE JGI_NO = #jgiNo:INTEGER# -->
+           WHERE PROD_CODE = #prodCode:CHAR#
+        )
+        </isNotNull>
+        <isNotNull property="resultRefProdCode3">
+        ,DELI3 AS (
+        SELECT * FROM DPS_I_DELIVERY_RESULT
+         <!--  納入実績は従業員番号を条件にしない -->
+         <!-- WHERE JGI_NO = #jgiNo:INTEGER# -->
+           WHERE PROD_CODE = #prodCode:CHAR#
+        )
+        </isNotNull>
+        ,IWP_DELI AS (
+        SELECT IWP.SEQ_KEY
+              ,COALESCE(IWP.JGI_NO,DELI.JGI_NO) AS JGI_NO
+              ,COALESCE(IWP.INS_NO,DELI.INS_NO) AS INS_NO
+              ,COALESCE(IWP.TMS_TYTEN_CD,DELI.TMS_TYTEN_CD) AS TMS_TYTEN_CD
+              ,IWP.DIST_VALUE_Y
+<!-- add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる -->
+              ,IWP.MODIFY_VALUE_Y
+<!-- add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる -->
+              ,IWP.PLANNED_VALUE_Y
+              ,IWP.BEF_PLANNED_VALUE_Y
+              ,IWP.SPECIAL_INS_PLAN_FLG
+              ,IWP.EXCEPT_DIST_INS_FLG
+              ,IWP.DEL_INS_FLG
+              ,IWP.IS_JGI_NO
+              ,IWP.IS_JGI_NAME
+              ,IWP.IS_DATE
+              ,IWP.UP_JGI_NO
+              ,IWP.UP_JGI_NAME
+              ,IWP.UP_DATE
+              ,DELI.PRE_FAR_ADVANCE_PERIOD
+              ,DELI.FAR_ADVANCE_PERIOD
+              ,DELI.ADVANCE_PERIOD
+              ,DELI.CURRENT_PERIOD
+              ,DELI.CURRENT_PLAN_VALUE
+          FROM IWP
+               <!-- FULL OUTER JOIN DELI   -->
+               LEFT OUTER JOIN DELI
+            <!-- 従業員番号を結合条件から外す -->
+            <!-- ON IWP.JGI_NO = DELI.JGI_NO -->
+            ON IWP.INS_NO = DELI.INS_NO
+           AND IWP.TMS_TYTEN_CD = DELI.TMS_TYTEN_CD
+        )
+        ,IWP_DELI1 AS (
+        SELECT IWP.SEQ_KEY
+              <isNotNull property="resultRefProdCode1">
+              ,COALESCE(IWP.JGI_NO,DELI1.JGI_NO) AS JGI_NO
+              ,COALESCE(IWP.INS_NO,DELI1.INS_NO) AS INS_NO
+              ,COALESCE(IWP.TMS_TYTEN_CD,DELI1.TMS_TYTEN_CD) AS TMS_TYTEN_CD
+              </isNotNull>
+              <isNull property="resultRefProdCode1">
+              ,IWP.JGI_NO
+              ,IWP.INS_NO
+              ,IWP.TMS_TYTEN_CD
+              </isNull>
+              ,IWP.DIST_VALUE_Y
+<!-- add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる -->
+              ,IWP.MODIFY_VALUE_Y
+<!-- add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる -->
+              ,IWP.PLANNED_VALUE_Y
+              ,IWP.BEF_PLANNED_VALUE_Y
+              ,IWP.SPECIAL_INS_PLAN_FLG
+              ,IWP.EXCEPT_DIST_INS_FLG
+              ,IWP.DEL_INS_FLG
+              ,IWP.IS_JGI_NO
+              ,IWP.IS_JGI_NAME
+              ,IWP.IS_DATE
+              ,IWP.UP_JGI_NO
+              ,IWP.UP_JGI_NAME
+              ,IWP.UP_DATE
+              ,IWP.PRE_FAR_ADVANCE_PERIOD
+              ,IWP.FAR_ADVANCE_PERIOD
+              ,IWP.ADVANCE_PERIOD
+              ,IWP.CURRENT_PERIOD
+              ,IWP.CURRENT_PLAN_VALUE
+              <isNotNull property="resultRefProdCode1">
+              ,DELI1.PRE_FAR_ADVANCE_PERIOD AS PRE_FAR_ADVANCE_PERIOD1
+              ,DELI1.FAR_ADVANCE_PERIOD AS FAR_ADVANCE_PERIOD1
+              ,DELI1.ADVANCE_PERIOD AS ADVANCE_PERIOD1
+              ,DELI1.CURRENT_PERIOD AS CURRENT_PERIOD1
+              ,DELI1.CURRENT_PLAN_VALUE AS CURRENT_PLAN_VALUE1
+              </isNotNull>
+              <isNull property="resultRefProdCode1">
+              ,NULL AS PRE_FAR_ADVANCE_PERIOD1
+              ,NULL AS FAR_ADVANCE_PERIOD1
+              ,NULL AS ADVANCE_PERIOD1
+              ,NULL AS CURRENT_PERIOD1
+              ,NULL AS CURRENT_PLAN_VALUE1
+              </isNull>
+          FROM IWP_DELI IWP
+              <isNotNull property="resultRefProdCode1">
+               <!-- FULL OUTER JOIN DELI1 -->
+               LEFT OUTER JOIN DELI1
+            <!-- 従業員番号を結合条件から外す -->
+            <!-- ON IWP.JGI_NO = DELI1.JGI_NO -->
+            ON IWP.INS_NO = DELI1.INS_NO
+           AND IWP.TMS_TYTEN_CD = DELI1.TMS_TYTEN_CD
+              </isNotNull>
+        )
+        ,IWP_DELI2 AS (
+        SELECT IWP.SEQ_KEY
+              <isNotNull property="resultRefProdCode2">
+              ,COALESCE(IWP.JGI_NO,DELI2.JGI_NO) AS JGI_NO
+              ,COALESCE(IWP.INS_NO,DELI2.INS_NO) AS INS_NO
+              ,COALESCE(IWP.TMS_TYTEN_CD,DELI2.TMS_TYTEN_CD) AS TMS_TYTEN_CD
+              </isNotNull>
+              <isNull property="resultRefProdCode2">
+              ,IWP.JGI_NO
+              ,IWP.INS_NO
+              ,IWP.TMS_TYTEN_CD
+              </isNull>
+              ,IWP.DIST_VALUE_Y
+<!-- add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる -->
+              ,IWP.MODIFY_VALUE_Y
+<!-- add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる -->
+              ,IWP.PLANNED_VALUE_Y
+              ,IWP.BEF_PLANNED_VALUE_Y
+              ,IWP.SPECIAL_INS_PLAN_FLG
+              ,IWP.EXCEPT_DIST_INS_FLG
+              ,IWP.DEL_INS_FLG
+              ,IWP.IS_JGI_NO
+              ,IWP.IS_JGI_NAME
+              ,IWP.IS_DATE
+              ,IWP.UP_JGI_NO
+              ,IWP.UP_JGI_NAME
+              ,IWP.UP_DATE
+              ,IWP.PRE_FAR_ADVANCE_PERIOD
+              ,IWP.FAR_ADVANCE_PERIOD
+              ,IWP.ADVANCE_PERIOD
+              ,IWP.CURRENT_PERIOD
+              ,IWP.CURRENT_PLAN_VALUE
+              ,IWP.PRE_FAR_ADVANCE_PERIOD1
+              ,IWP.FAR_ADVANCE_PERIOD1
+              ,IWP.ADVANCE_PERIOD1
+              ,IWP.CURRENT_PERIOD1
+              ,IWP.CURRENT_PLAN_VALUE1
+              <isNotNull property="resultRefProdCode2">
+              ,DELI2.PRE_FAR_ADVANCE_PERIOD AS PRE_FAR_ADVANCE_PERIOD2
+              ,DELI2.FAR_ADVANCE_PERIOD AS FAR_ADVANCE_PERIOD2
+              ,DELI2.ADVANCE_PERIOD AS ADVANCE_PERIOD2
+              ,DELI2.CURRENT_PERIOD AS CURRENT_PERIOD2
+              ,DELI2.CURRENT_PLAN_VALUE AS CURRENT_PLAN_VALUE2
+              </isNotNull>
+              <isNull property="resultRefProdCode2">
+              ,NULL AS PRE_FAR_ADVANCE_PERIOD2
+              ,NULL AS FAR_ADVANCE_PERIOD2
+              ,NULL AS ADVANCE_PERIOD2
+              ,NULL AS CURRENT_PERIOD2
+              ,NULL AS CURRENT_PLAN_VALUE2
+              </isNull>
+          FROM IWP_DELI1 IWP
+              <isNotNull property="resultRefProdCode2">
+               <!--  FULL OUTER JOIN DELI2  -->
+               LEFT OUTER JOIN DELI2
+            <!-- 従業員番号を結合条件から外す -->
+            <!-- ON IWP.JGI_NO = DELI2.JGI_NO -->
+            ON IWP.INS_NO = DELI2.INS_NO
+           AND IWP.TMS_TYTEN_CD = DELI2.TMS_TYTEN_CD
+              </isNotNull>
+        )
+        ,IWP_DELI3 AS (
+        SELECT IWP.SEQ_KEY
+              <isNotNull property="resultRefProdCode3">
+              ,COALESCE(IWP.JGI_NO,DELI3.JGI_NO) AS JGI_NO
+              ,COALESCE(IWP.INS_NO,DELI3.INS_NO) AS INS_NO
+              ,COALESCE(IWP.TMS_TYTEN_CD,DELI3.TMS_TYTEN_CD) AS TMS_TYTEN_CD
+              </isNotNull>
+              <isNull property="resultRefProdCode3">
+              ,IWP.JGI_NO
+              ,IWP.INS_NO
+              ,IWP.TMS_TYTEN_CD
+              </isNull>
+              ,IWP.DIST_VALUE_Y
+<!-- add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる -->
+              ,IWP.MODIFY_VALUE_Y
+<!-- add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる -->
+              ,IWP.PLANNED_VALUE_Y
+              ,IWP.BEF_PLANNED_VALUE_Y
+              ,IWP.SPECIAL_INS_PLAN_FLG
+              ,IWP.EXCEPT_DIST_INS_FLG
+              ,IWP.DEL_INS_FLG
+              ,IWP.IS_JGI_NO
+              ,IWP.IS_JGI_NAME
+              ,IWP.IS_DATE
+              ,IWP.UP_JGI_NO
+              ,IWP.UP_JGI_NAME
+              ,IWP.UP_DATE
+              ,IWP.PRE_FAR_ADVANCE_PERIOD
+              ,IWP.FAR_ADVANCE_PERIOD
+              ,IWP.ADVANCE_PERIOD
+              ,IWP.CURRENT_PERIOD
+              ,IWP.CURRENT_PLAN_VALUE
+              ,IWP.PRE_FAR_ADVANCE_PERIOD1
+              ,IWP.FAR_ADVANCE_PERIOD1
+              ,IWP.ADVANCE_PERIOD1
+              ,IWP.CURRENT_PERIOD1
+              ,IWP.CURRENT_PLAN_VALUE1
+              ,IWP.PRE_FAR_ADVANCE_PERIOD2
+              ,IWP.FAR_ADVANCE_PERIOD2
+              ,IWP.ADVANCE_PERIOD2
+              ,IWP.CURRENT_PERIOD2
+              ,IWP.CURRENT_PLAN_VALUE2
+              <isNotNull property="resultRefProdCode3">
+              ,DELI3.PRE_FAR_ADVANCE_PERIOD AS PRE_FAR_ADVANCE_PERIOD3
+              ,DELI3.FAR_ADVANCE_PERIOD AS FAR_ADVANCE_PERIOD3
+              ,DELI3.ADVANCE_PERIOD AS ADVANCE_PERIOD3
+              ,DELI3.CURRENT_PERIOD AS CURRENT_PERIOD3
+              ,DELI3.CURRENT_PLAN_VALUE AS CURRENT_PLAN_VALUE3
+              </isNotNull>
+              <isNull property="resultRefProdCode3">
+              ,NULL AS PRE_FAR_ADVANCE_PERIOD3
+              ,NULL AS FAR_ADVANCE_PERIOD3
+              ,NULL AS ADVANCE_PERIOD3
+              ,NULL AS CURRENT_PERIOD3
+              ,NULL AS CURRENT_PLAN_VALUE3
+              </isNull>
+          FROM IWP_DELI2 IWP
+              <isNotNull property="resultRefProdCode3">
+              <!--  FULL OUTER JOIN DELI3 -->
+              LEFT OUTER JOIN DELI3
+            <!-- 従業員番号を結合条件から外す -->
+            <!-- ON IWP.JGI_NO = DELI3.JGI_NO -->
+            ON IWP.INS_NO = DELI3.INS_NO
+           AND IWP.TMS_TYTEN_CD = DELI3.TMS_TYTEN_CD
+              </isNotNull>
+        )
+    SELECT
+          IWP.SEQ_KEY
+          ,IWP.JGI_NO
+          ,#prodCode:CHAR# AS PROD_CODE
+          ,IWP.INS_NO
+          ,IWP.TMS_TYTEN_CD
+          ,IWP.DIST_VALUE_Y AS DIST_VALUE_B
+<!-- add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる -->
+          ,IWP.MODIFY_VALUE_Y AS MODIFY_VALUE_B
+<!-- add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる -->
+          ,IWP.PLANNED_VALUE_Y AS PLANNED_VALUE_B
+          ,IWP.BEF_PLANNED_VALUE_Y AS BEF_PLANNED_VALUE_B
+          ,IWP.SPECIAL_INS_PLAN_FLG
+          ,CASE WHEN EXC_INS.INS_NO IS NULL THEN '0' ELSE EXC_INS.EXCEPT_FLG END AS EXCEPT_DIST_INS_FLG
+          ,CASE
+            WHEN INS.DEL_FLG ='1' THEN '1'
+            WHEN INS.REQ_FLG ='1' THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '●', 1, 1)=1  THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '〇', 1, 1)=1  THEN '1'
+            ELSE '0'
+           END AS DEL_INS_FLG
+          ,IWP.IS_JGI_NO
+          ,IWP.IS_JGI_NAME
+          ,IWP.IS_DATE
+          ,IWP.UP_JGI_NO
+          ,IWP.UP_JGI_NAME
+          ,IWP.UP_DATE
+          ,AT.ACTIVITY_TYPE
+          ,INS.INS_ABBR_NAME
+          ,INS.ADDR_CODE_PREF
+          ,INS.ADDR_CODE_CITY
+          ,CASE INS.ADDR_CODE_CITY WHEN '000' THEN JIS.FUKEN_MEI_KJ ELSE JIS.SHIKUCHOSON_MEI_KJ END AS SHIKUCHOSON_MEI_KJ
+          ,TMS.TMS_TYTEN_MEI_KJ
+          ,IWP.PRE_FAR_ADVANCE_PERIOD
+          ,IWP.FAR_ADVANCE_PERIOD
+          ,IWP.ADVANCE_PERIOD
+          ,IWP.CURRENT_PERIOD
+          ,IWP.CURRENT_PLAN_VALUE
+          ,IWP.PRE_FAR_ADVANCE_PERIOD1
+          ,IWP.FAR_ADVANCE_PERIOD1
+          ,IWP.ADVANCE_PERIOD1
+          ,IWP.CURRENT_PERIOD1
+          ,IWP.CURRENT_PLAN_VALUE1
+          ,IWP.PRE_FAR_ADVANCE_PERIOD2
+          ,IWP.FAR_ADVANCE_PERIOD2
+          ,IWP.ADVANCE_PERIOD2
+          ,IWP.CURRENT_PERIOD2
+          ,IWP.CURRENT_PLAN_VALUE2
+          ,IWP.PRE_FAR_ADVANCE_PERIOD3
+          ,IWP.FAR_ADVANCE_PERIOD3
+          ,IWP.ADVANCE_PERIOD3
+          ,IWP.CURRENT_PERIOD3
+          ,IWP.CURRENT_PLAN_VALUE3
+          ,NULL AS JGI_NAME
+          ,NULL AS TEAM_CODE
+          ,NULL AS BUMON_RYAKU_NAME
+          ,TMS.PLAN_TAI_GAI_FLG_TOK
+          ,TMS.PLAN_TAI_GAI_FLG_RIK
+          ,OINS.HO_INS_TYPE AS OINS_HO_INS_TYPE
+          ,OINS.RELN_INS_NO AS OINS_RELN_INS_NO
+          ,NVL(OYK.MAIN_INS_NO,'0') AS MAIN_INS_NO
+<!-- mod start 2021/8/17 h.Kaneko 親子紐づけ対応 -->
+          <!-- ,INS.HO_INS_TYPE AS INS_HO_INS_TYPE-->
+          ,NVL(OINS.HO_INS_TYPE,INS.HO_INS_TYPE) AS INS_HO_INS_TYPE
+<!-- mod end 2021/8/17 -->
+          ,INS.RELN_INS_NO
+          ,INS.RELN_INS_CODE
+      FROM IWP_DELI3 IWP
+           INNER JOIN DPS_C_INS_MST INS
+        ON IWP.INS_NO = INS.INS_NO
+           LEFT JOIN DPS_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO
+       AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+           LEFT JOIN DPS_C_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+       AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+           INNER JOIN DPS_S_T_TMS_TYTEN_MST_UN TMS
+        ON IWP.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+           INNER JOIN DPS_S_SY_T_JIS_MST JIS
+        ON INS.ADDR_CODE_PREF = JIS.TODOUFUKEN_CD AND INS.ADDR_CODE_CITY = JIS.SHIKUCHOSON_CD
+           LEFT JOIN DPS_V_ACTIVITY_TYPE AT
+        ON IWP.INS_NO = AT.INS_NO
+           LEFT OUTER JOIN DPS_I_EXCEPT_DIST_INS EXC_INS
+        ON IWP.INS_NO = EXC_INS.INS_NO AND ( EXC_INS.PROD_CODE = #prodCode:CHAR# OR EXC_INS.PROD_CODE IS NULL)
+    <dynamic prepend="WHERE">
+       <isNotNull prepend="AND" property="activityType">
+           AT.ACTIVITY_TYPE = #activityType:CHAR#
+       </isNotNull>
+       <isNotNull property="hoInsTypeList" prepend="AND">
+<!-- mod start -->
+           <!-- <iterate prepend="INS.HO_INS_TYPE IN" open="(" close=")" conjunction=","  property="hoInsTypeList">-->
+           <iterate prepend="NVL(OINS.HO_INS_TYPE,INS.HO_INS_TYPE) IN" open="(" close=")" conjunction=","  property="hoInsTypeList">
+<!-- mod end -->
+               #hoInsTypeList[].dbValue#
+           </iterate>
+       </isNotNull>
+    </dynamic>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+</sqlMap>

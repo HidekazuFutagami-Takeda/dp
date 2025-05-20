@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+ "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+
+    <form-beans>
+      <form-bean name="Dpm101C00Form" type="jp.co.takeda.web.in.dpm.Dpm101C00Form" />
+      <form-bean name="Dpm101C01Form" type="jp.co.takeda.web.in.dpm.Dpm101C01Form" />
+    </form-beans>
+
+<action-mappings type="jp.co.takeda.web.cmn.action.DpActionMapping">
+<!-- ***********************************************************************
+
+    (医)品目別計画編集画面
+
+ ***********************************************************************  -->
+<action path="/dpm101C00F00"
+ type="jp.co.takeda.web.ctrl.dpm.Dpm101C00Action" name="Dpm101C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dpm101C00F00" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+</action>
+
+<action path="/dpm101C00F01"
+ type="jp.co.takeda.web.ctrl.dpm.Dpm101C00Action" name="Dpm101C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dpm101C00F01" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+</action>
+
+<action path="/dpm101C00F05"
+ type="jp.co.takeda.web.ctrl.dpm.Dpm101C00Action" name="Dpm101C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dpm101C00F05" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+</action>
+
+<action path="/dpm101C00F10Execute"
+ type="jp.co.takeda.web.ctrl.dpm.Dpm101C00Action" name="Dpm101C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dpm101C00F10Execute" />
+    <set-property property="validationMethod" value="dpm101C00F10Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+</action>
+
+<action path="/dpm101C00F11Execute"
+ type="jp.co.takeda.web.ctrl.dpm.Dpm101C00Action" name="Dpm101C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dpm101C00F11Execute" />
+    <set-property property="validationMethod" value="dpm101C00F11Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+</action>
+
+<action path="/dpm101C00F12Execute"
+ type="jp.co.takeda.web.ctrl.dpm.Dpm101C00Action" name="Dpm101C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dpm101C00F12Execute" />
+    <set-property property="validationMethod" value="dpm101C00F12Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+</action>
+
+<action path="/dpm101C00F13Execute"
+ type="jp.co.takeda.web.ctrl.dpm.Dpm101C00Action" name="Dpm101C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dpm101C00F13Execute" />
+    <set-property property="validationMethod" value="dpm101C00F13Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+</action>
+
+<action path="/dpm101C00F14Execute"
+ type="jp.co.takeda.web.ctrl.dpm.Dpm101C00Action" name="Dpm101C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dpm101C00F14Execute" />
+    <set-property property="validationMethod" value="dpm101C00F14Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+</action>
+
+<action path="/dpm101C00F15Output"
+ type="jp.co.takeda.web.ctrl.dpm.Dpm101C00Action" name="Dpm101C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dpm101C00F15Output" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="validationMethod" value="dpm101C00F15Validation" />
+    <forward name="success" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dpm/dpm101C00.vm" />
+</action>
+
+
+<!-- ***********************************************************************
+
+    (医)積上結果表示ダイアログ画面
+
+ ***********************************************************************  -->
+<action path="/dpm101C01F00"
+ type="jp.co.takeda.web.ctrl.dpm.Dpm101C01Action" name="Dpm101C01Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dpm101C01F00" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dpm/dpm101C01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dpm/dpm101C01.vm" />
+</action>
+
+<action path="/dpm101C01F05Execute"
+ type="jp.co.takeda.web.ctrl.dpm.Dpm101C01Action" name="Dpm101C01Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dpm101C01F05Execute" />
+    <set-property property="validationMethod" value="dpm101C01F05Validation" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dpm/dpm101C01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dpm/dpm101C01.vm" />
+</action>
+
+</action-mappings>
+</struts-config>

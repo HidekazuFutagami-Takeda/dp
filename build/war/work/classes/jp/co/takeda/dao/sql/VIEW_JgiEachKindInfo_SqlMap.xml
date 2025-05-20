@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_JgiEachKindInfo_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.view.JgiEachKindInfo" >
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="EXCEPT_COUNT" property="exceptDistInsCnt" jdbcType="INTEGER" />
+    <result column="EXCEPT_UP_DATE" property="exceptDistInsUpDate" jdbcType="TIMESTAMP" />
+    <result column="SPECIAL_COUNT" property="specialInsPlanCnt" jdbcType="INTEGER" />
+    <result column="SPECIAL_UP_DATE" property="specialInsPlanUpDate" jdbcType="TIMESTAMP" />
+    <result column="SHOKUSHU_NAME" property="shokushuName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <!-- 検索 -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH EXCEPT AS (SELECT JM.JGI_NO
+                  ,COUNT(DISTINCT EDI.INS_NO) AS EXCEPT_COUNT
+                  ,MAX(EDI.UP_DATE) AS EXCEPT_UP_DATE
+              FROM DPS_C_JGI_MST JM
+                   INNER JOIN DPS_C_MR_INS MI
+                ON MI.MR_NO = JM.JGI_NO
+                   LEFT OUTER JOIN (SELECT * FROM DPS_I_EXCEPT_DIST_INS WHERE REGIST_TYPE = '1') EDI
+                ON EDI.INS_NO = MI.INS_NO
+             WHERE JM.JGI_NO = #jgiNo:INTEGER#
+             GROUP BY JM.JGI_NO
+           )
+        ,SPECIAL AS (SELECT JM.JGI_NO
+                  ,COUNT(DISTINCT SIP.INS_NO) AS SPECIAL_COUNT
+                  ,MAX(SIP.UP_DATE) AS SPECIAL_UP_DATE
+              FROM DPS_C_JGI_MST JM
+                   INNER JOIN DPS_C_MR_INS MI
+                ON MI.MR_NO = JM.JGI_NO
+                   LEFT OUTER JOIN DPS_I_SPECIAL_INS_PLAN SIP
+                ON SIP.INS_NO = MI.INS_NO
+             WHERE JM.JGI_NO = #jgiNo:INTEGER#
+             GROUP BY JM.JGI_NO
+           )
+    SELECT JM.JGI_NO
+          ,JM.JGI_NAME
+          ,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+          ,EXCEPT_COUNT
+          ,EXCEPT_UP_DATE
+          ,SPECIAL_COUNT
+          ,SPECIAL_UP_DATE
+      FROM DPS_C_JGI_MST JM
+           INNER JOIN EXCEPT
+        ON JM.JGI_NO = EXCEPT.JGI_NO
+           INNER JOIN SPECIAL
+        ON JM.JGI_NO = SPECIAL.JGI_NO
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ 
+        ON JJ.JGI_NO = JM.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+        
+    </select>
+
+</sqlMap>

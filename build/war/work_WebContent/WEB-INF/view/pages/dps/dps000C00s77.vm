@@ -1,0 +1,64 @@
+## ------------------------------------
+## (ワ)施設特約店別計画
+## ------------------------------------
+#set($GridObjName = "dps000C00s77Grid")
+#set($CoverId = "dps000C00s77CoverId")
+#set($honbuFlg = $progress.isWakutinHonbu())
+<script language="javascript">
+<!--
+##帳票出力
+function dps000C00F52Output(jgiNo) {
+    var actionPath = '$link.setAction('dps000C00F52Output')';
+    document.dps000C00F52Form.action = '$link.setAction('dps000C00F52Output')';
+    document.getElementById("insWsVacJgiNo").value = jgiNo;
+    document.dps000C00F52Form.submit();
+    return false;
+}
+var ${GridObjName};
+## 初期表示＋読込処理
+function dps000C00F77() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+#if ($honbuFlg)
+    ${GridObjName}.setHeader("組織,施設特約店別計画,#cspan,#cspan")
+    ${GridObjName}.attachHeader("#rspan,配分状況,ＭＲ公開,ＭＲ確定")
+    ${GridObjName}.setInitWidths("110,100,100,100");
+    ${GridObjName}.setColAlign("left,center,center,center");
+    ${GridObjName}.setColTypes("ro,ro,ro,ro");
+    ${GridObjName}.enableResizing("false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false");
+#else
+    ${GridObjName}.setHeader("担当者,施設特約店別計画,#cspan")
+    ${GridObjName}.attachHeader("#rspan,ＭＲ公開,ＭＲ確定")
+    ${GridObjName}.setInitWidths("110,100,100");
+    ${GridObjName}.setColAlign("left,center,center");
+    ${GridObjName}.setColTypes("ro,ro,ro");
+    ${GridObjName}.enableResizing("false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false");
+#end
+    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.enableAutoWidth(true);
+    ${GridObjName}.enableAutoHeight(true);
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.objBox.style.overflowY="hidden";
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    #if ($progress.isWakutinWsPlanDispFlg())
+    ${GridObjName}.load("$link.setAction('dps000C00F77?sFlg=true')", dps000C00F78);
+    #else
+    ${GridObjName}.load("$link.setAction('dps000C00F77?sFlg=true')", "");
+    #end
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.attachEvent("onBeforeSelect",function(newId,oldId){return;});
+}
+//-->
+</script>
+#loadingGridDiv("${GridObjName}", "${CoverId}")
+<form name="dps000C00F52Form" id="dps000C00F52Form" method="post">
+<input type="hidden" name="insWsVacJgiNo" id="insWsVacJgiNo" value="" />
+</form>

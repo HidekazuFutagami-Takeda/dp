@@ -1,0 +1,113 @@
+<div id="menuErea">
+<div class="titleBg"><p>メニュー</p></div>
+<div id="laContents">
+#set ($kanriSosikiList = $!menu.getKanriSosikiList())
+#if ($kanriSosikiList)
+<table>
+    <tr>
+        <td><img src="$link.getContextPath()/cmn/images/menuIconL.gif" /></td>
+        <td>組織・担当者別計画</td>
+    </tr>
+    #foreach($codeAndValue in $kanriSosikiList)
+    <tr>
+        <td align="right"><img src="$link.getContextPath()/cmn/images/menuIconR.gif" /></td>
+        <td><a href="$codeAndValue.code" tabindex="-1">$codeAndValue.value</a></td>
+    </tr>
+    #end
+</table>
+#end
+#set ($kanriInsList = $!menu.getKanriInsList())
+#if ($kanriInsList)
+<table>
+    <tr>
+        <td><img src="$link.getContextPath()/cmn/images/menuIconL.gif" /></td>
+        <td>施設別計画</td>
+    </tr>
+    #foreach($codeAndValue in $kanriInsList)
+    <tr>
+        <td align="right"><img src="$link.getContextPath()/cmn/images/menuIconR.gif" /></td>
+        <td><a href="$codeAndValue.code" tabindex="-1">$codeAndValue.value</a></td>
+    </tr>
+    #end
+</table>
+#end
+#set ($kanriInsWsList = $!menu.getKanriInsWsList())
+#if ($kanriInsWsList)
+<table>
+    <tr>
+        <td><img src="$link.getContextPath()/cmn/images/menuIconL.gif" /></td>
+        <td>施設特約店別計画</td>
+    </tr>
+    #foreach($codeAndValue in $kanriInsWsList)
+    <tr>
+        <td align="right"><img src="$link.getContextPath()/cmn/images/menuIconR.gif" /></td>
+        <td><a href="$codeAndValue.code" tabindex="-1">$codeAndValue.value</a></td>
+    </tr>
+    #end
+</table>
+#end
+<br>
+#set ($kanriWsList = $!menu.getKanriWsList())
+#if ($kanriWsList)
+<table>
+    <tr>
+        <td><img src="$link.getContextPath()/cmn/images/menuIconL.gif" /></td>
+        <td>特約店別計画</td>
+    </tr>
+    #foreach($codeAndValue in $kanriWsList)
+    <tr>
+        <td align="right"><img src="$link.getContextPath()/cmn/images/menuIconR.gif" /></td>
+        <td><a href="$codeAndValue.code" tabindex="-1">$codeAndValue.value</a></td>
+    </tr>
+    #end
+</table>
+#end
+<br>
+
+<table>
+    <tr>
+        <td><img src="$link.getContextPath()/cmn/images/menuIconL.gif" /></td>
+        <td>月別計画</td>
+    </tr>
+    <tr>
+	    <td />
+	    <td>
+		    #set ($kanriSosikiList = $!menu.getMonthlyKanriSosikiList())
+		    #if ($kanriSosikiList)
+		    <table>
+		        <tr>
+		            <td><img src="$link.getContextPath()/cmn/images/menuIconL.gif" /></td>
+		            <td>組織・担当者別計画</td>
+		        </tr>
+		        #foreach($codeAndValue in $kanriSosikiList)
+		        <tr>
+		            <td align="right"><img src="$link.getContextPath()/cmn/images/menuIconR.gif" /></td>
+		            <td><a href="$codeAndValue.code" tabindex="-1">$codeAndValue.value</a></td>
+		        </tr>
+		        #end
+		    </table>
+		    #end
+		</td>
+	<tr>
+		<td />
+		<td>
+		    #set ($kanriInsList = $!menu.getMonthlyKanriInsList())
+		    #if ($kanriInsList)
+		    <table>
+		        <tr>
+		            <td><img src="$link.getContextPath()/cmn/images/menuIconL.gif" /></td>
+		            <td>施設別計画</td>
+		        </tr>
+		        #foreach($codeAndValue in $kanriInsList)
+		        <tr>
+		            <td align="right"><img src="$link.getContextPath()/cmn/images/menuIconR.gif" /></td>
+		            <td><a href="$codeAndValue.code" tabindex="-1">$codeAndValue.value</a></td>
+		        </tr>
+		        #end
+		    </table>
+		    #end
+	    </td>
+    </tr>
+</table>
+</div>
+</div>

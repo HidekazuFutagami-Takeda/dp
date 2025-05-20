@@ -1,0 +1,879 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_I_MR_PLAN_SqlMap" >
+  <resultMap id="resultMap" class="jp.co.takeda.model.ManageMrPlan" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="CAL_YEAR" property="calYear" jdbcType="CHAR" />
+    <result column="CAL_TERM" property="calTerm" jdbcType="CHAR" />
+    <result column="INS_TYPE" property="insType" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PLANNED_1_VALUE_Y" property="implPlan.planned1ValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_1_VALUE_T" property="implPlan.planned1ValueT" jdbcType="BIGINT" />
+    <result column="PLANNED_2_VALUE_Y" property="implPlan.planned2ValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_2_VALUE_T" property="implPlan.planned2ValueT" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_1_VALUE_Y" property="implPlan.befPlanned1ValueY" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_1_VALUE_T" property="implPlan.befPlanned1ValueT" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_2_VALUE_Y" property="implPlan.befPlanned2ValueY" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_2_VALUE_T" property="implPlan.befPlanned2ValueT" jdbcType="BIGINT" />
+    <result column="DEL_FLG" property="delFlg" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="IS_PG_ID" property="isPgId" jdbcType="VARCHAR" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="UP_PG_ID" property="upPgId" jdbcType="VARCHAR" />
+    <result column="STACKED_VALUE" property="stackedValue" jdbcType="BIGINT" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT  MP.SEQ_KEY
+          , MP.CAL_YEAR
+          , MP.CAL_TERM
+          , MP.INS_TYPE
+          , MP.PROD_CODE
+          , MP.JGI_NO
+          , MP.PLANNED_1_VALUE_Y
+          , MP.PLANNED_1_VALUE_T
+          , MP.PLANNED_2_VALUE_Y
+          , MP.PLANNED_2_VALUE_T
+          , MP.BEF_PLANNED_1_VALUE_Y
+          , MP.BEF_PLANNED_1_VALUE_T
+          , MP.BEF_PLANNED_2_VALUE_Y
+          , MP.BEF_PLANNED_2_VALUE_T
+          , MP.DEL_FLG
+          , MP.IS_JGI_NO
+          , MP.IS_JGI_NAME
+          , MP.IS_DATE
+          , MP.IS_PG_ID
+          , MP.UP_JGI_NO
+          , MP.UP_JGI_NAME
+          , MP.UP_DATE
+          , MP.UP_PG_ID
+          , NULL AS STACKED_VALUE
+          , NULL AS PROD_NAME
+          , NULL AS JGI_NAME
+      FROM DPM_I_MR_PLAN MP
+     WHERE MP.SEQ_KEY = #seqKey:BIGINT#
+       AND MP.CAL_YEAR = '$calYear$'
+       AND MP.CAL_TERM = '$calTerm.dbValue$'
+  </select>
+
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.ManageMrPlan" >
+    SELECT  MP.SEQ_KEY
+          , MP.CAL_YEAR
+          , MP.CAL_TERM
+          , MP.INS_TYPE
+          , MP.PROD_CODE
+          , MP.JGI_NO
+          , MP.PLANNED_1_VALUE_Y
+          , MP.PLANNED_1_VALUE_T
+          , MP.PLANNED_2_VALUE_Y
+          , MP.PLANNED_2_VALUE_T
+          , MP.BEF_PLANNED_1_VALUE_Y
+          , MP.BEF_PLANNED_1_VALUE_T
+          , MP.BEF_PLANNED_2_VALUE_Y
+          , MP.BEF_PLANNED_2_VALUE_T
+          , MP.DEL_FLG
+          , MP.IS_JGI_NO
+          , MP.IS_JGI_NAME
+          , MP.IS_DATE
+          , MP.IS_PG_ID
+          , MP.UP_JGI_NO
+          , MP.UP_JGI_NAME
+          , MP.UP_DATE
+          , MP.UP_PG_ID
+          , NULL AS STACKED_VALUE
+          , NULL AS PROD_NAME
+          , NULL AS JGI_NAME
+      FROM DPM_I_MR_PLAN MP
+     WHERE MP.CAL_YEAR = '$calYear$'
+       AND MP.CAL_TERM = '$calTerm.dbValue$'
+       AND MP.INS_TYPE = #insType:VARCHAR#
+       AND MP.PROD_CODE = #prodCode:CHAR#
+       AND MP.JGI_NO = #jgiNo:INTEGER#
+  </select>
+
+  <select id="selectListByProd" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH MR_PLAN AS (
+        SELECT MP.SEQ_KEY
+              ,MP.CAL_YEAR
+              ,MP.CAL_TERM
+              ,'1' AS INS_TYPE
+              ,#prodCode:CHAR# AS PROD_CODE
+              ,JM.JGI_NO
+              ,MP.PLANNED_1_VALUE_Y
+              ,MP.PLANNED_1_VALUE_T
+              ,MP.PLANNED_2_VALUE_Y
+              ,MP.PLANNED_2_VALUE_T
+              ,MP.BEF_PLANNED_1_VALUE_Y
+              ,MP.BEF_PLANNED_1_VALUE_T
+              ,MP.BEF_PLANNED_2_VALUE_Y
+              ,MP.BEF_PLANNED_2_VALUE_T
+              ,MP.DEL_FLG
+              ,MP.IS_JGI_NO
+              ,MP.IS_JGI_NAME
+              ,MP.IS_DATE
+              ,MP.IS_PG_ID
+              ,MP.UP_JGI_NO
+              ,MP.UP_JGI_NAME
+              ,MP.UP_DATE
+              ,MP.UP_PG_ID
+              ,SUM.STACKED_VALUE
+              ,NULL AS PROD_NAME
+              ,JM.JGI_NAME
+              ,JM.SHOKUSEI_CD
+              ,JM.SHOKUSHU_CD
+              ,JM.JGI_KB
+          FROM
+              DPM_C_VI_JGI_MST JM
+                  LEFT JOIN DPM_I_MR_PLAN MP
+                      ON MP.JGI_NO = JM.JGI_NO
+                       AND MP.CAL_YEAR = '$calYear$'
+                       AND MP.CAL_TERM = '$calTerm.dbValue$'
+                       AND MP.PROD_CODE = #prodCode:CHAR#
+                       AND MP.INS_TYPE = '1'
+                  LEFT JOIN (
+                        SELECT
+                            MIP.MR_NO AS JGI_NO,
+                            SUM(IP.PLANNED_2_VALUE_Y) AS STACKED_VALUE
+                        FROM
+                            DPM_I_INS_PLAN IP
+                            INNER JOIN DPM_C_VI_INS_MST INS ON IP.INS_NO = INS.INS_NO
+                            <!--シノニムはNSG親子紐づけが反映されない INNER JOIN DPS_S_SY_COM_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE -->
+                            INNER JOIN DPM_C_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE
+                            INNER JOIN DPM_C_VI_JGI_MST JM ON MIP.MR_NO = JM.JGI_NO
+                            LEFT JOIN DPM_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+							LEFT JOIN DPM_C_VI_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+                        WHERE
+                                IP.DEL_FLG = '0'
+                            AND IP.CAL_YEAR = '$calYear$'
+                            AND IP.CAL_TERM = '$calTerm.dbValue$'
+                            <isNotNull prepend="AND" property="sosCd3">
+                            JM.SOS_CD3 = #sosCd3:VARCHAR#
+                            </isNotNull>
+                            <isNotNull prepend="AND" property="sosCd4">
+                            JM.SOS_CD4 = #sosCd4:VARCHAR#
+                            </isNotNull>
+                            AND IP.PROD_CODE = #prodCode:CHAR#
+                            <!--NSG親子紐づけ AND INS.INS_TYPE = '1'-->
+                            AND nvl(oins.INS_TYPE, INS.INS_TYPE) = '1'
+                            AND MIP.MAIN_MR = '0'
+                            <!-- add Start 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+                            <isNotNull prepend="AND" property="category">
+                                EXISTS
+                                (SELECT 'X'
+                                <!-- mod Start 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                                <!--
+                                FROM DPS_C_PLANNED_CTG CTG
+                                    ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                                WHERE CTG.CATEGORY = #category:CHAR#
+                                AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                                AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                                AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                                -->
+                                FROM DPM_C_PLANNED_CTG CTG
+                                    ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                                WHERE CTG.CATEGORY = #category:CHAR#
+                                AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                                AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                                AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                                AND CTG.CAL_YEAR = #calYear:CHAR#
+                                AND CTG.CAL_TERM = #calTerm:CHAR#
+                                <!-- mod End 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                                )
+                            </isNotNull>
+	                        <!-- add End 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+                        GROUP BY
+                            MIP.MR_NO
+                  ) SUM
+                        ON SUM.JGI_NO = JM.JGI_NO
+         WHERE
+            <iterate prepend="JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               '$jgiKbList[].dbValue$'
+            </iterate>
+           <isNotNull prepend="AND" property="jokenSetList">
+               EXISTS (SELECT JO.JGI_NO
+                         FROM DPS_S_SY_M_JGI_JOKEN JO
+                         WHERE JO.JGI_NO = JM.JGI_NO
+                       <isNotNull property="jokenSetList">
+                           <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                               #jokenSetList[].dbValue#
+                           </iterate>
+                       </isNotNull>
+                      )
+           </isNotNull>
+            <isNotNull prepend="AND" property="sosCd3">
+            JM.SOS_CD3 = #sosCd3:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="AND" property="sosCd4">
+            JM.SOS_CD4 = #sosCd4:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="AND" property="jgiNo">
+            JM.JGI_NO = #jgiNo:INTEGER#
+            </isNotNull>
+             <!-- add Start 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+             <isNotNull prepend="AND" property="category">
+                 EXISTS
+                 (SELECT 'X'
+                 <!-- mod Start 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                 <!--
+                 FROM DPS_C_PLANNED_CTG CTG
+                     ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                 WHERE CTG.CATEGORY = #category:CHAR#
+                 AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                 AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                 AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                 -->
+                 FROM DPM_C_PLANNED_CTG CTG
+                     ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                 WHERE CTG.CATEGORY = #category:CHAR#
+                 AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                 AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                 AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                 AND CTG.CAL_YEAR = #calYear:CHAR#
+                 AND CTG.CAL_TERM = #calTerm:CHAR#
+                 <!-- mod End 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                 )
+             </isNotNull>
+	         <!-- add End 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+        UNION
+        SELECT MP.SEQ_KEY
+              ,MP.CAL_YEAR
+              ,MP.CAL_TERM
+              ,'2' AS INS_TYPE
+              ,#prodCode:CHAR# AS PROD_CODE
+              ,JM.JGI_NO
+              ,MP.PLANNED_1_VALUE_Y
+              ,MP.PLANNED_1_VALUE_T
+              ,MP.PLANNED_2_VALUE_Y
+              ,MP.PLANNED_2_VALUE_T
+              ,MP.BEF_PLANNED_1_VALUE_Y
+              ,MP.BEF_PLANNED_1_VALUE_T
+              ,MP.BEF_PLANNED_2_VALUE_Y
+              ,MP.BEF_PLANNED_2_VALUE_T
+              ,MP.DEL_FLG
+              ,MP.IS_JGI_NO
+              ,MP.IS_JGI_NAME
+              ,MP.IS_DATE
+              ,MP.IS_PG_ID
+              ,MP.UP_JGI_NO
+              ,MP.UP_JGI_NAME
+              ,MP.UP_DATE
+              ,MP.UP_PG_ID
+              ,SUM.STACKED_VALUE
+              ,NULL AS PROD_NAME
+              ,JM.JGI_NAME
+              ,JM.SHOKUSEI_CD
+              ,JM.SHOKUSHU_CD
+              ,JM.JGI_KB
+          FROM
+              DPM_C_VI_JGI_MST JM
+                  LEFT JOIN DPM_I_MR_PLAN MP
+                      ON MP.JGI_NO = JM.JGI_NO
+                       AND MP.CAL_YEAR = '$calYear$'
+                       AND MP.CAL_TERM = '$calTerm.dbValue$'
+                       AND MP.PROD_CODE = #prodCode:CHAR#
+                       AND MP.INS_TYPE = '2'
+                  LEFT JOIN (
+                        SELECT
+                            MIP.MR_NO AS JGI_NO,
+                            SUM(IP.PLANNED_2_VALUE_Y) AS STACKED_VALUE
+                        FROM
+                            DPM_I_INS_PLAN IP
+                            INNER JOIN DPM_C_VI_INS_MST INS ON IP.INS_NO = INS.INS_NO
+                            <!--シノニムはNSG親子紐づけが反映されない  INNER JOIN DPS_S_SY_COM_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE -->
+                            INNER JOIN DPM_C_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE
+                            INNER JOIN DPM_C_VI_JGI_MST JM ON MIP.MR_NO = JM.JGI_NO
+                            LEFT JOIN DPM_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+							LEFT JOIN DPM_C_VI_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+                        WHERE
+                                IP.DEL_FLG = '0'
+                            AND IP.CAL_YEAR = '$calYear$'
+                            AND IP.CAL_TERM = '$calTerm.dbValue$'
+                            <isNotNull prepend="AND" property="sosCd3">
+                            JM.SOS_CD3 = #sosCd3:VARCHAR#
+                            </isNotNull>
+                            <isNotNull prepend="AND" property="sosCd4">
+                            JM.SOS_CD4 = #sosCd4:VARCHAR#
+                            </isNotNull>
+                            AND IP.PROD_CODE = #prodCode:CHAR#
+                            <!--NSG親子紐づけ AND INS.INS_TYPE = '2'-->
+                            AND nvl(oins.INS_TYPE, INS.INS_TYPE) = '2'
+                            AND MIP.MAIN_MR = '0'
+                            <!-- add Start 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+                            <isNotNull prepend="AND" property="category">
+                                EXISTS
+                                (SELECT 'X'
+                                <!-- mod Start 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                                <!--
+                                FROM DPS_C_PLANNED_CTG CTG
+                                    ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                                WHERE CTG.CATEGORY = #category:CHAR#
+                                AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                                AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                                AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                                -->
+                                FROM DPM_C_PLANNED_CTG CTG
+                                    ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                                WHERE CTG.CATEGORY = #category:CHAR#
+                                AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                                AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                                AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                                AND CTG.CAL_YEAR = #calYear:CHAR#
+                                AND CTG.CAL_TERM = #calTerm:CHAR#
+                                <!-- mod End 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                                )
+                            </isNotNull>
+	                        <!-- add End 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+                        GROUP BY
+                            MIP.MR_NO
+
+                  ) SUM
+                      ON SUM.JGI_NO = JM.JGI_NO
+         WHERE
+            <iterate prepend="JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               '$jgiKbList[].dbValue$'
+            </iterate>
+            <isNotNull prepend="AND" property="jokenSetList">
+               EXISTS (SELECT JO.JGI_NO
+                         FROM DPS_S_SY_M_JGI_JOKEN JO
+                         WHERE JO.JGI_NO = JM.JGI_NO
+                       <isNotNull property="jokenSetList">
+                           <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                               #jokenSetList[].dbValue#
+                           </iterate>
+                       </isNotNull>
+                      )
+            </isNotNull>
+            <isNotNull prepend="AND" property="sosCd3">
+            JM.SOS_CD3 = #sosCd3:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="AND" property="sosCd4">
+            JM.SOS_CD4 = #sosCd4:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="AND" property="jgiNo">
+            JM.JGI_NO = #jgiNo:INTEGER#
+            </isNotNull>
+             <!-- add Start 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+             <isNotNull prepend="AND" property="category">
+                 EXISTS
+                 (SELECT 'X'
+                 <!-- mod Start 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                 <!--
+                 FROM DPS_C_PLANNED_CTG CTG
+                     ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                 WHERE CTG.CATEGORY = #category:CHAR#
+                 AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                 AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                 AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                 -->
+                 FROM DPM_C_PLANNED_CTG CTG
+                     ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                 WHERE CTG.CATEGORY = #category:CHAR#
+                 AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                 AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                 AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                 AND CTG.CAL_YEAR = #calYear:CHAR#
+                 AND CTG.CAL_TERM = #calTerm:CHAR#
+                 <!-- mod End 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                 )
+             </isNotNull>
+	         <!-- add End 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+        UNION
+        SELECT MP.SEQ_KEY
+              ,MP.CAL_YEAR
+              ,MP.CAL_TERM
+              ,'3' AS INS_TYPE
+              ,#prodCode:CHAR# AS PROD_CODE
+              ,JM.JGI_NO
+              ,MP.PLANNED_1_VALUE_Y
+              ,MP.PLANNED_1_VALUE_T
+              ,MP.PLANNED_2_VALUE_Y
+              ,MP.PLANNED_2_VALUE_T
+              ,MP.BEF_PLANNED_1_VALUE_Y
+              ,MP.BEF_PLANNED_1_VALUE_T
+              ,MP.BEF_PLANNED_2_VALUE_Y
+              ,MP.BEF_PLANNED_2_VALUE_T
+              ,MP.DEL_FLG
+              ,MP.IS_JGI_NO
+              ,MP.IS_JGI_NAME
+              ,MP.IS_DATE
+              ,MP.IS_PG_ID
+              ,MP.UP_JGI_NO
+              ,MP.UP_JGI_NAME
+              ,MP.UP_DATE
+              ,MP.UP_PG_ID
+              ,SUM.STACKED_VALUE
+              ,NULL AS PROD_NAME
+              ,JM.JGI_NAME
+              ,JM.SHOKUSEI_CD
+              ,JM.SHOKUSHU_CD
+              ,JM.JGI_KB
+          FROM
+              DPM_C_VI_JGI_MST JM
+                  LEFT JOIN DPM_I_MR_PLAN MP
+                      ON MP.JGI_NO = JM.JGI_NO
+                       AND MP.CAL_YEAR = '$calYear$'
+                       AND MP.CAL_TERM = '$calTerm.dbValue$'
+                       AND MP.PROD_CODE = #prodCode:CHAR#
+                       AND MP.INS_TYPE = '3'
+                  LEFT JOIN (
+                        SELECT
+                            MIP.MR_NO AS JGI_NO,
+                            SUM(IP.PLANNED_2_VALUE_Y) AS STACKED_VALUE
+                        FROM
+                            DPM_I_INS_PLAN IP
+                            INNER JOIN DPM_C_VI_INS_MST INS ON IP.INS_NO = INS.INS_NO
+                            <!-- シノニムはNSG親子紐づけが反映されていない INNER JOIN DPS_S_SY_COM_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE -->
+                            INNER JOIN DPM_C_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE
+                            INNER JOIN DPM_C_VI_JGI_MST JM ON MIP.MR_NO = JM.JGI_NO
+                            LEFT JOIN DPM_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+							LEFT JOIN DPM_C_VI_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+                        WHERE
+                                IP.DEL_FLG = '0'
+                            AND IP.CAL_YEAR = '$calYear$'
+                            AND IP.CAL_TERM = '$calTerm.dbValue$'
+                            <isNotNull prepend="AND" property="sosCd3">
+                            JM.SOS_CD3 = #sosCd3:VARCHAR#
+                            </isNotNull>
+                            <isNotNull prepend="AND" property="sosCd4">
+                            JM.SOS_CD4 = #sosCd4:VARCHAR#
+                            </isNotNull>
+                            AND IP.PROD_CODE = #prodCode:CHAR#
+                            <!--NSG親子紐づけ AND INS.INS_TYPE = '3'-->
+                            AND nvl(oins.INS_TYPE, INS.INS_TYPE) = '3'
+                            AND MIP.MAIN_MR = '0'
+                            <!-- add Start 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+                            <isNotNull prepend="AND" property="category">
+                                EXISTS
+                                (SELECT 'X'
+                                <!-- mod Start 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                                <!--
+                                FROM DPS_C_PLANNED_CTG CTG
+                                    ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                                WHERE CTG.CATEGORY = #category:CHAR#
+                                AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                                AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                                AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                                -->
+                                FROM DPM_C_PLANNED_CTG CTG
+                                    ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                                WHERE CTG.CATEGORY = #category:CHAR#
+                                AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                                AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                                AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                                AND CTG.CAL_YEAR = #calYear:CHAR#
+                                AND CTG.CAL_TERM = #calTerm:CHAR#
+                                <!-- mod End 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                                )
+                            </isNotNull>
+	                        <!-- add End 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+                        GROUP BY
+                            MIP.MR_NO
+
+                  ) SUM
+                      ON SUM.JGI_NO = JM.JGI_NO
+         WHERE
+            <iterate prepend="JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               '$jgiKbList[].dbValue$'
+            </iterate>
+            <isNotNull prepend="AND" property="jokenSetList">
+               EXISTS (SELECT JO.JGI_NO
+                         FROM DPS_S_SY_M_JGI_JOKEN JO
+                         WHERE JO.JGI_NO = JM.JGI_NO
+                       <isNotNull property="jokenSetList">
+                           <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                               #jokenSetList[].dbValue#
+                           </iterate>
+                       </isNotNull>
+                      )
+            </isNotNull>
+            <isNotNull prepend="AND" property="sosCd3">
+            JM.SOS_CD3 = #sosCd3:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="AND" property="sosCd4">
+            JM.SOS_CD4 = #sosCd4:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="AND" property="jgiNo">
+            JM.JGI_NO = #jgiNo:INTEGER#
+            </isNotNull>
+             <!-- add Start 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+             <isNotNull prepend="AND" property="category">
+                 EXISTS
+                 (SELECT 'X'
+                 <!-- mod Start 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                 <!--
+                 FROM DPS_C_PLANNED_CTG CTG
+                     ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                 WHERE CTG.CATEGORY = #category:CHAR#
+                 AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                 AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                 AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                 -->
+                 FROM DPM_C_PLANNED_CTG CTG
+                     ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                 WHERE CTG.CATEGORY = #category:CHAR#
+                 AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                 AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                 AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                 AND CTG.CAL_YEAR = #calYear:CHAR#
+                 AND CTG.CAL_TERM = #calTerm:CHAR#
+                 <!-- mod End 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                 )
+             </isNotNull>
+	         <!-- add End 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+    )
+    SELECT * FROM MR_PLAN ORDER BY SHOKUSEI_CD, SHOKUSHU_CD, DECODE(JGI_KB, '1','0', JGI_KB), JGI_NO, INS_TYPE
+  </select>
+
+  <select id="selectListByJgi" resultMap="resultMap" parameterClass="java.util.Map" >
+  <!-- UH用情報取得 -->
+    SELECT MP.SEQ_KEY
+          ,MP.CAL_YEAR
+          ,MP.CAL_TERM
+          ,'1' AS INS_TYPE
+          ,PP.PROD_CODE
+          ,#jgiNo:INTEGER# AS JGI_NO
+          ,MP.PLANNED_1_VALUE_Y
+          ,MP.PLANNED_1_VALUE_T
+          ,MP.PLANNED_2_VALUE_Y
+          ,MP.PLANNED_2_VALUE_T
+          ,MP.BEF_PLANNED_1_VALUE_Y
+          ,MP.BEF_PLANNED_1_VALUE_T
+          ,MP.BEF_PLANNED_2_VALUE_Y
+          ,MP.BEF_PLANNED_2_VALUE_T
+          ,MP.DEL_FLG
+          ,MP.IS_JGI_NO
+          ,MP.IS_JGI_NAME
+          ,MP.IS_DATE
+          ,MP.IS_PG_ID
+          ,MP.UP_JGI_NO
+          ,MP.UP_JGI_NAME
+          ,MP.UP_DATE
+          ,MP.UP_PG_ID
+          ,SUM.STACKED_VALUE
+          ,PP.PROD_NAME
+          ,NULL AS JGI_NAME
+          ,PP.GROUP_CODE
+          ,PP.STAT_PROD_CODE
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+     FROM DPM_C_PLANNED_PROD PP
+     	  LEFT JOIN DPM_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD
+          LEFT JOIN DPM_I_MR_PLAN MP
+		        ON MP.PROD_CODE = PP.PROD_CODE
+		       AND MP.CAL_YEAR = PP.CAL_YEAR
+		       AND MP.CAL_TERM = PP.CAL_TERM
+		       AND MP.JGI_NO = #jgiNo:INTEGER#
+		       AND MP.INS_TYPE = '1'
+          LEFT JOIN (
+               SELECT
+                     MIP.MR_NO AS JGI_NO,
+                     IP.PROD_CODE,
+                     SUM(IP.PLANNED_2_VALUE_Y) AS STACKED_VALUE
+               FROM
+                     DPM_I_INS_PLAN IP
+                     INNER JOIN DPM_C_VI_INS_MST  INS ON IP.INS_NO = INS.INS_NO
+                     <!--シノニムはNSG親子紐づけが反映されない  INNER JOIN DPS_S_SY_COM_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE -->
+                     INNER JOIN DPM_C_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE
+                     INNER JOIN DPM_C_VI_PLANNED_PROD PR ON IP.PROD_CODE = PR.PROD_CODE AND IP.CAL_YEAR = PR.CAL_YEAR AND IP.CAL_TERM = PR.CAL_TERM
+                     LEFT JOIN DPM_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+					LEFT JOIN DPM_C_VI_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+               WHERE
+                     IP.DEL_FLG = '0'
+                 AND IP.CAL_YEAR = '$calYear$'
+                 AND IP.CAL_TERM = '$calTerm.dbValue$'
+                 AND MIP.MR_NO = #jgiNo:INTEGER#
+                 <isEqual prepend="AND" property="zatsuAriFlg" compareValue="false">
+                 	<!-- NSG親子紐づけ INS.INS_TYPE = '1' -->
+                 	nvl(oins.INS_TYPE, INS.INS_TYPE) = '1'
+                 </isEqual>
+                 <isEqual prepend="AND" property="zatsuAriFlg" compareValue="true">
+                 	<!-- NSG親子紐づけ INS.INS_TYPE_Z = '1' -->
+                 	nvl(oins.INS_TYPE_Z, INS.INS_TYPE_Z) = '1'
+                 </isEqual>
+                 <isNotNull prepend="AND" property="category">
+                     PR.CATEGORY = #category:CHAR#
+                 </isNotNull>
+                 <isNotNull prepend="AND" property="prodCode">
+                     PR.PROD_CODE = #prodCode:CHAR#
+                 </isNotNull>
+                 <isNotNull prepend="AND" property="prodCode">
+                     IP.PROD_CODE = #prodCode:CHAR#
+                 </isNotNull>
+               GROUP BY
+                 MIP.MR_NO, IP.PROD_CODE
+           ) SUM ON SUM.PROD_CODE = PP.PROD_CODE
+     WHERE PP.PLAN_LEVEL_MR = '1'
+       AND PP.CAL_YEAR = '$calYear$'
+       AND PP.CAL_TERM = '$calTerm.dbValue$'
+       <isNotNull prepend="AND" property="category">
+           PP.CATEGORY = #category:CHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="prodCode">
+           PP.PROD_CODE = #prodCode:CHAR#
+       </isNotNull>
+    UNION
+  <!-- P用情報取得 -->
+    SELECT MP.SEQ_KEY
+          ,MP.CAL_YEAR
+          ,MP.CAL_TERM
+          ,'2' AS INS_TYPE
+          ,PP.PROD_CODE
+          ,#jgiNo:INTEGER# AS JGI_NO
+          ,MP.PLANNED_1_VALUE_Y
+          ,MP.PLANNED_1_VALUE_T
+          ,MP.PLANNED_2_VALUE_Y
+          ,MP.PLANNED_2_VALUE_T
+          ,MP.BEF_PLANNED_1_VALUE_Y
+          ,MP.BEF_PLANNED_1_VALUE_T
+          ,MP.BEF_PLANNED_2_VALUE_Y
+          ,MP.BEF_PLANNED_2_VALUE_T
+          ,MP.DEL_FLG
+          ,MP.IS_JGI_NO
+          ,MP.IS_JGI_NAME
+          ,MP.IS_DATE
+          ,MP.IS_PG_ID
+          ,MP.UP_JGI_NO
+          ,MP.UP_JGI_NAME
+          ,MP.UP_DATE
+          ,MP.UP_PG_ID
+          ,SUM.STACKED_VALUE
+          ,PP.PROD_NAME
+          ,NULL AS JGI_NAME
+          ,PP.GROUP_CODE
+          ,PP.STAT_PROD_CODE
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPM_C_PLANNED_PROD PP
+     	   LEFT JOIN DPM_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD
+           LEFT JOIN DPM_I_MR_PLAN MP
+		        ON MP.PROD_CODE = PP.PROD_CODE
+		       AND MP.CAL_YEAR = PP.CAL_YEAR
+		       AND MP.CAL_TERM = PP.CAL_TERM
+		       AND MP.JGI_NO = #jgiNo:INTEGER#
+		       AND MP.INS_TYPE = '2'
+           LEFT JOIN (
+               SELECT
+                     MIP.MR_NO AS JGI_NO,
+                     IP.PROD_CODE,
+                     SUM(IP.PLANNED_2_VALUE_Y) AS STACKED_VALUE
+               FROM
+                     DPM_I_INS_PLAN IP
+                     INNER JOIN DPM_C_VI_INS_MST  INS ON IP.INS_NO = INS.INS_NO
+                     <!--シノニムはNSG親子紐づけが反映されない  INNER JOIN DPS_S_SY_COM_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE -->
+                     INNER JOIN DPM_C_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE
+                     INNER JOIN DPM_C_VI_PLANNED_PROD PR ON IP.PROD_CODE = PR.PROD_CODE AND IP.CAL_YEAR = PR.CAL_YEAR AND IP.CAL_TERM = PR.CAL_TERM
+                     LEFT JOIN DPM_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+					LEFT JOIN DPM_C_VI_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+               WHERE
+                     IP.DEL_FLG = '0'
+                 AND IP.CAL_YEAR = '$calYear$'
+                 AND IP.CAL_TERM = '$calTerm.dbValue$'
+                 AND MIP.MR_NO = #jgiNo:INTEGER#
+                 <isEqual prepend="AND" property="zatsuAriFlg" compareValue="false">
+                 	<!-- NSG親子紐づけ INS.INS_TYPE = '2' -->
+                     nvl(oins.INS_TYPE, INS.INS_TYPE) = '2'
+                 </isEqual>
+                 <isEqual prepend="AND" property="zatsuAriFlg" compareValue="true">
+                 	<!-- NSG親子紐づけ INS.INS_TYPE_Z = '2' -->
+                     nvl(oins.INS_TYPE_Z, INS.INS_TYPE_Z) = '2'
+                 </isEqual>
+                 <isNotNull prepend="AND" property="category">
+                     PR.CATEGORY = #category:CHAR#
+                 </isNotNull>
+                 <isNotNull prepend="AND" property="prodCode">
+                     PR.PROD_CODE = #prodCode:CHAR#
+                 </isNotNull>
+                 <isNotNull prepend="AND" property="prodCode">
+                     IP.PROD_CODE = #prodCode:CHAR#
+                 </isNotNull>
+               GROUP BY
+                 MIP.MR_NO, IP.PROD_CODE
+          ) SUM ON SUM.PROD_CODE = PP.PROD_CODE
+     WHERE PP.PLAN_LEVEL_MR = '1'
+       AND PP.CAL_YEAR = '$calYear$'
+       AND PP.CAL_TERM = '$calTerm.dbValue$'
+       <isNotNull prepend="AND" property="category">
+           PP.CATEGORY = #category:CHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="prodCode">
+           PP.PROD_CODE = #prodCode:CHAR#
+       </isNotNull>
+    UNION
+  <!-- Z（ワクチン）用情報取得 -->
+    SELECT MP.SEQ_KEY
+          ,MP.CAL_YEAR
+          ,MP.CAL_TERM
+          ,'3' AS INS_TYPE
+          ,PP.PROD_CODE
+          ,#jgiNo:INTEGER# AS JGI_NO
+          ,MP.PLANNED_1_VALUE_Y
+          ,MP.PLANNED_1_VALUE_T
+          ,MP.PLANNED_2_VALUE_Y
+          ,MP.PLANNED_2_VALUE_T
+          ,MP.BEF_PLANNED_1_VALUE_Y
+          ,MP.BEF_PLANNED_1_VALUE_T
+          ,MP.BEF_PLANNED_2_VALUE_Y
+          ,MP.BEF_PLANNED_2_VALUE_T
+          ,MP.DEL_FLG
+          ,MP.IS_JGI_NO
+          ,MP.IS_JGI_NAME
+          ,MP.IS_DATE
+          ,MP.IS_PG_ID
+          ,MP.UP_JGI_NO
+          ,MP.UP_JGI_NAME
+          ,MP.UP_DATE
+          ,MP.UP_PG_ID
+          ,SUM.STACKED_VALUE
+          ,PP.PROD_NAME
+          ,NULL AS JGI_NAME
+          ,PP.GROUP_CODE
+          ,PP.STAT_PROD_CODE
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPM_C_PLANNED_PROD PP
+     	   LEFT JOIN DPM_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD
+           LEFT JOIN DPM_I_MR_PLAN MP
+		        ON MP.PROD_CODE = PP.PROD_CODE
+		       AND MP.CAL_YEAR = PP.CAL_YEAR
+		       AND MP.CAL_TERM = PP.CAL_TERM
+		       AND MP.JGI_NO = #jgiNo:INTEGER#
+		       AND MP.INS_TYPE = '3'
+           LEFT JOIN (
+               SELECT
+                     MIP.MR_NO AS JGI_NO,
+                     IP.PROD_CODE,
+                     SUM(IP.PLANNED_2_VALUE_Y) AS STACKED_VALUE
+               FROM
+                     DPM_I_INS_PLAN IP
+                     INNER JOIN DPM_C_VI_INS_MST  INS ON IP.INS_NO = INS.INS_NO
+                     <!--シノニムはNSG親子紐づけが反映されない  INNER JOIN DPS_S_SY_COM_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE -->
+                     INNER JOIN DPM_C_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE
+                     INNER JOIN DPM_C_VI_PLANNED_PROD PR ON IP.PROD_CODE = PR.PROD_CODE AND IP.CAL_YEAR = PR.CAL_YEAR AND IP.CAL_TERM = PR.CAL_TERM
+                     LEFT JOIN DPM_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+					LEFT JOIN DPM_C_VI_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+               WHERE
+                     IP.DEL_FLG = '0'
+                 AND IP.CAL_YEAR = '$calYear$'
+                 AND IP.CAL_TERM = '$calTerm.dbValue$'
+                 AND MIP.MR_NO = #jgiNo:INTEGER#
+                 <isEqual prepend="AND" property="zatsuAriFlg" compareValue="false">
+                 	<!-- NSG親子紐づけ INS.INS_TYPE = '3' -->
+                     nvl(oins.INS_TYPE, INS.INS_TYPE) = '3'
+                 </isEqual>
+                 <isEqual prepend="AND" property="zatsuAriFlg" compareValue="true">
+                 	<!-- NSG親子紐づけ INS.INS_TYPE_Z = '3' -->
+                 	nvl(oins.INS_TYPE_Z, INS.INS_TYPE_Z) = '3'
+                 </isEqual>
+                 <isNotNull prepend="AND" property="category">
+                     PR.CATEGORY = #category:CHAR#
+                 </isNotNull>
+                 <isNotNull prepend="AND" property="prodCode">
+                     PR.PROD_CODE = #prodCode:CHAR#
+                 </isNotNull>
+                 <isNotNull prepend="AND" property="prodCode">
+                     IP.PROD_CODE = #prodCode:CHAR#
+                 </isNotNull>
+               GROUP BY
+                 MIP.MR_NO, IP.PROD_CODE
+           ) SUM ON SUM.PROD_CODE = PP.PROD_CODE
+     WHERE PP.PLAN_LEVEL_MR = '1'
+       AND PP.CAL_YEAR = '$calYear$'
+       AND PP.CAL_TERM = '$calTerm.dbValue$'
+       <isNotNull prepend="AND" property="category">
+           PP.CATEGORY = #category:CHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="prodCode">
+           PP.PROD_CODE = #prodCode:CHAR#
+       </isNotNull>
+	 ORDER BY
+       DATA_SEQ,
+       PROD_CODE,
+       INS_TYPE
+  </select>
+
+  <insert id="insert" parameterClass="jp.co.takeda.model.ManageMrPlan" >
+    INSERT INTO DPM_I_MR_PLAN
+          (SEQ_KEY
+          , CAL_YEAR
+          , CAL_TERM
+          , INS_TYPE
+          , PROD_CODE
+          , JGI_NO
+          , PLANNED_1_VALUE_Y
+          , PLANNED_1_VALUE_T
+          , PLANNED_2_VALUE_Y
+          , PLANNED_2_VALUE_T
+          , BEF_PLANNED_1_VALUE_Y
+          , BEF_PLANNED_1_VALUE_T
+          , BEF_PLANNED_2_VALUE_Y
+          , BEF_PLANNED_2_VALUE_T
+          , DEL_FLG
+          , IS_JGI_NO
+          , IS_JGI_NAME
+          , IS_DATE
+          , IS_PG_ID
+          , UP_JGI_NO
+          , UP_JGI_NAME
+          , UP_DATE
+          , UP_PG_ID)
+    VALUES (ORADPX01.SEQ_DPM_I_MR_PLAN.NEXTVAL
+          , #calYear:CHAR#
+          , #calTerm:CHAR#
+          , #insType:VARCHAR#
+          , #prodCode:CHAR#
+          , #jgiNo:INTEGER#
+          , #implPlan.planned1ValueY:BIGINT#
+          , #implPlan.planned1ValueT:BIGINT#
+          , #implPlan.planned2ValueY:BIGINT#
+          , #implPlan.planned2ValueT:BIGINT#
+          , #implPlan.befPlanned1ValueY:BIGINT#
+          , #implPlan.befPlanned1ValueT:BIGINT#
+          , #implPlan.befPlanned2ValueY:BIGINT#
+          , #implPlan.befPlanned2ValueT:BIGINT#
+          , #delFlg:CHAR#
+          , #isJgiNo:INTEGER#
+          , #isJgiName:VARCHAR#
+          , SYSTIMESTAMP
+          , #isPgId:VARCHAR#
+          , #upJgiNo:INTEGER#
+          , #upJgiName:VARCHAR#
+          , SYSTIMESTAMP
+          , #upPgId:VARCHAR#)
+  </insert>
+
+  <update id="update" parameterClass="jp.co.takeda.model.ManageMrPlan" >
+    UPDATE DPM_I_MR_PLAN
+       SET DEL_FLG = #delFlg:CHAR#
+          ,PLANNED_1_VALUE_Y = #implPlan.planned1ValueY:BIGINT#
+          ,PLANNED_1_VALUE_T = #implPlan.planned1ValueT:BIGINT#
+          ,PLANNED_2_VALUE_Y = #implPlan.planned2ValueY:BIGINT#
+          ,PLANNED_2_VALUE_T = #implPlan.planned2ValueT:BIGINT#
+          ,BEF_PLANNED_1_VALUE_Y = #implPlan.befPlanned1ValueY:BIGINT#
+          ,BEF_PLANNED_1_VALUE_T = #implPlan.befPlanned1ValueT:BIGINT#
+          ,BEF_PLANNED_2_VALUE_Y = #implPlan.befPlanned2ValueY:BIGINT#
+          ,BEF_PLANNED_2_VALUE_T = #implPlan.befPlanned2ValueT:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+          ,UP_PG_ID = #upPgId:VARCHAR#
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+</sqlMap>

@@ -1,0 +1,212 @@
+## 本画面はワクチン統合により廃止 そのうち消すこと ##
+#set($layout = "nothingLayout.vm" )
+#if ($form.getRequestData("DPS302C05_DATA_R_SEARCH_RESULT"))
+    #set($dataList = $form.getRequestData("DPS302C05_DATA_R_SEARCH_RESULT"))
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+
+## CSSクラス 背景色の用意
+#set($c1 = "sumTeam")
+#set($c2 = "sumAreaTokuG")
+#set($c3 = "inputB")
+
+## CSSスタイル高さの用意
+#if($dataList.size() == 1)
+#set($hStyle = "height:100px;")
+#else
+#set($hStyle = "height:25px;")
+#end
+
+## CSSスタイル 枠線の用意
+#set($s1 = $hStyle + "border-width:0px 1px 0px 1px;")
+#set($s2 = $hStyle + "border-width:1px 1px 0px 1px;border-top-color:#808080;")
+#set($s3 = $hStyle + "border-width:1px 0px 0px 1px;border-top-color:#808080;")
+#set($s4 = $hStyle + "border-width:1px 1px 0px 0px;border-top-color:#808080;")
+
+<rows>
+#set($sosUserId = 0)
+#set($decimalFormat = $form.bean.getDefaultRateFormat())
+#set($dataCnt = $dataList.size())
+#set($sosName = "")
+#set($teamName = "")
+#set($oldSosName = "")
+#set($oldTeamName = "")
+#set($fstTeamFlg = true)
+#set($overSndTeamDispSosNameFlg = false)
+#foreach($resultData in $dataList)
+
+## 計画
+#set($plannedValue = "")
+#set($plannedValueType = "ed")
+#if($resultData.mrPlanForVac.plannedValueB)
+    #set($plannedValue = $resultData.mrPlanForVac.plannedValueB)
+    #set($plannedValueType = "edn")
+#end
+
+## UP率
+#set($upRate = "")
+#if($resultData.upRate)
+    #set($upRate = $!format.doubleToString($resultData.upRate, $decimalFormat))
+#end
+
+## 前々々期実績
+#set($preFarAdvancePeriod = "")
+#if($resultData.resultValueDto.preFarAdvancePeriod)
+    #set($preFarAdvancePeriod = $resultData.resultValueDto.preFarAdvancePeriod)
+#end
+
+## 前々期実績
+#set($farAdvancePeriod = "")
+#if($resultData.resultValueDto.farAdvancePeriod)
+    #set($farAdvancePeriod = $resultData.resultValueDto.farAdvancePeriod)
+#end
+
+## 前期実績
+#set($advancePeriod = "")
+#if($resultData.resultValueDto.advancePeriod)
+    #set($advancePeriod = $resultData.resultValueDto.advancePeriod)
+#end
+
+## 当期 計画
+#set($currentPlanValue = "")
+#if($resultData.resultValueDto.currentPlanValue)
+    #set($currentPlanValue = $resultData.resultValueDto.currentPlanValue)
+#end
+
+## 当期 実績
+#set($currentPeriod = "")
+#if($resultData.resultValueDto.currentPeriod)
+    #set($currentPeriod = $resultData.resultValueDto.currentPeriod)
+#end
+
+## 当期 遂行率
+#set($currentRate = "")
+#if($resultData.resultValueDto.currentRate)
+    #set($currentRate = $!format.doubleToString($resultData.resultValueDto.currentRate, $decimalFormat))
+#end
+
+<row id='$velocityCount'>
+
+## 組織合計行
+#if($resultData.teamSum)
+    <cell class="$c1" style="$s3">計</cell>
+    <cell class="$c1" style="$s4"></cell>
+    <cell class="$c1" style="$s2 #setMinusStyle($plannedValue)">$plannedValue</cell>
+    <cell class="$c1" style="$s2">$upRate</cell>
+    <cell class="$c1" style="$s2 #setMinusStyle($preFarAdvancePeriod)">$preFarAdvancePeriod</cell>
+    <cell class="$c1" style="$s2 #setMinusStyle($farAdvancePeriod)">$farAdvancePeriod</cell>
+    <cell class="$c1" style="$s2 #setMinusStyle($advancePeriod)">$advancePeriod</cell>
+    <cell class="$c1" style="$s2 #setMinusStyle($currentPlanValue)">$currentPlanValue</cell>
+    <cell class="$c1" style="$s2 #setMinusStyle($currentPeriod)">$currentPeriod</cell>
+    <cell class="$c1" style="$s2">$currentRate</cell>
+    ## サブグループ判別用ユーザデータ
+    <userdata name="rowType">subTotal</userdata>
+    <userdata name="subTotalId">$sosUserId</userdata>
+#elseif($resultData.sosSum)
+    <cell class="$c1" style="$s3">計</cell>
+    <cell class="$c1" style="$s4"></cell>
+    <cell class="$c1" style="$s2 #setMinusStyle($plannedValue)">$plannedValue</cell>
+    <cell class="$c1" style="$s2">$upRate</cell>
+    <cell class="$c1" style="$s2 #setMinusStyle($preFarAdvancePeriod)">$preFarAdvancePeriod</cell>
+    <cell class="$c1" style="$s2 #setMinusStyle($farAdvancePeriod)">$farAdvancePeriod</cell>
+    <cell class="$c1" style="$s2 #setMinusStyle($advancePeriod)">$advancePeriod</cell>
+    <cell class="$c1" style="$s2 #setMinusStyle($currentPlanValue)">$currentPlanValue</cell>
+    <cell class="$c1" style="$s2 #setMinusStyle($currentPeriod)">$currentPeriod</cell>
+    <cell class="$c1" style="$s2">$currentRate</cell>
+    ## サブグループ判別用ユーザデータ
+    <userdata name="rowType">subTotal</userdata>
+    <userdata name="subTotalId">$sosUserId</userdata>
+## 全合計行
+#elseif($resultData.allSum)
+    <cell class="$c2" style="$s3">全社合計</cell>
+    <cell class="$c2" style="$s4"></cell>
+    <cell class="$c2" style="$s2 #setMinusStyle($plannedValue)">$plannedValue</cell>
+    <cell class="$c2" style="$s2">$upRate</cell>
+    <cell class="$c2" style="$s2 #setMinusStyle($preFarAdvancePeriod)">$preFarAdvancePeriod</cell>
+    <cell class="$c2" style="$s2 #setMinusStyle($farAdvancePeriod)">$farAdvancePeriod</cell>
+    <cell class="$c2" style="$s2 #setMinusStyle($advancePeriod)">$advancePeriod</cell>
+    <cell class="$c2" style="$s2 #setMinusStyle($currentPlanValue)">$currentPlanValue</cell>
+    <cell class="$c2" style="$s2 #setMinusStyle($currentPeriod)">$currentPeriod</cell>
+    <cell class="$c2" style="$s2">$currentRate</cell>
+    ## 全グループ判別用ユーザデータ
+    <userdata name="rowType">total</userdata>
+    <userdata name="subTotalId">none</userdata>
+## 通常行
+#else
+    ## 組織名
+    #set($sosName = "")
+    #if ($resultData.sosName)
+        #set($sosName = $resultData.sosName)
+    #end
+    ##チーム名
+    #set($teamName = "")
+    #if ($resultData.teamName)
+        #set($teamName = $resultData.teamName)
+    #end
+    ##----------------------
+    ##判定
+    ##----------------------
+    ##1件しかない場合(小児科ＭＲの場合)高さが十分なので、改行しても支障なし (J19-0010 対応・コメントのみ修正)
+    #if($dataCnt == 1)
+        <cell style="$s2"><![CDATA[$!sosName<br>$!teamName]]></cell>
+    ##小児科ＭＲ以外の場合 (J19-0010 対応・コメントのみ修正)
+    #else
+        ##組織名、チーム名が変化していない場合
+        #if(($oldSosName == $!sosName) && ($oldTeamName == $!teamName))
+            <cell style="$s1"></cell>
+        ##組織名が変化した場合
+        #elseif (!($oldSosName == $!sosName))
+            <cell style="$s2">$!sosName</cell>
+            #set($sosUserId = $sosUserId + 1) ## 組織が変更された際にユーザデータ設定用IDをインクリメント
+            #set($oldSosName = $!sosName)
+            #set($oldTeamName = "")
+            #set($fstTeamFlg = true)
+            #set($overSndTeamDispSosNameFlg = false)
+        ##チーム名が変化した場合(最初)
+        #elseif (!($!oldTeamName == $!teamName) && $fstTeamFlg)
+            <cell style="$s1">$!teamName</cell>
+            #set($oldTeamName = $!teamName)
+            #set($fstTeamFlg = false)
+        ##チーム名が変化した場合(2回目以降)
+        #elseif (!($oldTeamName == $!teamName) && !$fstTeamFlg)
+            ##組織名を表示していない場合
+            #if(!$overSndTeamDispSosNameFlg)
+                <cell style="$s2">$!sosName</cell>
+                #set($overSndTeamDispSosNameFlg = true)
+            ##組織名を表示している場合
+            #else
+                <cell style="$s1">$!teamName</cell>
+                #set($oldTeamName = $!teamName)
+                #set($overSndTeamDispSosNameFlg = false)
+            #end
+        #end
+    #end
+
+    <cell style="$s2">$!resultData.jgiName</cell>
+    #if($!security.hasAuthEdit("DPS302"))
+    <cell class="$c3" style="$s2 #setMinusStyle($plannedValue)" type="$plannedValueType">$plannedValue</cell>
+    #else
+    <cell style="$s2 #setMinusStyle($plannedValue)">$plannedValue</cell> ## AL,MRの場合は編集不可
+    #end
+    <cell style="$s2">$upRate</cell>
+    <cell style="$s2 #setMinusStyle($preFarAdvancePeriod)">$preFarAdvancePeriod</cell>
+    <cell style="$s2 #setMinusStyle($farAdvancePeriod)">$farAdvancePeriod</cell>
+    <cell style="$s2 #setMinusStyle($advancePeriod)">$advancePeriod</cell>
+    <cell style="$s2 #setMinusStyle($currentPlanValue)">$currentPlanValue</cell>
+    <cell style="$s2 #setMinusStyle($currentPeriod)">$currentPeriod</cell>
+    <cell style="$s2">$currentRate</cell>
+    ## 入力行判別用ユーザデータ
+    <userdata name="rowType">input</userdata>
+    <userdata name="subTotalId">$sosUserId</userdata>
+    ## 更新行判別用ユーザデータ
+    ##シーケンスキー・最終更新日時・データ取得時の担当者別計画値・登録ボタン押下後に更新後の担当者別計画値を追加
+    <userdata name="updateRowId">$!resultData.mrPlanForVac.seqKey,$!resultData.mrPlanForVac.upDate.Time,$plannedValue</userdata>
+#end
+</row>
+
+##現ループの組織名称を保持
+#set($oldSosName = $resultData.sosName)
+#end
+</rows>
+#end

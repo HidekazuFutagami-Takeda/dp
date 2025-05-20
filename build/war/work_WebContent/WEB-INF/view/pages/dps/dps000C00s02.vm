@@ -1,0 +1,70 @@
+<div id="menuErea">
+<div class="titleBg"><p>メニュー</p></div>
+<div id="laContents">
+#set ($planningPreparationList = $!menu.getPlanningPreparationList())
+#if ($planningPreparationList)
+<table>
+    <tr>
+        <td><img src="$link.getContextPath()/cmn/images/menuIconL.gif" /></td>
+        <td>計画立案準備</td>
+    </tr>
+    #foreach($codeAndValue in $planningPreparationList)
+    <tr>
+        <td align="right"><img src="$link.getContextPath()/cmn/images/menuIconR.gif" /></td>
+        <td><a href="$codeAndValue.code" tabindex="-1">$codeAndValue.value</a></td>
+    </tr>
+    #end
+</table>
+#end
+
+#set ($sienSosikiList = $!menu.getSienSosikiList())
+#if ($sienSosikiList)
+<table>
+    <tr>
+        <td><img src="$link.getContextPath()/cmn/images/menuIconL.gif" /></td>
+        <td>担当者別計画立案</td>
+    </tr>
+    #foreach($codeAndValue in $sienSosikiList)
+    <tr>
+        <td align="right"><img src="$link.getContextPath()/cmn/images/menuIconR.gif" /></td>
+        <td><a href="$codeAndValue.code" tabindex="-1">$codeAndValue.value</a></td>
+    </tr>
+    #end
+</table>
+#end
+#set ($sienSisetuTokuyakuList = $!menu.getSienSisetuTokuyakuList())
+#if ($sienSisetuTokuyakuList)
+<table>
+    <tr>
+        <td><img src="$link.getContextPath()/cmn/images/menuIconL.gif" /></td>
+        #if ($!security.hasIyaku())
+        <td>施設特約店別計画立案</td>
+        #else
+        <td>施設特約店別計画立案</td>
+        #end
+    </tr>
+    #foreach($codeAndValue in $sienSisetuTokuyakuList)
+    <tr>
+        <td align="right"><img src="$link.getContextPath()/cmn/images/menuIconR.gif" /></td>
+        <td><a href="$codeAndValue.code" tabindex="-1">$codeAndValue.value</a></td>
+    </tr>
+    #end
+</table>
+#end
+#set ($sienTokuyakuList = $!menu.getSienTokuyakuList())
+#if ($sienTokuyakuList)
+<table>
+    <tr>
+        <td><img src="$link.getContextPath()/cmn/images/menuIconL.gif" /></td>
+        <td>特約店別計画立案</td>
+    </tr>
+    #foreach($codeAndValue in $sienTokuyakuList)
+    <tr>
+        <td align="right"><img src="$link.getContextPath()/cmn/images/menuIconR.gif" /></td>
+        <td><a href="$codeAndValue.code" tabindex="-1">$codeAndValue.value</a></td>
+    </tr>
+    #end
+</table>
+#end
+</div>
+</div>

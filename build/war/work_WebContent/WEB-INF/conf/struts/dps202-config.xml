@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+ "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+
+    <form-beans>
+        <form-bean name="Dps202C00Form" type="jp.co.takeda.web.in.dps.Dps202C00Form" />
+        <form-bean name="Dps202C01Form" type="jp.co.takeda.web.in.dps.Dps202C01Form" />
+        <form-bean name="Dps202C02Form" type="jp.co.takeda.web.in.dps.Dps202C02Form" />
+        <form-bean name="Dps202C03Form" type="jp.co.takeda.web.in.dps.Dps202C03Form" />
+        <form-bean name="Dps202C04Form" type="jp.co.takeda.web.in.dps.Dps202C04Form" />
+        <form-bean name="Dps202C05Form" type="jp.co.takeda.web.in.dps.Dps202C05Form" />
+    </form-beans>
+
+<action-mappings type="jp.co.takeda.web.cmn.action.DpActionMapping">
+<!-- ***********************************************************************
+
+    (医)特定施設個別計画施設一覧画面(営業所案)
+
+ ***********************************************************************  -->
+<action path="/dps202C00F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C00Action" name="Dps202C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps202C00F00" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+</action>
+
+<action path="/dps202C00F05"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C00Action" name="Dps202C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps202C00F05" />
+    <set-property property="generateToken" value="true" />
+    <set-property property="validationMethod" value="dps202C00F05Validation" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+</action>
+
+<action path="/dps202C00F10Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C00Action" name="Dps202C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps202C00F10Execute" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="validationMethod" value="dps202C00F10Validation" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+</action>
+
+<action path="/dps202C00F25"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C00Action" name="Dps202C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps202C00F25" />
+    <set-property property="generateToken" value="true" />
+    <set-property property="validationMethod" value="dps202C00F25Validation" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+</action>
+
+<action path="/dps202C00F15"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C00Action" name="Dps202C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps202C00F15" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+</action>
+
+<!--add Start 2022/6/21 Y.Taniguchi バックログNo.21　組織に紐づく都道府県をプルダウンに表示する-->
+<action path="/dps202C00F16"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C00Action" name="Dps202C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps202C00F16" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps202C00.vm" />
+</action>
+<!--add End 2022/6/21 Y.Taniguchi バックログNo.21　組織に紐づく都道府県をプルダウンに表示する-->
+
+<!-- ***********************************************************************
+
+    (医)特定施設個別計画立案画面(営業所案)
+
+ ***********************************************************************  -->
+<action path="/dps202C01F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C01Action" name="Dps202C01Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps202C01F00" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C01.vm" />
+</action>
+
+<action path="/dps202C01F20"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C01Action" name="Dps202C01Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps202C01F20" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C01.vm" />
+</action>
+
+<action path="/dps202C01F01"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C01Action" name="Dps202C01Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps202C01F01" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C01.vm" />
+</action>
+
+<action path="/dps202C01F21"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C01Action" name="Dps202C01Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps202C01F21" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C01.vm" />
+</action>
+
+<action path="/dps202C01F05Excecute"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C01Action" name="Dps202C01Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps202C01F05Excecute" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="validationMethod" value="dps202C01F05Validation" />
+    <set-property property="checkToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C01.vm" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps900C01.vm" />
+</action>
+
+<action path="/dps202C01F25Excecute"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C01Action" name="Dps202C01Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps202C01F25Excecute" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="validationMethod" value="dps202C01F05Validation" />
+    <set-property property="checkToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C01.vm" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps900C01.vm" />
+</action>
+
+<!-- ***********************************************************************
+
+    (医)特定施設個別計画施設一覧画面(担当者立案)
+
+ ***********************************************************************  -->
+<action path="/dps202C02F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C02Action" name="Dps202C02Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps202C02F00" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C02.vm" />
+</action>
+
+<action path="/dps202C02F05"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C02Action" name="Dps202C02Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps202C02F05" />
+    <set-property property="generateToken" value="true" />
+    <set-property property="validationMethod" value="dps202C02F05Validation" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C02.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps202C02.vm" />
+</action>
+
+<action path="/dps202C02F10Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C02Action" name="Dps202C02Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps202C02F10Execute" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="validationMethod" value="dps202C02F10Validation" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C02.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps202C02.vm" />
+</action>
+
+<action path="/dps202C02F25"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C02Action" name="Dps202C02Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps202C02F25" />
+    <set-property property="generateToken" value="true" />
+    <set-property property="validationMethod" value="dps202C02F25Validation" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C02.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps202C02.vm" />
+</action>
+
+<action path="/dps202C02F15"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C02Action" name="Dps202C02Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps202C02F15" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C02.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps202C02.vm" />
+</action>
+
+<!-- ***********************************************************************
+
+    (医)特定施設個別計画立案画面(担当者立案)
+
+ ***********************************************************************  -->
+<action path="/dps202C03F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C03Action" name="Dps202C03Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps202C03F00" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C03.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C03.vm" />
+</action>
+
+<action path="/dps202C03F01"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C03Action" name="Dps202C03Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps202C03F01" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C03.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C03.vm" />
+</action>
+
+<action path="/dps202C03F05Excecute"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C03Action" name="Dps202C03Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps202C03F05Excecute" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="validationMethod" value="dps202C03F05Validation" />
+    <set-property property="checkToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C03.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C03.vm" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps900C03.vm" />
+</action>
+
+<action path="/dps202C03F20"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C03Action" name="Dps202C03Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps202C03F20" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C03.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C03.vm" />
+</action>
+
+<action path="/dps202C03F25Excecute"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C03Action" name="Dps202C03Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps202C03F25Excecute" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="validationMethod" value="dps202C03F05Validation" />
+    <set-property property="checkToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C03.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C03.vm" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps900C01.vm" />
+</action>
+
+<!-- ***********************************************************************
+
+    (ワ)特定施設個別計画施設一覧画面(担当者立案)
+
+ ***********************************************************************  -->
+<action path="/dps202C04F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C04Action" name="Dps202C04Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps202C04F00" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C04.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C04.vm" />
+</action>
+
+<action path="/dps202C04F05"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C04Action" name="Dps202C04Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps202C04F05" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C04.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C04.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps202C04.vm" />
+</action>
+
+<action path="/dps202C04F10"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C04Action" name="Dps202C04Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps202C04F10" />
+    <set-property property="generateToken" value="true" />
+    <set-property property="validationMethod" value="dps202C04F10Validation" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C04.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C04.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps202C04.vm" />
+</action>
+
+<action path="/dps202C04F15Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C04Action" name="Dps202C04Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps202C04F15Execute" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="validationMethod" value="dps202C04F15Validation" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C04.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C04.vm" />
+    <forward name="input" path="/WEB-INF/view/pages/dps/dps202C04.vm" />
+</action>
+
+<!-- ***********************************************************************
+
+    (ワ)特定施設個別計画立案画面(担当者立案)
+
+ ***********************************************************************  -->
+<action path="/dps202C05F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C05Action" name="Dps202C05Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps202C05F00" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C05.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C05.vm" />
+</action>
+
+<action path="/dps202C05F05Excecute"
+ type="jp.co.takeda.web.ctrl.dps.Dps202C05Action" name="Dps202C05Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps202C05F05Excecute" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="false" />
+    <set-property property="validationMethod" value="dps202C05F05Validation" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps202C05.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps202C05.vm" />
+</action>
+
+</action-mappings>
+</struts-config>

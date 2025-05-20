@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_YAKKOU_SIJOU_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.YakkouSijou" >
+    <result column="YAKKOU_SIJOU_CODE" property="yakkouSijouCode" jdbcType="CHAR" />
+    <result column="YAKKOU_SIJOU_SORT_KEY" property="yakkouSijouSortKey" jdbcType="INTEGER" />
+    <result column="YAKKOU_SIJOU_NAME" property="yakkouSijouName" jdbcType="VARCHAR" />
+    <result column="CATEGORY" property="category" jdbcType="CHAR" />
+    <result column="DEL_FLG" property="delFlg" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <!-- 検索 -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT YAKKOU_SIJOU_CODE
+          ,YAKKOU_SIJOU_SORT_KEY
+          ,YAKKOU_SIJOU_NAME
+          ,CATEGORY
+          ,DEL_FLG
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_YAKKOU_SIJOU
+     WHERE YAKKOU_SIJOU_CODE = #yakkouSijouCode:CHAR#
+  </select>
+
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT YAKKOU_SIJOU_CODE
+          ,YAKKOU_SIJOU_SORT_KEY
+          ,YAKKOU_SIJOU_NAME
+          ,CATEGORY
+          ,DEL_FLG
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_YAKKOU_SIJOU
+      WHERE DEL_FLG = #delFlg:CHAR#
+       <isNotNull prepend="AND" property="category">
+           CATEGORY = #category:CHAR#
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+</sqlMap>

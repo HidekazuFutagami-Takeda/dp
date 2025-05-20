@@ -1,0 +1,338 @@
+#set($pageTitle = $text.get("dps401C03","title"))
+#set($bodyOnloadMethod = "dps401C03F00Grid()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dps401C03x01.vm")
+#set($GridObjName = "dps401C03Grid")
+#set($gridHeight1 = $text.get("${GridObjName}1","grid"))
+#set($gridHeight2 = $text.get("${GridObjName}2","grid"))
+#set($CoverId = "dps401C03CoverId")
+
+<script language="javascript">
+<!--
+var ${GridObjName};
+
+## 権限設定
+#set($authRehaibun = false)
+#if($security.hasAuthEdit("DPS401"))
+    #set($authRehaibun = true)
+#end
+#set($authOpen = false)
+#if($security.hasAuthEdit("DPS401"))
+    #set($authOpen = true)
+#end
+#set($authFix = false)
+#if($security.hasAuthEdit("DPS401"))
+    #set($authFix = true)
+#end
+#set($authNonfix = false)
+#if($security.hasAuthEdit("DPS401"))
+    #set($authNonfix = true)
+#end
+
+## ボタン制御
+#set($duttonDisable = "")
+#if (!$form.getRequestData("DATA_EXIST"))
+    #set($duttonDisable ="disabled")
+#end
+
+## 初期表示＋読込処理
+function dps401C03F00Grid() {
+    doInitGrid();
+    #if($form.bean.rank == "1" || $form.bean.rank == "2" || $form.bean.rank == "3")
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+    #end
+}
+
+## DHTMLXGrid生成
+function doInitGrid() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ##
+    ##ユーザが本部・本部ワクチンGの場合
+    ##
+    #if($form.bean.rank == "1")
+        ${GridObjName}.setHeader("選択,担当者名,全エリア,計画<br>編集,施設特約店別計画立案状況,#cspan,#cspan,当期計画,#cspan,#cspan,担当者別計画<br>[１],施設特約店別計画<br>積上 [２],調整金額<br>[１] &#8210 [２]");
+        ${GridObjName}.attachHeader("#rspan,#rspan,#rspan,#rspan,配分状況<br><div id='statusArea'></div>,MRに公開<br><div id='mrOpenArea'></div>,MR確定<br><div id='mrFixArea'></div>,計画,実績,遂行率,#rspan,#rspan,#rspan");
+        ${GridObjName}.setInitWidths("40,120,120,50,110,110,110,90,90,50,100,130,100");
+        ${GridObjName}.setColAlign("center,left,left,center,center,center,center,right,right,right,right,right,right");
+        ${GridObjName}.setColTypes("ch,ro,ro,ro,ro,ro,ro,ron,ron,ron,ron,ron,ron");
+        ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false,false");
+        ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false,false,false");
+        ${GridObjName}.setNumberFormat("0,000",7);
+        ${GridObjName}.setNumberFormat("0,000",8);
+        ${GridObjName}.setNumberFormat("0,000.0",9);
+        ${GridObjName}.setNumberFormat("0,000",10);
+        ${GridObjName}.setNumberFormat("0,000",11);
+        ${GridObjName}.setNumberFormat("0,000",12);
+        ${GridObjName}.enableAutoHeight(true, getGridHeight('dps401C03_1', $!gridHeight1));
+        ##${GridObjName}.splitAt(2);
+    ##
+    ##ユーザが特約店部長-特約店業務Gの場合
+    ##
+    #elseif($form.bean.rank == "2")
+        ${GridObjName}.setHeader("担当者名,全エリア,施設特約店<BR>別計画編集,施設特約店別計画立案状況,#cspan,当期計画,#cspan,#cspan,担当者別計画<br>[１],施設特約店別計画<br>積上 [２],調整金額<br>[１] &#8210 [２]");
+        ${GridObjName}.attachHeader("#rspan,#rspan,#rspan,MRに公開<br><div id='mrOpenArea'></div>,MR確定<br><div id='mrFixArea'></div>,計画,実績,遂行率,#rspan,#rspan,#rspan");
+        ${GridObjName}.setInitWidths("120,120,110,110,110,90,90,50,100,130,100");
+        ${GridObjName}.setColAlign("left,left,center,center,center,right,right,right,right,right,right");
+        ${GridObjName}.setColTypes("ro,ro,ro,ro,ro,ron,ron,ron,ron,ron,ron");
+        ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false,false");
+        ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false");
+        ${GridObjName}.setNumberFormat("0,000",5);
+        ${GridObjName}.setNumberFormat("0,000",6);
+        ${GridObjName}.setNumberFormat("00.0",7);
+        ${GridObjName}.setNumberFormat("0,000",8);
+        ${GridObjName}.setNumberFormat("0,000",9);
+        ${GridObjName}.setNumberFormat("0,000",10);
+        ${GridObjName}.enableAutoHeight(true, getGridHeight('dps401C03_2', $!gridHeight2));
+        ##${GridObjName}.splitAt(1);
+    ##
+    ##ユーザが小児科ACの場合 (J19-0010 対応・コメントのみ修正)
+    ##
+    #else
+        ${GridObjName}.setHeader("選択,担当者名,全エリア,施設特約店<BR>別計画編集,施設特約店別計画立案状況,#cspan,当期計画,#cspan,#cspan,担当者別計画<br>[１],施設特約店別計画<br>積上 [２],調整金額<br>[１] &#8210 [２]");
+        ${GridObjName}.attachHeader("#rspan,#rspan,#rspan,#rspan,MRに公開<br><div id='mrOpenArea'></div>,MR確定<br><div id='mrFixArea'></div>,計画,実績,遂行率,#rspan,#rspan,#rspan");
+        ${GridObjName}.setInitWidths("40,120,120,110,110,110,90,90,50,100,130,100");
+        ${GridObjName}.setColAlign("center,left,left,center,center,center,right,right,right,right,right,right");
+        ${GridObjName}.setColTypes("ch,ro,ro,ro,ro,ro,ron,ron,ron,ron,ron,ron");
+        ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false");
+        ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false,false");
+        ${GridObjName}.setNumberFormat("0,000",6);
+        ${GridObjName}.setNumberFormat("0,000",7);
+        ${GridObjName}.setNumberFormat("00.0",8);
+        ${GridObjName}.setNumberFormat("0,000",9);
+        ${GridObjName}.setNumberFormat("0,000",10);
+        ${GridObjName}.setNumberFormat("0,000",11);
+        ${GridObjName}.enableAutoHeight(true, getGridHeight('dps401C03_3', $!gridHeight1));
+        ##${GridObjName}.splitAt(2);
+    #end
+    ${GridObjName}.enableDistributedParsing(true,50,300);
+    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.setStyle("height:58px;","height:45px;","","");
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    #if($authRehaibun)
+        document.getElementById("statusArea").appendChild(document.getElementById("statusAreaValue").childNodes[0]);
+    #end
+    #if($authOpen)
+        document.getElementById("mrOpenArea").appendChild(document.getElementById("mrOpenAreaValue").childNodes[0]);
+    #end
+    #if($authFix || $authNonfix)
+        document.getElementById("mrFixArea").appendChild(document.getElementById("mrFixAreaValue").childNodes[0]);
+    #end
+}
+
+## 施設特約店別計画「再配分」処理
+function dps401C03F15Execute() {
+    execute('$text.get("DPS401C03.002","dialogue")', '$link.setAction("dps401C03F15Execute")',false);
+}
+
+## 施設特約店別計画「公開」処理
+function dps401C03F16Execute() {
+    execute('$text.get("DPS401C03.003","dialogue")', '$link.setAction("dps401C03F16Execute")',false);
+}
+
+## 施設特約店別計画「公開解除」処理
+function dps401C03F17Execute() {
+    execute('$text.get("DPS401C03.004","dialogue")', '$link.setAction("dps401C03F17Execute")',false);
+}
+
+## 施設特約店別計画「確定」処理
+function dps401C03F18Execute() {
+    execute('$text.get("DPS401C03.005","dialogue")', '$link.setAction("dps401C03F18Execute")',true);
+}
+
+## 施設特約店別計画「確定解除」処理
+function dps401C03F19Execute() {
+    execute('$text.get("DPS401C03.006","dialogue")', '$link.setAction("dps401C03F19Execute")',false);
+}
+
+## 更新処理
+function execute(confirmMsg, actionPath,sagakuCheck) {
+
+    ##入力チェック
+    if (!executeValidation()) {
+        return;
+    }
+
+    ##施設特約店別計画、調整金額チェック
+    if(sagakuCheck){
+
+        ##調整金額チェック
+        for (rowId = 1; rowId <= ${GridObjName}.getRowsNum(); rowId++) {
+            if(${GridObjName}.cells(rowId,0).getValue().toString() != "1")
+                continue;{
+            }
+            var jgiName  = ${GridObjName}.cells(rowId,1).getValue().toString();
+            var rowInfo = "担当者【" + jgiName + "】";
+            var s = ${GridObjName}.getUserData(rowId, 's');
+            if(isEntered(s) && s != "0"){
+                if (!confirm('$text.get("DPS401C03.007","dialogue", ["' + rowInfo + '"])')) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    ##確認
+    if (!confirm(confirmMsg)) {
+        return;
+    }
+    ##送信データ作成
+    addCheckRowIdList(document.dps401C03Form, ${GridObjName}, 'selectRowIdList', 'rowIdList', 0);
+    ##送信
+    document.dps401C03Form.action = actionPath;
+    document.dps401C03Form.submit();
+    dps401C0XF05 = blockIt;
+    execute = blockIt;
+}
+
+## 検索処理
+function dps401C0XF05() {
+    if (dps401C03F05Validation()) {
+        var actionPath = '$link.setAction('dps401C03F05')';
+        document.dps401C03Form.action = actionPath;
+        document.dps401C03Form.submit();
+        execute = blockIt;
+        dps401C0XF05 = blockIt;
+    }
+}
+
+## 画面入力チェック
+function dps401C03F05Validation() {
+    ## 入力フォーム
+    form = document.dps401C03Form;
+
+    ## [必須] 品目
+    value = form.prodCode.value;
+    errorMsg = '$text.get("DPC1003E",["品目"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    return validation();
+}
+function executeValidation() {
+    ## 入力フォーム
+    form = document.dps401C03Form;
+
+    ## [必須] 品目
+    value = form.prodCode.value;
+    errorMsg = '$text.get("DPC1003E",["品目"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    ## [必須] 選択が1以上チェックされている
+    var value = ${GridObjName}.getCheckedRows(0);
+    errorMsg = '$text.get("DPC1006E",["担当者"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    return validation();
+}
+
+//-->
+</script>
+#tabbar("sienSisetuTokuyaku", "dps401C03F00")
+<div id="tabBox">
+
+<form name="dps401C03Form" method="post">
+
+    <span style="float: right;">
+        #if($!security.hasAuthRefer("DPS401"))
+            <a href='$link.setAction("dps401C04F00")'>品目一覧へ</a>
+        #end
+    </span>
+
+    <table class="gridLine" cellspacing="0" cellpadding="1">
+        <tr>
+            <td class="gridIndex" style="width: 150px;">品目*</td>
+            <td>
+            <table cellspacing="0" cellpadding="0">
+                <tr>
+                    <td>#select ("prodCode", $service.getWakutinProdList(true), $!form.bean.prodCode)</td>
+                </tr>
+            </table>
+            </td>
+        </tr>
+    </table>
+
+    <table style="margin-top: 2px; margin-bottom: 2px;">
+        <tr>
+            <td><input type='button' value='検索' style="width: 80px;" onclick='dps401C0XF05()'></td>
+        </tr>
+    </table>
+
+    <table width="100%" style="float: left; margin-top: 0px; margin-bottom: 0px;">
+        <tr>
+            <td class="statusEnd legendSize">&nbsp;</td>
+            <td style="padding-right: 10px;"><label>：作業が完了している状態</label></td>
+            <td class="statusIng legendSize">&nbsp;</td>
+            <td style="padding-right: 10px;"><label>：作業を実行することが可能な状態</label></td>
+            <td class="statusNot legendSize">&nbsp;</td>
+            <td style="padding-right: 10px;"><label>：作業を実行することができない状態</label></td>
+            <td style="width: 220px;"></td>
+        </tr>
+        #if($form.bean.rank != "2")
+        <tr>
+            <td colspan="6"><a href='#' onClick='allCheckboxChange(${GridObjName},0,true)' class="allCheckboxChange">すべての担当者を選択</a>
+            <a href='#' onClick='allCheckboxChange(${GridObjName},0,false)' class="allCheckboxChange">すべての担当者を解除</a></td>
+            <td style="width: 220px;">
+            <div class="label" style="clear: both; text-align: right; vertical-align: bottom; width: 100%;">$consts.tableHeaderB</div>
+            </td>
+        </tr>
+        #end
+    </table>
+    #loadingGridDiv4("${GridObjName}", "${CoverId}", "width: 98.0%; clear: both;")
+    <div class="guide">
+    #if($authRehaibun)
+    ※【再配分】ボタンをクリックすると、選択した担当者の品目に対する再配分処理を実施し、計画値を上書きます。<br>
+    #end
+    #if($authOpen && $authFix && $authNonfix)
+    ※施設特約店別計画の状態を変更する場合は、変更対象の担当者を選択(複数可)し、【公開】【確定】【解除】ボタンをクリックしてください。<br>
+    #elseif($authOpen && !$authFix && !$authNonfix)
+    ※施設特約店別計画を確定する場合は、変更対象の担当者を選択(複数可)し、【確定】ボタンをクリックしてください。<br>
+    #end
+    ※編集リンクをクリックすると、施設特約店別計画編集画面を表示します。<br>
+    </div>
+    ##hidden項目
+    #token()
+    <input type="hidden" id="sosCd2" name="sosCd2" value="$!form.bean.getSosCd2()" />
+    <input type="hidden" id="sosCd3" name="sosCd3" value="$!form.bean.getSosCd3()" />
+    <input type="hidden" id="rank" name="rank" value="$!form.bean.getRank()" />
+</form>
+</div>
+
+## ヘッダー部ボタン設定
+<div style="display: none">
+    <div id="statusAreaValue"><span>
+        #if($authRehaibun)
+            <input type="button" value="再配分" onclick="dps401C03F15Execute()" $duttonDisable />
+        #end
+    </span></div>
+    <div id="mrOpenAreaValue"><span>
+        #if($authOpen)
+            <input type="button" value="公開" onclick="dps401C03F16Execute()" $duttonDisable />
+            <input type="button" value="解除" onclick="dps401C03F17Execute()" style="margin-left: 5px;" $duttonDisable />
+        #end
+    </span></div>
+
+    <div id="mrFixAreaValue"><span>
+        #if($authFix)
+            <input type="button" value="確定" onclick="dps401C03F18Execute()" $duttonDisable />
+        #end
+        #if($authNonfix)
+            <input type="button" value="解除" onclick="dps401C03F19Execute()" style="margin-left: 5px;" $duttonDisable />
+        #end
+    </span></div>
+</div>
+

@@ -1,0 +1,48 @@
+#set($layout = "nothingLayout.vm" )
+#set($dps000C00F76Data = $form.getRequestData("DPS000C00F76_DATA_R"))
+#set($sos = $dps000C00F76Data.getSosEachKindInfoForVac())
+#set($jgiList = $dps000C00F76Data.getJgiEachKindInfoForVac())
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#if($sos)
+    <row id="1">
+    ##特定施設
+    #if ($sos.specialInsPlanUpDate)
+        #set ($sSosTimeString = $!format.toString($!{sos.specialInsPlanUpDate}, "yyyy/MM/dd HH:mm"))
+        #set ($sSosString = $sSosTimeString + "(" + $sos.specialInsPlanCnt + "件)")
+    #else
+        #set ($sSosString = "")
+    #end
+    ##担当者別計画
+    #if ($sos.mrPlanUpDate)
+        #set ($tSosString = $!format.toString($!{sos.mrPlanUpDate}, "yyyy/MM/dd HH:mm"))
+    #else
+        #set ($tSosString = "")
+    #end
+    <cell>全エリア</cell>
+    <cell>$!{sSosString}</cell>
+    <cell>$!{tSosString}</cell>
+    </row>
+#elseif($jgiList)
+#foreach($jgi in $jgiList)
+    <row id="$velocityCount">
+    ##特定施設
+    #if ($jgi.specialInsPlanUpDate)
+        #set ($sSosTimeString = $!format.toString($!{jgi.specialInsPlanUpDate}, "yyyy/MM/dd HH:mm"))
+        #set ($sSosString = $sSosTimeString + "(" + $!jgi.specialInsPlanCnt + "件)")
+    #else
+        #set ($sSosString = "")
+    #end
+    ##担当者別計画
+    #if ($jgi.mrPlanUpDate)
+        #set ($tSosString = $!format.toString($!{jgi.mrPlanUpDate}, "yyyy/MM/dd HH:mm"))
+    #else
+        #set ($tSosString = "")
+    #end
+    <cell>$!{jgi.jgiName}</cell>
+    <cell>$!{sSosString}</cell>
+    <cell>$!{tSosString}</cell>
+    </row>
+#end
+#end
+</rows>

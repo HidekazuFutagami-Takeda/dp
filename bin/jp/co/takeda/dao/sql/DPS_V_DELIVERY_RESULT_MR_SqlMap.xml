@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_V_DELIVERY_RESULT_MR_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.DeliveryResultMrForVac" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result property="monNnu" resultMap="DPS_V_DELIVERY_RESULT_SqlMap.monNnu" />
+  </resultMap>
+
+  <resultMap id="resultSumMap" class="java.util.HashMap" >
+    <result property="monNnu" resultMap="DPS_V_DELIVERY_RESULT_SqlMap.monNnu" />
+  </resultMap>
+
+  <sql id="record">
+          DELIVERY_RECORD_01, DELIVERY_RECORD_02, DELIVERY_RECORD_03, DELIVERY_RECORD_04
+          ,DELIVERY_RECORD_05, DELIVERY_RECORD_06, DELIVERY_RECORD_07, DELIVERY_RECORD_08
+          ,DELIVERY_RECORD_09, DELIVERY_RECORD_10, DELIVERY_RECORD_11, DELIVERY_RECORD_12
+          ,DELIVERY_RECORD_13, DELIVERY_RECORD_14, DELIVERY_RECORD_15, DELIVERY_RECORD_16
+          ,DELIVERY_RECORD_17, DELIVERY_RECORD_18, DELIVERY_RECORD_19, DELIVERY_RECORD_20
+          ,DELIVERY_RECORD_21, DELIVERY_RECORD_22, DELIVERY_RECORD_23, DELIVERY_RECORD_24
+          ,PRE_FAR_ADVANCE_PERIOD, FAR_ADVANCE_PERIOD, ADVANCE_PERIOD, CURRENT_PERIOD, CURRENT_PLAN_VALUE
+  </sql>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.DeliveryResultMrForVac" >
+    SELECT SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,<include refid="record"/>
+      FROM DPS_V_DELIVERY_RESULT_MR
+     WHERE JGI_NO = #jgiNo:INTEGER#
+       AND PROD_CODE = #prodCode:CHAR#
+  </select>
+
+  <select id="selectByProd" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,JM.JGI_NO
+          ,DRM.PROD_CODE
+          ,DELIVERY_RECORD_01, DELIVERY_RECORD_02, DELIVERY_RECORD_03, DELIVERY_RECORD_04
+          ,DELIVERY_RECORD_05, DELIVERY_RECORD_06, DELIVERY_RECORD_07, DELIVERY_RECORD_08
+          ,DELIVERY_RECORD_09, DELIVERY_RECORD_10, DELIVERY_RECORD_11, DELIVERY_RECORD_12
+          ,DELIVERY_RECORD_13, DELIVERY_RECORD_14, DELIVERY_RECORD_15, DELIVERY_RECORD_16
+          ,DELIVERY_RECORD_17, DELIVERY_RECORD_18, DELIVERY_RECORD_19, DELIVERY_RECORD_20
+          ,DELIVERY_RECORD_21, DELIVERY_RECORD_22, DELIVERY_RECORD_23, DELIVERY_RECORD_24
+          ,PRE_FAR_ADVANCE_PERIOD, FAR_ADVANCE_PERIOD, ADVANCE_PERIOD, CURRENT_PERIOD
+          ,CURRENT_PLAN_VALUE
+     FROM DPS_V_DELIVERY_RESULT_MR DRM
+          INNER JOIN DPS_C_VI_JGI_MST JM
+       ON DRM.JGI_NO = JM.JGI_NO
+          INNER JOIN DPS_C_SOS_MST SM
+       ON JM.SOS_CD = SM.SOS_CD
+          INNER JOIN DPS_C_PLANNED_PROD PP
+       ON DRM.PROD_CODE = PP.PROD_CODE
+    WHERE DRM.PROD_CODE = #prodCode:CHAR#
+          <isNotNull prepend="AND" property="jokenSetList">
+              EXISTS (SELECT JO.JGI_NO
+              FROM DPS_C_JGI_JOKEN JO
+              WHERE JO.JGI_NO = JM.JGI_NO
+              <isNotNull property="jokenSetList">
+              <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                  #jokenSetList[].dbValue#
+              </iterate>
+              </isNotNull>
+          )
+          </isNotNull>
+          <isNotNull property="jgiKbList">
+              <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+              #jgiKbList[].dbValue#
+              </iterate>
+          </isNotNull>
+          <isNotNull prepend="AND" property="sosCd3">
+            JM.SOS_CD3 = #sosCd3:VARCHAR#
+          </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <select id="selectBySos" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,JM.JGI_NO
+          ,DRM.PROD_CODE
+          ,<include refid="record"/>
+     FROM DPS_V_DELIVERY_RESULT_MR DRM
+          INNER JOIN DPS_C_VI_JGI_MST JM
+       ON DRM.JGI_NO = JM.JGI_NO
+          INNER JOIN DPS_C_SOS_MST SM
+       ON JM.SOS_CD = SM.SOS_CD
+          INNER JOIN
+         (SELECT DISTINCT PROD.PROD_CODE, STAT_PROD_CODE, GROUP_CODE
+             FROM
+                (
+                 SELECT PROD_CODE, STAT_PROD_CODE, GROUP_CODE FROM DPS_C_PLANNED_PROD
+                 UNION
+                 SELECT PROD_CODE, STAT_PROD_CODE, GROUP_CODE FROM DPS_C_REF_TOTAL_PROD
+                 ) PROD
+         ) PP
+       ON DRM.PROD_CODE = PP.PROD_CODE
+    WHERE 
+       <isNotNull property="jokenSetList">
+            EXISTS (SELECT JO.JGI_NO
+            FROM DPS_C_JGI_JOKEN JO
+            WHERE JO.JGI_NO = JM.JGI_NO
+            <isNotNull property="jokenSetList">
+                <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                    #jokenSetList[].dbValue#
+                </iterate>
+            </isNotNull>
+            )
+       </isNotNull>
+       <isNotNull property="jgiKbList">
+           <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               #jgiKbList[].dbValue#
+           </iterate>
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd3">
+        JM.SOS_CD3 = #sosCd3:VARCHAR#
+      </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <select id="selectSummary" resultMap="resultSumMap" parameterClass="java.util.Map" >
+   SELECT SUM(DRM.DELIVERY_RECORD_01) AS DELIVERY_RECORD_01
+         ,SUM(DRM.DELIVERY_RECORD_02) AS DELIVERY_RECORD_02
+         ,SUM(DRM.DELIVERY_RECORD_03) AS DELIVERY_RECORD_03
+         ,SUM(DRM.DELIVERY_RECORD_04) AS DELIVERY_RECORD_04
+         ,SUM(DRM.DELIVERY_RECORD_05) AS DELIVERY_RECORD_05
+         ,SUM(DRM.DELIVERY_RECORD_06) AS DELIVERY_RECORD_06
+         ,SUM(DRM.DELIVERY_RECORD_07) AS DELIVERY_RECORD_07
+         ,SUM(DRM.DELIVERY_RECORD_08) AS DELIVERY_RECORD_08
+         ,SUM(DRM.DELIVERY_RECORD_09) AS DELIVERY_RECORD_09
+         ,SUM(DRM.DELIVERY_RECORD_10) AS DELIVERY_RECORD_10
+         ,SUM(DRM.DELIVERY_RECORD_11) AS DELIVERY_RECORD_11
+         ,SUM(DRM.DELIVERY_RECORD_12) AS DELIVERY_RECORD_12
+         ,SUM(DRM.DELIVERY_RECORD_13) AS DELIVERY_RECORD_13
+         ,SUM(DRM.DELIVERY_RECORD_14) AS DELIVERY_RECORD_14
+         ,SUM(DRM.DELIVERY_RECORD_15) AS DELIVERY_RECORD_15
+         ,SUM(DRM.DELIVERY_RECORD_16) AS DELIVERY_RECORD_16
+         ,SUM(DRM.DELIVERY_RECORD_17) AS DELIVERY_RECORD_17
+         ,SUM(DRM.DELIVERY_RECORD_18) AS DELIVERY_RECORD_18
+         ,SUM(DRM.DELIVERY_RECORD_19) AS DELIVERY_RECORD_19
+         ,SUM(DRM.DELIVERY_RECORD_20) AS DELIVERY_RECORD_20
+         ,SUM(DRM.DELIVERY_RECORD_21) AS DELIVERY_RECORD_21
+         ,SUM(DRM.DELIVERY_RECORD_22) AS DELIVERY_RECORD_22
+         ,SUM(DRM.DELIVERY_RECORD_23) AS DELIVERY_RECORD_23
+         ,SUM(DRM.DELIVERY_RECORD_24) AS DELIVERY_RECORD_24
+         ,SUM(DRM.PRE_FAR_ADVANCE_PERIOD) AS PRE_FAR_ADVANCE_PERIOD
+         ,SUM(DRM.FAR_ADVANCE_PERIOD) AS FAR_ADVANCE_PERIOD
+         ,SUM(DRM.ADVANCE_PERIOD) AS ADVANCE_PERIOD
+         ,SUM(DRM.CURRENT_PERIOD) AS CURRENT_PERIOD
+         ,SUM(DRM.CURRENT_PLAN_VALUE) AS CURRENT_PLAN_VALUE
+     FROM DPS_V_DELIVERY_RESULT_MR DRM
+          INNER JOIN DPS_C_VI_JGI_MST JM
+       ON DRM.JGI_NO = JM.JGI_NO
+    WHERE DRM.PROD_CODE = #prodCode:CHAR#
+     <isNotNull prepend="AND" property="jokenSetList">
+         EXISTS (SELECT JO.JGI_NO
+         FROM DPS_C_JGI_JOKEN JO
+         WHERE JO.JGI_NO = JM.JGI_NO
+         <isNotNull property="jokenSetList">
+             <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                 #jokenSetList[].dbValue#
+             </iterate>
+         </isNotNull>
+         )
+     </isNotNull>
+     <isNotNull property="jgiKbList">
+         <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               #jgiKbList[].dbValue#
+         </iterate>
+     </isNotNull>      <isNotNull prepend="AND" property="sosCd3">
+        JM.SOS_CD3 = #sosCd3:VARCHAR#
+     </isNotNull>
+  </select>
+
+</sqlMap>

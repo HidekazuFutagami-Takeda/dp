@@ -1,0 +1,319 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS401C00_DATA_R"))
+    #set( $resultData = $form.getRequestData("DPS401C00_DATA_R"))
+#end
+#if ( $resultData.teamResultList)
+    #set( $teamList = $resultData.teamResultList)
+#end
+#if ($teamList)
+#set($q = '"' )
+#set($bgEnd = "class='statusEnd'")
+#set($bgIng = "class='statusIng'")
+#set($bgNot = "class='statusNot'")
+$!consts.getDhtmlxGridXmlHeader()
+##
+##カテゴリ
+##set( $category = "1")
+#set($category = $!form.bean.category)
+##if($resultData.category)
+	##set( $category = $resultData.category.dbValue)
+##end
+<rows>
+
+## ワクチンのカテゴリコード取得
+#set($vaccineCode = $service.getShienVaccineCode())
+##
+## チーム（無い場合は事業所）単位に繰り返し
+##
+#set( $totalCount = 1)
+#set($decimalFormat = $form.bean.getDefaultRateFormat())
+#foreach($teamData in $teamList)
+    ##
+    ## 担当者単位に繰り返し
+    ##
+    #set( $mrCount = 1)
+    #foreach($mrData in $teamData.mrList)
+        ##チーム名設定
+        #set( $teamName = "")
+        #set( $teamNameStyle = "border-bottom:0px")
+        ##最初の行の場合
+        #if($mrCount == 1)
+            #set( $teamName = $map.transformTeamName($teamData.sosName))
+            #set( $teamNameStyle = "border-bottom:0px")
+        #end
+        ##最終行の場合
+        #if($mrCount == $teamData.mrList.size())
+            ##1件以上ある最終行
+            #if($teamData.mrList.size() != 1)
+                #set( $teamName = "")
+                #set( $teamNameStyle = "")
+            #else
+                #set( $teamNameStyle = "")
+            #end
+        #end
+        ##
+        ##施設特約店別計ステータス情報
+        #set($insWsPlanStatus = ${mrData.insWsPlanStatus})
+
+        ##
+        ##施設特約店別計画配分状況
+        #set($codeAndValueInsWsPlanDist = $progress.progressInsWsPlanDistStatus($!{insWsPlanStatus}))
+        #set($insWsPlanDistStatus = $codeAndValueInsWsPlanDist.value)
+        #set( $distStartDate = "")
+        #if($insWsPlanStatus.distStartDate)
+            #set($distStartDate = $!format.toString($!{insWsPlanStatus.distStartDate}, 'MM/dd HH:mm'))
+        #end
+        #set( $distEndDate = "")
+        #if($insWsPlanStatus.distEndDate)
+            #set($distEndDate = $!format.toString($!{insWsPlanStatus.distEndDate}, 'MM/dd HH:mm'))
+        #end
+        #if($!codeAndValueInsWsPlanDist.code.equals("NOT"))
+        	#if($mrData.enableRehaibun)
+	            #set($insWsPlanDistClass = $bgIng)
+        	#else
+	            #set($insWsPlanDistClass = $bgNot)
+        	#end
+            #if($insWsPlanStatus.distStartDate)
+                #set($insWsPlanDistStatus = $!insWsPlanDistStatus)
+            #end
+        #elseif($!codeAndValueInsWsPlanDist.code.equals("END"))
+            #set($insWsPlanDistClass = $bgEnd)
+            #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>" + $distEndDate)
+        #end
+        ##施設特約店別計画ＭＲ公開
+        #set($codeAndValueInsWsPlanMrOpen = $progress.progressInsWsPlanMrOpenStatus($!{insWsPlanStatus}))
+        #set($insWsPlanMrOpenStatus = $codeAndValueInsWsPlanMrOpen.value)
+        #if($!codeAndValueInsWsPlanMrOpen.code.equals("NOT"))
+            #set($insWsPlanMrOpenClass = $bgNot)
+        #elseif($!codeAndValueInsWsPlanMrOpen.code.equals("ING"))
+            #if(($form.bean.category == $vaccineCode && $form.bean.honbuUser == true) || $form.bean.category != $vaccineCode)
+                #set($insWsPlanMrOpenClass = $bgIng)
+            #else
+                #set($insWsPlanMrOpenClass = $bgNot)
+            #end
+        #elseif($!codeAndValueInsWsPlanMrOpen.code.equals("END"))
+            #set($insWsPlanMrOpenClass = $bgEnd)
+            #set($insWsPlanMrOpenStatus = $!insWsPlanMrOpenStatus + "<br>(" + $!format.toString($insWsPlanStatus.insWsOpenDate, 'MM/dd HH:mm') + ")")
+        #end
+        ##
+
+        ## ワクチンの場合
+        #if ($form.bean.category == $vaccineCode)
+            ##施設特約店別計画ＭＲ確定
+            #set($codeAndValueInsWsPlanMrFix = $progress.progressInsWsPlanMrFixStatus($!{insWsPlanStatus}, $!{form.bean.category}))
+            #set($insWsPlanMrFixStatus = $codeAndValueInsWsPlanMrFix.value)
+            #if($!codeAndValueInsWsPlanMrFix.code.equals("NOT"))
+                #set($insWsPlanMrFixClass = $bgNot)
+            #elseif($!codeAndValueInsWsPlanMrFix.code.equals("ING"))
+                ###if($security.hasAuthEdit("DPS401C00") && ($category) && $form.bean.honbuUser == true)
+                #if($security.hasAuthEdit("DPS401C00") && $form.bean.honbuUser == true)
+                    #set($insWsPlanMrFixClass = $bgIng)
+                #else
+                    #set($insWsPlanMrFixClass = $bgNot)
+                #end
+            #elseif($!codeAndValueInsWsPlanMrFix.code.equals("END"))
+                #set($insWsPlanMrFixClass = $bgEnd)
+                #set($insWsPlanMrFixStatus = $!insWsPlanMrFixStatus + "<br>" + $!format.toString($insWsPlanStatus.insWsFixDate, 'MM/dd HH:mm'))
+            #end
+        ## 医薬の場合
+        #else
+            ##施設特約店別計画ＭＲ確定
+            #set($codeAndValueInsWsPlanMrFix = $progress.progressInsWsPlanMrFixStatus($!{insWsPlanStatus}, $!{form.bean.category}))
+            #set($insWsPlanMrFixStatus = $codeAndValueInsWsPlanMrFix.value)
+            #if($!codeAndValueInsWsPlanMrFix.code.equals("NOT"))
+                #set($insWsPlanMrFixClass = $bgNot)
+            #elseif($!codeAndValueInsWsPlanMrFix.code.equals("ING"))
+                #set($insWsPlanMrFixClass = $bgIng)
+            #elseif($!codeAndValueInsWsPlanMrFix.code.equals("END"))
+                #set($insWsPlanMrFixClass = $bgEnd)
+                #set($insWsPlanMrFixStatus = $!insWsPlanMrFixStatus + "<br>(" + $!format.toString($insWsPlanStatus.insWsFixDate, 'MM/dd HH:mm') + ")")
+            #end
+        #end
+
+        ##
+        ## ---- 非表示データ -------
+        ## 従業員
+        #set($jgiNo = "")
+        #if($insWsPlanStatus.jgiNo)
+            #set($jgiNo = $!{insWsPlanStatus.jgiNo})
+        #end
+        ## 施設特約店別計画ステータス最終更新日
+        #set( $lastUpdate = "")
+        #if($insWsPlanStatus.upDate)
+            #set($lastUpdate = $!{insWsPlanStatus.upDate.time})
+        #end
+	    ## 計画値表示フラグ
+	    #set( $dispPlan = false)
+	    ## ワクチンの場合、設定ユーザが本部・本部ワクチンG、または、公開以降の場合は、計画値表示
+	    #if($form.bean.category == $vaccineCode)
+            #if($form.bean.honbuUser == true || $codeAndValueInsWsPlanMrOpen.code.equals("END"))
+                #set( $dispPlan = true)
+            #end
+        ## 医薬の場合
+        #else
+	        #if($mrData.dispPlan)
+	            #set( $dispPlan = $mrData.dispPlan)
+	        #end
+	    #end
+	    ## 編集リンク表示フラグ
+	    #set( $dispEditLink = false)
+	    #if($mrData.dispEditLink)
+	        #set( $dispEditLink = $mrData.dispEditLink)
+	    #end
+	    ## 重点品目フラグ
+	    #set( $planLevelInsDoc = false)
+	    #if($resultData.planLevelInsDoc)
+	        #set( $planLevelInsDoc = $resultData.planLevelInsDoc)
+	    #end
+	    ## 施設調整（UH）
+	    #set( $insChoseiUh = "-")
+	    #set( $insChoseiColorUh = "#FFF")
+        #if($mrData.insChoseiResult)
+	        #if($mrData.insChoseiResult.existDiffUh)
+			    #set( $insChoseiUh = "あり")
+##			    #set( $insChoseiColorUh = "#F4A460")
+	        #else
+			    #set( $insChoseiUh = "なし")
+##			    #set( $insChoseiColorUh = "#FFF")
+	        #end
+	        #set( $insChoseiColorUh = "#FFF")
+        #end
+	    ## 施設調整（P）
+	    #set( $insChoseiP = "-")
+	    #set( $insChoseiColorP = "#FFF")
+        #if($mrData.insChoseiResult)
+	        #if($mrData.insChoseiResult.existDiffP)
+			    #set( $insChoseiP = "あり")
+##			    #set( $insChoseiColorP = "#F4A460")
+	        #else
+			    #set( $insChoseiP = "なし")
+##			    #set( $insChoseiColorP = "#FFF")
+	        #end
+	        #set( $insChoseiColorP = "#FFF")
+        #end
+        <row id='$totalCount'>
+        	## mod Start 2021/7/8 H.Kaneko Step4UAT課題151
+            ##<cell></cell>
+            ##<cell style="height:45;">1</cell>
+            ##<cell style="height:45;">$!{insWsPlanStatus.jgiName}（$!{insWsPlanStatus.shokushuName}）</cell>
+            ##<cell style="height:45;$teamNameStyle">$teamName</cell>
+            <cell style="height:40px;"></cell>
+            <cell style="height:40px;">1</cell>
+            <cell style="height:40px;">$!{insWsPlanStatus.jgiName}（$!{insWsPlanStatus.shokushuName}）</cell>
+            <cell style="height:40px;$teamNameStyle">$teamName</cell>
+            ## mod End 2021/7/8 H.Kaneko Step4UAT課題151
+            #if($dispEditLink)
+            	#if($planLevelInsDoc)
+	                #set($oWinUrl = $link.setAction("dps401C02F02").addQueryData('sosCd3',$form.bean.sosCd3Tran).addQueryData('sosCd4',$teamData.sosCd4).addQueryData('jgiNo',$!{jgiNo}).addQueryData('prodCode',$!form.bean.prodCodeTran).addQueryData('category',$!form.bean.category).addQueryData('clickRowId', $!totalCount))
+            	#else
+	                #set($oWinUrl = $link.setAction("dps401C02F00").addQueryData('sosCd3',$form.bean.sosCd3Tran).addQueryData('sosCd4',$teamData.sosCd4).addQueryData('jgiNo',$!{jgiNo}).addQueryData('prodCode',$!form.bean.prodCodeTran).addQueryData('category',$!form.bean.category).addQueryData('clickRowId', $!totalCount))
+            	#end
+            	## mod Start 2021/7/8 H.Kaneko Step4UAT課題151
+                ##<cell style="height:45;"><![CDATA[<a href='#' onclick='cs_openEditDialog($!{q}$!{oWinUrl}$!{q},dps401C0XF05);'>編集</a>]]></cell>
+                <cell style="height:40px;"><![CDATA[<a href='#' onclick='cs_openEditDialog($!{q}$!{oWinUrl}$!{q},dps401C0XF05);'>編集</a>]]></cell>
+                ## mod End 2021/7/8 H.Kaneko Step4UAT課題151
+            #else
+            	## mod Start 2021/7/8 H.Kaneko Step4UAT課題151
+                ##<cell style="height:45;"></cell>
+                <cell style="height:40px;"></cell>
+                ## mod End 2021/7/8 H.Kaneko Step4UAT課題151
+            #end
+            ###if (($form.bean.category == $vaccineCode && $form.bean.honbuUser == true) || $form.bean.category != $vaccineCode)
+            	## mod Start 2021/7/8 H.Kaneko Step4UAT課題151
+                ##<cell style="height:45;" $insWsPlanDistClass><![CDATA[$!insWsPlanDistStatus]]></cell>
+                <cell style="height:40px;" $insWsPlanDistClass><![CDATA[$!insWsPlanDistStatus]]></cell>
+                ## mod End 2021/7/8 H.Kaneko Step4UAT課題151
+            ###end
+            ## mod Start 2021/7/8 H.Kaneko Step4UAT課題151
+            ##<cell style="height:45;" $insWsPlanMrOpenClass><![CDATA[$!insWsPlanMrOpenStatus]]></cell>
+            ##<cell style="height:45;" $insWsPlanMrFixClass><![CDATA[$!insWsPlanMrFixStatus]]></cell>
+            ##<cell style="height:45;#setMinusStyle($!{mrData.resultSummaryUh.currentPlanValue})">$!{mrData.resultSummaryUh.currentPlanValue}</cell>
+            ##<cell style="height:45;#setMinusStyle($!{mrData.resultSummaryUh.currentPeriod})">$!{mrData.resultSummaryUh.currentPeriod}</cell>
+            ##<cell style="height:45;#setMinusStyle($!{mrData.resultSummaryUh.currentRate})">$!format.doubleToString($!{mrData.resultSummaryUh.currentRate}, $decimalFormat)</cell>
+            <cell style="height:40px;" $insWsPlanMrOpenClass><![CDATA[$!insWsPlanMrOpenStatus]]></cell>
+            <cell style="height:40px;" $insWsPlanMrFixClass><![CDATA[$!insWsPlanMrFixStatus]]></cell>
+            <cell style="height:40px;#setMinusStyle($!{mrData.resultSummaryUh.currentPlanValue})">$!{mrData.resultSummaryUh.currentPlanValue}</cell>
+            <cell style="height:40px;#setMinusStyle($!{mrData.resultSummaryUh.currentPeriod})">$!{mrData.resultSummaryUh.currentPeriod}</cell>
+            <cell style="height:40px;#setMinusStyle($!{mrData.resultSummaryUh.currentRate})">$!format.doubleToString($!{mrData.resultSummaryUh.currentRate}, $decimalFormat)</cell>
+            ## mod End 2021/7/8 H.Kaneko Step4UAT課題151
+            #if($dispPlan)
+            	## mod Start 2021/7/8 H.Kaneko Step4UAT課題151
+                ##<cell style="height:45;#setMinusStyle($!{mrData.plannedSummary.mrPlanPlannedValueUh})">$!{mrData.plannedSummary.mrPlanPlannedValueUh}</cell>
+                ##<cell style="height:45;#setMinusStyle($!{mrData.plannedSummary.insWsPlanPlannedValueUh})">$!{mrData.plannedSummary.insWsPlanPlannedValueUh}</cell>
+                ##<cell style="height:45;#setSagakuStyle($!{mrData.plannedSummary.sagakuUh})">$!{mrData.plannedSummary.sagakuUh}</cell>
+                ##<cell style="height:45;background-color:$insChoseiColorUh;">$insChoseiUh</cell>
+                <cell style="height:40px;#setMinusStyle($!{mrData.plannedSummary.mrPlanPlannedValueUh})">$!{mrData.plannedSummary.mrPlanPlannedValueUh}</cell>
+                <cell style="height:40px;#setMinusStyle($!{mrData.plannedSummary.insWsPlanPlannedValueUh})">$!{mrData.plannedSummary.insWsPlanPlannedValueUh}</cell>
+                <cell style="height:40px;#setSagakuStyle($!{mrData.plannedSummary.sagakuUh})">$!{mrData.plannedSummary.sagakuUh}</cell>
+                <cell style="height:40px;background-color:$insChoseiColorUh;">$insChoseiUh</cell>
+                ## mod End 2021/7/8 H.Kaneko Step4UAT課題151
+                <userdata name="pUH">$!{mrData.plannedSummary.insWsPlanPlannedValueUh}</userdata>
+                <userdata name="sUH">$!{mrData.plannedSummary.sagakuUh}</userdata>
+                <userdata name="insUH">$!mrData.insChoseiResult.existDiffUh</userdata>
+            #else
+            	## mod Start 2021/7/8 H.Kaneko Step4UAT課題151
+                ##<cell style="height:45;"></cell>
+                ##<cell style="height:45;"></cell>
+                ##<cell style="height:45;"></cell>
+                ##<cell style="height:45;"></cell>
+                <cell style="height:40px;"></cell>
+                <cell style="height:40px;"></cell>
+                <cell style="height:40px;"></cell>
+                <cell style="height:40px;"></cell>
+                ## mod End 2021/7/8 H.Kaneko Step4UAT課題151
+                <userdata name="pUH"></userdata>
+                <userdata name="sUH"></userdata>
+                <userdata name="insUH"></userdata>
+            #end
+            ## mod Start 2021/7/8 H.Kaneko Step4UAT課題151
+            ##<cell style="height:45;#setMinusStyle($!{mrData.resultSummaryP.currentPlanValue})">$!{mrData.resultSummaryP.currentPlanValue}</cell>
+            ##<cell style="height:45;#setMinusStyle($!{mrData.resultSummaryP.currentPeriod})">$!{mrData.resultSummaryP.currentPeriod}</cell>
+            ##<cell style="height:45;#setMinusStyle($!{mrData.resultSummaryP.currentRate})">$!format.doubleToString($!{mrData.resultSummaryP.currentRate}, $decimalFormat)</cell>
+            <cell style="height:40px;#setMinusStyle($!{mrData.resultSummaryP.currentPlanValue})">$!{mrData.resultSummaryP.currentPlanValue}</cell>
+            <cell style="height:40px;#setMinusStyle($!{mrData.resultSummaryP.currentPeriod})">$!{mrData.resultSummaryP.currentPeriod}</cell>
+            <cell style="height:40px;#setMinusStyle($!{mrData.resultSummaryP.currentRate})">$!format.doubleToString($!{mrData.resultSummaryP.currentRate}, $decimalFormat)</cell>
+            ## mod End 2021/7/8 H.Kaneko Step4UAT課題151
+            #if($dispPlan)
+            	## mod Start 2021/7/8 H.Kaneko Step4UAT課題151
+                ##<cell style="height:45;#setMinusStyle($!{mrData.plannedSummary.mrPlanPlannedValueP})">$!{mrData.plannedSummary.mrPlanPlannedValueP}</cell>
+                ##<cell style="height:45;#setMinusStyle($!{mrData.plannedSummary.insWsPlanPlannedValueP})">$!{mrData.plannedSummary.insWsPlanPlannedValueP}</cell>
+                ##<cell style="height:45;#setSagakuStyle($!{mrData.plannedSummary.sagakuP})">$!{mrData.plannedSummary.sagakuP}</cell>
+                ##<cell style="height:45;background-color:$insChoseiColorP;">$insChoseiP</cell>
+                <cell style="height:40px;#setMinusStyle($!{mrData.plannedSummary.mrPlanPlannedValueP})">$!{mrData.plannedSummary.mrPlanPlannedValueP}</cell>
+                <cell style="height:40px;#setMinusStyle($!{mrData.plannedSummary.insWsPlanPlannedValueP})">$!{mrData.plannedSummary.insWsPlanPlannedValueP}</cell>
+                <cell style="height:40px;#setSagakuStyle($!{mrData.plannedSummary.sagakuP})">$!{mrData.plannedSummary.sagakuP}</cell>
+                <cell style="height:40px;background-color:$insChoseiColorP;">$insChoseiP</cell>
+                ## mod End 2021/7/8 H.Kaneko Step4UAT課題151
+                <userdata name="pP">$!{mrData.plannedSummary.insWsPlanPlannedValueP}</userdata>
+                <userdata name="sP">$!{mrData.plannedSummary.sagakuP}</userdata>
+                <userdata name="insP">$!mrData.insChoseiResult.existDiffP</userdata>
+            #else
+            	## mod Start 2021/7/8 H.Kaneko Step4UAT課題151
+                ##<cell style="height:45;"></cell>
+                ##<cell style="height:45;"></cell>
+                ##<cell style="height:45;"></cell>
+                ##<cell style="height:45;"></cell>
+                <cell style="height:40px;"></cell>
+                <cell style="height:40px;"></cell>
+                <cell style="height:40px;"></cell>
+                <cell style="height:40px;"></cell>
+                ## mod End 2021/7/8 H.Kaneko Step4UAT課題151
+                <userdata name="pP"></userdata>
+                <userdata name="sP"></userdata>
+                <userdata name="insP"></userdata>
+            #end
+            ##送信情報
+            <userdata name="rowIdList">$jgiNo,$insWsPlanStatus.jgiName,$lastUpdate</userdata>
+            ## 削除施設数
+            <userdata name="delInsCount">$!{mrData.delInsCount}</userdata>
+            ## 計画対象外特約店数
+            <userdata name="taigaiTytenCount">$!{mrData.taigaiTytenCount}</userdata>
+            ## 配分除外施設数
+            <userdata name="exceptDistInsCount">$!{mrData.exceptDistInsCount}</userdata>
+        </row>
+        #set( $mrCount = $mrCount + 1)
+        #set( $totalCount = $totalCount + 1)
+    #end
+#end
+</rows>
+#end

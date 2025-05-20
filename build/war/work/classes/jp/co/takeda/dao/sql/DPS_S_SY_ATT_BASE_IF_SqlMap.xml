@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_S_SY_ATT_BASE_IF_SqlMap" >
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.AttBaseIf" >
+    INSERT INTO DPS_S_SY_ATT_BASE_IF
+           (IF_P_KEY
+            ,IF_SYS_KEY
+            ,IF_VERSION_NO
+            ,STATUS_KB
+            ,FRML_DOCU_FLG
+            ,SUBJECT
+            ,CON_TXT
+            ,JUYO_KB
+            ,FW_KB_BR
+            ,FW_KB_DIST
+            ,FW_KB_HOSP_G
+            ,FW_KB_TOKU_G
+            ,FW_KB_ACD_G
+            ,FW_KB_APM
+            ,FW_KB_YOBI1
+            ,FW_KB_YOBI2
+            ,FW_KB_YOBI3
+            ,NAVI_START_DAY
+            ,NAVI_END_DAY
+            ,PROC_KB
+            ,DONE_FLG
+            ,UP_JGI_NO
+            ,IS_DATE
+            ,UP_DATE
+            ,UP_SCRN_ID
+            ,UP_FUNC_ID
+           )
+    VALUES (#ifPKey:INTEGER#
+          ,#ifSysKey:INTEGER#
+          ,#IF_VERSION_NO:INTEGER#
+          ,#STATUS_KB:VARCHAR#
+          ,#FRML_DOCU_FLG:VARCHAR#
+          ,#subject:VARCHAR#
+          ,#conTxt:CLOB,handler="org.springframework.orm.ibatis.support.ClobStringTypeHandler"#
+          ,#JUYO_KB:VARCHAR#
+          ,#FW_KB_BR:VARCHAR#
+          ,#FW_KB_DIST:VARCHAR#
+          ,#FW_KB_HOSP_G:VARCHAR#
+          ,#FW_KB_TOKU_G:VARCHAR#
+          ,#FW_KB_ACD_G:VARCHAR#
+          ,#FW_KB_APM:VARCHAR#
+          ,#FW_KB_YOBI1:VARCHAR#
+          ,#FW_KB_YOBI2:VARCHAR#
+          ,#FW_KB_YOBI3:VARCHAR#
+          ,#naviStartDay:DATE#
+          ,#naviEndDay:DATE#
+          ,#PROC_KB:VARCHAR#
+          ,#DONE_FLG:VARCHAR#
+          ,#upJgiNo:INTEGER#
+          ,#isDate:TIMESTAMP#
+          ,#upDate:TIMESTAMP#
+          ,#upScrnId:VARCHAR#
+          ,#upFuncId:VARCHAR#
+          )
+  </insert>
+
+  <select id="getSeqKey" resultClass="java.lang.Integer">
+    SELECT ORADPX01.SEQ_DPS_S_SY_ATT_BASE_IF.NEXTVAL FROM DUAL
+  </select>
+
+</sqlMap>

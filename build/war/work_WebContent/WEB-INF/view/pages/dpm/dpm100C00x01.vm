@@ -1,0 +1,182 @@
+## (医)組織別計画編集画面 明細行
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPM100C00_DATA_R_SEARCH_RESULT"))
+    #set( $dataList = $form.getRequestData("DPM100C00_DATA_R_SEARCH_RESULT").detailList)
+#end
+## ONC組織フラグ
+## add start 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+##set( $oncSosFlg = false)
+##if($form.bean.prodCategory && $form.bean.prodCategory == "3")
+#set( $oncSosFlg = true)
+##end
+## add end 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#set( $rowId = 1 )
+#foreach($resultObj in $dataList)
+    ## 組織コード
+    #set( $sosCd = "")
+        #if($resultObj.sosCd)
+            #set( $sosCd = $resultObj.sosCd)
+        #end
+    ## 組織名
+    #set( $sosName = "")
+        #if($resultObj.sosName)
+            #set( $sosName = $resultObj.sosName)
+        #end
+    ## 従業員番号
+    #set( $jgiNo = "")
+        #if($resultObj.jgiNo)
+            #set( $jgiNo = $resultObj.jgiNo)
+        #end
+    ## 従業員名
+    #set( $jgiName = "")
+        #if($resultObj.jgiName)
+            #set( $jgiName = $resultObj.jgiName)
+        #end
+    ## [UH]Y価ベース
+    #set( $yBaseValueUH = "")
+    #set( $yBaseValueUHType = "ed")
+        #if($resultObj.yBaseValueUH)
+            #set( $yBaseValueUH = $resultObj.yBaseValueUH)
+            #set( $yBaseValueUHType = "edn")
+        #end
+    ## [UH]T価ベース
+    #set( $tBaseValueUH = "")
+        #if($resultObj.tBaseValueUH)
+            #set( $tBaseValueUH = $resultObj.tBaseValueUH)
+        #end
+    ## [UH]最終更新情報(ツールチップ)
+    #set( $lastUpNameUH = "")
+    #set( $lastUpDateUH = "")
+        #if($resultObj.upDateUH)
+            #set( $lastUpNameUH = "$!resultObj.upJgiNameUH&#13;")
+            #set( $lastUpDateUH = "$!format.toString($!resultObj.upDateUH, 'yyyy/MM/dd HH:mm:ss')")
+        #end
+    ## [P]Y価ベース
+    #set( $yBaseValueP = "")
+    #set( $yBaseValuePType = "ed")
+        #if($resultObj.yBaseValueP)
+            #set( $yBaseValueP = $resultObj.yBaseValueP)
+            #set( $yBaseValuePType = "edn")
+        #end
+    ## [P]T価ベース
+    #set( $tBaseValueP = "")
+        #if($resultObj.tBaseValueP)
+            #set( $tBaseValueP = $resultObj.tBaseValueP)
+        #end
+    ## [P]最終更新情報(ツールチップ)
+    #set( $lastUpNameP = "")
+    #set( $lastUpDateP = "")
+        #if($resultObj.upDateP)
+            #set( $lastUpNameP = "$!resultObj.upJgiNameP&#13;")
+            #set( $lastUpDateP = "$!format.toString($!resultObj.upDateP, 'yyyy/MM/dd HH:mm:ss')")
+        #end
+    ## [Z]Y価ベース
+    #set( $yBaseValueZ = "")
+    #set( $yBaseValueZType = "ed")
+        #if($resultObj.yBaseValueZ)
+            #set( $yBaseValueZ = $resultObj.yBaseValueZ)
+            #set( $yBaseValueZType = "edn")
+        #end
+    ## [Z]T価ベース
+    #set( $tBaseValueZ = "")
+        #if($resultObj.tBaseValueZ)
+            #set( $tBaseValueZ = $resultObj.tBaseValueZ)
+        #end
+    ## [Z]最終更新情報(ツールチップ)
+    #set( $lastUpNameZ = "")
+    #set( $lastUpDateZ = "")
+        #if($resultObj.upDateZ)
+            #set( $lastUpNameZ = "$!resultObj.upJgiNameZ&#13;")
+            #set( $lastUpDateZ = "$!format.toString($!resultObj.upDateZ, 'yyyy/MM/dd HH:mm:ss')")
+        #end
+    ## 雑組織フラグ
+    #set( $etcSosFlg = false)
+        #if($resultObj.etcSosFlg)
+            #set( $etcSosFlg = $resultObj.etcSosFlg)
+        #end
+    ## 明細行
+    <row id='$rowId'>
+        #if ($form.bean.sosCd4)
+            #if($resultObj.canMovePlanLevel)
+            <cell style="height:30"><![CDATA[$jgiName<br><a href="#" onclick="dpm200C00F05UH('$jgiNo','$etcSosFlg')">▼施設別・UH</a>　<a href="#" onclick="dpm200C00F05P('$jgiNo','$etcSosFlg')">▼施設別・P</a>　<a href="#" onclick="dpm200C00F05Z('$jgiNo','$etcSosFlg')">▼施設別・他</a>　<a href="#" onclick="dpm101C00F05Jgi('$jgiNo','$etcSosFlg','$oncSosFlg')">品目別</a>]]></cell>
+            #else
+            <cell style="height:30"><![CDATA[$jgiName<br>　　　　　　　　　　　　　　　　　　 <a href="#" onclick="dpm101C00F05Jgi('$jgiNo','$etcSosFlg','$oncSosFlg')">品目別</a>]]></cell>
+            #end
+        #elseif ($form.bean.sosCd3 && $form.bean.oncSosFlg == true)
+            #if($resultObj.canMovePlanLevel)
+            <cell style="height:30"><![CDATA[$jgiName<br><a href="#" onclick="dpm200C00F05UH('$jgiNo','$etcSosFlg')">▼施設別・UH</a>　<a href="#" onclick="dpm200C00F05P('$jgiNo','$etcSosFlg')">▼施設別・P</a>　<a href="#" onclick="dpm200C00F05Z('$jgiNo','$etcSosFlg')">▼施設別・他</a>　<a href="#" onclick="dpm101C00F05Jgi('$jgiNo','$etcSosFlg','$oncSosFlg')">品目別</a>]]></cell>
+            #else
+            <cell style="height:30"><![CDATA[$jgiName<br>　　　　　　　　　　　　　　　　　　 <a href="#" onclick="dpm101C00F05Jgi('$jgiNo','$etcSosFlg','$oncSosFlg')">品目別</a>]]></cell>
+            #end
+        #elseif ($form.bean.sosCd3 && $form.bean.oncSosFlg == false)
+            #if($resultObj.canMovePlanLevel)
+            <cell style="height:30"><![CDATA[$sosName<br><a href="#" onclick="searchPlanMR('$sosCd','$etcSosFlg','$oncSosFlg')">▼担当者別</a>　<a href="#" onclick="dpm101C00F05Team('$sosCd','$etcSosFlg','$oncSosFlg')">品目別</a>]]></cell>
+            #else
+            <cell style="height:30"><![CDATA[$sosName<br>　　　　　　　　 <a href="#" onclick="dpm101C00F05Team('$sosCd','$etcSosFlg','$oncSosFlg')">品目別</a>]]></cell>
+            #end
+        ##elseif ($form.bean.sosCd2 && $form.bean.oncSosFlg == true)
+        #elseif ($form.bean.sosCd2)
+            #if($resultObj.canMovePlanLevel)
+            <cell style="height:30"><![CDATA[$sosName<br><a href="#" onclick="searchPlanTeam('$sosCd','$oncSosFlg')">▼担当者別</a>　<a href="#" onclick="dpm101C00F05Office('$sosCd','$oncSosFlg')">品目別</a>]]></cell>
+            #else
+            <cell style="height:30"><![CDATA[$sosName<br>　　　　　　　　 <a href="#" onclick="dpm101C00F05Office('$sosCd','$oncSosFlg')">品目別</a>]]></cell>
+            #end
+        ##elseif ($form.bean.sosCd2 && $form.bean.oncSosFlg == false)
+        ##    #if($resultObj.canMovePlanLevel)
+        ##    <cell style="height:30"><![CDATA[$sosName<br><a href="#" onclick="searchPlanTeam('$sosCd','$oncSosFlg')">▼チーム別</a>　<a href="#" onclick="dpm101C00F05Office('$sosCd','$oncSosFlg')">品目別</a>]]></cell>
+        ##    #else
+        ##    <cell style="height:30"><![CDATA[$sosName<br>　　　　　　　　 <a href="#" onclick="dpm101C00F05Office('$sosCd','$oncSosFlg')">品目別</a>]]></cell>
+        ##    #end
+        #else
+            #if($resultObj.canMovePlanLevel)
+            <cell style="height:30"><![CDATA[$sosName<br><a href="#" onclick="searchPlanOffice('$sosCd','$oncSosFlg')">▼エリア別</a>　<a href="#" onclick="dpm101C00F05Siten('$sosCd','$oncSosFlg')">品目別</a>]]></cell>
+            #else
+            <cell style="height:30"><![CDATA[$sosName<br>　　　　　　　　 <a href="#" onclick="dpm101C00F05Siten('$sosCd','$oncSosFlg')">品目別</a>]]></cell>
+            #end
+        #end
+        <cell style="height:30;color:#FF0000;"></cell>
+        #if($!security.hasAuthEdit("DPM10"))
+        <cell style="height:30" class="inputB" type="$yBaseValueUHType">$yBaseValueUH</cell>
+        #else
+        <cell style="height:30" type="ron">$yBaseValueUH</cell>
+        #end
+        <cell style="height:30;color:#FF0000;"></cell>
+        #if($!security.hasAuthEdit("DPM10"))
+        <cell style="height:30" class="inputB" type="$yBaseValuePType">$yBaseValueP</cell>
+        #else
+        <cell style="height:30" type="ron">$yBaseValueP</cell>
+        #end
+        <cell style="height:30;color:#FF0000;"></cell>
+        ## タイトルが存在する場合のみ編集可能
+        #if($!security.hasAuthEdit("DPM10") && $titleZ != "")
+        <cell style="height:30" class="inputB" type="$yBaseValueZType">$yBaseValueZ</cell>
+        #else
+        <cell style="height:30" type="ron">$yBaseValueZ</cell>
+        #end
+        <cell style="height:30"></cell>
+        <cell style="height:30"></cell>
+        ## Validation用ユーザデータ
+        <userdata name="sosName">$sosName</userdata>
+        <userdata name="jgiName">$jgiName</userdata>
+        ## 自動計算用ユーザデータ
+        <userdata name="toolTipUH">$lastUpNameUH$lastUpDateUH</userdata>
+        <userdata name="toolTipP">$lastUpNameP$lastUpDateP</userdata>
+        <userdata name="toolTipZ">$lastUpNameZ$lastUpDateZ</userdata>
+        <userdata name="rowType">input</userdata>
+        <userdata name="tyChangeRateUH">$!resultObj.tyChangeRateUH</userdata>
+        <userdata name="tyChangeRateP">$!resultObj.tyChangeRateP</userdata>
+        <userdata name="tyChangeRateZ">$!resultObj.tyChangeRateZ</userdata>
+        <userdata name="yBaseValueUHLowerLevelPlanSummary">$!resultObj.yBaseValueUHLowerLevelPlanSummary</userdata>
+        <userdata name="yBaseValuePLowerLevelPlanSummary">$!resultObj.yBaseValuePLowerLevelPlanSummary</userdata>
+        <userdata name="yBaseValueZLowerLevelPlanSummary">$!resultObj.yBaseValueZLowerLevelPlanSummary</userdata>
+        ## 更新用ユーザデータ
+        ## 組織コード・雑組織フラグ・従業員番号・品目コード・シーケンスキー・最終更新日時・データ取得時の計画値 ＋ 登録ボタン押下後の入力計画値(追加)
+        <userdata name="updateRowId">$sosCd,$etcSosFlg,$jgiNo,$!form.bean.prodCode,$!resultObj.seqKeyUH,$!resultObj.upDateUH.Time,$!resultObj.yBaseValueUH,$!resultObj.seqKeyP,$!resultObj.upDateP.Time,$!resultObj.yBaseValueP,$!resultObj.seqKeyZ,$!resultObj.upDateZ.Time,$!resultObj.yBaseValueZ</userdata>
+    </row>
+    #set( $rowId = $rowId + 1 )
+#end
+</rows>
+#end

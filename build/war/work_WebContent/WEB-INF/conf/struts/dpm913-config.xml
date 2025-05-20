@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+ "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+
+    <form-beans>
+      <form-bean name="Dpm913C00Form" type="jp.co.takeda.web.in.dpm.Dpm913C00Form" />
+    </form-beans>
+
+<action-mappings type="jp.co.takeda.web.cmn.action.DpActionMapping">
+<!-- ***********************************************************************
+
+	(ワ)市区郡検索画面
+
+ ***********************************************************************  -->
+<action path="/dpm913C00F00"
+ type="jp.co.takeda.web.ctrl.dpm.Dpm913C00Action" name="Dpm913C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dpm913C00F00" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dpm/dpm913C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dpm/dpm913C00.vm" />
+</action>
+
+<action path="/dpm913C00F05"
+ type="jp.co.takeda.web.ctrl.dpm.Dpm913C00Action" name="Dpm913C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dpm913C00F05" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dpm/dpm913C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dpm/dpm913C00.vm" />
+</action>
+
+</action-mappings>
+</struts-config>

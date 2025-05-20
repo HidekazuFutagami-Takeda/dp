@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_MIKAKUTOKU_SIJOU_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.MikakutokuSijou" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="YAKKOU_SIJOU_CODE" property="yakkouSijouCode" jdbcType="CHAR" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="INS_TYPE" property="insType" jdbcType="CHAR" />
+    <result column="INS_NO" property="insNo" jdbcType="VARCHAR" />
+    <result column="YAKKOU_SIJOU_ZENTAI" property="yakkouSijouZentai" jdbcType="BIGINT" />
+    <result column="YAKKOU_SIJOU_TAKEDA" property="yakkouSijouTakeda" jdbcType="BIGINT" />
+    <result column="YAKKOU_SIJOU_MIKAKUTOKU" property="yakkouSijouMikakutoku" jdbcType="BIGINT" />
+    <result column="YAKKOU_SIJOU_RATIO" property="yakkouSijouRatio" jdbcType="DOUBLE" />
+    <result column="MODIFY_AMOUNT_Y" property="modifyAmountY" jdbcType="BIGINT" />
+    <result column="DIST_PLAN_MIKAKUTOKU" property="distPlanMikakutoku" jdbcType="BIGINT" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultMapList" class="jp.co.takeda.model.MikakutokuSijou" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="YAKKOU_SIJOU_CODE" property="yakkouSijouCode" jdbcType="CHAR" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="INS_TYPE" property="insType" jdbcType="CHAR" />
+    <result column="INS_NO" property="insNo" jdbcType="VARCHAR" />
+    <result column="YAKKOU_SIJOU_ZENTAI" property="yakkouSijouZentai" jdbcType="BIGINT" />
+    <result column="YAKKOU_SIJOU_TAKEDA" property="yakkouSijouTakeda" jdbcType="BIGINT" />
+    <result column="YAKKOU_SIJOU_MIKAKUTOKU" property="yakkouSijouMikakutoku" jdbcType="BIGINT" />
+    <result column="YAKKOU_SIJOU_RATIO" property="yakkouSijouRatio" jdbcType="DOUBLE" />
+    <result column="MODIFY_AMOUNT_Y" property="modifyAmountY" jdbcType="BIGINT" />
+    <result column="DIST_PLAN_MIKAKUTOKU" property="distPlanMikakutoku" jdbcType="BIGINT" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="SHOKUSHU_NAME" property="shokushuName" jdbcType="VARCHAR" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="BUMON_RYAKU_NAME" property="bumonRyakuName" jdbcType="VARCHAR" />
+    <result column="INS_ABBR_NAME" property="insAbbrName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="resultMapSumList" class="jp.co.takeda.model.MikakutokuSijou" >
+    <result column="YAKKOU_SIJOU_CODE" property="yakkouSijouCode" jdbcType="CHAR" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="INS_TYPE" property="insType" jdbcType="CHAR" />
+    <result column="YAKKOU_SIJOU_ZENTAI" property="yakkouSijouZentai" jdbcType="BIGINT" />
+    <result column="YAKKOU_SIJOU_TAKEDA" property="yakkouSijouTakeda" jdbcType="BIGINT" />
+    <result column="YAKKOU_SIJOU_MIKAKUTOKU" property="yakkouSijouMikakutoku" jdbcType="BIGINT" />
+    <result column="YAKKOU_SIJOU_RATIO" property="yakkouSijouRatio" jdbcType="DOUBLE" />
+    <result column="MODIFY_AMOUNT_Y" property="modifyAmountY" jdbcType="BIGINT" />
+    <result column="DIST_PLAN_MIKAKUTOKU" property="distPlanMikakutoku" jdbcType="BIGINT" />
+    <result column="DIST_PLAN_RATIO" property="distPlanRatio" jdbcType="DOUBLE" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="SHOKUSHU_NAME" property="shokushuName" jdbcType="VARCHAR" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="BUMON_RYAKU_NAME" property="bumonRyakuName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,YAKKOU_SIJOU_CODE
+          ,JGI_NO
+          ,INS_TYPE
+          ,INS_NO
+          ,YAKKOU_SIJOU_ZENTAI
+          ,YAKKOU_SIJOU_TAKEDA
+          ,YAKKOU_SIJOU_MIKAKUTOKU
+          ,YAKKOU_SIJOU_RATIO
+          ,MODIFY_AMOUNT_Y
+          ,DIST_PLAN_MIKAKUTOKU
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_MIKAKUTOKU_SIJOU
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.MikakutokuSijou" >
+    SELECT SEQ_KEY
+          ,YAKKOU_SIJOU_CODE
+          ,JGI_NO
+          ,INS_TYPE
+          ,INS_NO
+          ,YAKKOU_SIJOU_ZENTAI
+          ,YAKKOU_SIJOU_TAKEDA
+          ,YAKKOU_SIJOU_MIKAKUTOKU
+          ,YAKKOU_SIJOU_RATIO
+          ,MODIFY_AMOUNT_Y
+          ,DIST_PLAN_MIKAKUTOKU
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_MIKAKUTOKU_SIJOU
+     WHERE YAKKOU_SIJOU_CODE = #yakkouSijouCode:CHAR#
+       AND JGI_NO = #jgiNo:INTEGER#
+       AND INS_TYPE = #insType:CHAR#
+      <isNotNull prepend="AND" property="insNo" >
+           INS_NO = #insNo:VARCHAR#
+      </isNotNull>
+      <isNull prepend="AND" property="insNo" >
+           INS_NO IS NULL
+      </isNull>
+  </select>
+
+  <!-- 検索・組織、薬効市場(サマリ) -->
+  <select id="selectSumList" resultMap="resultMapSumList" parameterClass="java.util.Map" >
+    WITH SUMMI AS (SELECT JM.SOS_CD3
+                  ,SUM(MIS.YAKKOU_SIJOU_MIKAKUTOKU) YAKKOU
+                  ,SUM(MIS.DIST_PLAN_MIKAKUTOKU) DIST
+              FROM DPS_C_VI_JGI_MST JM
+                   LEFT OUTER JOIN DPS_I_MIKAKUTOKU_SIJOU MIS
+                ON JM.JGI_NO = MIS.JGI_NO
+             WHERE MIS.YAKKOU_SIJOU_CODE = #yakkouSijouCode:CHAR#
+               AND JM.SOS_CD3 = #sosCd3:VARCHAR#
+               AND MIS.INS_TYPE = #insType:CHAR#
+               <isNotNull property="jgiKbList">
+                   <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+                       #jgiKbList[].dbValue#
+                   </iterate>
+               </isNotNull>
+               <isNotNull prepend="AND" property="jokenSetList">
+               EXISTS (SELECT JO.JGI_NO
+               FROM DPS_C_JGI_JOKEN JO
+               WHERE JO.JGI_NO = JM.JGI_NO
+               <isNotNull property="jokenSetList">
+                   <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                       #jokenSetList[].dbValue#
+                   </iterate>
+               </isNotNull>
+               )
+               </isNotNull>
+             GROUP BY JM.SOS_CD3
+           )
+
+    SELECT #yakkouSijouCode:CHAR# AS YAKKOU_SIJOU_CODE
+          ,JM.JGI_NO
+          ,#insType:CHAR# AS INS_TYPE
+          ,YAKKOU_SIJOU_ZENTAI
+          ,YAKKOU_SIJOU_TAKEDA
+          ,YAKKOU_SIJOU_MIKAKUTOKU
+          ,CASE
+            WHEN SUMMI.YAKKOU = 0 THEN 0
+            ELSE ROUND( (YAKKOU_SIJOU_MIKAKUTOKU / SUMMI.YAKKOU) * 100 , 1 )
+           END AS YAKKOU_SIJOU_RATIO
+          ,MODIFY_AMOUNT_Y
+          ,DIST_PLAN_MIKAKUTOKU
+          ,CASE
+            WHEN SUMMI.DIST = 0 THEN 0
+            ELSE ROUND( (DIST_PLAN_MIKAKUTOKU / SUMMI.DIST) * 100 , 1 )
+           END AS DIST_PLAN_RATIO
+          ,JM.JGI_NAME
+          ,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+          ,JM.SOS_CD
+          ,SM.BUMON_RYAKU_NAME
+      FROM ((DPS_C_VI_JGI_MST JM
+            LEFT OUTER JOIN
+            (SELECT MIS.YAKKOU_SIJOU_CODE
+                  ,MIS.JGI_NO
+                  ,SUM(MIS.YAKKOU_SIJOU_ZENTAI) YAKKOU_SIJOU_ZENTAI
+                  ,SUM(MIS.YAKKOU_SIJOU_TAKEDA) YAKKOU_SIJOU_TAKEDA
+                  ,SUM(MIS.YAKKOU_SIJOU_MIKAKUTOKU) YAKKOU_SIJOU_MIKAKUTOKU
+                  ,SUM(MIS.YAKKOU_SIJOU_RATIO) YAKKOU_SIJOU_RATIO
+                  ,SUM(MIS.MODIFY_AMOUNT_Y) MODIFY_AMOUNT_Y
+                  ,SUM(MIS.DIST_PLAN_MIKAKUTOKU) DIST_PLAN_MIKAKUTOKU
+              FROM DPS_I_MIKAKUTOKU_SIJOU MIS
+                   INNER JOIN DPS_C_JGI_MST JM
+                ON MIS.JGI_NO = JM.JGI_NO
+             WHERE MIS.YAKKOU_SIJOU_CODE = #yakkouSijouCode:CHAR#
+               AND JM.SOS_CD3 = #sosCd3:VARCHAR#
+               AND MIS.INS_TYPE = #insType:CHAR#
+             GROUP BY MIS.YAKKOU_SIJOU_CODE
+                     ,MIS.JGI_NO
+           ) MI
+        ON MI.JGI_NO = JM.JGI_NO)
+           LEFT OUTER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD)
+           LEFT OUTER JOIN SUMMI
+        ON JM.SOS_CD3 = SUMMI.SOS_CD3
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ
+        ON JJ.JGI_NO = JM.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+     WHERE JM.SOS_CD3 = #sosCd3:VARCHAR#
+       <isNotNull property="jgiKbList">
+           <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               #jgiKbList[].dbValue#
+           </iterate>
+       </isNotNull>
+       <isNotNull prepend="AND" property="jokenSetList">
+           EXISTS (SELECT JO.JGI_NO
+           FROM DPS_C_JGI_JOKEN JO
+           WHERE JO.JGI_NO = JM.JGI_NO
+           <isNotNull property="jokenSetList">
+               <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                   #jokenSetList[].dbValue#
+               </iterate>
+           </isNotNull>
+           )
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 検索・組織、薬効市場 -->
+  <select id="selectList" resultMap="resultMapList" parameterClass="java.util.Map" >
+        SELECT MSI.SEQ_KEY
+			,MSI.YAKKOU_SIJOU_CODE
+			,MSI.JGI_NO
+<!-- mod start 2021/8/17 h.Kaneko 親子紐づけ対応 -->
+			<!-- ,MSI.INS_TYPE -->
+			,CASE NVL(OINS.HO_INS_TYPE, INS.HO_INS_TYPE)
+				WHEN '1' THEN '1'
+				WHEN '2' THEN '1'
+				WHEN '3' THEN '2'
+				WHEN '4' THEN '2'
+				ELSE msi.ins_type
+			END AS INS_TYPE
+<!-- mod end 2021/8/17 -->
+			,MSI.INS_NO
+			,MSI.YAKKOU_SIJOU_ZENTAI
+			,MSI.YAKKOU_SIJOU_TAKEDA
+			,MSI.YAKKOU_SIJOU_MIKAKUTOKU
+			,MSI.YAKKOU_SIJOU_RATIO
+			,MSI.MODIFY_AMOUNT_Y
+			,MSI.DIST_PLAN_MIKAKUTOKU
+			,MSI.UP_JGI_NO
+			,MSI.UP_JGI_NAME
+			,MSI.UP_DATE
+			,JM.JGI_NAME
+			,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+			,SM.SOS_CD
+			,SM.BUMON_RYAKU_NAME
+			,INS.INS_ABBR_NAME
+			,OINS.HO_INS_TYPE AS OINS_HO_INS_TYPE
+			,OINS.RELN_INS_NO AS OINS_RELN_INS_NO
+			,NVL(OYK.MAIN_INS_NO, '0') AS MAIN_INS_NO
+			,INS.HO_INS_TYPE AS INS_HO_INS_TYPE
+			,INS.RELN_INS_NO
+			,INS.RELN_INS_CODE
+          FROM ((DPS_I_MIKAKUTOKU_SIJOU MSI
+               LEFT OUTER JOIN DPS_C_JGI_MST JM
+            ON MSI.JGI_NO = JM.JGI_NO)
+               LEFT OUTER JOIN DPS_C_INS_MST INS
+            ON MSI.INS_NO = INS.INS_NO)
+               LEFT JOIN DPS_C_SY_COM_INS_OYAKO OYK
+            ON OYK.INS_NO = INS.INS_NO
+               AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+               LEFT JOIN DPS_C_INS_MST OINS
+            ON NVL(OYK.MAIN_INS_NO, OYK.INS_NO) = OINS.INS_NO AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+               LEFT OUTER JOIN DPS_C_SOS_MST SM
+            ON JM.SOS_CD = SM.SOS_CD
+               LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ
+            ON JJ.JGI_NO = JM.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+         WHERE MSI.YAKKOU_SIJOU_CODE = #yakkouSijouCode:CHAR#
+           AND JM.SOS_CD3 = #sosCd3:VARCHAR#
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.MikakutokuSijou" >
+    UPDATE DPS_I_MIKAKUTOKU_SIJOU
+       SET MODIFY_AMOUNT_Y = #modifyAmountY:BIGINT#
+          ,DIST_PLAN_MIKAKUTOKU = #distPlanMikakutoku:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_MIKAKUTOKU_SIJOU
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </delete>
+
+</sqlMap>

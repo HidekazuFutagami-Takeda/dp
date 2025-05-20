@@ -1,0 +1,149 @@
+##dpm913C00.vm 市区郡検索画面
+#set($contentsId = "freeSizeContents")
+#set( $layout = "dialogueLayout.vm" )
+#set($bodyOnloadMethod = "dpm913C00F00()")
+##set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($pageTitle = $text.get("dpm913C00","title"))
+## アクションフォーム値取得
+#set($fukenApplyFuncName = $form.bean.fukenApplyFuncName)
+#set($crntPageNo = $form.bean.crntPageNo)
+#if ($form.getRequestData("JIS_LIST_KEY_R"))
+    #set($listDto = $form.getRequestData("JIS_LIST_KEY_R"))
+    #set($pagingBean = $paging.getPagingBean($listDto.addrSearchResultList,$consts.pageCount,$crntPageNo))
+    #set($dataList = $pagingBean.getCrntPageData())
+#end
+<script language="javascript">
+<!--
+
+function dpm913C00F00() {
+    return false;
+}
+
+## 検索クリック
+function dpm913C00F00Search() {
+    if (dpm913C00F00Validation()) {
+        document.dpm913C00Form.crntPageNo.value = "1";
+## add Start 2022/6/21 Y.Taniguchi バックログNo.21　組織に紐づく都道府県をプルダウンに表示する
+        document.dpm913C00Form.sosInitSosCodeValue.value = "$!form.bean.sosInitSosCodeValue";
+## add End 2022/6/21 Y.Taniguchi バックログNo.21　組織に紐づく都道府県をプルダウンに表示する
+        var actionPath = '$link.setAction('dpm913C00F05')';
+        document.dpm913C00Form.action = actionPath;
+        document.dpm913C00Form.submit();
+        dpm913C00F00Search = blockIt;
+    }
+    return false;
+}
+
+## 画面入力チェック
+function dpm913C00F00Validation() {
+    ## 入力フォーム
+    form = document.dpm913C00Form;
+
+    ## [全角] 市区町村
+    value = form.sikuMeiKn.value;
+    if (value) {
+        errorMsg = '$text.get("DPC1004E",["市区町村","全角"])';
+        isAdded = addErrorInfo(!isZenkakuKana(value), errorMsg);
+        if (!isAdded) {
+            ## [文字数(22)]
+            limitByte = 22;
+            errorMsg = '$text.get("DPC1022E",["市区町村","' + limitByte + '"])';
+            addErrorInfo(!isByteInRange(value, limitByte), errorMsg);
+        }
+    }
+
+    return validation();
+}
+
+## ページ番号クリック
+function dpm913C00F00Page(crntPageNo) {
+    document.dpm913C00Form.crntPageNo.value = crntPageNo;
+## add Start 2022/6/21 Y.Taniguchi バックログNo.21　組織に紐づく都道府県をプルダウンに表示する
+    document.dpm913C00Form.sosInitSosCodeValue.value = "$!form.bean.sosInitSosCodeValue";
+## add End 2022/6/21 Y.Taniguchi バックログNo.21　組織に紐づく都道府県をプルダウンに表示する
+    document.dpm913C00Form.sikuMeiKn.value = "$!form.bean.sikuMeiKn";
+    document.dpm913C00Form.addrCodePref.value = "$!form.bean.addrCodePref";
+    var actionPath = '$link.setAction('dpm913C00F05')';
+    document.dpm913C00Form.action = actionPath;
+    document.dpm913C00Form.submit();
+    return false;
+}
+
+## 呼び出し画面へ返す
+function dpm913C00F00Return(fukenCode,shikuCode,fukenName,shikuName) {
+    window.opener.${fukenApplyFuncName}(fukenCode,shikuCode,fukenName,shikuName);
+    window.close();
+    return false;
+}
+
+//-->
+</script>
+<div class="disp">
+<form name="dpm913C00Form" method="post">
+#token()
+<input type="hidden" name="fukenApplyFuncName" value="$fukenApplyFuncName"  id="fukenApplyFuncName"/>
+<input type="hidden" name="crntPageNo" value="$crntPageNo" id="crntPageNo"/>
+## add Start 2022/6/21 Y.Taniguchi バックログNo.21　組織に紐づく都道府県をプルダウンに表示する
+<input type="hidden" name="sosInitSosCodeValue" value="$sosInitSosCodeValue" id="sosInitSosCodeValue"/>
+## add End 2022/6/21 Y.Taniguchi バックログNo.21　組織に紐づく都道府県をプルダウンに表示する
+<table cellspacing="1" cellpadding="1" align="left" width="700">
+    <tr>
+        <td>
+            <table>
+                <tr>
+                    <td class="gridIndex" style="width:80px;">都道府県</td>
+                    <td>#select ("addrCodePref", $form.bean.prefectures, $!form.bean.addrCodePref)</td>
+                    <td class="gridIndex" style="width:80px;">市区町村</td>
+                    <td><input type="text" id="sikuMeiKn" name="sikuMeiKn" value="$!form.bean.sikuMeiKn" size="30"  maxlength="11"  class="ime_on"/></td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input type="button" value="表示" style="width:80px;" onclick="dpm913C00F00Search()" /><INPUT style="WIDTH: 80px" onclick="self.window.close();" type="button" value="閉じる" name="add_item2"></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    #if( $pagingBean )
+    <tr valign="top">
+        <td>
+            <table width="100%">
+                <tr>
+                    <td class="label">
+                    <div align="left">#dispSearchCount($pagingBean)</div>
+                    </td>
+                    <td>
+                    <div align="right">#dispSearchPage($pagingBean,"dpm913C00F00Page")</div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    #end
+    <tr valign="top">
+        <td>
+            <table width="100%" class="gridLine" style="border-collapse:collapse;">
+                <tr>
+                    <td class="gridIndex" width="40">
+                    <div align="center">選択</div>
+                    </td>
+                    <td class="gridIndex" width="380">
+                    <div align="center">都道府県</div>
+                    </td>
+                    <td nowrap class="gridIndex" width="380">
+                    <div align="center">市区町村</div>
+                    </td>
+                </tr>
+                #if( $dataList)
+                #foreach($result in $dataList)
+                <tr>
+                    <td class="gridLine"><div align="center"><input type="button" name="sos" style="WIDTH: 20px;" onClick="dpm913C00F00Return('$!result.addrCodePref','$!result.addrCodeCity','$!result.fukenName','$!result.shikuchosonMeiKj')"></div></td>
+                    <td class="gridLine">$!{result.fukenName}</td>
+                    <td class="gridLine"><label>$!{result.shikuchosonMeiKj}</label></td>
+                </tr>
+                #end
+                #end
+            </table>
+        </td>
+    </tr>
+</table>
+</form>
+</div>

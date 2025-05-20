@@ -1,0 +1,450 @@
+#set($layout = "dialogueLayout.vm" )
+#set($bodyOnloadMethod = "dps302C01F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($pageTitle = $text.get("dps302C01","title"))
+#set($searchData = $form.getRequestData("DPS302C01_DATA_R_INFO_RESULT"))
+#set($teamFlag = $form.getRequestData("DPS302C01_DATA_R_TEAM_FLAG"))
+## 画面定数 -------------------------------------------------------------------------
+## 空文字
+#set($emptyStr = "　")
+## チーム別計画編集画面リンク
+#set($urlTeamEdit = "executeLink('$link.setAction('dps302C02F15').addQueryData('sosCd3',$form.bean.sosCd3).addQueryData('sosCd4',$form.bean.sosCd4).addQueryData('prodCode',$form.bean.prodCode).addQueryData('insType',$form.bean.insType)');")
+## 担当者別計画編集画面リンク
+#set($urlTantoEdit = "executeLink('$link.setAction('dps302C03F20').addQueryData('sosCd3',$form.bean.sosCd3).addQueryData('sosCd4',$form.bean.sosCd4).addQueryData('prodCode',$form.bean.prodCode).addQueryData('insType',$form.bean.insType)');")
+## 検索処理結果 ---------------------------------------------------------------------
+## 立案対象品目 品目名称
+#set($prodName = $emptyStr)
+#if($searchData.prodName)
+    #set($prodName = $searchData.prodName)
+#end
+## 立案対象品目 製品区分
+#set($prodType = $emptyStr)
+#if($searchData.prodType)
+    #set($prodType = $searchData.prodType)
+#end
+## 試算品目 品目名称
+#set($estProdName = $emptyStr)
+#if($searchData.estProdName)
+    #set($estProdName = $searchData.estProdName)
+#end
+## 試算品目 製品区分
+#set($estProdType = $emptyStr)
+#if($searchData.estProdType)
+    #set($estProdType = $searchData.estProdType)
+#end
+## 試算パラメータ シーケンスキー
+#set($paramSeqKey = $emptyStr)
+#if($searchData.paramSeqKey)
+    #set($paramSeqKey = $searchData.paramSeqKey)
+#end
+## 試算パラメータ 最終更新者名
+#set($paramUpJgiName = $emptyStr)
+#if($searchData.paramUpJgiName)
+    #set($paramUpJgiName = $searchData.paramUpJgiName)
+#end
+## 試算パラメータ 最終更新日時
+#set($paramUpDate = $emptyStr)
+#if($searchData.paramUpDate)
+    #set($paramUpDate = $searchData.paramUpDate)
+#end
+## add start 2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+## 試算パラメータ 留保率
+#set($indexRyhRtsu = $emptyStr)
+#if($searchData.indexRyhRtsu)
+    #set($indexRyhRtsu = $searchData.indexRyhRtsu)
+#end
+## add end   2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+## 試算パラメータ 指数(未獲得市場)
+#set($indexMikakutoku = $emptyStr)
+#if($searchData.indexMikakutoku)
+    #set($indexMikakutoku = $searchData.indexMikakutoku)
+#end
+## 試算パラメータ 指数(納入実績)
+#set($indexDelivery = $emptyStr)
+#if($searchData.indexDelivery)
+    #set($indexDelivery = $searchData.indexDelivery)
+#end
+## 試算パラメータ 指数(フリー項目1)
+#set($indexFree1 = $emptyStr)
+#if($searchData.indexFree1)
+    #set($indexFree1 = $searchData.indexFree1)
+#end
+## 試算パラメータ 指数(フリー項目2)
+#set($indexFree2 = $emptyStr)
+#if($searchData.indexFree2)
+    #set($indexFree2 = $searchData.indexFree2)
+#end
+## 試算パラメータ 指数(フリー項目3)
+#set($indexFree3 = $emptyStr)
+#if($searchData.indexFree3)
+    #set($indexFree3 = $searchData.indexFree3)
+#end
+## 試算パラメータ フリー項目名称1
+#set($indexFreeName1 = $emptyStr)
+#if($searchData.indexFreeName1)
+    #set($indexFreeName1 = $searchData.indexFreeName1)
+#end
+## 試算パラメータ フリー項目名称2
+#set($indexFreeName2 = $emptyStr)
+#if($searchData.indexFreeName2)
+    #set($indexFreeName2 = $searchData.indexFreeName2)
+#end
+## 試算パラメータ フリー項目名称3
+#set($indexFreeName3 = $emptyStr)
+#if($searchData.indexFreeName3)
+    #set($indexFreeName3 = $searchData.indexFreeName3)
+#end
+#set($paramSos = $emptyStr)
+## 試算パラメータ 本部フラグ
+#if($searchData.isParamHonbu)
+    #set($paramSos = "本部案")
+#end
+## 試算パラメータ 営業所フラグ
+#if($searchData.isParamOffice)
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    #set($paramSos = "エリア案")
+##    #set($paramSos = "営業所案")
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+#end
+## チーム別計画編集 可否フラグ
+#set($canTeamPlanEdit = false)
+#if($searchData.canTeamPlanEdit)
+    #set($canTeamPlanEdit = $searchData.canTeamPlanEdit)
+#end
+## 担当者別計画編集 可否フラグ
+#set($canMrPlanEdit = false)
+#if($searchData.canMrPlanEdit)
+    #set($canMrPlanEdit = $searchData.canMrPlanEdit)
+#end
+## チーム表示フラグ
+#set($isTeamRank = false)
+#if($teamFlag)
+    #set($isTeamRank = $teamFlag)
+#end
+## 選択対象区分名
+#set($insTypeName = $emptyStr)
+#foreach($codeAndValue in $form.bean.insTypes)
+    #if($form.bean.insType)
+        #if($codeAndValue.code == $form.bean.insType)
+            #set($insTypeName = $codeAndValue.value)
+        #end
+    #end
+#end
+## 担当者別計画 最終更新者名
+#set($mrPlanUpJgiName = false)
+#if($searchData.mrPlanUpJgiName)
+    #set($mrPlanUpJgiName = $searchData.mrPlanUpJgiName)
+#end
+## 担当者別計画 最終更新日時
+#set($mrPlanUpDate = false)
+#if($searchData.mrPlanUpDate)
+    #set($mrPlanUpDate = $searchData.mrPlanUpDate)
+#end
+## ワクチンのカテゴリコード取得
+#set($vaccineCode = $service.getShienVaccineCode())
+
+<script language="javascript">
+<!--
+#set($dataListFileName  = "dps302C01x01.vm")
+#set($GridObjName = "dps302C01Grid")
+##チーム表示
+#set($gridHeight1 = $text.get("${GridObjName}1","grid"))
+##営業所表示
+#set($gridHeight2 = $text.get("${GridObjName}2","grid"))
+#set($CoverId = "dps302C01CoverId")
+var ${GridObjName};
+var preInsType =  "$form.bean.insType";
+## 初期表示＋読込処理
+function dps302C01F00() {
+## mod start 2018/06/22 H.Shiota J18-0002_2018年4月組織変更対応（計画支援）　sosApplyExt()を先頭に移動(初期選択組織のunderSosCntをdoInitGrid()で利用するため)
+    ## 組織設定
+    ## チーム表示の場合は初期階層をチームまでにセット
+    #if ($isTeamRank)
+        sosApplyExt("$!form.bean.sosCd4", "", "03", false);
+    ## 営業所表示の場合は初期階層を営業所までにセット
+    #else
+        sosApplyExt("$!form.bean.sosCd3", "", "02", false);
+    #end
+
+    ## グリッドの生成＋データ読込
+    doInitGrid();
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+## mod End   2018/06/22 H.Shiota J18-0002_2018年4月組織変更対応（計画支援）　sosApplyExt()を先頭に移動(初期選択組織のunderSosCntをdoInitGrid()で利用するため)
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+    #set($deliveryLabel = "納入実績")
+    #if($estProdName)
+        #set($deliveryLabel = $deliveryLabel + "(" + $estProdName + ")")
+    #end
+
+## add start 2018/06/22 H.Shiotai J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによってヘッダーの文言変更「チーム」⇔「エリア」
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    var headerSosTitle = "エリア内<BR>構成比";
+##    var headerSosTitle = "営業所・エリア内<BR>構成比";
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+	#if($form.bean.SosCd3)
+		if(document.getElementById('underSosCnt').value != "0"){
+	       	headerSosTitle = "チーム内構成比";
+		}
+	#end
+## add End   2018/06/22 H.Shiotai J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによってヘッダーの文言変更「チーム」⇔「エリア」
+
+##  ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+##  ${GridObjName}.setHeader("$emptyStr,担当者,翌期試算結果,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,$insTypeName,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan");
+##  ${GridObjName}.attachHeader("#rspan,#rspan,特定施設<br>個別計画,理論計画&#9312,#cspan,#cspan,理論計画&#9313,#cspan,#cspan,試算指数合計,#cspan,未獲得市場,#cspan,#cspan,$!deliveryLabel,#cspan,#cspan,$indexFreeName1,#cspan,#cspan,$indexFreeName2,#cspan,#cspan,$indexFreeName3,#cspan,#cspan");
+## mod start 2018/06/22 H.Shiota J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによってヘッダーの文言変更「チーム」⇔「営業所・エリア」
+##    ${GridObjName}.attachHeader("#rspan,#rspan,#rspan,増分,計画,前同比,増分,計画,前同比,所内構成比,チーム内構成比,<div id='gIndexMikakutoku' style='background-color:#FFFFFF;'></div>,所内構成比,チーム内構成比,<div id='gIndexDelivery' style='background-color:#FFFFFF;'></div>,所内構成比,チーム内構成比,<div id='gIndexFree1' style='background-color:#FFFFFF;'></div>,所内構成比,チーム内構成比,<div id='gIndexFree2' style='background-color:#FFFFFF;'></div>,所内構成比,チーム内構成比,<div id='gIndexFree3' style='background-color:#FFFFFF;'></div>,所内構成比,チーム内構成比");
+##  ${GridObjName}.attachHeader("#rspan,#rspan,#rspan,増分,計画,前同比,増分,計画,前同比,所内構成比," + headerSosTitle + ",<div id='gIndexMikakutoku' style='background-color:#FFFFFF;'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexDelivery' style='background-color:#FFFFFF;'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexFree1' style='background-color:#FFFFFF;'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexFree2' style='background-color:#FFFFFF;'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexFree3' style='background-color:#FFFFFF;'></div>,所内構成比," + headerSosTitle + "");
+##    ${GridObjName}.attachHeader("#rspan,#rspan,#rspan,増分,計画,前同比,増分,計画,前同比,所内構成比," + headerSosTitle + ",<div id='gIndexMikakutoku'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexDelivery'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexFree1'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexFree2'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexFree3'></div>,所内構成比," + headerSosTitle + "");
+##    ${GridObjName}.attachHeader("#rspan,#rspan,#rspan,増分,計画,前同比,増分,計画,前同比,所内構成比," + headerSosTitle + ",<div id='gIndexMikakutoku'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexDelivery'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexFree1'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexFree2'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexFree3'></div>,所内構成比," + headerSosTitle + "",["","","","","","","","","","","","margin:10px;background-color:#FFFFFF;","","","margin:10px;background-color:#FFFFFF;","","","margin:10px;background-color:#FFFFFF;","","","margin:10px;background-color:#FFFFFF;","","","margin:10px;background-color:#FFFFFF;","",""]);
+## mod End   2018/06/22 H.Shiota J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによってヘッダーの文言変更「チーム」⇔「営業所・エリア」
+## mod start 2020/07/01 趙 2020年4月組織変更対応（各種アプリ）
+##    ${GridObjName}.setInitWidths("100,100,80,80,80,80,80,80,80,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100");
+##  ${GridObjName}.setInitWidths("100,140,80,80,80,80,80,80,80,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100");
+## mod end   2020/07/01 趙 2020年4月組織変更対応（各種アプリ）
+##  ${GridObjName}.setColAlign("left,left,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right");
+##  ${GridObjName}.setColTypes("ro,ro,ron,ron,ron,ro,ron,ron,ro,ro,ro,ron,ro,ro,ron,ro,ro,ron,ro,ro,ron,ro,ro,ron,ro,ro");
+##  ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+##  ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("temp,$emptyStr,担当者,翌期試算結果,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,$insTypeName,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan");
+    ${GridObjName}.attachHeader("temp,#rspan,#rspan,特定施設<br>個別計画,理論計画&#9312,#cspan,#cspan,理論計画&#9313,#cspan,#cspan,試算指数合計,#cspan,未獲得市場,#cspan,#cspan,$!deliveryLabel,#cspan,#cspan,$indexFreeName1,#cspan,#cspan,$indexFreeName2,#cspan,#cspan,$indexFreeName3,#cspan,#cspan");
+    ${GridObjName}.attachHeader("temp,#rspan,#rspan,#rspan,増分,計画,前同比,増分,計画,前同比,所内構成比," + headerSosTitle + ",<div id='gIndexMikakutoku' style='background-color:#FFFFFF;'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexDelivery' style='background-color:#FFFFFF;'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexFree1' style='background-color:#FFFFFF;'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexFree2' style='background-color:#FFFFFF;'></div>,所内構成比," + headerSosTitle + ",<div id='gIndexFree3' style='background-color:#FFFFFF;'></div>,所内構成比," + headerSosTitle + "");
+    ${GridObjName}.setInitWidths("0,100,140,80,80,80,80,80,80,80,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100");
+    ${GridObjName}.setColAlign("left,left,left,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right");
+    ${GridObjName}.setColTypes("ro,ro,ro,ron,ron,ron,ro,ron,ron,ro,ro,ro,ron,ro,ro,ron,ro,ro,ron,ro,ro,ron,ro,ro,ron,ro,ro");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableColSpan(true);
+    ${GridObjName}.enableDistributedParsing(true,50,300);
+    ${GridObjName}.enableMultiline(false);
+    #if ($isTeamRank)
+        ${GridObjName}.enableAutoHeight(true, getGridHeight('dps302C01_2', $!gridHeight1)); ## チーム表示の場合は指数入力部がないため縦幅を長くする
+    #else
+        ${GridObjName}.enableAutoHeight(true, getGridHeight('dps302C01_1', $!gridHeight2));
+    #end
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+##  ${GridObjName}.setNumberFormat("0,000",2);
+##  ${GridObjName}.setNumberFormat("0,000",3);
+##  ${GridObjName}.setNumberFormat("0,000",4);
+##  ${GridObjName}.setNumberFormat("0,000",6);
+##  ${GridObjName}.setNumberFormat("0,000",7);
+##  ${GridObjName}.setNumberFormat("0,000",11);
+##  ${GridObjName}.setNumberFormat("0,000",14);
+##  ${GridObjName}.setNumberFormat("0,000",17);
+##  ${GridObjName}.setNumberFormat("0,000",20);
+##  ${GridObjName}.setNumberFormat("0,000",23);
+    ${GridObjName}.setNumberFormat("0,000",3);
+    ${GridObjName}.setNumberFormat("0,000",4);
+    ${GridObjName}.setNumberFormat("0,000",5);
+    ${GridObjName}.setNumberFormat("0,000",7);
+    ${GridObjName}.setNumberFormat("0,000",8);
+    ${GridObjName}.setNumberFormat("0,000",12);
+    ${GridObjName}.setNumberFormat("0,000",15);
+    ${GridObjName}.setNumberFormat("0,000",18);
+    ${GridObjName}.setNumberFormat("0,000",21);
+    ${GridObjName}.setNumberFormat("0,000",24);
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+##  ${GridObjName}.splitAt(2);
+    ${GridObjName}.splitAt(3);
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+    	if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    document.getElementById("gIndexMikakutoku").appendChild(document.getElementById("hIndexMikakutoku").childNodes[0]);
+    document.getElementById("gIndexDelivery").appendChild(document.getElementById("hIndexDelivery").childNodes[0]);
+    document.getElementById("gIndexFree1").appendChild(document.getElementById("hIndexFree1").childNodes[0]);
+    document.getElementById("gIndexFree2").appendChild(document.getElementById("hIndexFree2").childNodes[0]);
+    document.getElementById("gIndexFree3").appendChild(document.getElementById("hIndexFree3").childNodes[0]);
+}
+## リンク移動
+function executeLink(actionPath) {
+    if (isValueChanged()) {
+        if (!window.confirm('$text.get("DPC999C99.001","dialogue")')) {
+            return false;
+        }
+    }
+    document.dps302C01Form.action = actionPath;
+    document.dps302C01Form.submit();
+}
+## 処理実行
+function execute(actionPath) {
+    document.dps302C01Form.action = actionPath;
+    document.dps302C01Form.submit();
+    dps302C01F05 = blockIt;
+    dps302C01F10Execute = blockIt;
+    dps302C01F11Execute = blockIt;
+}
+## 検索処理
+function dps302C01F05() {
+    ##確認
+    if (isValueChanged()) {
+        if (!confirm('$text.get("DPC999C99.001","dialogue")')) {
+            ## キャンセルの場合、変更前のプルダウンに戻す。
+            document.getElementById("insType").value = preInsType;
+            return false;
+        }
+    }
+    var actionPath = '$link.setAction('dps302C01F05')';
+    execute(actionPath);
+}
+## 検索処理
+function dps302C01F05NoWarning() {
+    var actionPath = '$link.setAction('dps302C01F05')';
+    execute(actionPath);
+}
+## ダイアログを閉じる(画面内の閉じるボタン)
+function closeWindow() {
+    if (isValueChanged()) {
+        if (!window.confirm('$text.get("DPC999C99.001","dialogue")')) {
+            return false;
+        }
+    }
+    window.close();
+}
+## ダイアログを閉じる(ウィンドウの閉じるボタン)
+window.onbeforeunload = function(event) {
+    if (isValueChanged()){
+        var closeMsg = "$text.get('DPC999C99.000','dialogue')";
+        event = (event || window.event);
+        var flg = (event.clientX > 0 && event.clientY < 0);
+        if (flg) {
+            event.returnValue = closeMsg;
+        }
+    }
+};
+## 指数の値が読込時から変更されている場合にTRUE,そうでない場合FALSEを返す。
+function isValueChanged() {
+    var editFlag = false;
+    #if (!$isTeamRank)
+## add start 2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+    if ($indexRyhRtsu != document.getElementById("txtIndexRyhRtsu").value) {
+        editFlag = true;
+    }
+## add end   2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+    if ($indexMikakutoku != document.getElementById("txtIndexMikakutoku").value) {
+        editFlag = true;
+    }
+    if ($indexDelivery != document.getElementById("txtIndexDelivery").value) {
+        editFlag = true;
+    }
+    if ($indexFree1 != document.getElementById("txtIndexFree1").value) {
+        editFlag = true;
+    }
+    if ($indexFree2 != document.getElementById("txtIndexFree2").value) {
+        editFlag = true;
+    }
+    if ($indexFree3 != document.getElementById("txtIndexFree3").value) {
+        editFlag = true;
+    }
+    #end
+    return editFlag;
+}
+//-->
+</script>
+<div class="disp" style="padding:0px;margin:5px;">
+<form name="dps302C01Form" method="post">
+##共通部
+<div align="left" style="float: left; width: 70%;">
+<table class="gridTableLine" cellspacing="0" cellpadding="0" width="100%">
+    <tbody class="tableBody">
+        <tr>
+            <td class="header" style="width: 30px;">組織</td>
+            <td id="sos">$emptyStr</td>
+            <td class="header" style="width: 80px;">立案対象品目</td>
+            <td>$prodName</td>
+            <td class="header" style="width: 55px;">製品区分</td>
+            <td>$prodType</td>
+        </tr>
+        <tr>
+            <td class="header" colspan="2">$emptyStr</td>
+            <td class="header" style="width: 55px;">試算品目</td>
+            <td>$estProdName</td>
+            <td class="header" style="width: 55px;">製品区分</td>
+            <td>$estProdType</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+##最終更新情報
+<div align="right" style="float: left; width: 30%;">
+<table cellspacing="0" cellpadding="0" width="100%">
+    <tr>
+        <td style="text-align:right;">#upDateInfo($!mrPlanUpJgiName, $!mrPlanUpDate)</td>
+    </tr>
+    <tr>
+        <td style="text-align:right;"><a href="#" onclick="$urlTeamEdit">#if ($canTeamPlanEdit)チーム別計画編集画面へ#end</a></td>
+    </tr>
+    <tr>
+        <td style="text-align:right;"><a href="#" onclick="$urlTantoEdit">#if ($canMrPlanEdit)担当者別計画編集画面へ#end</a></td>
+    </tr>
+</table>
+</div>
+##チーム表示の場合は指数入力不可
+#if ($isTeamRank)
+#else
+    #parse("WEB-INF/view/pages/dps/dps302C01s01.vm")
+#end
+
+#if (!$isTeamRank)
+<div style="margin-top:5px;">
+    #if ($!security.hasAuthEdit("DPS302C01"))
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    <input type="button" value="エリア計画より再試算(エリア案)" style="width:195px;" onclick="dps302C01F10Execute()" />
+    <input type="button" value="エリア計画より再試算(本部案)" style="width:195px;"  onclick="dps302C01F11Execute()" />
+##    <input type="button" value="営業所計画より再試算(営業所案)" style="width:195px;" onclick="dps302C01F10Execute()" />
+##    <input type="button" value="営業所計画より再試算(本部案)" style="width:195px;"  onclick="dps302C01F11Execute()" />
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    #end
+</div>
+#end
+<table cellspacing="0" cellpadding="0" style="width:100%; margin-top:5px; margin-bottom:2px;">
+    <tr>
+        <td>
+            #selectWithFunc ("insType", $form.bean.insTypes, $!form.bean.insType, "dps302C01F05NoWarning()")
+            &nbsp;&nbsp;<input type="button" value="閉じる" style="width:80px;" onclick="closeWindow()" />
+        </td>
+
+	    #if($form.bean.category == "$vaccineCode")
+	        <td class="label" style="text-align:right;vertical-align:bottom;">$consts.tableHeaderB</td>
+	    #else
+	        <td class="label" style="text-align:right;vertical-align:bottom;">$consts.tableHeaderY</td>
+	    #end
+    </tr>
+</table>
+#loadingGridDiv2("${GridObjName}", "${CoverId}", "width: 100%; clear: both;")
+#token()
+## グリッド埋め込み項目
+<div style="display:none">
+    <div id="hIndexMikakutoku">$indexMikakutoku%</div>
+    <div id="hIndexDelivery">$indexDelivery%</div>
+    <div id="hIndexFree1">$indexFree1%</div>
+    <div id="hIndexFree2">$indexFree2%</div>
+    <div id="hIndexFree3">$indexFree3%</div>
+</div>
+## Hidden項目
+<input type="hidden" id="sosCd2" name="sosCd2" />
+<input type="hidden" id="sosCd3" name="sosCd3"  />
+<input type="hidden" id="sosCd4" name="sosCd4"  />
+<input type="hidden" id="jgiNo" name="jgiNo"  />
+<input type="hidden" id="initSosCodeValue" name="initSosCodeValue" />
+<input type="hidden" id="prodName" name="prodName" value="$prodName" />
+<input type="hidden" id="paramSeqKey" name="paramSeqKey" value="$paramSeqKey" />
+<input type="hidden" id="paramUpDateTime" name="paramUpDateTime" value="$paramUpDate.time" />
+## add start 2018/06/22 H.Shiota J18-0002_2018年4月組織変更対応（計画支援）
+<input type="hidden" id="underSosCnt" name="underSosCnt"  />
+## add end   2018/06/22 H.Shiota J18-0002_2018年4月組織変更対応（計画支援）
+</form>
+</div>

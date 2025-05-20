@@ -1,0 +1,264 @@
+##dps913_00.vm (医)過去実績参照画面(担当者別)
+#set( $layout = "dialogueLayout.vm" )
+#set($pageTitle = $text.get("dps913C00","title"))
+#set($bodyOnloadMethod = "dps913C00F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dps913C00x01.vm")
+#set($GridObjName = "dps913C00Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps913C00CoverId")
+#if($form.bean.page)
+    #set( $page = $format.parseInteger($form.bean.page))
+#else
+    #set( $page = $format.parseInteger("4"))
+#end
+#set( $dataList = $form.getRequestData("DPS913C00_DATA_R"))
+#set($gridHeight = $text.get("$GridObjName","grid"))
+
+## ワクチンのカテゴリコード取得
+#set($vaccineCode = $service.getShienVaccineCode())
+
+## 追加ヘッダ
+#set($attachHeader = $form.bean.attachHeader)
+
+<script language="javascript">
+<!--
+var startTime = new Date();
+var ${GridObjName};
+var editFlg = false;
+var inspos = 0;
+
+##初期表示＋読込処理
+function dps913C00F00() {
+    window.name = "self";
+    doInitGrid();
+    if (document.getElementById("dps913C00x01.vm")) {
+        var loadXMLString = document.getElementById("dps913C00x01.vm").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+
+}
+function doInitGrid() {
+
+    if (${GridObjName} == null) {
+
+        ## mod Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+        ## var headerStr = ["temp,　,#cspan"];
+        ## var attachHeaderStr = ["　,　,担当者"];
+        ## var setInitWidthsStr = ["0,120,140"];
+        ## var setColAlignStr = ["left,left,left"];
+        ## var setColTypesStr = ["ro,ro,ro"];
+        ## var enableResizingStr = ["false,false,false"];
+        var headerStr = [",temp,　,#cspan"];
+        var attachHeaderStr = ["品目,　,　,担当者"];
+        var setInitWidthsStr = ["85,0,120,140"];
+        var setColAlignStr = ["left,left,left,left"];
+        var setColTypesStr = ["ro,ro,ro,ro"];
+        var enableResizingStr = ["false,false,false,false"];
+        ## mod End 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+        var headerP =  "$form.bean.headerP";
+        var headerUH = "$form.bean.headerUh";
+
+        for(i=1;i<4;i++){
+            if(i == 1){
+                headerStr.push(",合計");
+            }
+            if(i == 2){
+                headerStr.push("," + headerUH);
+            }
+            if(i == 3){
+                headerStr.push("," + headerP);
+            }
+            #if($page == 0)
+                #if($dataList.getRefDateList())
+                    #foreach($date in $dataList.getRefDateList())
+                        attachHeaderStr.push("," + '$format.toString($date, "yyyy/MM")');
+                        headerStr.push(",#cspan");
+                        setInitWidthsStr.push(",80");
+                        setColAlignStr.push(",right");
+                        setColTypesStr.push(",ron");
+                        enableResizingStr.push(",false");
+                    #end
+                #end
+            #else
+                #if($dataList.getRefDateList())
+                    #foreach($date in $paging.getPagingBean($dataList.getRefDateList(),6,$page).getCrntPageData())
+                        attachHeaderStr.push("," + '$format.toString($date, "yyyy/MM")');
+                        headerStr.push(",#cspan");
+                        setInitWidthsStr.push(",80");
+                        setColAlignStr.push(",right");
+                        setColTypesStr.push(",ron");
+                        enableResizingStr.push(",false");
+                    #end
+                #end
+            #end
+            attachHeaderStr.push(",前々々期");
+            attachHeaderStr.push(",前々期");
+            attachHeaderStr.push(",前期");
+            attachHeaderStr.push(",当期");
+            attachHeaderStr.push(",当期計画");
+            attachHeaderStr.push(",遂行率");
+            headerStr.push(",#cspan,#cspan,#cspan,#cspan,#cspan");
+            setInitWidthsStr.push(",80,80,80,80,80,80");
+            setColAlignStr.push(",right,right,right,right,right,right");
+            setColTypesStr.push(",ron,ron,ron,ron,ron,ron");
+            enableResizingStr.push(",false,false,false,false,false,false");
+        }
+
+        ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+        ${GridObjName}.setHeader(headerStr.join(""));
+        ${GridObjName}.attachHeader(attachHeaderStr.join(""));
+        ${GridObjName}.setInitWidths(setInitWidthsStr.join(""));
+        ${GridObjName}.setColAlign(setColAlignStr.join(""));
+        ${GridObjName}.setColTypes(setColTypesStr.join(""));
+        ${GridObjName}.enableResizing(enableResizingStr.join(""));
+        ${GridObjName}.enableTooltips(enableResizingStr.join(""));
+        #if($page == 0)
+            ##for(i=2;i<92;i++){
+            ##    if(i == 31 || i == 61 || i == 91){
+            ## mod Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+            ## for(i=3;i<93;i++){
+            ##       if(i == 32 || i == 62 || i == 92){
+            for(i=4;i<94;i++){
+                  if(i == 33 || i == 63 || i == 93){
+            ## mod End 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+                    ${GridObjName}.setNumberFormat("0,000.0",i);
+                }else{
+                    ${GridObjName}.setNumberFormat("0,000",i);
+                }
+            }
+        #else
+            ##for(i=2;i<38;i++){
+            ##  if(i == 13 || i == 25 || i == 37){
+            ## mod Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+            ## for(i=3;i<39;i++){
+            ##     if(i == 14 || i == 26 || i == 38){
+            for(i=4;i<40;i++){
+                if(i == 15 || i == 27 || i == 39){
+            ## mod End 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+                    ${GridObjName}.setNumberFormat("0,000.0",i);
+                }else{
+                    ${GridObjName}.setNumberFormat("0,000",i);
+                }
+            }
+        #end
+
+        ${GridObjName}.enableDistributedParsing(true,150,50);
+        ${GridObjName}.enableAutoHeight(true, getGridHeight('dps913C00', $!gridHeight));
+        ${GridObjName}.init();
+
+        ${GridObjName}.enableEditEvents(true, false, true);
+        ${GridObjName}.enableBlockSelection();
+        ${GridObjName}.forceLabelSelection(true);
+        ${GridObjName}.setCSVDelimiter("\t");
+        ## mod Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+        ## ${GridObjName}.splitAt(3);
+        ${GridObjName}.splitAt(4);
+        ## mod End 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+        ${GridObjName}.attachEvent("onXLE",function(){
+            /*
+            var endTime = new Date();
+            var msec = endTime - startTime;
+            alert(msec);
+            */
+            });
+        ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+            if(!(currentCellMove(${GridObjName},keycode))){return false;}
+            copyBlock(${GridObjName}, keycode, ctrl, shift);
+            return true;
+            });
+    }
+}
+function pageChange(value){
+    var form = document.dps913C00Form;
+    var element = document.createElement('input');
+    element.type = "hidden";
+    element.name = "page";
+    element.value = value;
+    form.appendChild(element);
+    form.submit();
+    pageChange = blockIt;
+}
+//-->
+</script>
+
+<div class="disp">
+    <div align="left">
+        <form action="$link.setAction('dps913C00F00')" method="post" name="dps913C00Form">
+        <table class="gridLine" cellspacing="0" cellpadding="0" width="100%">
+        <tr>
+            <td class="gridIndex" width="10%">品目</td>
+            <td width="60%">
+
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　多少汎用的な形に書き換え
+##          #if(${form.bean.prodCategory} == 1)
+##              #set($prodList = $service.getMMP_ONCRefProdList(false))
+##          #elseif(${form.bean.prodCategory} == 3)
+##              #set($prodList = $service.getMMP_ONCRefProdList(false))
+##          #else
+##              #set($prodList = $service.getShireRefProdList(false))
+##          #end
+
+            ##ワクチンかワクチン以外で取得する品目を変更
+            #if(!${form.bean.category} || ${form.bean.category} == "$vaccineCode")
+                 #set($prodList = $service.getWakutinRefProdList(true))
+            #else
+                #set($prodList = $service.getDpsRefProdList(${form.bean.category}, true))
+            #end
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　多少汎用的な形に書き換え　
+                #select( "prodCode", $prodList, $form.bean.prodCode )
+                <input type="button" name="button" value="変更" onclick="submit(this.form)">
+                <input type="hidden" name="sosCd3" value="$!{form.bean.sosCd3}">
+            </td>
+            <td class="textC" width="30%">
+                展開期間　：　
+                #if($page == 1)
+                    前々々期
+                #else
+                    <a href="#" onClick="pageChange(1)">前々々期</a>
+                #end
+                #if($page == 2)
+                    前々期
+                #else
+                    <a href="#" onClick="pageChange(2)">前々期</a>
+                #end
+                #if($page == 3)
+                    前期
+                #else
+                    <a href="#" onClick="pageChange(3)">前期</a>
+                #end
+                #if($page == 4)
+                    当期
+                #else
+                    <a href="#" onClick="pageChange(4)">当期</a>
+                #end
+                #if($page == 0)
+                    全て
+                #else
+                    <a href="#" onClick="pageChange(0)">全て</a>
+                #end
+            </td>
+        </tr>
+        </table>
+        </form>
+    </div>
+    <div>
+        <table cellspacing="0" cellpadding="0" style="width:100%; margin-top:5px; margin-bottom:2px;">
+        <tr>
+            <td><input type="button" value="閉じる" onclick="window.close();" /></td>
+            #if($form.bean.category == "$vaccineCode")
+                <td class="label" style="text-align:right;vertical-align:bottom;">$consts.tableHeaderB</td>
+            #else
+                <td class="label" style="text-align:right;vertical-align:bottom;">$consts.tableHeaderY</td>
+            #end
+        </tr></table>
+    </div>
+    #loadingGridDiv2("${GridObjName}", "${CoverId}", "width: 100%; clear: both;")
+    <div class="guide">
+        ※遂行率は、実績／計画×100をあらわします。
+    </div>
+</div>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_DPS_C_VI_CPROD_XLS_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.PlannedProd" >
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="GROUP_CODE" property="groupCode" jdbcType="CHAR" />
+    <result column="STAT_PROD_CODE" property="statProdCode" jdbcType="CHAR" />
+    <result column="CATEGORY" property="category" jdbcType="CHAR" />
+    <result column="SALES" property="sales" jdbcType="CHAR" />
+    <result column="PROD_TYPE" property="prodType" jdbcType="VARCHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result column="PROD_ABBR_NAME" property="prodAbbrName" jdbcType="VARCHAR" />
+    <result column="YAKKOU_SIJOU_CODE" property="yakkouSijouCode" jdbcType="CHAR" />
+    <result column="DIST_BASIS_TYPE" property="distBasisType" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_ZENSHA" property="planLevelZensha" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_SITEN" property="planLevelSiten" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_OFFICE" property="planLevelOffice" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_TEAM" property="planLevelTeam" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_MR" property="planLevelMr" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_INS" property="planLevelIns" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_INS_DOC" property="planLevelInsDoc" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_INS_WS" property="planLevelInsWs" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_WS" property="planLevelWs" jdbcType="CHAR" />
+    <result column="TEMP_PROD_FLG" property="tempProdFlg" jdbcType="CHAR" />
+    <result column="PLAN_TARGET_FLG" property="planTargetFlg" jdbcType="CHAR" />
+    <result column="PRESCRIPTION_TYPE" property="prescriptionType" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <!-- 検索 -->
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT T0.PCAT_CODE PROD_CODE
+          ,MAX(T0.GROUP_CODE) GROUP_CODE
+          ,MAX(T0.STAT_PROD_CODE) STAT_PROD_CODE
+          ,MAX(T0.CATEGORY) CATEGORY
+          ,MAX(T0.SALES) SALES
+          ,MAX(T0.PROD_TYPE) PROD_TYPE
+          ,T0.PCAT_NAME PROD_NAME
+          ,MAX(T0.PROD_ABBR_NAME) PROD_ABBR_NAME
+          ,MAX(T0.YAKKOU_SIJOU_CODE) YAKKOU_SIJOU_CODE
+          ,MAX(T0.DIST_BASIS_TYPE) DIST_BASIS_TYPE
+          ,MAX(T0.PLAN_LEVEL_ZENSHA) PLAN_LEVEL_ZENSHA
+          ,MAX(T0.PLAN_LEVEL_SITEN) PLAN_LEVEL_SITEN
+          ,MAX(T0.PLAN_LEVEL_OFFICE) PLAN_LEVEL_OFFICE
+          ,MAX(T0.PLAN_LEVEL_TEAM) PLAN_LEVEL_TEAM
+          ,MAX(T0.PLAN_LEVEL_MR) PLAN_LEVEL_MR
+          ,MAX(T0.PLAN_LEVEL_INS) PLAN_LEVEL_INS
+          ,MAX(T0.PLAN_LEVEL_INS_DOC) PLAN_LEVEL_INS_DOC
+          ,MAX(T0.PLAN_LEVEL_INS_WS) PLAN_LEVEL_INS_WS
+          ,MAX(T0.PLAN_LEVEL_WS) PLAN_LEVEL_WS
+          ,MAX(T0.TEMP_PROD_FLG) TEMP_PROD_FLG
+          ,MAX(T0.PLAN_TARGET_FLG) PLAN_TARGET_FLG
+          ,MAX(T0.PRESCRIPTION_TYPE) PRESCRIPTION_TYPE
+          ,MAX(T0.IS_JGI_NO) IS_JGI_NO
+          ,MAX(T0.IS_JGI_NAME) IS_JGI_NAME
+          ,MAX(T0.IS_DATE) IS_DATE
+          ,MAX(T0.UP_JGI_NO) UP_JGI_NO
+          ,MAX(T0.UP_JGI_NAME) UP_JGI_NAME
+          ,MAX(T0.UP_DATE) UP_DATE
+          ,MAX(NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999))  AS DATA_SEQ
+      FROM DPS_C_VI_CPROD_XLS T0
+      LEFT JOIN DPS_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND T0.PCAT_CODE = CM.DATA_CD
+    <isNotNull property="mrCat">
+      INNER JOIN DPS_C_MR_PROD_FIELD T1 ON T0.PROD_CODE = T1.PROD_CODE AND T1.MR_CAT = #mrCat:VARCHAR#
+    </isNotNull>
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="category">
+        T0.CATEGORY = #category:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sales">
+        T0.SALES = #sales:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planTargetFlg">
+        T0.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelInsDoc">
+        T0.PLAN_LEVEL_INS_DOC = #planLevelInsDoc:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="prescriptionType">
+        T0.PRESCRIPTION_TYPE = #prescriptionType:CHAR#
+      </isNotNull>
+    </dynamic>
+      GROUP BY T0.PCAT_CODE, T0.PCAT_NAME
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+</sqlMap>

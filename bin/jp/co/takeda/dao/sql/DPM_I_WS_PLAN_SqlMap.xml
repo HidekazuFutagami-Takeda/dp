@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_I_WS_PLAN_SqlMap" >
+  <resultMap id="resultMap" class="jp.co.takeda.model.ManageWsPlan" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="CAL_YEAR" property="calYear" jdbcType="CHAR" />
+    <result column="CAL_TERM" property="calTerm" jdbcType="CHAR" />
+    <result column="INS_TYPE" property="insType" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="PLANNED_1_VALUE_Y" property="implPlan.planned1ValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_1_VALUE_T" property="implPlan.planned1ValueT" jdbcType="BIGINT" />
+    <result column="PLANNED_2_VALUE_Y" property="implPlan.planned2ValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_2_VALUE_T" property="implPlan.planned2ValueT" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_1_VALUE_Y" property="implPlan.befPlanned1ValueY" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_1_VALUE_T" property="implPlan.befPlanned1ValueT" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_2_VALUE_Y" property="implPlan.befPlanned2ValueY" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_2_VALUE_T" property="implPlan.befPlanned2ValueT" jdbcType="BIGINT" />
+    <result column="DEL_FLG" property="delFlg" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="IS_PG_ID" property="isPgId" jdbcType="VARCHAR" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="UP_PG_ID" property="upPgId" jdbcType="VARCHAR" />
+
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result column="TMS_TYTEN_MEI_KJ" property="tmsTytenName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="column">
+     SEQ_KEY
+          , CAL_YEAR
+          , CAL_TERM
+          , INS_TYPE
+          , PROD_CODE
+          , TMS_TYTEN_CD
+          , PLANNED_1_VALUE_Y
+          , PLANNED_1_VALUE_T
+          , PLANNED_2_VALUE_Y
+          , PLANNED_2_VALUE_T
+          , BEF_PLANNED_1_VALUE_Y
+          , BEF_PLANNED_1_VALUE_T
+          , BEF_PLANNED_2_VALUE_Y
+          , BEF_PLANNED_2_VALUE_T
+          , DEL_FLG
+          , IS_JGI_NO
+          , IS_JGI_NAME
+          , IS_DATE
+          , IS_PG_ID
+          , UP_JGI_NO
+          , UP_JGI_NAME
+          , UP_DATE
+          , UP_PG_ID
+          , NULL AS PROD_NAME
+          , NULL AS TMS_TYTEN_MEI_KJ
+  </sql>
+
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT <include refid="column"/>
+      FROM DPM_I_WS_PLAN
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND CAL_YEAR = #calYear:CHAR#
+       AND CAL_TERM = #calTerm:CHAR#
+  </select>
+
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.ManageWsPlan" >
+    SELECT <include refid="column"/>
+      FROM DPM_I_WS_PLAN
+     WHERE CAL_YEAR = #calYear:CHAR#
+       AND CAL_TERM = #calTerm:CHAR#
+       AND INS_TYPE = #insType:VARCHAR#
+       AND PROD_CODE = #prodCode:CHAR#
+       AND TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+  </select>
+
+  <select id="selectListByProd" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT WP.SEQ_KEY
+          ,WP.CAL_YEAR
+          ,WP.CAL_TERM
+          ,'1' AS INS_TYPE
+          ,#prodCode:CHAR# AS PROD_CODE
+          ,TMS.TMS_TYTEN_CD
+          ,WP.PLANNED_1_VALUE_Y
+          ,WP.PLANNED_1_VALUE_T
+          ,WP.PLANNED_2_VALUE_Y
+          ,WP.PLANNED_2_VALUE_T
+          ,WP.BEF_PLANNED_1_VALUE_Y
+          ,WP.BEF_PLANNED_1_VALUE_T
+          ,WP.BEF_PLANNED_2_VALUE_Y
+          ,WP.BEF_PLANNED_2_VALUE_T
+          ,WP.DEL_FLG
+          ,WP.IS_JGI_NO
+          ,WP.IS_JGI_NAME
+          ,WP.IS_DATE
+          ,WP.IS_PG_ID
+          ,WP.UP_JGI_NO
+          ,WP.UP_JGI_NAME
+          ,WP.UP_DATE
+          ,WP.UP_PG_ID
+          ,NULL AS PROD_NAME
+          ,TMS.TMS_TYTEN_MEI_KJ
+      FROM (<include refid="COMMON_SqlMap.add_tmsView"/>) TMS
+       <isNotNull property="allWsFlg">
+           LEFT JOIN DPM_I_WS_PLAN WP
+       </isNotNull>
+       <isNull property="allWsFlg">
+           INNER JOIN DPM_I_WS_PLAN WP
+       </isNull>
+        ON TMS.TMS_TYTEN_CD = WP.TMS_TYTEN_CD
+       AND WP.CAL_YEAR = #calYear:CHAR#
+       AND WP.CAL_TERM = #calTerm:CHAR#
+       AND WP.PROD_CODE = #prodCode:CHAR#
+       AND WP.INS_TYPE = '1'
+     WHERE TMS.TMS_TYTEN_CD LIKE #tmsTytenCd:CHAR# ESCAPE '~'
+    UNION
+    SELECT WP.SEQ_KEY
+          ,WP.CAL_YEAR
+          ,WP.CAL_TERM
+          ,'2' AS INS_TYPE
+          ,#prodCode:CHAR# AS PROD_CODE
+          ,TMS.TMS_TYTEN_CD
+          ,WP.PLANNED_1_VALUE_Y
+          ,WP.PLANNED_1_VALUE_T
+          ,WP.PLANNED_2_VALUE_Y
+          ,WP.PLANNED_2_VALUE_T
+          ,WP.BEF_PLANNED_1_VALUE_Y
+          ,WP.BEF_PLANNED_1_VALUE_T
+          ,WP.BEF_PLANNED_2_VALUE_Y
+          ,WP.BEF_PLANNED_2_VALUE_T
+          ,WP.DEL_FLG
+          ,WP.IS_JGI_NO
+          ,WP.IS_JGI_NAME
+          ,WP.IS_DATE
+          ,WP.IS_PG_ID
+          ,WP.UP_JGI_NO
+          ,WP.UP_JGI_NAME
+          ,WP.UP_DATE
+          ,WP.UP_PG_ID
+          ,NULL AS PROD_NAME
+          ,TMS.TMS_TYTEN_MEI_KJ
+      FROM (<include refid="COMMON_SqlMap.add_tmsView"/>) TMS
+       <isNotNull property="allWsFlg">
+           LEFT JOIN DPM_I_WS_PLAN WP
+       </isNotNull>
+       <isNull property="allWsFlg">
+           INNER JOIN DPM_I_WS_PLAN WP
+       </isNull>
+        ON TMS.TMS_TYTEN_CD = WP.TMS_TYTEN_CD
+       AND WP.CAL_YEAR = #calYear:CHAR#
+       AND WP.CAL_TERM = #calTerm:CHAR#
+       AND WP.PROD_CODE = #prodCode:CHAR#
+       AND WP.INS_TYPE = '2'
+     WHERE TMS.TMS_TYTEN_CD LIKE #tmsTytenCd:CHAR# ESCAPE '~'
+    UNION
+    SELECT WP.SEQ_KEY
+          ,WP.CAL_YEAR
+          ,WP.CAL_TERM
+          ,'3' AS INS_TYPE
+          ,#prodCode:CHAR# AS PROD_CODE
+          ,TMS.TMS_TYTEN_CD
+          ,WP.PLANNED_1_VALUE_Y
+          ,WP.PLANNED_1_VALUE_T
+          ,WP.PLANNED_2_VALUE_Y
+          ,WP.PLANNED_2_VALUE_T
+          ,WP.BEF_PLANNED_1_VALUE_Y
+          ,WP.BEF_PLANNED_1_VALUE_T
+          ,WP.BEF_PLANNED_2_VALUE_Y
+          ,WP.BEF_PLANNED_2_VALUE_T
+          ,WP.DEL_FLG
+          ,WP.IS_JGI_NO
+          ,WP.IS_JGI_NAME
+          ,WP.IS_DATE
+          ,WP.IS_PG_ID
+          ,WP.UP_JGI_NO
+          ,WP.UP_JGI_NAME
+          ,WP.UP_DATE
+          ,WP.UP_PG_ID
+          ,NULL AS PROD_NAME
+          ,TMS.TMS_TYTEN_MEI_KJ
+      FROM (<include refid="COMMON_SqlMap.add_tmsView"/>) TMS
+       <isNotNull property="allWsFlg">
+           LEFT JOIN DPM_I_WS_PLAN WP
+       </isNotNull>
+       <isNull property="allWsFlg">
+           INNER JOIN DPM_I_WS_PLAN WP
+       </isNull>
+        ON TMS.TMS_TYTEN_CD = WP.TMS_TYTEN_CD
+       AND WP.CAL_YEAR = #calYear:CHAR#
+       AND WP.CAL_TERM = #calTerm:CHAR#
+       AND WP.PROD_CODE = #prodCode:CHAR#
+       AND WP.INS_TYPE = '3'
+     WHERE TMS.TMS_TYTEN_CD LIKE #tmsTytenCd:CHAR# ESCAPE '~'
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <select id="selectListByWs" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT WP.SEQ_KEY
+          ,WP.CAL_YEAR
+          ,WP.CAL_TERM
+          ,'1' AS INS_TYPE
+          ,PP.PROD_CODE
+          ,#tmsTytenCd:CHAR# AS TMS_TYTEN_CD
+          ,WP.PLANNED_1_VALUE_Y
+          ,WP.PLANNED_1_VALUE_T
+          ,WP.PLANNED_2_VALUE_Y
+          ,WP.PLANNED_2_VALUE_T
+          ,WP.BEF_PLANNED_1_VALUE_Y
+          ,WP.BEF_PLANNED_1_VALUE_T
+          ,WP.BEF_PLANNED_2_VALUE_Y
+          ,WP.BEF_PLANNED_2_VALUE_T
+          ,WP.DEL_FLG
+          ,WP.IS_JGI_NO
+          ,WP.IS_JGI_NAME
+          ,WP.IS_DATE
+          ,WP.IS_PG_ID
+          ,WP.UP_JGI_NO
+          ,WP.UP_JGI_NAME
+          ,WP.UP_DATE
+          ,WP.UP_PG_ID
+          ,PP.PROD_NAME
+          ,PP.GROUP_CODE
+          ,PP.STAT_PROD_CODE
+          ,NULL AS TMS_TYTEN_MEI_KJ
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPM_C_PLANNED_PROD PP
+       <isNotNull property="allProdFlg">
+           LEFT JOIN DPM_I_WS_PLAN WP
+       </isNotNull>
+       <isNull property="allProdFlg">
+           INNER JOIN DPM_I_WS_PLAN WP
+       </isNull>
+	        ON WP.PROD_CODE = PP.PROD_CODE
+	       AND WP.CAL_YEAR = PP.CAL_YEAR
+	       AND WP.CAL_TERM = PP.CAL_TERM
+	       AND WP.TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+           <isNull property="isVaccine">
+               AND WP.INS_TYPE = '1'
+           </isNull>
+<!-- mid Start 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える-->
+<!--	  LEFT JOIN DPM_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD-->
+     	  LEFT JOIN DPM_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod_ws' AND PP.PROD_CODE = CM.DATA_CD
+<!-- mid End 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える-->
+     WHERE PP.PLAN_LEVEL_WS = '1'
+       <isNull property="isVaccine">
+       AND PP.SALES = '01'
+       </isNull>
+       <isNotNull property="isVaccine">
+       AND PP.SALES = '03'
+       </isNotNull>
+       AND PP.CAL_YEAR = #calYear:CHAR#
+       AND PP.CAL_TERM = #calTerm:CHAR#
+       <isNotNull property="category" prepend="AND">
+<!-- mod Start 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加 -->
+<!--           PP.CATEGORY = #category:CHAR# -->
+           (
+             (#category:CHAR# = #categoryIyakuAll:CHAR# AND PP.CATEGORY != #categoryVxBU:CHAR#)
+              OR
+             (PP.CATEGORY = #category:CHAR#)
+           )
+<!-- mod End 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加 -->
+       </isNotNull>
+  <isNull property="isVaccine">
+    UNION
+    SELECT WP.SEQ_KEY
+          ,WP.CAL_YEAR
+          ,WP.CAL_TERM
+          ,'2' AS INS_TYPE
+          ,PP.PROD_CODE
+          ,#tmsTytenCd:CHAR# AS TMS_TYTEN_CD
+          ,WP.PLANNED_1_VALUE_Y
+          ,WP.PLANNED_1_VALUE_T
+          ,WP.PLANNED_2_VALUE_Y
+          ,WP.PLANNED_2_VALUE_T
+          ,WP.BEF_PLANNED_1_VALUE_Y
+          ,WP.BEF_PLANNED_1_VALUE_T
+          ,WP.BEF_PLANNED_2_VALUE_Y
+          ,WP.BEF_PLANNED_2_VALUE_T
+          ,WP.DEL_FLG
+          ,WP.IS_JGI_NO
+          ,WP.IS_JGI_NAME
+          ,WP.IS_DATE
+          ,WP.IS_PG_ID
+          ,WP.UP_JGI_NO
+          ,WP.UP_JGI_NAME
+          ,WP.UP_DATE
+          ,WP.UP_PG_ID
+          ,PP.PROD_NAME
+          ,PP.GROUP_CODE
+          ,PP.STAT_PROD_CODE
+          ,NULL AS TMS_TYTEN_MEI_KJ
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPM_C_PLANNED_PROD PP
+       <isNotNull property="allProdFlg">
+           LEFT JOIN DPM_I_WS_PLAN WP
+       </isNotNull>
+       <isNull property="allProdFlg">
+           INNER JOIN DPM_I_WS_PLAN WP
+       </isNull>
+	        ON WP.PROD_CODE = PP.PROD_CODE
+	       AND WP.CAL_YEAR = PP.CAL_YEAR
+	       AND WP.CAL_TERM = PP.CAL_TERM
+	       AND WP.TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+	       AND WP.INS_TYPE = '2'
+<!-- mid Start 2022/6/8 R.takamoto �o�b�N���ONo.26�@����X�ʌv��֘A�̕i�ڕ��я���ς���-->
+<!--	  LEFT JOIN DPM_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD-->
+     	  LEFT JOIN DPM_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod_ws' AND PP.PROD_CODE = CM.DATA_CD
+<!-- mid End 2022/6/8 R.takamoto �o�b�N���ONo.26�@����X�ʌv��֘A�̕i�ڕ��я���ς���-->
+     WHERE PP.PLAN_LEVEL_WS = '1'
+       <isNull property="isVaccine">
+       AND PP.SALES = '01'
+       </isNull>
+       <isNotNull property="isVaccine">
+       AND PP.SALES = '03'
+       </isNotNull>
+       AND PP.CAL_YEAR = #calYear:CHAR#
+       AND PP.CAL_TERM = #calTerm:CHAR#
+       <isNotNull property="category" prepend="AND">
+<!-- mod Start 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加 -->
+<!--           PP.CATEGORY = #category:CHAR# -->
+           (
+             (#category:CHAR# = #categoryIyakuAll:CHAR# AND PP.CATEGORY != #categoryVxBU:CHAR#)
+              OR
+             (PP.CATEGORY = #category:CHAR#)
+           )
+<!-- mod End 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加 -->
+       </isNotNull>
+    UNION
+    SELECT WP.SEQ_KEY
+          ,WP.CAL_YEAR
+          ,WP.CAL_TERM
+          ,'3' AS INS_TYPE
+          ,PP.PROD_CODE
+          ,#tmsTytenCd:CHAR# AS TMS_TYTEN_CD
+          ,WP.PLANNED_1_VALUE_Y
+          ,WP.PLANNED_1_VALUE_T
+          ,WP.PLANNED_2_VALUE_Y
+          ,WP.PLANNED_2_VALUE_T
+          ,WP.BEF_PLANNED_1_VALUE_Y
+          ,WP.BEF_PLANNED_1_VALUE_T
+          ,WP.BEF_PLANNED_2_VALUE_Y
+          ,WP.BEF_PLANNED_2_VALUE_T
+          ,WP.DEL_FLG
+          ,WP.IS_JGI_NO
+          ,WP.IS_JGI_NAME
+          ,WP.IS_DATE
+          ,WP.IS_PG_ID
+          ,WP.UP_JGI_NO
+          ,WP.UP_JGI_NAME
+          ,WP.UP_DATE
+          ,WP.UP_PG_ID
+          ,PP.PROD_NAME
+          ,PP.GROUP_CODE
+          ,PP.STAT_PROD_CODE
+          ,NULL AS TMS_TYTEN_MEI_KJ
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPM_C_PLANNED_PROD PP
+       <isNotNull property="allProdFlg">
+           LEFT JOIN DPM_I_WS_PLAN WP
+       </isNotNull>
+       <isNull property="allProdFlg">
+           INNER JOIN DPM_I_WS_PLAN WP
+       </isNull>
+	        ON WP.PROD_CODE = PP.PROD_CODE
+	       AND WP.CAL_YEAR = PP.CAL_YEAR
+	       AND WP.CAL_TERM = PP.CAL_TERM
+	       AND WP.TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+	       AND WP.INS_TYPE = '3'
+<!-- mid Start 2022/6/8 R.takamoto �o�b�N���ONo.26�@����X�ʌv��֘A�̕i�ڕ��я���ς���-->
+<!--	  LEFT JOIN DPM_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD-->
+     	  LEFT JOIN DPM_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod_ws' AND PP.PROD_CODE = CM.DATA_CD
+<!-- mid End 2022/6/8 R.takamoto �o�b�N���ONo.26�@����X�ʌv��֘A�̕i�ڕ��я���ς���-->
+     WHERE PP.PLAN_LEVEL_WS = '1'
+       <isNull property="isVaccine">
+       AND PP.SALES = '01'
+       </isNull>
+       <isNotNull property="isVaccine">
+       AND PP.SALES = '03'
+       </isNotNull>
+       AND PP.CAL_YEAR = #calYear:CHAR#
+       AND PP.CAL_TERM = #calTerm:CHAR#
+       <isNotNull property="category" prepend="AND">
+<!-- mod Start 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加 -->
+<!--           PP.CATEGORY = #category:CHAR# -->
+           (
+             (#category:CHAR# = #categoryIyakuAll:CHAR# AND PP.CATEGORY != #categoryVxBU:CHAR#)
+              OR
+             (PP.CATEGORY = #category:CHAR#)
+           )
+<!-- mod End 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加 -->
+       </isNotNull>
+  </isNull>
+	 ORDER BY
+       DATA_SEQ,
+       PROD_CODE,
+       INS_TYPE
+  </select>
+
+  <insert id="insert" parameterClass="jp.co.takeda.model.ManageWsPlan" >
+    INSERT INTO DPM_I_WS_PLAN
+           (SEQ_KEY
+          , CAL_YEAR
+          , CAL_TERM
+          , INS_TYPE
+          , PROD_CODE
+          , TMS_TYTEN_CD
+          , PLANNED_1_VALUE_Y
+          , PLANNED_1_VALUE_T
+          , PLANNED_2_VALUE_Y
+          , PLANNED_2_VALUE_T
+          , BEF_PLANNED_1_VALUE_Y
+          , BEF_PLANNED_1_VALUE_T
+          , BEF_PLANNED_2_VALUE_Y
+          , BEF_PLANNED_2_VALUE_T
+          , DEL_FLG
+          , IS_JGI_NO
+          , IS_JGI_NAME
+          , IS_DATE
+          , IS_PG_ID
+          , UP_JGI_NO
+          , UP_JGI_NAME
+          , UP_DATE
+          , UP_PG_ID)
+    VALUES (ORADPX01.SEQ_DPM_I_WS_PLAN.NEXTVAL
+          , #calYear:CHAR#
+          , #calTerm:CHAR#
+          , #insType:VARCHAR#
+          , #prodCode:CHAR#
+          , #tmsTytenCd:CHAR#
+          , #implPlan.planned1ValueY:BIGINT#
+          , #implPlan.planned1ValueT:BIGINT#
+          , #implPlan.planned2ValueY:BIGINT#
+          , #implPlan.planned2ValueT:BIGINT#
+          , #implPlan.befPlanned1ValueY:BIGINT#
+          , #implPlan.befPlanned1ValueT:BIGINT#
+          , #implPlan.befPlanned2ValueY:BIGINT#
+          , #implPlan.befPlanned2ValueT:BIGINT#
+          , #delFlg:CHAR#
+          , #isJgiNo:INTEGER#
+          , #isJgiName:VARCHAR#
+          , SYSTIMESTAMP
+          , #isPgId:VARCHAR#
+          , #upJgiNo:INTEGER#
+          , #upJgiName:VARCHAR#
+          , SYSTIMESTAMP
+          , #upPgId:VARCHAR#)
+  </insert>
+
+  <update id="update" parameterClass="jp.co.takeda.model.ManageWsPlan" >
+    UPDATE DPM_I_WS_PLAN
+       SET DEL_FLG = #delFlg:CHAR#
+          ,PLANNED_1_VALUE_Y = #implPlan.planned1ValueY:BIGINT#
+          ,PLANNED_1_VALUE_T = #implPlan.planned1ValueT:BIGINT#
+          ,PLANNED_2_VALUE_Y = #implPlan.planned2ValueY:BIGINT#
+          ,PLANNED_2_VALUE_T = #implPlan.planned2ValueT:BIGINT#
+          ,BEF_PLANNED_1_VALUE_Y = #implPlan.befPlanned1ValueY:BIGINT#
+          ,BEF_PLANNED_1_VALUE_T = #implPlan.befPlanned1ValueT:BIGINT#
+          ,BEF_PLANNED_2_VALUE_Y = #implPlan.befPlanned2ValueY:BIGINT#
+          ,BEF_PLANNED_2_VALUE_T = #implPlan.befPlanned2ValueT:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+          ,UP_PG_ID = #upPgId:VARCHAR#
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+</sqlMap>

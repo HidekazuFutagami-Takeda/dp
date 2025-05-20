@@ -1,0 +1,1734 @@
+## (医)組織別計画編集画面
+#set($pageTitle = $text.get("dpm500C00","title"))
+#set($bodyOnloadMethod  = "dpm500C00F00()")
+#set($dataListFileName  = "dpm500C00x01.vm")
+#set($dataListFileName2 = "dpm500C00x02.vm")
+## 検索結果
+#if($form.getRequestData("DPM500C00_DATA_R_SEARCH_RESULT"))
+    #set($resultDetail = $form.getRequestData("DPM500C00_DATA_R_SEARCH_RESULT").detailList)
+#end
+## 計画レベル:組織別では選択された組織の下位組織計画を表示するので、立案レベルも１つ下を使用する
+#if ($form.bean.sosCd3)
+    #set($planLevel = "DPM500C00_PLANLEVEL_MR")
+#elseif ($form.bean.sosCd2)
+    #set($planLevel = "DPM500C00_PLANLEVEL_OFFICE")
+#else
+    #set($planLevel = "DPM500C00_PLANLEVEL_SITEN")
+#end
+## 品目リスト
+#set($vaccineCode = $service.getVaccineCode())
+#set($jrnsCode = $service.getJrnsCode())
+#if($form.bean.prodCategory == "$vaccineCode")
+  #set($prodList = $service.getManageVaccineProdList($!form.bean.prodCategory, $form.getField("$planLevel"),false))
+#elseif($form.bean.prodCategory == "$jrnsCode")
+  #set($prodList = $service.getManageJrnsProdList($form.getField("$planLevel"), false))
+#else
+  #set($prodList = $service.getManageIyakuProdList($!form.bean.prodCategory, $form.getField("$planLevel"),false))
+#end
+
+## 品目名
+#set($prodName = "")
+#if($form.bean.prodCode)
+#foreach($codeAndValue in $prodList)
+    #if($codeAndValue.code == $form.bean.prodCode)
+        #set($prodName = "$codeAndValue.value")
+    #end
+#end
+#end
+## 実施計画区分
+#set($plannedType = $security.getPlannedType().toString())
+#set($plannedTypeStr = "実施計画")
+
+## グリッドのヘッダ
+#set($headerDetail = $form.bean.headerDetail)
+#set($headerSum = $form.bean.headerSum)
+#set($attachHeader1row = $form.bean.attachHeader1row)
+#set($attachHeader2row = $form.bean.attachHeader2row)
+#set($attachHeader3row = $form.bean.attachHeader3row)
+#set($initWidths = $form.bean.initWidths)
+#set($colAlign = $form.bean.colAlign)
+#set($colTypes = $form.bean.colTypes)
+#set($enableResizing = $form.bean.enableResizing)
+#set($enableTooltips = $form.bean.enableTooltips)
+
+## add Start 2022/11/29 H.futagami No.19　「合計」欄は「前月までの実績＋当月以降の入力した計画」の合計を表示
+#set($tougetuCount = $form.bean.tougetuCount)
+## add End 2022/11/29 H.futagami No.19　「合計」欄は「前月までの実績＋当月以降の入力した計画」の合計を表示
+
+## 当月以降であることによる編集可能リスト
+#set($enableEdit = $form.bean.enableEdit)
+
+## ログインユーザが、JRNS選択可能ユーザか
+#set($jrnsUser = $form.bean.jrnsUser)
+
+## JRNSに含まれるカテゴリリスト
+#set($jrnsCategoryList = $form.bean.jrnsCategoryList)
+
+<script language="javascript">
+<!--
+document.getElementById("closeWindow").value = "true";
+
+## 明細行グリッド
+#set($CoverId1 = "dpm500C00CoverId1")
+#set($GridObjName1 = "dpm500C00Grid1")
+#set($gridHeight = $text.get("${GridObjName1}","grid"))
+var ${GridObjName1};
+## 集計行グリッド
+#set($CoverId2 = "dpm500C00CoverId2")
+#set($GridObjName2 = "dpm500C00Grid2")
+var ${GridObjName2};
+## 編集検知フラグ
+var editFlg = false;
+
+## 初期表示
+function dpm500C00F00() {
+    doInitGrid1(); ## 明細行
+    doInitGrid2(); ## 集計行
+    ## 明細行のデータ読み込み
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName1}.loadXMLString(loadXMLString);
+            for (rowId = 1; rowId <= ${GridObjName1}.getRowsNum(); rowId++) {
+                ## セルスタイルの設定処理
+                ##setCellStyle(${GridObjName1}, rowId, new Array("2","4","6","8"));
+                ## 合計列の計算処理
+                doCalcPlannedStackedValueSumCol(${GridObjName1},rowId);
+                doCalcPlannedYBValueSumCol(${GridObjName1}, rowId);
+                doCalcExpectedStackedValueSumCol(${GridObjName1}, rowId);
+                doCalcExpectedYBValueSumCol(${GridObjName1}, rowId);
+                ## 遂行率の計算処理
+## mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+##                for (columnId = 2; columnId <= 56; columnId = columnId + 2) {
+                for (columnId = 4; columnId <= 58; columnId = columnId + 9) {
+##                    doCalcExecuteRate(${GridObjName1}, rowId, columnId);
+                    doCalcExecuteRate(${GridObjName1}, rowId, columnId);
+##                }
+                }
+                for (columnId = 6; columnId <= 60; columnId = columnId + 9) {
+                    doCalcExecuteRate(${GridObjName1}, rowId, columnId);
+                }
+                for (columnId = 8; columnId <= 62; columnId = columnId + 9) {
+                    doCalcExecuteRate(${GridObjName1}, rowId, columnId);
+                }
+                for (columnId = 10; columnId <= 64; columnId = columnId + 9) {
+                    doCalcExecuteRate(${GridObjName1}, rowId, columnId);
+                }
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+            }
+        }
+    }
+    ## 集計行のデータ読み込み
+    if (document.getElementById("$dataListFileName2")) {
+        var loadXMLString = document.getElementById("$dataListFileName2").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName2}.loadXMLString(loadXMLString);
+            ## add Start 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+            ## 集計行の値をセット
+            setSumGrid(${GridObjName1}, ${GridObjName2}, 2);
+            setSumGrid(${GridObjName1}, ${GridObjName2}, 3);
+            for (columnId = 12; columnId <= 57; columnId = columnId + 9) {
+                setSumGrid(${GridObjName1}, ${GridObjName2}, columnId);
+            }
+            ## add End 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+            ## セルスタイルの設定処理
+            ##setCellStyle(${GridObjName2}, 1, new Array("2","4","6","8"));
+            ## 合計列の計算処理
+            doCalcPlannedStackedValueSumCol(${GridObjName2},1);
+            doCalcPlannedYBValueSumCol(${GridObjName2}, 1);
+            doCalcExpectedStackedValueSumCol(${GridObjName2}, 1);
+            doCalcExpectedYBValueSumCol(${GridObjName2}, 1);
+            ## 遂行率の計算処理
+## mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+##            for (columnId = 2; columnId <= 56; columnId = columnId + 2) {
+            for (columnId = 4; columnId <= 58; columnId = columnId + 9) {
+##                doCalcExecuteRate(${GridObjName2}, 1, columnId);
+                doCalcExecuteRate(${GridObjName2}, 1, columnId);
+##            }
+            }
+            for (columnId = 6; columnId <= 60; columnId = columnId + 9) {
+                doCalcExecuteRate(${GridObjName2}, 1, columnId);
+            }
+            for (columnId = 8; columnId <= 62; columnId = columnId + 9) {
+                doCalcExecuteRate(${GridObjName2}, 1, columnId);
+            }
+            for (columnId = 10; columnId <= 64; columnId = columnId + 9) {
+                doCalcExecuteRate(${GridObjName2}, 1, columnId);
+            }
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        }
+    }
+
+## add Start 2022/11/16 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+    ## 実績の四捨五入処理
+    ## 集計行
+    if (document.getElementById("$dataListFileName2") && ${GridObjName2}.getRowsNum() > 0) {
+        for (columnId = 2; columnId <= 3; columnId = columnId + 1) {
+            var valueRound = ${GridObjName2}.cells(1,columnId).getValue();
+            if(valueRound != null && valueRound.toString() != ""){
+                valueRound = Math.round(valueRound);
+        	    ${GridObjName2}.cells(1,columnId).setValue(valueRound);
+            }
+        }
+        for (columnId = 12; columnId <= 57; columnId = columnId + 9) {
+            var valueRound = ${GridObjName2}.cells(1,columnId).getValue();
+            if(valueRound != null && valueRound.toString() != ""){
+                valueRound = Math.round(valueRound);
+        	    ${GridObjName2}.cells(1,columnId).setValue(valueRound);
+            }
+        }
+    }
+    ## 明細行
+    if (document.getElementById("$dataListFileName")) {
+        for (rowId = 1; rowId <= ${GridObjName1}.getRowsNum(); rowId++) {
+            for (columnId = 2; columnId <= 3; columnId = columnId + 1) {
+                var valueRound;
+				if(columnId == "2"){
+				    valueRound = ${GridObjName1}.getUserData(rowId, 'hiddenRecordTotalValueYbJisseki');
+				}else if(columnId == "3"){
+				    valueRound = ${GridObjName1}.getUserData(rowId, 'hiddenRecordTougetuValueYbJisseki');
+				}
+                if(valueRound != null && valueRound.toString() != ""){
+                    valueRound = Math.round(Number(valueRound));
+            	    ${GridObjName1}.cells(rowId,columnId).setValue(valueRound);
+                }
+            }
+            for (columnId = 12; columnId <= 57; columnId = columnId + 9) {
+                var valueRound;
+				if(columnId == "12"){
+				    valueRound = ${GridObjName1}.getUserData(rowId, 'hiddenRecord1ValueYbJisseki');
+				}else if(columnId == "21"){
+				    valueRound = ${GridObjName1}.getUserData(rowId, 'hiddenRecord2ValueYbJisseki');
+				}else if(columnId == "30"){
+				    valueRound = ${GridObjName1}.getUserData(rowId, 'hiddenRecord3ValueYbJisseki');
+				}else if(columnId == "39"){
+				    valueRound = ${GridObjName1}.getUserData(rowId, 'hiddenRecord4ValueYbJisseki');
+				}else if(columnId == "48"){
+				    valueRound = ${GridObjName1}.getUserData(rowId, 'hiddenRecord5ValueYbJisseki');
+				}else if(columnId == "57"){
+				    valueRound = ${GridObjName1}.getUserData(rowId, 'hiddenRecord6ValueYbJisseki');
+				}
+	            if(valueRound != null && valueRound.toString() != ""){
+	            	valueRound = Math.round(Number(valueRound));
+	            	${GridObjName1}.cells(rowId,columnId).setValue(valueRound);
+	            }
+            }
+        }
+    }
+    ## 小数点以下を削除するためにsetNumberFormatを変更して再セット
+    ${GridObjName1}.setNumberFormat("0,000",2);
+    ${GridObjName1}.setNumberFormat("0,000",3);
+    ${GridObjName1}.setNumberFormat("0,000",12);
+    ${GridObjName1}.setNumberFormat("0,000",21);
+    ${GridObjName1}.setNumberFormat("0,000",30);
+    ${GridObjName1}.setNumberFormat("0,000",39);
+    ${GridObjName1}.setNumberFormat("0,000",48);
+    ${GridObjName1}.setNumberFormat("0,000",57);
+    ${GridObjName2}.setNumberFormat("0,000",2);
+    ${GridObjName2}.setNumberFormat("0,000",3);
+    ${GridObjName2}.setNumberFormat("0,000",12);
+    ${GridObjName2}.setNumberFormat("0,000",21);
+    ${GridObjName2}.setNumberFormat("0,000",30);
+    ${GridObjName2}.setNumberFormat("0,000",39);
+    ${GridObjName2}.setNumberFormat("0,000",48);
+    ${GridObjName2}.setNumberFormat("0,000",57);
+    ## 集計行
+    if (document.getElementById("$dataListFileName2") && ${GridObjName2}.getRowsNum() > 0) {
+        for (columnId = 2; columnId <= 3; columnId = columnId + 1) {
+            var valueRound = ${GridObjName2}.cells(1,columnId).getValue();
+            ${GridObjName2}.cells(1,columnId).setValue(valueRound);
+        }
+        for (columnId = 12; columnId <= 57; columnId = columnId + 9) {
+            var valueRound = ${GridObjName2}.cells(1,columnId).getValue();
+            ${GridObjName2}.cells(1,columnId).setValue(valueRound);
+        }
+    }
+    ## 明細行
+    if (document.getElementById("$dataListFileName")) {
+        for (rowId = 1; rowId <= ${GridObjName1}.getRowsNum(); rowId++) {
+            for (columnId = 2; columnId <= 3; columnId = columnId + 1) {
+                var valueRound = ${GridObjName1}.cells(rowId,columnId).getValue();
+                ${GridObjName1}.cells(rowId,columnId).setValue(valueRound);
+            }
+            for (columnId = 12; columnId <= 57; columnId = columnId + 9) {
+                var valueRound = ${GridObjName1}.cells(rowId,columnId).getValue();
+                ${GridObjName1}.cells(rowId,columnId).setValue(valueRound);
+            }
+        }
+    }
+## add End 2022/11/16 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+
+    ## データ部とヘッダーのずれ修正 ############
+    #correctMisalignedHeader(${GridObjName1} ${GridObjName2})
+}
+
+## DHTMLXGrid生成(明細行)
+function doInitGrid1() {
+    #if($resultDetail)
+        ${GridObjName1} = createDhtmlXGridLodingExt("${GridObjName1}", "${CoverId1}");
+    #else
+        ${GridObjName1} = createDhtmlXGrid("${GridObjName1}");
+    #end
+    ${GridObjName1}.setHeader("$headerDetail");
+    ${GridObjName1}.setInitWidths("300,$initWidths");
+    ${GridObjName1}.setColAlign("left,$colAlign");
+    ${GridObjName1}.setColTypes("ro,$colTypes");
+    ${GridObjName1}.enableResizing("false,$enableResizing");
+    ${GridObjName1}.enableTooltips("false,$enableTooltips");
+    ${GridObjName1}.enableDistributedParsing(true,50,300);
+    ${GridObjName1}.enableAutoHeight(true, getGridHeight('dpm500C00', $!gridHeight));
+    ${GridObjName1}.enableBlockSelection();
+    ${GridObjName1}.forceLabelSelection(true);
+    ${GridObjName1}.setCSVDelimiter("\t");
+    ${GridObjName1}.setNumberFormat("0,000",1);
+## mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    ${GridObjName1}.setNumberFormat("0,000.000",2);
+    ${GridObjName1}.setNumberFormat("0,000.000",3);
+##    for (var i = 2; i <= 57; i++) {
+    for (var i = 4; i <= 65; i++) {
+##        if (i % 2 == 0) {
+##            ${GridObjName1}.setNumberFormat("0,000",i);
+##        } else {
+##            ${GridObjName1}.setNumberFormat("0,000.0%",i);
+##        }
+        switch(i % 9){
+        case 1:
+        case 4:
+        case 6:
+        case 8:
+            ${GridObjName1}.setNumberFormat("0,000",i);
+            break;
+        case 3:
+            ${GridObjName1}.setNumberFormat("0,000.000",i);
+            break;
+        case 0:
+        case 2:
+        case 5:
+        case 7:
+            ${GridObjName1}.setNumberFormat("0,000.0%",i);
+            break;
+        default:
+            break;
+        }
+##    }
+    }
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    ${GridObjName1}.setSizes();
+    ${GridObjName1}.setNoHeader(true);
+    ${GridObjName1}.init();
+## mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+##    ${GridObjName1}.splitAt(2);
+    ${GridObjName1}.splitAt(4);
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    ${GridObjName1}.enableEditEvents(true, false, true);
+
+    ##  --- 編集中に登録ボタンが押された場合のチェッカー
+    window.editValueChecker = new EditingValueChecker(${GridObjName1},'$text.get("DPC1036E",[""])' );
+
+    ${GridObjName1}.attachEvent("onEditCell",function(stage,rowId,colId,newvalue,oldvalue){
+
+        ## --- 編集中に登録ボタンが押された場合のチェック用に値とstageを保持 ---
+    	window.editValueChecker.saveState(stage,newvalue);
+
+        if(stage == 1){
+            setIme(${GridObjName1},rowId,colId,"inactive",10);
+        }
+        if(stage == 2){
+            if(newvalue.toString() != oldvalue.toString()){
+                intCheck(${GridObjName1},rowId,colId,newvalue);
+                ##setCellStyle(${GridObjName1}, rowId, new Array(colId, "8"));
+                ## 合計列の計算処理
+                doCalcPlannedStackedValueSumCol(${GridObjName1},rowId);
+                doCalcPlannedYBValueSumCol(${GridObjName1}, rowId);
+                doCalcExpectedStackedValueSumCol(${GridObjName1}, rowId);
+                doCalcExpectedYBValueSumCol(${GridObjName1}, rowId);
+                ## 遂行率の計算処理
+                doCalcExecuteRate(${GridObjName1}, rowId, colId);
+                ## 合計列の遂行率の計算処理
+## mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+##                doCalcExecuteRate(${GridObjName1}, rowId, 52);
+                doCalcExecuteRate(${GridObjName1}, rowId, 60);
+##                doCalcExecuteRate(${GridObjName1}, rowId, 56);
+                doCalcExecuteRate(${GridObjName1}, rowId, 64);
+
+                ## 合計列の積み上げ計算処理
+                ##   月初計画の積上値合計列の計算処理
+                doCalcPlannedStackedValueSumCol(${GridObjName2},1);
+                ##   月末見込の積上値合計列の計算処理
+                doCalcExpectedStackedValueSumCol(${GridObjName2}, 1);
+
+ 　　　　　　　　　　　   ## 各月の積上合算処理
+            	for (columnId = 5; columnId <= 59; columnId = columnId + 9) {
+                	setSumStackedValue(${GridObjName1}, ${GridObjName2}, 1, columnId);
+                	setSumStackedValue(${GridObjName1}, ${GridObjName2}, 1, columnId + 4);
+            	}
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+                editFlg = true;
+            }
+        }
+        return true;
+    });
+    ${GridObjName1}.attachEvent("onRowSelect",function(rowId,colId){
+        ${GridObjName1}.editCell();
+    });
+    ${GridObjName1}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName1},keycode))){return false;}
+        ## ペースト処理時
+        copyBlock(${GridObjName1}, keycode, ctrl, shift, new Array("4","8"));
+        if (keycode == 86 && ctrl) {
+            for (rowId = 1; rowId <= ${GridObjName1}.getRowsNum(); rowId++) {
+                  ## セルスタイルの設定処理(明細行)
+                  ##setCellStyle(${GridObjName1}, rowId, new Array("8"));
+                  ## 合計列の計算処理
+                  doCalcPlannedStackedValueSumCol(${GridObjName1},rowId);
+                  doCalcPlannedYBValueSumCol(${GridObjName1}, rowId);
+                  doCalcExpectedStackedValueSumCol(${GridObjName1}, rowId);
+                  doCalcExpectedYBValueSumCol(${GridObjName1}, rowId);
+                  ## 遂行率の計算処理
+## mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+##                  for (columnId = 4; columnId <= 56; columnId = columnId + 4) {
+                  for (columnId = 6; columnId <= 60; columnId = columnId + 9) {
+##                      doCalcExecuteRate(${GridObjName1}, rowId, columnId);
+                      doCalcExecuteRate(${GridObjName1}, rowId, columnId);
+##                  }
+                  }
+                  for (columnId = 10; columnId <= 64; columnId = columnId + 9) {
+                      doCalcExecuteRate(${GridObjName1}, rowId, columnId);
+                  }
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+            }
+            editFlg = true;
+        }
+        return true;
+    });
+    ${GridObjName1}.attachEvent("onMouseOver",function(rowId,columnId){
+        var title = "";
+        if(${GridObjName1}.getUserData(rowId,"rowType") == "input"){
+## mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+##            if(columnId % 4 == 0 && columnId <= 48){
+            if(columnId % 9 == 4 && columnId <= 56){
+##                title = ${GridObjName1}.getUserData(rowId,"toolTip");
+                title = ${GridObjName1}.getUserData(rowId,"toolTip");
+##            }
+            }
+            if(columnId % 9 == 8 && columnId <= 56){
+                title = ${GridObjName1}.getUserData(rowId,"toolTip");
+            }
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+            if(title == null){
+                title = "";
+            }
+            ${GridObjName1}.cells(rowId,columnId).cell.title = title;
+        }
+    });
+    ${GridObjName1}.attachEvent("onScroll",function(sLeft,sTop){
+    	${GridObjName2}.objBox.scrollLeft=${GridObjName1}.objBox.scrollLeft
+    });
+}
+
+## DHTMLXGrid生成(集計行)
+function doInitGrid2() {
+    #if($resultDetail)
+        ${GridObjName2} = createDhtmlXGridLodingExt("${GridObjName2}", "${CoverId2}");
+    #else
+        ${GridObjName2} = createDhtmlXGrid("${GridObjName2}");
+    #end
+
+    ## 営業所選択時
+    #if ($form.bean.sosCd3)
+        sosApply("$form.bean.sosCd3", "", "03","$form.bean.etcSosFlg");
+        ${GridObjName2}.setHeader("担当者計画　$!plannedTypeStr　$prodName,$headerSum");
+        ${GridObjName2}.attachHeader("組織・担当名称,$attachHeader1row");
+        ${GridObjName2}.attachHeader("#rspan,$attachHeader2row");
+        ${GridObjName2}.attachHeader("#rspan,$attachHeader3row")
+    ## 支店選択時
+    #elseif ($form.bean.sosCd2)
+        sosApply("$form.bean.sosCd2", "", "03","$form.bean.etcSosFlg");
+        ${GridObjName2}.setHeader("エリア計画　$!plannedTypeStr　$prodName,$headerSum");
+        ${GridObjName2}.attachHeader("組織・担当名称,$attachHeader1row");
+        ${GridObjName2}.attachHeader("#rspan,$attachHeader2row");
+        ${GridObjName2}.attachHeader("#rspan,$attachHeader3row")
+    ## 全社選択時
+    #else
+        sosApply("", "", "03","$form.bean.etcSosFlg");
+        ${GridObjName2}.setHeader("リージョン計画　$!plannedTypeStr　$prodName,$headerSum");
+        ${GridObjName2}.attachHeader("組織・担当名称,$attachHeader1row");
+        ${GridObjName2}.attachHeader("#rspan,$attachHeader2row");
+        ${GridObjName2}.attachHeader("#rspan,$attachHeader3row")
+    #end
+    ${GridObjName2}.setInitWidths("300,$initWidths");
+    ${GridObjName2}.setColAlign("left,$colAlign");
+    ${GridObjName2}.setColTypes("ro,$colTypes");
+    ${GridObjName2}.enableResizing("false,$enableResizing");
+    ${GridObjName2}.enableTooltips("false,$enableTooltips");
+    ${GridObjName2}.enableAutoHeight(true, 117, true);
+    ${GridObjName2}.enableBlockSelection();
+    ${GridObjName2}.forceLabelSelection(true);
+    ${GridObjName2}.setCSVDelimiter("\t");
+    ${GridObjName2}.setNumberFormat("0,000",1);
+## mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    ${GridObjName2}.setNumberFormat("0,000.000",2);
+    ${GridObjName2}.setNumberFormat("0,000.000",3);
+##    for (var i = 2; i <= 57; i++){
+    for (var i = 4; i <= 65; i++){
+##        if (i % 2 == 0) {
+##            ${GridObjName2}.setNumberFormat("0,000",i);
+##        } else {
+##            ${GridObjName2}.setNumberFormat("0,000.0%",i);
+##        }
+        switch(i % 9){
+        case 1:
+        case 4:
+        case 6:
+        case 8:
+            ${GridObjName2}.setNumberFormat("0,000",i);
+            break;
+        case 3:
+            ${GridObjName2}.setNumberFormat("0,000.000",i);
+            break;
+        case 0:
+        case 2:
+        case 5:
+        case 7:
+            ${GridObjName2}.setNumberFormat("0,000.0%",i);
+            break;
+        default:
+            break;
+        }
+##    }
+    }
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    ${GridObjName2}.setSizes();
+    ${GridObjName2}.init();
+## mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+##    ${GridObjName2}.splitAt(2);
+    ${GridObjName2}.splitAt(4);
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    ${GridObjName2}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        copyBlock(${GridObjName2}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName2}.attachEvent("onBeforeSelect",function(newId,oldId){return;});
+    ${GridObjName2}.attachEvent("onMouseOver",function(rowId,columnId){return;});
+}
+
+## 遂行率の計算処理
+function doCalcExecuteRate(grid, rowId, colId){
+## mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+##    if (!(colId >= 2 && colId % 2 == 0)){
+    if (!(colId >= 4 && ((colId + 5) % 9) % 2 == 0)){
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+      return;
+    }
+
+    ## 積上値/計画値
+    var value1 = grid.cells(rowId, colId).getValue();
+    ## 期別計画値
+    var value2 = grid.cells(rowId, 1).getValue();
+    ## 算出値の設定セル
+    var cell = grid.cells(rowId, colId + 1);
+
+    ## 算出不能の場合は空白
+    if (value2.toString() == "0" || value2.toString() == "") {
+      cell.setValue("");
+    } else {
+      ## 遂行率算出
+      var rate = Math.round((value1 / value2) * 1000) / 10;
+      if (rate == 0) {
+          cell.setValue("0.0");
+      } else {
+          cell.setValue(rate);
+      }
+    }
+}
+
+## add Start 2022/10/14 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+## 積上計算処理
+function setSumStackedValue(detailGrid, grid, rowId, colId){
+
+    ## 算出値の設定セル
+    var cell = grid.cells(rowId, colId - 1);
+
+	// 全合計取得
+	var allSum = 0;
+
+    for (rowId = 1; rowId <= detailGrid.getRowsNum(); rowId++) {
+        var value = detailGrid.cells(rowId, colId + 1).getValue();
+    	if(value != null && value.toString() != ""){
+        	allSum = allSum + convertToInteger(detailGrid, rowId, colId + 1);
+    	}
+    }
+
+    cell.setValue(allSum);
+}
+## add End 2022/10/14 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示
+
+## 月初計画の積上値合計列の計算処理
+function doCalcPlannedStackedValueSumCol(grid, rowId){
+    ## 月初計画積上値
+    var sumValue = null;
+## mod Start 2022/11/29 H.futagami No.19　「合計」欄は「前月までの実績＋当月以降の入力した計画」の合計を表示
+#### mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+####    var value1 = grid.cells(rowId,2).getValue();
+##    var value1 = grid.cells(rowId,4).getValue();
+####    var value2 = grid.cells(rowId,10).getValue();
+##    var value2 = grid.cells(rowId,13).getValue();
+####    var value3 = grid.cells(rowId,18).getValue();
+##    var value3 = grid.cells(rowId,22).getValue();
+####    var value4 = grid.cells(rowId,26).getValue();
+##    var value4 = grid.cells(rowId,31).getValue();
+####    var value5 = grid.cells(rowId,34).getValue();
+##    var value5 = grid.cells(rowId,40).getValue();
+####    var value6 = grid.cells(rowId,42).getValue();
+##    var value6 = grid.cells(rowId,49).getValue();
+##
+####    if(value1 != null && value1.toString() != ""){
+##    if(value1 != null && value1.toString() != ""){
+####        sumValue = convertToInteger(grid,rowId,2);
+##        sumValue = convertToInteger(grid,rowId,4);
+####    }
+##    }
+####    if(value2 != null && value2.toString() != ""){
+##    if(value2 != null && value2.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,10);
+##        sumValue = sumValue + convertToInteger(grid,rowId,13);
+####    }
+##    }
+####    if(value3 != null && value3.toString() != ""){
+##    if(value3 != null && value3.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,18);
+##        sumValue = sumValue + convertToInteger(grid,rowId,22);
+####    }
+##    }
+####    if(value4 != null && value4.toString() != ""){
+##    if(value4 != null && value4.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,26);
+##        sumValue = sumValue + convertToInteger(grid,rowId,31);
+####    }
+##    }
+####    if(value5 != null && value5.toString() != ""){
+##    if(value5 != null && value5.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,34);
+##        sumValue = sumValue + convertToInteger(grid,rowId,40);
+####    }
+##    }
+####    if(value6 != null && value6.toString() != ""){
+##    if(value6 != null && value6.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,42);
+##        sumValue = sumValue + convertToInteger(grid,rowId,49);
+####    }
+##    }
+
+    var value = null;
+    for (monthCount = 0; monthCount <= 5; monthCount = monthCount + 1) {
+      if(monthCount < $tougetuCount){
+        ## 各月実績
+        ## add Start 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+		if(monthCount == 0){
+		    value = grid.getUserData(rowId, 'hiddenRecord1ValueYbJisseki');
+		}else if(monthCount == 1){
+		    value = grid.getUserData(rowId, 'hiddenRecord2ValueYbJisseki');
+		}else if(monthCount == 2){
+		    value = grid.getUserData(rowId, 'hiddenRecord3ValueYbJisseki');
+		}else if(monthCount == 3){
+		    value = grid.getUserData(rowId, 'hiddenRecord4ValueYbJisseki');
+		}else if(monthCount == 4){
+		    value = grid.getUserData(rowId, 'hiddenRecord5ValueYbJisseki');
+		}else if(monthCount == 5){
+		    value = grid.getUserData(rowId, 'hiddenRecord6ValueYbJisseki');
+	　　　 }
+        ## add End 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+        if(value != null && value.toString() != ""){
+          sumValue = sumValue + Number(value);
+        }
+      }else{
+        ## 各月月初計画積上
+        value = grid.cells(rowId,monthCount * 9 + 4).getValue();
+        if(value != null && value.toString() != ""){
+          sumValue = sumValue + convertToInteger(grid,rowId,monthCount * 9 + 4);
+        }
+      }
+    }
+## mod End 2022/11/29 H.futagami No.19　「合計」欄は「前月までの実績＋当月以降の入力した計画」の合計を表示
+
+##    var cell = grid.cells(rowId, 50);
+    var cell = grid.cells(rowId, 58);
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    if (sumValue != null) {
+        cell.setValue(sumValue);
+    }
+    else {
+        cell.setValue(null);
+    }
+}
+
+## 月初計画の計画値合計列の計算処理
+function doCalcPlannedYBValueSumCol(grid, rowId){
+    ## 月初計画計画値
+    var sumValue = null;
+## mod Start 2022/11/29 H.futagami No.19　「合計」欄は「前月までの実績＋当月以降の入力した計画」の合計を表示
+#### mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+##	##    var value1 = grid.cells(rowId,4).getValue();
+##	    var value1 = grid.cells(rowId,6).getValue();
+##	##    var value2 = grid.cells(rowId,12).getValue();
+##	    var value2 = grid.cells(rowId,15).getValue();
+##	##    var value3 = grid.cells(rowId,20).getValue();
+##	    var value3 = grid.cells(rowId,24).getValue();
+##	##    var value4 = grid.cells(rowId,28).getValue();
+##	    var value4 = grid.cells(rowId,33).getValue();
+##	##    var value5 = grid.cells(rowId,36).getValue();
+##	    var value5 = grid.cells(rowId,42).getValue();
+##	##    var value6 = grid.cells(rowId,44).getValue();
+##	    var value6 = grid.cells(rowId,51).getValue();
+##
+####    if(value1 != null && value1.toString() != ""){
+##    if(value1 != null && value1.toString() != ""){
+####        sumValue = convertToInteger(grid,rowId,4);
+##        sumValue = convertToInteger(grid,rowId,6);
+####    }
+##    }
+####    if(value2 != null && value2.toString() != ""){
+##    if(value2 != null && value2.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,12);
+##        sumValue = sumValue + convertToInteger(grid,rowId,15);
+####    }
+##    }
+####    if(value3 != null && value3.toString() != ""){
+##    if(value3 != null && value3.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,20);
+##        sumValue = sumValue + convertToInteger(grid,rowId,24);
+####    }
+##    }
+####    if(value4 != null && value4.toString() != ""){
+##    if(value4 != null && value4.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,28);
+##        sumValue = sumValue + convertToInteger(grid,rowId,33);
+####    }
+##    }
+####    if(value5 != null && value5.toString() != ""){
+##    if(value5 != null && value5.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,36);
+##        sumValue = sumValue + convertToInteger(grid,rowId,42);
+####    }
+##    }
+####    if(value6 != null && value6.toString() != ""){
+##    if(value6 != null && value6.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,44);
+##        sumValue = sumValue + convertToInteger(grid,rowId,51);
+####    }
+##    }
+
+    var value = null;
+    for (monthCount = 0; monthCount <= 5; monthCount = monthCount + 1) {
+      if(monthCount < $tougetuCount){
+        ## 各月実績
+        ## add Start 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+		if(monthCount == 0){
+		    value = grid.getUserData(rowId, 'hiddenRecord1ValueYbJisseki');
+		}else if(monthCount == 1){
+		    value = grid.getUserData(rowId, 'hiddenRecord2ValueYbJisseki');
+		}else if(monthCount == 2){
+		    value = grid.getUserData(rowId, 'hiddenRecord3ValueYbJisseki');
+		}else if(monthCount == 3){
+		    value = grid.getUserData(rowId, 'hiddenRecord4ValueYbJisseki');
+		}else if(monthCount == 4){
+		    value = grid.getUserData(rowId, 'hiddenRecord5ValueYbJisseki');
+		}else if(monthCount == 5){
+		    value = grid.getUserData(rowId, 'hiddenRecord6ValueYbJisseki');
+	　　　 }
+        ## add End 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+        if(value != null && value.toString() != ""){
+          sumValue = sumValue + Number(value);
+        }
+      }else{
+        ## 各月月初計画計画値
+        value = grid.cells(rowId,monthCount * 9 + 6).getValue();
+        if(value != null && value.toString() != ""){
+          sumValue = sumValue + convertToInteger(grid,rowId,monthCount * 9 + 6);
+        }
+      }
+    }
+## mod End 2022/11/29 H.futagami No.19　「合計」欄は「前月までの実績＋当月以降の入力した計画」の合計を表示
+
+##    var cell = grid.cells(rowId, 52);
+    var cell = grid.cells(rowId, 60);
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    if (sumValue != null) {
+        cell.setValue(sumValue);
+    }
+    else {
+        cell.setValue(null);
+    }
+}
+
+## 月末見込の積上値合計列の計算処理
+function doCalcExpectedStackedValueSumCol(grid, rowId){
+    ## 月末見込積上値
+    var sumValue = null;
+## mod Start 2022/11/29 H.futagami No.19　「合計」欄は「前月までの実績＋当月以降の入力した計画」の合計を表示
+#### mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+####    var value1 = grid.cells(rowId,6).getValue();
+##    var value1 = grid.cells(rowId,8).getValue();
+####    var value2 = grid.cells(rowId,14).getValue();
+##    var value2 = grid.cells(rowId,17).getValue();
+####    var value3 = grid.cells(rowId,22).getValue();
+##    var value3 = grid.cells(rowId,26).getValue();
+####    var value4 = grid.cells(rowId,30).getValue();
+##    var value4 = grid.cells(rowId,35).getValue();
+####    var value5 = grid.cells(rowId,38).getValue();
+##    var value5 = grid.cells(rowId,44).getValue();
+####    var value6 = grid.cells(rowId,46).getValue();
+##    var value6 = grid.cells(rowId,53).getValue();
+####
+##
+####    if(value1 != null && value1.toString() != ""){
+##    if(value1 != null && value1.toString() != ""){
+####        sumValue = convertToInteger(grid,rowId,6);
+##        sumValue = convertToInteger(grid,rowId,8);
+####    }
+##    }
+####    if(value2 != null && value2.toString() != ""){
+##    if(value2 != null && value2.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,14);
+##        sumValue = sumValue + convertToInteger(grid,rowId,17);
+####    }
+##    }
+####    if(value3 != null && value3.toString() != ""){
+##    if(value3 != null && value3.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,22);
+##        sumValue = sumValue + convertToInteger(grid,rowId,26);
+####    }
+##    }
+####    if(value4 != null && value4.toString() != ""){
+##    if(value4 != null && value4.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,30);
+##        sumValue = sumValue + convertToInteger(grid,rowId,35);
+####    }
+##    }
+####    if(value5 != null && value5.toString() != ""){
+##    if(value5 != null && value5.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,38);
+##        sumValue = sumValue + convertToInteger(grid,rowId,44);
+####    }
+##    }
+####    if(value6 != null && value6.toString() != ""){
+##    if(value6 != null && value6.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,46);
+##        sumValue = sumValue + convertToInteger(grid,rowId,53);
+####    }
+##    }
+
+    var value = null;
+    for (monthCount = 0; monthCount <= 5; monthCount = monthCount + 1) {
+      if(monthCount < $tougetuCount){
+        ## 各月実績
+        ## add Start 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+		if(monthCount == 0){
+		    value = grid.getUserData(rowId, 'hiddenRecord1ValueYbJisseki');
+		}else if(monthCount == 1){
+		    value = grid.getUserData(rowId, 'hiddenRecord2ValueYbJisseki');
+		}else if(monthCount == 2){
+		    value = grid.getUserData(rowId, 'hiddenRecord3ValueYbJisseki');
+		}else if(monthCount == 3){
+		    value = grid.getUserData(rowId, 'hiddenRecord4ValueYbJisseki');
+		}else if(monthCount == 4){
+		    value = grid.getUserData(rowId, 'hiddenRecord5ValueYbJisseki');
+		}else if(monthCount == 5){
+		    value = grid.getUserData(rowId, 'hiddenRecord6ValueYbJisseki');
+	　　　 }
+        ## add End 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+        if(value != null && value.toString() != ""){
+          sumValue = sumValue + Number(value);
+        }
+      }else{
+        ## 各月月末計画積上値
+        value = grid.cells(rowId,monthCount * 9 + 8).getValue();
+        if(value != null && value.toString() != ""){
+          sumValue = sumValue + convertToInteger(grid,rowId,monthCount * 9 + 8);
+        }
+      }
+    }
+## mod End 2022/11/29 H.futagami No.19　「合計」欄は「前月までの実績＋当月以降の入力した計画」の合計を表示
+
+##    var cell = grid.cells(rowId, 54);
+    var cell = grid.cells(rowId, 62);
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    if (sumValue != null) {
+        cell.setValue(sumValue);
+    }
+    else {
+        cell.setValue(null);
+    }
+}
+
+## 月末見込の計画値合計列の計算処理
+function doCalcExpectedYBValueSumCol(grid, rowId){
+    ## 月末見込計画値
+    var sumValue = null;
+## mod Start 2022/11/29 H.futagami No.19　「合計」欄は「前月までの実績＋当月以降の入力した計画」の合計を表示
+#### mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+####    var value1 = grid.cells(rowId,8).getValue();
+##    var value1 = grid.cells(rowId,10).getValue();
+####    var value2 = grid.cells(rowId,16).getValue();
+##    var value2 = grid.cells(rowId,19).getValue();
+####    var value3 = grid.cells(rowId,24).getValue();
+##    var value3 = grid.cells(rowId,28).getValue();
+####    var value4 = grid.cells(rowId,32).getValue();
+##    var value4 = grid.cells(rowId,37).getValue();
+####    var value5 = grid.cells(rowId,40).getValue();
+##    var value5 = grid.cells(rowId,46).getValue();
+####    var value6 = grid.cells(rowId,48).getValue();
+##    var value6 = grid.cells(rowId,55).getValue();
+####
+##
+####    if(value1 != null && value1.toString() != ""){
+##    if(value1 != null && value1.toString() != ""){
+####        sumValue = convertToInteger(grid,rowId,8);
+##        sumValue = convertToInteger(grid,rowId,10);
+####    }
+##    }
+####    if(value2 != null && value2.toString() != ""){
+##    if(value2 != null && value2.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,16);
+##        sumValue = sumValue + convertToInteger(grid,rowId,19);
+####    }
+##    }
+####    if(value3 != null && value3.toString() != ""){
+##    if(value3 != null && value3.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,24);
+##        sumValue = sumValue + convertToInteger(grid,rowId,28);
+####    }
+##    }
+####    if(value4 != null && value4.toString() != ""){
+##    if(value4 != null && value4.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,32);
+##        sumValue = sumValue + convertToInteger(grid,rowId,37);
+####    }
+##    }
+####    if(value5 != null && value5.toString() != ""){
+##    if(value5 != null && value5.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,40);
+##        sumValue = sumValue + convertToInteger(grid,rowId,46);
+####    }
+##    }
+####    if(value6 != null && value6.toString() != ""){
+##    if(value6 != null && value6.toString() != ""){
+####        sumValue = sumValue + convertToInteger(grid,rowId,48);
+##        sumValue = sumValue + convertToInteger(grid,rowId,55);
+####    }
+##    }
+
+    var value = null;
+    for (monthCount = 0; monthCount <= 5; monthCount = monthCount + 1) {
+      if(monthCount < $tougetuCount){
+        ## 各月実績
+        ## add Start 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+		if(monthCount == 0){
+		    value = grid.getUserData(rowId, 'hiddenRecord1ValueYbJisseki');
+		}else if(monthCount == 1){
+		    value = grid.getUserData(rowId, 'hiddenRecord2ValueYbJisseki');
+		}else if(monthCount == 2){
+		    value = grid.getUserData(rowId, 'hiddenRecord3ValueYbJisseki');
+		}else if(monthCount == 3){
+		    value = grid.getUserData(rowId, 'hiddenRecord4ValueYbJisseki');
+		}else if(monthCount == 4){
+		    value = grid.getUserData(rowId, 'hiddenRecord5ValueYbJisseki');
+		}else if(monthCount == 5){
+		    value = grid.getUserData(rowId, 'hiddenRecord6ValueYbJisseki');
+	　　　 }
+        ## add End 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+        if(value != null && value.toString() != ""){
+          sumValue = sumValue + Number(value);
+        }
+      }else{
+        ## 各月月末計画計画値
+        value = grid.cells(rowId,monthCount * 9 + 10).getValue();
+        if(value != null && value.toString() != ""){
+          sumValue = sumValue + convertToInteger(grid,rowId,monthCount * 9 + 10);
+        }
+      }
+    }
+## mod End 2022/11/29 H.futagami No.19　「合計」欄は「前月までの実績＋当月以降の入力した計画」の合計を表示
+
+##    var cell = grid.cells(rowId, 56);
+    var cell = grid.cells(rowId, 64);
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    if (sumValue != null) {
+        cell.setValue(sumValue);
+    }
+    else {
+        cell.setValue(null);
+    }
+}
+
+## 指定セルスタイルの再設定処理
+function setCellStyle(grid, rowId, colIdArr) {
+    for(arrIdx = 0; arrIdx < colIdArr.length; arrIdx++){
+        var colId = colIdArr[arrIdx];
+        var value = grid.cells(rowId,colId).getValue();
+        minusStyle(grid, rowId, colId, value);
+        if (value.toString() == "NaN") {
+            grid.cells(rowId,colId).setValue("");
+        }
+    }
+}
+
+## 検索処理
+function dpm500C00F05() {
+    if (searchValidation()) {
+        if (editFlg) {
+            if (!window.confirm('$text.get("DPC999C99.001","dialogue")')) {
+                return;
+            }
+        }
+        var actionPath = "$link.setAction('dpm500C00F05')";
+        document.dpm500C00Form.action = actionPath;
+        document.dpm500C00Form.submit();
+
+	    dpm500C00F05 = blockIt;
+	    execute = blockIt;
+	    dpm501C00F05 = blockIt;
+	    dpm600C00F05 = blockIt;
+    }
+}
+
+## カテゴリリストの変更処理
+## 組織・担当者を変更した時
+function changeCategory() {
+	var form = document.dpm500C00Form;
+	## 選択した組織のカテゴリ
+    var sosCategoryAry = document.getElementById('sosCategory').value.split(',');
+
+    ## 組織コードの取得
+    var sosCd;
+    if(isEntered(form.sosCd4.value)){
+      sosCd = form.sosCd4.value;
+    } else if(isEntered(form.sosCd3.value)){
+      sosCd = form.sosCd3.value;
+    } else if(isEntered(form.sosCd2.value)){
+      sosCd = form.sosCd2.value;
+    } else {
+      sosCd = null;
+    }
+
+    ## 計画対象カテゴリ領域より、立案レベルを条件にカテゴリを取得
+    var planLvCtgList = [];
+    if (isEntered(form.sosCd3.value)) {
+      planLvCtgList = [
+                      #foreach($val in $service.getCategoryByPlanLevel($form.getField("DPM500C00_PLANLEVEL_MR")))
+                      , '$val'
+                      #end
+                      ];
+    } else if (isEntered(form.sosCd2.value)) {
+      planLvCtgList = [
+                      #foreach($val in $service.getCategoryByPlanLevel($form.getField("DPM500C00_PLANLEVEL_OFFICE")))
+                      , '$val'
+                      #end
+                      ];
+    } else {
+      planLvCtgList = [
+                      #foreach($val in $service.getCategoryByPlanLevel($form.getField("DPM500C00_PLANLEVEL_SITEN")))
+                      , '$val'
+                      #end
+                      ];
+    }
+
+	## 選択した組織のカテゴリは、このタイミングでvelocityで取得できないので、カテゴリを一旦全て取得
+    var categoryList = [
+                      #foreach($codeAndValue in $service.getDpmCategoryPlanList(null, '2', false))
+                      , { text: '$codeAndValue.value', value: '$codeAndValue.code' }
+                      #end
+                     ];
+
+	## JRNSに含まれるカテゴリリスト
+	var jrnsCategoryList = [
+                      #foreach($code in $jrnsCategoryList)
+                      , '$code'
+                      #end
+                     ];
+
+	var jrnsUser = $jrnsUser;
+	var jrnsCode =  '$jrnsCode';
+
+    ## カテゴリのselectbox
+	var prodCategory = document.getElementsByName('prodCategory')[0];
+	## 一旦selectboxのoptionを削除
+	while(prodCategory.lastChild)
+	{
+		prodCategory.removeChild(prodCategory.lastChild);
+	}
+
+	## optionを作成
+	var option;
+	document.createElement('option');
+
+	var isExistJrnsCtg = false;
+	## 選択した組織のカテゴリのみ残す
+    for (var i = 1; i < categoryList.length; i++){
+		// JRNSの場合、支店スタッフ以上である＆営業所・NSG・ワクチン・CVのいずれかがリストに存在する場合に、リストに追加する
+		if (jrnsCode == categoryList[i].value && jrnsUser && isExistJrnsCtg) {
+			option = document.createElement('option');
+			option.setAttribute('value', categoryList[i].value);
+			option.innerHTML = categoryList[i].text;
+    		prodCategory.appendChild(option);
+		} else if (jrnsCode != categoryList[i].value) {
+	    	for(var j = 0; j < sosCategoryAry.length; j++) {
+	    		if (categoryList[i].value == sosCategoryAry[j] && planLvCtgList.includes(categoryList[i].value)) {
+					option = document.createElement('option');
+					option.setAttribute('value', categoryList[i].value);
+					option.innerHTML = categoryList[i].text;
+	    			prodCategory.appendChild(option);
+					if (jrnsCategoryList.includes(categoryList[i].value)) {
+						isExistJrnsCtg = true;
+					}
+	    		}
+    		}
+    	}
+    }
+}
+
+## 品目リストの変更処理
+## カテゴリを変更した時、組織・担当者を変更した時
+function changeProd() {
+
+	var form = document.dpm500C00Form;
+## 計画レベル:組織別では選択された組織の下位組織計画を表示するので、立案レベルも１つ下を使用する
+	if(isEntered(form.sosCd4.value)){
+	  changeMrProdList();
+	} else if(isEntered(form.sosCd3.value)){
+	  changeMrProdList();
+	} else if(isEntered(form.sosCd2.value)){
+	 changeOfficeProdList();
+	} else {
+	  changeBranchProdList();
+	}
+}
+
+## 担当者別品目リストを作成
+function changeMrProdList() {
+	#changeProdList("DPM500C00_PLANLEVEL_MR")
+	changeProdCategoryList(document.dpm500C00Form);
+}
+## 事業所別品目リストを作成
+function changeOfficeProdList() {
+	#changeProdList("DPM500C00_PLANLEVEL_OFFICE")
+	changeProdCategoryList(document.dpm500C00Form);
+}
+## 支店別品目リストを作成
+function changeBranchProdList() {
+	#changeProdList("DPM500C00_PLANLEVEL_SITEN")
+	changeProdCategoryList(document.dpm500C00Form);
+}
+
+
+## 検索時入力チェック
+function searchValidation() {
+    ## 入力フォーム
+    var form = document.dpm500C00Form;
+    var value = "";
+
+    ## [必須] カテゴリ
+    value = form.prodCategory.value;
+    errorMsg = '$text.get("DPC1003E",["カテゴリ"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    ## [必須] 品目
+    value = form.prodCode.value;
+    errorMsg = '$text.get("DPC1003E",["品目"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    return validation();
+}
+
+## 更新処理
+function dpm500C00FXXExecute() {
+
+    ## 営業所選択時
+    #if ($form.bean.sosCd3)
+        execute('$text.get("DPM500C00.003","dialogue")', '$link.setAction("dpm500C00F13Execute")');
+    ## 支店選択時
+    #elseif ($form.bean.sosCd2)
+        execute('$text.get("DPM500C00.002","dialogue")', '$link.setAction("dpm500C00F11Execute")');
+    ## 全社選択時
+    #else
+        execute('$text.get("DPM500C00.001","dialogue")', '$link.setAction("dpm500C00F10Execute")');
+    #end
+}
+
+## 更新処理
+function execute(confirmMsg, actionPath) {
+
+    ## --- 編集中セル値の登録時チェック ---
+	if(window.editValueChecker.isValid() == false){
+		return;
+	}
+
+    ##入力チェック
+    if (!executeValidation()) {
+        return;
+    }
+    ##確認
+    if (!confirm(confirmMsg)) {
+        return;
+    }
+
+    var form = document.dpm500C00Form;
+    ## ユーザデータに編集後の計画・見込値を追加
+    var rowNum = ${GridObjName1}.getRowsNum();
+    for (i = 1; i <= rowNum; i++) {
+## mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+##        var p1 = ${GridObjName1}.cells(i,4).getValue();
+        var p1 = ${GridObjName1}.cells(i,6).getValue();
+##        var e1 = ${GridObjName1}.cells(i,8).getValue();
+        var e1 = ${GridObjName1}.cells(i,10).getValue();
+##        p1 = p1.toString().replace(/,/g,"");
+        p1 = p1.toString().replace(/,/g,"");
+##        e1 = e1.toString().replace(/,/g,"");
+        e1 = e1.toString().replace(/,/g,"");
+##        var p2 = ${GridObjName1}.cells(i,12).getValue();
+        var p2 = ${GridObjName1}.cells(i,15).getValue();
+##        var e2 = ${GridObjName1}.cells(i,16).getValue();
+        var e2 = ${GridObjName1}.cells(i,19).getValue();
+##        p2 = p2.toString().replace(/,/g,"");
+        p2 = p2.toString().replace(/,/g,"");
+##        e2 = e2.toString().replace(/,/g,"");
+        e2 = e2.toString().replace(/,/g,"");
+##        var p3 = ${GridObjName1}.cells(i,20).getValue();
+        var p3 = ${GridObjName1}.cells(i,24).getValue();
+##        var e3 = ${GridObjName1}.cells(i,24).getValue();
+        var e3 = ${GridObjName1}.cells(i,28).getValue();
+##        p3 = p3.toString().replace(/,/g,"");
+        p3 = p3.toString().replace(/,/g,"");
+##        e3 = e3.toString().replace(/,/g,"");
+        e3 = e3.toString().replace(/,/g,"");
+##        var p4 = ${GridObjName1}.cells(i,28).getValue();
+        var p4 = ${GridObjName1}.cells(i,33).getValue();
+##        var e4 = ${GridObjName1}.cells(i,32).getValue();
+        var e4 = ${GridObjName1}.cells(i,37).getValue();
+##        p4 = p4.toString().replace(/,/g,"");
+        p4 = p4.toString().replace(/,/g,"");
+##        e4 = e4.toString().replace(/,/g,"");
+        e4 = e4.toString().replace(/,/g,"");
+##        var p5 = ${GridObjName1}.cells(i,36).getValue();
+        var p5 = ${GridObjName1}.cells(i,42).getValue();
+##        var e5 = ${GridObjName1}.cells(i,40).getValue();
+        var e5 = ${GridObjName1}.cells(i,46).getValue();
+##        p5 = p5.toString().replace(/,/g,"");
+        p5 = p5.toString().replace(/,/g,"");
+##        e5 = e5.toString().replace(/,/g,"");
+        e5 = e5.toString().replace(/,/g,"");
+##        var p6 = ${GridObjName1}.cells(i,44).getValue();
+        var p6 = ${GridObjName1}.cells(i,51).getValue();
+##        var e6 = ${GridObjName1}.cells(i,48).getValue();
+        var e6 = ${GridObjName1}.cells(i,55).getValue();
+##        p6 = p6.toString().replace(/,/g,"");
+        p6 = p6.toString().replace(/,/g,"");
+##        e6 = e6.toString().replace(/,/g,"");
+        e6 = e6.toString().replace(/,/g,"");
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        var userData = ${GridObjName1}.getUserData(i, 'updateRowId');
+        userData += "," + p1 + "," + e1 + "," + p2 + "," + e2 + "," + p3 + "," + e3 + "," + p4 + "," + e4 + "," + p5 + "," + e5 + "," + p6 + "," + e6 ;
+        ${GridObjName1}.setUserData(i, 'updateRowId', userData);
+    }
+
+    ##フォームに更新情報を格納
+    addRowIdList(form, ${GridObjName1}, 'rowIdList', 'updateRowId');
+    ##送信
+    document.dpm500C00Form.action = actionPath;
+    document.dpm500C00Form.submit();
+
+    dpm500C00F05 = blockIt;
+    execute = blockIt;
+    dpm501C00F05 = blockIt;
+    dpm600C00F05 = blockIt;
+}
+
+## 更新時入力チェック
+function executeValidation() {
+    var rowNum = ${GridObjName1}.getRowsNum();
+    for (i = 1; i <= rowNum; i++) {
+        ## メッセージ準備
+        var rowInfo = "";
+
+        #if ($form.bean.sosCd3)
+            rowInfo = ${GridObjName1}.getUserData(i, 'jgiName');
+        #else
+            rowInfo = ${GridObjName1}.getUserData(i, 'sosName');
+        #end
+        ## エラーチェック
+        var checkValue;
+        var valStr;
+
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+##        for (columnId = 4; columnId <= 48; columnId = columnId + 4) {
+        for (columnId = 6; columnId <= 51; columnId = columnId + 9) {
+##            if (columnId % 8 == 0) {
+##                valStr = "の月末見込";
+##            } else {
+##                valStr = "の月初計画";
+##            }
+            var valStr = "の月初計画";
+            ## [計画値/見込値]
+##            checkValue = ${GridObjName1}.cells(i, columnId).getValue().toString();
+            checkValue = ${GridObjName1}.cells(i, columnId).getValue().toString();
+##            amountValidationNotTailCheck(valStr, checkValue, 10, true, rowInfo);
+            amountValidationNotTailCheck(valStr, checkValue, 10, true, rowInfo);
+        }
+        for (columnId = 10; columnId <= 55; columnId = columnId + 9) {
+                valStr = "の月末見込";
+            ## [計画値/見込値]
+            checkValue = ${GridObjName1}.cells(i, columnId).getValue().toString();
+            amountValidationNotTailCheck(valStr, checkValue, 10, true, rowInfo);
+        }
+## mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    }
+    return validation();
+}
+
+## 支店計画の検索処理
+function searchPlanSiten() {
+    var labelTxt = document.getElementById("sos");
+    labelTxt.childNodes[0].nodeValue = "";
+    var sosCd2 = document.getElementById('sosCd2');
+    sosCd2.value = "";
+    var sosCd3 = document.getElementById('sosCd3');
+    sosCd3.value = "";
+    var sosCd4 = document.getElementById('sosCd4');
+    sosCd4.value = "";
+    var etcSosFlg = document.getElementById('etcSosFlg');
+    etcSosFlg.value = false;
+    var oncSosFlg = document.getElementById('oncSosFlg');
+    oncSosFlg.value = false;
+    var sosCategory = document.getElementById('sosCategory');
+    if (sosCategory != null && sosCategory != "") {
+        sosCategory.value = getSosCategory();
+	}
+
+    var form = document.dpm500C00Form;
+    form.prodCode.options[form.prodCode.selectedIndex].value = "$!form.bean.prodCode";
+    form.prodCategory.value = "$!form.bean.prodCategory";
+    dpm500C00F05();
+}
+
+## 営業所計画の検索処理
+function searchPlanOffice(sosCd, _oncSosFlg) {
+    var sosCd2 = document.getElementById('sosCd2');
+    sosCd2.value = sosCd;
+    var sosCd3 = document.getElementById('sosCd3');
+    sosCd3.value = "";
+    var etcSosFlg = document.getElementById('etcSosFlg');
+    etcSosFlg.value = false;
+    var oncSosFlg = document.getElementById('oncSosFlg');
+    oncSosFlg.value = oncSosFlg;
+    var sosCategory = document.getElementById('sosCategory');
+    if (sosCategory != null && sosCategory != "") {
+        sosCategory.value = getSosCategory();
+	}
+
+    var form = document.dpm500C00Form;
+    form.prodCode.options[form.prodCode.selectedIndex].value = "$!form.bean.prodCode";
+    form.prodCategory.value = "$!form.bean.prodCategory";
+    dpm500C00F05();
+}
+
+## 担当者計画の検索処理
+function searchPlanMR(sosCd, _oncSosFlg) {
+    var sosCd2 = document.getElementById('sosCd2');
+    sosCd2.value = "$!form.bean.sosCd2";
+    var sosCd3 = document.getElementById('sosCd3');
+    sosCd3.value = sosCd;
+    ##var sosCd4 = document.getElementById('sosCd4');
+    ##sosCd4.value = sosCd;
+    var oncSosFlg = document.getElementById('oncSosFlg');
+    oncSosFlg.value = _oncSosFlg;
+    var sosCategory = document.getElementById('sosCategory');
+    if (sosCategory != null && sosCategory != "") {
+        sosCategory.value = getSosCategory();
+	}
+    var form = document.dpm500C00Form;
+    form.prodCode.options[form.prodCode.selectedIndex].value = "$!form.bean.prodCode";
+    form.prodCategory.value = "$!form.bean.prodCategory";
+    dpm500C00F05();
+}
+
+## 全社計画で品目別計画編集画面を開く
+function dpm501C00F05All() {
+    var oncSosFlg = document.getElementById('oncSosFlg');
+    oncSosFlg.value = false;
+    dpm501C00F05();
+}
+
+## 支店計画で品目別計画編集画面を開く
+function dpm501C00F05Siten(sosCd,_oncSosFlg) {
+    var sosCd2 = document.getElementById('sosCd2');
+    sosCd2.value = sosCd;
+    var sosCd3 = document.getElementById('sosCd3');
+    sosCd3.value = "";
+    var sosCd4 = document.getElementById('sosCd4');
+    sosCd4.value = "";
+    var jgiNo = document.getElementById('jgiNo');
+    jgiNo.value = "";
+    var etcSosFlg = document.getElementById('etcSosFlg');
+    etcSosFlg.value = false;
+    var oncSosFlg = document.getElementById('oncSosFlg');
+    oncSosFlg.value = _oncSosFlg;
+## add start 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+    var sosCategory = document.getElementById('sosCategory');
+    if (sosCategory != null && sosCategory != "") {
+## mod start 2018/1/18 T.Atsuji J17-0010_2018年4月組織変更対応（各種アプリ）
+##	    sosCategory.value = sosCategory;
+        sosCategory.value = getSosCategory();
+## mod end 2018/1/18 T.Atsuji J17-0010_2018年4月組織変更対応（各種アプリ）
+	}
+## add end 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+
+    var form = document.dpm500C00Form;
+    form.prodCategory.value = "$!form.bean.prodCategory";
+    dpm501C00F05();
+}
+
+## 営業所計画で品目別計画編集画面を開く
+function dpm501C00F05Office(sosCd,_oncSosFlg) {
+    var sosCd2 = document.getElementById('sosCd2');
+    sosCd2.value = "$!form.bean.sosCd2";
+    var sosCd3 = document.getElementById('sosCd3');
+    sosCd3.value = sosCd;
+    var sosCd4 = document.getElementById('sosCd4');
+    sosCd4.value = "";
+    var jgiNo = document.getElementById('jgiNo');
+    jgiNo.value = "";
+    var etcSosFlg = document.getElementById('etcSosFlg');
+    etcSosFlg.value = false;
+    var oncSosFlg = document.getElementById('oncSosFlg');
+    oncSosFlg.value = _oncSosFlg;
+## add start 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+    var sosCategory = document.getElementById('sosCategory');
+    if (sosCategory != null && sosCategory != "") {
+## mod start 2018/1/18 T.Atsuji J17-0010_2018年4月組織変更対応（各種アプリ）
+##	    sosCategory.value = sosCategory;
+        sosCategory.value = getSosCategory();
+## mod end 2018/1/18 T.Atsuji J17-0010_2018年4月組織変更対応（各種アプリ）
+	}
+## add end 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+
+    var form = document.dpm500C00Form;
+    form.prodCategory.value = "$!form.bean.prodCategory";
+    dpm501C00F05();
+}
+
+## 担当者計画で品目別計画編集画面を開く
+function dpm501C00F05Jgi(jgiNo,_etcSosFlg,_oncSosFlg) {
+    var sosCd2 = document.getElementById('sosCd2');
+    sosCd2.value = "$!form.bean.sosCd2";
+    var sosCd3 = document.getElementById('sosCd3');
+    sosCd3.value = "$!form.bean.sosCd3";
+    var sosCd4 = document.getElementById('sosCd4');
+    sosCd4.value = "$!form.bean.sosCd4";
+    var _jgiNo = document.getElementById('jgiNo');
+    _jgiNo.value = jgiNo;
+    var etcSosFlg = document.getElementById('etcSosFlg');
+    etcSosFlg.value = _etcSosFlg;
+    var oncSosFlg = document.getElementById('oncSosFlg');
+    oncSosFlg.value = _oncSosFlg;
+## add start 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+    var sosCategory = document.getElementById('sosCategory');
+    if (sosCategory != null && sosCategory != "") {
+## mod start 2018/1/18 T.Atsuji J17-0010_2018年4月組織変更対応（各種アプリ）
+##	    sosCategory.value = sosCategory;
+        sosCategory.value = getSosCategory();
+## mod end 2018/1/18 T.Atsuji J17-0010_2018年4月組織変更対応（各種アプリ）
+	}
+## add end 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+    var form = document.dpm500C00Form;
+    form.prodCategory.value = "$!form.bean.prodCategory";
+    dpm501C00F05();
+}
+
+## add start 2018/1/18 T.Atsuji J17-0010_2018年4月組織変更対応（各種アプリ）
+## カテゴリを取得
+function getSosCategory() {
+
+    ## 画面で選択した組織のカテゴリを取得
+    var sosCategory = "$!form.bean.sosCategory";
+
+    if (sosCategory != 'undefined' && sosCategory != null && sosCategory != '') {
+        ## 取得できた場合は、取得値を返却
+        return sosCategory;
+    }
+
+    ## 画面で選択した組織のカテゴリが取得できない場合
+    ## 画面で選択したカテゴリを取得
+    var prodCategory = "$!form.bean.prodCategory";
+
+    if (prodCategory != 'undefined' && prodCategory != null && prodCategory != '') {
+        ##取得値を返却
+        return prodCategory;
+    }
+
+    ## 空文字を返却
+    return '';
+}
+## add end 2018/1/18 T.Atsuji J17-0010_2018年4月組織変更対応（各種アプリ）
+
+## 品目別計画編集画面を開く
+function dpm501C00F05() {
+    if (editFlg) {
+        if (!window.confirm('$text.get("DPC999C99.001","dialogue")')) {
+            return;
+        }
+    }
+    var url ="$link.setAction('dpm501C00F05')";
+    document.dpm500C00Form.action = url;
+    document.dpm500C00Form.submit();
+
+    dpm500C00F05 = blockIt;
+    execute = blockIt;
+    dpm501C00F05 = blockIt;
+    dpm600C00F05 = blockIt;
+}
+
+## 担当者計画で[UH]施設別計画編集画面を開く
+function dpm600C00F05UH(jgiNo,_etcSosFlg) {
+	var sosCd2 = document.getElementById('sosCd2');
+    sosCd2.value = "$!form.bean.sosCd2";
+    var sosCd3 = document.getElementById('sosCd3');
+    sosCd3.value = "$!form.bean.sosCd3";
+    var sosCd4 = document.getElementById('sosCd4');
+    sosCd4.value = "$!form.bean.sosCd4";
+    var _jgiNo = document.getElementById('jgiNo');
+    _jgiNo.value = jgiNo;
+    var etcSosFlg = document.getElementById('etcSosFlg');
+    etcSosFlg.value = _etcSosFlg;
+
+    var form = document.dpm500C00Form;
+    form.prodCode.options[form.prodCode.selectedIndex].value = "$!form.bean.prodCode";
+    form.prodCategory.value = "$!form.bean.prodCategory";
+    form.insType.value = "1";
+    form.planData.value = "0";
+    form.insNo.value = "";
+    form.insName.value = "";
+    dpm600C00F05();
+}
+
+## 担当者計画で[P]施設別計画編集画面を開く
+function dpm600C00F05P(jgiNo,_etcSosFlg) {
+    var sosCd2 = document.getElementById('sosCd2');
+    sosCd2.value = "$!form.bean.sosCd2";
+    var sosCd3 = document.getElementById('sosCd3');
+    sosCd3.value = "$!form.bean.sosCd3";
+    var sosCd4 = document.getElementById('sosCd4');
+    sosCd4.value = "$!form.bean.sosCd4";
+    var _jgiNo = document.getElementById('jgiNo');
+    _jgiNo.value = jgiNo;
+    var etcSosFlg = document.getElementById('etcSosFlg');
+    etcSosFlg.value = _etcSosFlg;
+
+    var form = document.dpm500C00Form;
+    form.prodCode.options[form.prodCode.selectedIndex].value = "$!form.bean.prodCode";
+    form.prodCategory.value = "$!form.bean.prodCategory";
+    form.insType.value = "2";
+    form.planData.value = "0";
+    form.insNo.value = "";
+    form.insName.value = "";
+    dpm600C00F05();
+}
+
+## 担当者計画で[Z]施設別計画編集画面を開く
+function dpm600C00F05Z(jgiNo,_etcSosFlg) {
+    var sosCd2 = document.getElementById('sosCd2');
+    sosCd2.value = "$!form.bean.sosCd2";
+    var sosCd3 = document.getElementById('sosCd3');
+    sosCd3.value = "$!form.bean.sosCd3";
+    var sosCd4 = document.getElementById('sosCd4');
+    sosCd4.value = "$!form.bean.sosCd4";
+    var _jgiNo = document.getElementById('jgiNo');
+    _jgiNo.value = jgiNo;
+    var etcSosFlg = document.getElementById('etcSosFlg');
+    etcSosFlg.value = _etcSosFlg;
+
+    var form = document.dpm500C00Form;
+    form.prodCode.options[form.prodCode.selectedIndex].value = "$!form.bean.prodCode";
+    form.prodCategory.value = "$!form.bean.prodCategory";
+    form.insType.value = "3";
+    form.planData.value = "0";
+    form.insNo.value = "";
+    form.insName.value = "";
+    dpm600C00F05();
+}
+
+## 施設別計画編集画面を開く
+function dpm600C00F05() {
+    if (editFlg) {
+        if (!window.confirm('$text.get("DPC999C99.001","dialogue")')) {
+            return;
+        }
+    }
+    var url ="$link.setAction('dpm600C00F05')";
+    var form = document.dpm500C00Form;
+    document.dpm500C00Form.action = url;
+    document.dpm500C00Form.submit();
+
+    dpm500C00F05 = blockIt;
+    execute = blockIt;
+    dpm501C00F05 = blockIt;
+    dpm600C00F05 = blockIt;
+}
+
+## 組織・従業員選択後の処理
+function changeSos(sosCd, jgiNo, sosMaxSrchGetValue, etcSosFlg) {
+	let memorizer = new CategoryAndProdCodeMemorizer();
+	sosApply(sosCd, jgiNo, sosMaxSrchGetValue, etcSosFlg);
+	changeCategory();
+    memorizer.undoCategoryCodeValue();
+	changeProd();
+    memorizer.undoProdCodeValue();
+}
+
+## 出力処理
+function dpm500C00F14(){
+    if (!searchValidation()) {
+        return;
+    }
+
+    ##確認
+    if (!confirm('$text.get("DPM500C00.004","dialogue")')) {
+        return;
+    }
+
+    ##送信
+    var actionPath = '$link.setAction('dpm500C00F14Output')';
+    document.dpm500C00Form.action = actionPath;
+    document.dpm500C00Form.submit();
+
+    return false;
+}
+
+## add Start 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+## 合計行の設定
+function setSumGrid(detailGrid, sumGrid, columnId){
+	// 全合計取得
+	var allSum = 0;
+	// 入力行のデータを、合計
+	for (rowId = 1; rowId <= detailGrid.getRowsNum(); rowId++) {
+        ## add Start 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+		var value;
+	    if(columnId == "2"){
+			value = detailGrid.getUserData(rowId, 'hiddenRecordTotalValueYbJisseki');
+		}else if(columnId == "3"){
+			value = detailGrid.getUserData(rowId, 'hiddenRecordTougetuValueYbJisseki');
+		}else if(columnId == "12"){
+		    value = detailGrid.getUserData(rowId, 'hiddenRecord1ValueYbJisseki');
+		}else if(columnId == "21"){
+		    value = detailGrid.getUserData(rowId, 'hiddenRecord2ValueYbJisseki');
+		}else if(columnId == "30"){
+		    value = detailGrid.getUserData(rowId, 'hiddenRecord3ValueYbJisseki');
+		}else if(columnId == "39"){
+		    value = detailGrid.getUserData(rowId, 'hiddenRecord4ValueYbJisseki');
+		}else if(columnId == "48"){
+		    value = detailGrid.getUserData(rowId, 'hiddenRecord5ValueYbJisseki');
+		}else if(columnId == "57"){
+		    value = detailGrid.getUserData(rowId, 'hiddenRecord6ValueYbJisseki');
+		}else{
+			value = convertToInteger(detailGrid,rowId,columnId);
+		}
+		## add End 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+		if(value == null || value.toString() == ""){
+			continue;
+		}
+		allSum = allSum + Number(value);
+		minusStyle(detailGrid,rowId, columnId);
+	}
+
+    var cell = sumGrid.cells(1, columnId);
+    cell.setValue(allSum);
+
+    ## add Start 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+    if(columnId == "2"){
+        sumGrid.setUserData(1, 'hiddenRecordTotalValueYbJisseki', allSum);
+	}else if(columnId == "3"){
+	    sumGrid.setUserData(1, 'hiddenRecordTougetuValueYbJisseki', allSum);
+	}else if(columnId == "12"){
+		sumGrid.setUserData(1, 'hiddenRecord1ValueYbJisseki', allSum);
+	}else if(columnId == "21"){
+	    sumGrid.setUserData(1, 'hiddenRecord2ValueYbJisseki', allSum);
+	}else if(columnId == "30"){
+	    sumGrid.setUserData(1, 'hiddenRecord3ValueYbJisseki', allSum);
+	}else if(columnId == "39"){
+	    sumGrid.setUserData(1, 'hiddenRecord4ValueYbJisseki', allSum);
+	}else if(columnId == "48"){
+	    sumGrid.setUserData(1, 'hiddenRecord5ValueYbJisseki', allSum);
+	}else if(columnId == "57"){
+	    sumGrid.setUserData(1, 'hiddenRecord6ValueYbJisseki', allSum);
+	}
+    ## add End 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+
+}
+## add End 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+
+//-->
+</script>
+
+<div id="noTabBox">
+<form name="dpm500C00Form" method="post">
+## 処理用フィールド
+<input type="hidden" name="sosCd2Tran" value="$!form.bean.sosCd2Tran">
+<input type="hidden" name="sosCd3Tran" value="$!form.bean.sosCd3Tran">
+<input type="hidden" name="sosCd4Tran" value="$!form.bean.sosCd4Tran">
+<input type="hidden" name="etcSosFlgTran" value="$!form.bean.etcSosFlgTran">
+<input type="hidden" name="oncSosFlgTran" value="$!form.bean.oncSosFlgTran">
+## add start 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+<input type="hidden" name="sosCategoryTran" value="$!form.bean.sosCategoryTran">
+## add end 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+<input type="hidden" name="prodCodeTran" value="$!form.bean.prodCodeTran">
+<input type="hidden" name="prodCategoryTran" value="$!form.bean.prodCategoryTran">
+<input type="hidden" name="insType" value="">
+<input type="hidden" name="planData" value="">
+<input type="hidden" name="insNo" value="">
+<input type="hidden" name="insName" value="">
+<input type="hidden" name="mrJgiNo" value="$!form.bean.mrJgiNo">
+
+<table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+        <td class="gridIndex" style="width: 150px;">組織 *</td>
+        <td>#sosDialogExt2("changeSos","01", "00", "03", "DPM50")</td>
+        ##<td>#sosDialog("01", "00", "03")</td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width: 150px;">カテゴリ*</td>
+        <td>#selectWithFunc ("prodCategory", $!form.bean.prodCategoryList, $!form.bean.prodCategory, "changeProd()")</td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width: 150px;">品目*</td>
+        <td>#select ("prodCode", $prodList, $!form.bean.prodCode)</td>
+    </tr>
+</table>
+
+<table style="margin-top: 2px; margin-bottom: 2px; width: 100%;">
+    <tr>
+        <td>
+            <input type="button" value="表示" style="width: 80px;" onclick="dpm500C00F05()" />
+            #if ($!security.hasAuthEdit("DPM50"))
+            #if ($resultDetail)
+                <input type="button" value="登録" style="width: 80px;" onclick="dpm500C00FXXExecute()" />
+            #else
+                <input type="button" value="登録" style="width: 80px;" onclick="dpm500C00FXXExecute()" disabled />
+            #end
+            #end
+            #if ($resultDetail)
+            	<input type="button" value="ダウンロード" style="width: 120px;" onclick="dpm500C00F14()" />
+            #else
+                <input type="button" value="ダウンロード" style="width: 120px;" disabled />
+            #end
+        </td>
+        <td style="text-align: right; vertical-align: bottom;"><label>$consts.tableHeader</label></td>
+    </tr>
+</table>
+#if($resultDetail)
+    #loadingGridDiv2("${GridObjName2}", "${CoverId2}" ,"width: 99.5%; clear: both;")
+    #loadingGridDiv2("${GridObjName1}", "${CoverId1}" ,"width: 99.5%; clear: both;")
+#else
+    <div id="${GridObjName2}" style="width: 99.5%; clear: both;"></div>
+    <div id="${GridObjName1}" style="width: 99.5%; clear: both;"></div>
+#end
+#token()</form>
+</div>

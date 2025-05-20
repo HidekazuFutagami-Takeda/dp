@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_S_SY_T_JIS_MST_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.JisCodeMst" >
+    <result column="TODOUFUKEN_CD" property="todoufukenCd" jdbcType="CHAR" />
+    <result column="SHIKUCHOSON_CD" property="shikuchosonCd" jdbcType="CHAR" />
+    <result column="FUKEN_MEI_KJ" property="fukenMeiKj" jdbcType="VARCHAR" />
+    <result column="FUKEN_MEI_KN" property="fukenMeiKn" jdbcType="VARCHAR" />
+    <result column="SHIKUCHOSON_MEI_KJ" property="shikuchosonMeiKj" jdbcType="VARCHAR" />
+    <result column="SHIKUCHOSON_MEI_KN" property="shikuchosonMeiKn" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT TODOUFUKEN_CD, SHIKUCHOSON_CD, FUKEN_MEI_KJ, FUKEN_MEI_KN, SHIKUCHOSON_MEI_KJ,
+      SHIKUCHOSON_MEI_KN
+    FROM DPS_S_SY_T_JIS_MST
+    WHERE SHIKUCHOSON_CD = #shikuchosonCd:CHAR#
+      AND TODOUFUKEN_CD = #todoufukenCd:CHAR#
+  </select>
+
+  <select id="searchByTodoufukenCd" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT TODOUFUKEN_CD, SHIKUCHOSON_CD, FUKEN_MEI_KJ, FUKEN_MEI_KN, SHIKUCHOSON_MEI_KJ,
+      SHIKUCHOSON_MEI_KN
+    FROM DPS_S_SY_T_JIS_MST
+    WHERE TODOUFUKEN_CD = #todoufukenCd:CHAR#
+      AND SHIKUCHOSON_CD != '000'
+    ORDER BY TODOUFUKEN_CD, SHIKUCHOSON_CD
+  </select>
+
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT TODOUFUKEN_CD, SHIKUCHOSON_CD, FUKEN_MEI_KJ, FUKEN_MEI_KN, SHIKUCHOSON_MEI_KJ,
+      SHIKUCHOSON_MEI_KN
+    FROM DPS_S_SY_T_JIS_MST
+    <dynamic prepend="WHERE">
+        <isNotNull prepend="AND" property="todoufukenCd">
+        TODOUFUKEN_CD = #todoufukenCd:CHAR#
+        </isNotNull>
+        <isNotNull prepend="AND" property="sikuMeiKn">
+        SHIKUCHOSON_MEI_KJ LIKE #sikuMeiKn:VARCHAR# ESCAPE '~'
+        </isNotNull>
+    </dynamic>
+    ORDER BY TODOUFUKEN_CD, SHIKUCHOSON_CD
+  </select>
+
+</sqlMap>

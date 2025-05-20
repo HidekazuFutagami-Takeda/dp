@@ -1,0 +1,59 @@
+## (ワ)施設品目別計画編集画面
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPM201C01_DATA_R_SEARCH_RESULT"))
+    #set( $dataList = $form.getRequestData("DPM201C01_DATA_R_SEARCH_RESULT").getDetailList())
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#set( $rowId = 1 )
+#foreach($resultObj in $dataList)
+    ##
+
+    ## B価ベース
+    #set( $bBaseValue = "")
+    #set( $bBaseValueType = "ed")
+        #if($resultObj.bBaseValue)
+            #set( $bBaseValue = $resultObj.bBaseValue)
+            #set( $bBaseValueType = "edn")
+        #end
+    ## T価ベース
+    #set( $tBaseValue = "")
+        #if($resultObj.tBaseValue)
+            #set( $tBaseValue = $resultObj.tBaseValue)
+        #end
+    ## 削除予定施設の背景色
+    #set( $bgColor = "" )
+        #if($resultObj.DeletePlan)
+            #set( $bgColor = " class='delIns'" )
+        #end
+    ##
+    #set( $enableEdit = false )
+        #if($resultObj.EnableEdit && $!security.hasAuthEdit("DPM20"))
+            #set( $enableEdit = true )
+        #end
+    ## 明細行
+    <row id='$rowId'>
+        <cell$bgColor><![CDATA[$!resultObj.prodName]]></cell>
+        <cell$bgColor><![CDATA[<a href="#" onclick="dpm200C01F05('$!resultObj.prodCode')">施設別</a>]]></cell>
+        <cell$bgColor>$bBaseValue</cell>
+        #if($enableEdit)
+            <cell class="inputB" type="$bBaseValueType">$bBaseValue</cell>
+        #else
+            <cell$bgColor type="ron">$bBaseValue</cell>
+        #end
+        <cell$bgColor>$tBaseValue</cell>
+        ## 計算用ユーザデータ
+        <userdata name="rowType">input</userdata>
+        <userdata name="subTotalId">1</userdata>
+        <userdata name="tyChangeRate">$!resultObj.getTyChangeRate()</userdata>
+        ## 更新用ユーザデータ
+        ## 施設コード・品目コード・シーケンスキー・最終更新日時・データ取得時の計画値 ＋ 登録ボタン押下後の入力計画値(追加)
+        <userdata name="updateRowId">$!form.bean.insNo,$!resultObj.prodCode,$!resultObj.seqKey,$!resultObj.upDate.Time,$bBaseValue</userdata>
+        <userdata name="toolTip">$!resultObj.getUpJgiName()&#13;$!format.toString($!resultObj.getUpDate(), "yyyy/MM/dd HH:mm:ss")</userdata>
+    </row>
+    #set( $rowId = $rowId + 1 )
+
+#end
+</rows>
+#end

@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_EXCEPT_DIST_INS_SqlMap" >
+
+  <resultMap id="exceptProdCode" class="jp.co.takeda.model.ExceptProd" >
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="ESTIMATION_FLG" property="strEstimationFlg" jdbcType="CHAR" />
+    <result column="EXCEPT_FLG" property="strExceptFlg" jdbcType="CHAR" />
+  </resultMap>
+
+<!-- mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　担当者の取得方法を、品目をリストで取得している方法に合わせて変更。SQL組み換え。 -->
+<!-- <resultMap id="exceptProd" class="jp.co.takeda.model.ExceptProd" > -->
+  <resultMap id="exceptProd" class="jp.co.takeda.model.ExceptProd" groupBy="prodCode, category" >
+<!-- mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　担当者の取得方法を、品目をリストで取得している方法に合わせて変更。SQL組み換え。 -->
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="CATEGORY" property="category" jdbcType="CHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="CHAR" />
+    <result column="PROD_ABBR_NAME" property="prodAbbrName" jdbcType="CHAR" />
+    <result column="ESTIMATION_FLG" property="strEstimationFlg" jdbcType="CHAR" />
+    <result column="EXCEPT_FLG" property="strExceptFlg" jdbcType="CHAR" />
+  </resultMap>
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.ExceptDistIns" groupBy="insNo" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="INS_NO" property="insNo" jdbcType="VARCHAR" />
+    <result property="exceptProd" resultMap="DPS_I_EXCEPT_DIST_INS_SqlMap.exceptProdCode" />
+    <result column="REGIST_TYPE" property="registType" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultMapList" class="jp.co.takeda.model.ExceptDistIns" groupBy="insNo">
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="INS_NO" property="insNo" jdbcType="VARCHAR" />
+    <result property="exceptProd" resultMap="DPS_I_EXCEPT_DIST_INS_SqlMap.exceptProd" />
+    <result column="ESTIMATION_FLG" property="estimationFlg" jdbcType="CHAR" />
+    <result column="EXCEPT_FLG" property="exceptFlg" jdbcType="CHAR" />
+    <result column="REGIST_TYPE" property="registType" jdbcType="CHAR" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="INS_CLASS" property="insClass" jdbcType="VARCHAR" />
+    <result column="OLD_INSR_FLG" property="oldInsrFlg" jdbcType="VARCHAR" />
+    <result column="INS_ABBR_NAME" property="insAbbrName" jdbcType="VARCHAR" />
+    <result column="HO_INS_TYPE" property="hoInsType" jdbcType="VARCHAR" />
+<!-- mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　担当者の取得方法を、品目をリストで取得している方法に合わせて変更。SQL組み換え。 -->
+<!--    <result column="COM_JGI_NAME" property="comJgiName" jdbcType="VARCHAR" /> -->
+<!--    <result column="COM_SHOKUSHU_NAME" property="comShokushuName" jdbcType="VARCHAR" /> -->
+<!--    <result column="CVM_JGI_NAME" property="cvmJgiName" jdbcType="VARCHAR" /> -->
+<!--    <result column="CVM_SHOKUSHU_NAME" property="cvmShokushuName" jdbcType="VARCHAR" /> -->
+<!--    <result column="RS_JGI_NAME" property="rsJgiName" jdbcType="VARCHAR" /> -->
+<!--    <result column="RS_SHOKUSHU_NAME" property="rsShokushuName" jdbcType="VARCHAR" /> -->
+<!--    <result column="ONC_JGI_NAME" property="oncJgiName" jdbcType="VARCHAR" /> -->
+<!--    <result column="ONC_SHOKUSHU_NAME" property="oncShokushuName" jdbcType="VARCHAR" /> -->
+    <result property="dispJgi" resultMap="DPS_I_EXCEPT_DIST_INS_SqlMap.dispJgi" />
+<!-- mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　担当者の取得方法を、品目をリストで取得している方法に合わせて変更。SQL組み換え。 -->
+  </resultMap>
+
+<!-- and start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　担当者の取得方法を、品目をリストで取得している方法に合わせて変更。SQL組み換え。 -->
+  <resultMap id="dispJgi" class="jp.co.takeda.model.JgiMst" groupBy="jgiNo" >
+    <result column="DISP_JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="DISP_JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="DISP_SHOKUSHU_CD" property="shokushuCd" jdbcType="VARCHAR" />
+   <result column="DISP_SHOKUSHU_NAME" property="shokushuName" jdbcType="VARCHAR" />
+  </resultMap>
+<!-- and start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　担当者の取得方法を、品目をリストで取得している方法に合わせて変更。SQL組み換え。 -->
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,INS_NO
+          ,PROD_CODE
+          ,ESTIMATION_FLG
+          ,EXCEPT_FLG
+          ,REGIST_TYPE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_EXCEPT_DIST_INS
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,INS_NO
+          ,PROD_CODE
+          ,ESTIMATION_FLG
+          ,EXCEPT_FLG
+          ,REGIST_TYPE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_EXCEPT_DIST_INS
+     WHERE INS_NO = #insNo:VARCHAR#
+      <isNotNull prepend="AND" property="prodCode">
+        PROD_CODE = #prodCode:CHAR#
+      </isNotNull>
+      <isNull prepend="AND" property="prodCode">
+        PROD_CODE IS NULL
+      </isNull>
+      <isEqual property="planType.dbValue" compareValue="1" prepend="AND">
+        ESTIMATION_FLG = '1'
+      </isEqual>
+      <isEqual property="planType.dbValue" compareValue="2" prepend="AND">
+        EXCEPT_FLG = '1'
+      </isEqual>
+
+  </select>
+
+  <!-- 検索(施設コード) -->
+  <select id="selectByInsNo" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT EDI.SEQ_KEY
+          ,EDI.INS_NO
+          ,EDI.PROD_CODE
+          ,EDI.ESTIMATION_FLG
+          ,EDI.EXCEPT_FLG
+          ,EDI.REGIST_TYPE
+          ,EDI.IS_JGI_NO
+          ,EDI.IS_JGI_NAME
+          ,EDI.IS_DATE
+          ,EDI.UP_JGI_NO
+          ,EDI.UP_JGI_NAME
+          ,(SELECT MAX(EDI2.UP_DATE)
+                      FROM DPS_I_EXCEPT_DIST_INS EDI2
+                     WHERE EDI2.INS_NO = #insNo:VARCHAR#) UP_DATE
+      FROM DPS_I_EXCEPT_DIST_INS EDI
+           LEFT JOIN DPS_C_PLANNED_PROD PR
+        ON EDI.PROD_CODE = PR.PROD_CODE
+     WHERE INS_NO = #insNo:VARCHAR#
+       <isNotNull property="exceptProdList">
+       <iterate prepend="AND EDI.PROD_CODE IN" property="exceptProdList" open="(" close=")" conjunction=",">
+          #exceptProdList[]#
+       </iterate>
+       </isNotNull>
+     ORDER BY GROUP_CODE, STAT_PROD_CODE, PROD_CODE
+  </select>
+
+  <!-- 検索(施設コード、品目固定コード) -->
+  <select id="isExceptDistIns" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,INS_NO
+          ,PROD_CODE
+          ,ESTIMATION_FLG
+          ,EXCEPT_FLG
+          ,REGIST_TYPE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_EXCEPT_DIST_INS
+     WHERE INS_NO = #insNo:VARCHAR# AND (PROD_CODE = #prodCode:CHAR# OR PROD_CODE IS NULL)
+  </select>
+
+  <!-- 検索リスト 配分除外施設・施設情報・計画対象品目・従業員情報・組織情報-->
+  <select id="selectList" resultMap="resultMapList" parameterClass="java.util.Map" >
+<!-- mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　担当者の取得方法を、品目をリストで取得している方法に合わせて変更。SQL組み換え。 -->
+<!--    WITH EXCEPT_DIST_INS_TEMP AS ( -->
+<!--      SELECT -->
+<!--        EDI.INS_NO AS INS_NO -->
+<!--        ,EDI.PROD_CODE AS PROD_CODE -->
+<!--        ,EDI.REGIST_TYPE AS REGIST_TYPE -->
+<!--        ,EDI.SEQ_KEY AS SEQ_KEY -->
+<!--        ,EDI.UP_JGI_NO AS UP_JGI_NO -->
+<!--        ,EDI.UP_JGI_NAME AS UP_JGI_NAME -->
+<!--        ,AL.JGI_NO AS AL_JGI_NO -->
+<!--        ,AL.JGI_NAME AS AL_JGI_NAME -->
+<!--        ,'TL' AS AL_SHOKUSHU_NAME -->
+<!--        ,CVM.JGI_NAME AS CVM_JGI_NAME -->
+<!--        ,CVM.SHOKUSHU_NAME AS CVM_SHOKUSHU_NAME -->
+<!--        ,RS.JGI_NAME AS RS_JGI_NAME -->
+<!--        ,RS.SHOKUSHU_NAME AS RS_SHOKUSHU_NAME -->
+<!--        ,ONC.JGI_NAME AS ONC_JGI_NAME -->
+<!--        ,ONC.SHOKUSHU_NAME AS ONC_SHOKUSHU_NAME -->
+<!--      FROM DPS_I_EXCEPT_DIST_INS EDI -->
+<!--           INNER JOIN DPS_C_INS_MST IM ON EDI.INS_NO = IM.INS_NO -->
+<!--           INNER JOIN DPS_C_MR_INS MRI ON EDI.INS_NO = MRI.INS_NO -->
+<!--           INNER JOIN DPS_C_MR_INS SRC_MI ON MRI.INS_NO = SRC_MI.INS_NO AND SRC_MI.MAIN_MR = '0' -->
+<!--           INNER JOIN DPS_C_VI_JGI_MST JM ON SRC_MI.MR_NO = JM.JGI_NO -->
+               <!-- パフォーマンスが出ないので、外部結合は従業員ビューを通さない -->
+<!--           LEFT OUTER JOIN DPS_C_JGI_MST AL  ON AL.JGI_NO  = MRI.MR_NO AND MRI.MR_CAT = '01' AND MRI.MAIN_MR = '0' AND AL.JGI_KB IN ('0','1','8') -->
+<!--           LEFT OUTER JOIN DPS_C_JGI_MST ONC ON ONC.JGI_NO = MRI.MR_NO AND MRI.MR_CAT = '05' AND MRI.MAIN_MR = '0' AND ONC.JGI_KB IN ('0','1') -->
+<!--           LEFT OUTER JOIN DPS_C_JGI_MST CVM ON CVM.JGI_NO = MRI.MR_NO AND MRI.MR_CAT = '08' AND MRI.MAIN_MR = '0' AND CVM.JGI_KB IN ('0','1','8') -->
+<!--           LEFT OUTER JOIN DPS_C_JGI_MST RS  ON RS.JGI_NO  = MRI.MR_NO AND MRI.MR_CAT = '09' AND MRI.MAIN_MR = '0' AND RS.JGI_KB IN ('0','1','8') -->
+<!--    <dynamic prepend="WHERE"> -->
+<!--      <isNotNull prepend="AND" property="jgiNo"> -->
+<!--        JM.JGI_NO = #jgiNo:INTEGER# -->
+<!--      </isNotNull> -->
+<!--      <isNotNull prepend="AND" property="sosCd3"> -->
+<!--        JM.SOS_CD3 = #sosCd3:VARCHAR# -->
+<!--      </isNotNull> -->
+<!--      <isNotNull prepend="AND" property="sosCd4"> -->
+<!--        JM.SOS_CD4 = #sosCd4:VARCHAR# -->
+<!--      </isNotNull> -->
+<!--    </dynamic> -->
+<!--    ), -->
+<!--    EXCEPT_DIST_INS AS ( -->
+<!--      SELECT -->
+<!--        EDI.INS_NO AS INS_NO -->
+<!--        ,EDI.PROD_CODE AS PROD_CODE -->
+<!--        ,EDI.REGIST_TYPE AS REGIST_TYPE -->
+<!--        ,MAX(EDI.SEQ_KEY) AS SEQ_KEY -->
+<!--        ,MAX(EDI.UP_JGI_NO) AS UP_JGI_NO -->
+<!--        ,MAX(EDI.UP_JGI_NAME) AS UP_JGI_NAME -->
+<!--        ,MAX(EDI.AL_JGI_NO) AS AL_JGI_NO -->
+<!--        ,MAX(EDI.AL_JGI_NAME) AS AL_JGI_NAME -->
+<!--        ,MAX(EDI.AL_SHOKUSHU_NAME) AS AL_SHOKUSHU_NAME -->
+<!--        ,MAX(EDI.CVM_JGI_NAME) AS CVM_JGI_NAME -->
+<!--        ,MAX(EDI.CVM_SHOKUSHU_NAME) AS CVM_SHOKUSHU_NAME -->
+<!--        ,MAX(EDI.RS_JGI_NAME) AS RS_JGI_NAME -->
+<!--        ,MAX(EDI.RS_SHOKUSHU_NAME) AS RS_SHOKUSHU_NAME -->
+<!--        ,MAX(EDI.ONC_JGI_NAME) AS ONC_JGI_NAME -->
+<!--        ,MAX(EDI.ONC_SHOKUSHU_NAME) AS ONC_SHOKUSHU_NAME -->
+<!--      FROM EXCEPT_DIST_INS_TEMP EDI -->
+<!--    GROUP BY EDI.INS_NO, EDI.PROD_CODE, EDI.REGIST_TYPE -->
+<!--    ) -->
+    SELECT EDI.SEQ_KEY
+          ,EDI.INS_NO
+          ,EDI.PROD_CODE
+          ,EDI.ESTIMATION_FLG
+          ,EDI.EXCEPT_FLG
+          ,EDI.REGIST_TYPE
+          ,EDI.UP_JGI_NO
+          ,EDI.UP_JGI_NAME
+          ,(SELECT MAX(EDI2.UP_DATE)
+                     FROM DPS_I_EXCEPT_DIST_INS EDI2
+                     WHERE EDI2.INS_NO = EDI.INS_NO) UP_DATE
+          ,JM.JGI_NO AS JGI_NO
+          ,NULL AS JGI_NAME
+          ,IM.INS_CLASS
+          ,IM.OLD_INSR_FLG
+          ,IM.INS_ABBR_NAME
+<!-- mod start 2021/8/17 h.Kaneko 親子紐づけ対応 -->
+          <!-- ,IM.HO_INS_TYPE-->
+          ,NVL(OINS.HO_INS_TYPE, IM.HO_INS_TYPE) AS HO_INS_TYPE
+<!-- mod end 2021/8/17 -->
+          ,PR.CATEGORY
+          ,PR.PROD_NAME
+          ,PR.PROD_ABBR_NAME
+<!--      ,AL_JGI_NAME AS COM_JGI_NAME -->
+<!--      ,AL_SHOKUSHU_NAME AS COM_SHOKUSHU_NAME -->
+<!--      ,CVM_JGI_NAME AS CVM_JGI_NAME -->
+<!--      ,CVM_SHOKUSHU_NAME AS CVM_SHOKUSHU_NAME -->
+<!--      ,RS_JGI_NAME AS RS_JGI_NAME -->
+<!--      ,RS_SHOKUSHU_NAME AS RS_SHOKUSHU_NAME -->
+<!--      ,ONC_JGI_NAME AS ONC_JGI_NAME -->
+<!--      ,ONC_SHOKUSHU_NAME AS ONC_SHOKUSHU_NAME -->
+          ,DISP_TAN.JGI_NO AS DISP_JGI_NO
+          ,DISP_TAN.JGI_NAME AS DISP_JGI_NAME
+          ,DISP_TAN.SHOKUSHU_CD AS DISP_SHOKUSHU_CD
+          ,DISP_TAN.SHOKUSHU_NAME AS DISP_SHOKUSHU_NAME
+          ,OINS.HO_INS_TYPE AS OINS_HO_INS_TYPE
+          ,OINS.RELN_INS_NO AS OINS_RELN_INS_NO
+          ,NVL(OYK.MAIN_INS_NO,'0') AS MAIN_INS_NO
+          ,IM.HO_INS_TYPE AS INS_HO_INS_TYPE
+          ,IM.RELN_INS_NO
+          ,IM.RELN_INS_CODE
+<!--  FROM EXCEPT_DIST_INS EDI -->
+      FROM DPS_I_EXCEPT_DIST_INS EDI
+           INNER JOIN DPS_C_INS_MST IM
+        ON EDI.INS_NO = IM.INS_NO
+           LEFT JOIN DPS_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = IM.INS_NO
+       AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+           LEFT JOIN DPS_C_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+       AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+           LEFT JOIN DPS_C_PLANNED_PROD PR
+        ON EDI.PROD_CODE = PR.PROD_CODE
+<!-- add 2018/05/21 S.Hayashi J18-0002 -->
+           INNER JOIN DPS_C_MR_INS COM_MRI
+        ON EDI.INS_NO = COM_MRI.INS_NO
+       AND COM_MRI.MAIN_MR = '0'
+       AND COM_MRI.MR_CAT = (SELECT INS_MR_CAT FROM DPS_C_SHOKUSHU_GRP_M <!-- SYU0003の最小SEQの職種 -->
+                             WHERE (SHOKUSHU_GROP, SEQNO) = (SELECT SHOKUSHU_GROP, MIN(SEQNO)
+                                                             FROM DPS_C_SHOKUSHU_GRP_M
+                                                             WHERE SHOKUSHU_GROP = 'SYU0003'
+                                                             GROUP BY SHOKUSHU_GROP))
+<!-- end 2018/05/21 S.Hayashi J18-0002 -->
+           INNER JOIN DPS_C_JGI_MST JM
+        ON COM_MRI.MR_NO = JM.JGI_NO
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD
+<!-- add 2018/05/21 S.Hayashi J18-0002 -->
+           LEFT OUTER JOIN
+           (SELECT
+                MRI.INS_NO
+               ,MRI.MR_NO AS JGI_NO
+               ,JGI.JGI_NAME
+               ,JGI.SHOKUSHU_CD
+               ,JGI.SHOKUSHU_NAME
+               ,SG.SEQNO
+            FROM
+                DPS_C_MR_INS MRI
+            INNER JOIN
+                DPS_C_SHOKUSHU_GRP_M SG
+                ON MRI.MR_CAT = SG.INS_MR_CAT
+                <!-- del start 2023/2/10 h.Futagami ワクチンMR表示されない問題対応-->
+                <!--AND SG.SHOKUSHU_GROP IN ('SYU0003') -->
+                <!-- del end 2023/2/10 h.Futagami ワクチンMR表示されない問題対応-->
+            INNER JOIN
+                DPS_C_JGI_MST JGI
+                ON MRI.MR_NO = JGI.JGI_NO
+                AND JGI.JGI_KB IN ('0','1')
+            WHERE MRI.MAIN_MR = '0'
+           ) DISP_TAN
+        ON EDI.INS_NO = DISP_TAN.INS_NO
+     WHERE EXISTS
+     (
+           SELECT
+               1
+           FROM
+               DPS_C_MR_INS MI
+           INNER JOIN
+               DPS_C_VI_JGI_MST JM
+               ON MI.MR_NO = JM.JGI_NO
+           WHERE
+               EDI.INS_NO = MI.INS_NO
+           AND MI.MAIN_MR = '0'
+           <isNotNull prepend="AND" property="jgiNo">
+               JM.JGI_NO = #jgiNo:INTEGER#
+           </isNotNull>
+           <isNotNull prepend="AND" property="sosCd3">
+               JM.SOS_CD3 = #sosCd3:VARCHAR#
+           </isNotNull>
+           <isNotNull prepend="AND" property="sosCd4">
+               JM.SOS_CD4 = #sosCd4:VARCHAR#
+           </isNotNull>
+     )
+<!-- add 2018/05/21 S.Hayashi J18-0002 -->
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+<!-- mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　担当者の取得方法を、品目をリストで取得している方法に合わせて変更。SQL組み換え。 -->
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="java.util.Map" >
+    INSERT INTO DPS_I_EXCEPT_DIST_INS
+          (SEQ_KEY
+          ,INS_NO
+          ,PROD_CODE
+          ,ESTIMATION_FLG
+          ,EXCEPT_FLG
+          ,REGIST_TYPE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+   VALUES (ORADPX01.SEQ_DPS_I_EXCEPT_DIST_INS.NEXTVAL
+          ,#insNo:VARCHAR#
+          ,#prodCode:CHAR#
+          ,#estimationFlg:CHAR#
+          ,#exceptFlg:CHAR#
+          ,#registType:CHAR#
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 削除(施設コード)-->
+  <delete id="deleteByInsNo" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_EXCEPT_DIST_INS
+     WHERE INS_NO = #insNo:VARCHAR#
+       <isNotNull property="upDate" prepend="AND">
+         TO_CHAR((SELECT MAX(UP_DATE) FROM DPS_I_EXCEPT_DIST_INS WHERE INS_NO = #insNo:VARCHAR#) ,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+       </isNotNull>
+       <isNotNull property="exceptProdList">
+       <iterate prepend="AND PROD_CODE IN" property="exceptProdList" open="(" close=")" conjunction=",">
+          #exceptProdList[]#
+       </iterate>
+       </isNotNull>
+  </delete>
+
+  <delete id="deleteByProdNull" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_EXCEPT_DIST_INS
+     WHERE INS_NO = #insNo:VARCHAR#
+       AND PROD_CODE IS NULL
+       <isNotNull property="upDate" prepend="AND">
+         TO_CHAR((SELECT MAX(UP_DATE) FROM DPS_I_EXCEPT_DIST_INS WHERE INS_NO = #insNo:VARCHAR#) ,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+       </isNotNull>
+  </delete>
+
+  <update id="update" parameterClass="java.util.Map" >
+    UPDATE DPS_I_EXCEPT_DIST_INS
+       SET ESTIMATION_FLG = #estimationFlg:CHAR#
+          ,EXCEPT_FLG = #exceptFlg:CHAR#
+     WHERE INS_NO = #insNo:VARCHAR#
+       <isNotNull property="exceptProdList">
+       <iterate prepend="AND PROD_CODE IN" property="exceptProdList" open="(" close=")" conjunction=",">
+          #exceptProdList[]#
+       </iterate>
+       </isNotNull>
+  </update>
+
+</sqlMap>

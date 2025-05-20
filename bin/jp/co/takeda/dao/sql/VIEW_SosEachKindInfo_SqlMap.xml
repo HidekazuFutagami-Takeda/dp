@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_SosEachKindInfo_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.view.SosEachKindInfo" >
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="BUMON_SEI_NAME" property="bumonSeiName" jdbcType="VARCHAR" />
+    <result column="MIKAKUTOKU_UP_DATE" property="mikakutokuUpDate" jdbcType="TIMESTAMP" />
+    <result column="EXCEPT_COUNT" property="exceptDistInsCnt" jdbcType="INTEGER" />
+    <result column="EXCEPT_UP_DATE" property="exceptDistInsUpDate" jdbcType="TIMESTAMP" />
+    <result column="SPECIAL_COUNT" property="specialInsPlanCnt" jdbcType="INTEGER" />
+    <result column="SPECIAL_UP_DATE" property="specialInsPlanUpDate" jdbcType="TIMESTAMP" />
+    <result column="MR_PLAN_UP_DATE" property="mrPlanUpDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="sosColumn">
+    <isNotNull property="sosCd2" >
+    JM.SOS_CD2
+    </isNotNull>
+    <isNotNull property="sosCd3" >
+    JM.SOS_CD3
+    </isNotNull>
+    <isNotNull property="sosCd4" >
+    JM.SOS_CD4
+    </isNotNull>
+     AS SOS_CD
+  </sql>
+
+  <sql id="sosWhere">
+    <isNotNull property="sosCd2">
+    WHERE JM.SOS_CD2 = #sosCd2:VARCHAR#
+    GROUP BY JM.SOS_CD2
+    </isNotNull>
+    <isNotNull property="sosCd3">
+    WHERE JM.SOS_CD3 = #sosCd3:VARCHAR#
+    GROUP BY JM.SOS_CD3
+    </isNotNull>
+    <isNotNull property="sosCd4">
+    WHERE JM.SOS_CD4 = #sosCd4:VARCHAR#
+    GROUP BY JM.SOS_CD4
+    </isNotNull>
+  </sql>
+
+  <!-- 検索 -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH MIKAKUTOKU AS (SELECT
+                  <include refid="sosColumn" />
+                  ,MAX(MIS.UP_DATE) AS MIKAKUTOKU_UP_DATE
+              FROM DPS_C_JGI_MST JM
+                   LEFT OUTER JOIN DPS_I_MIKAKUTOKU_SIJOU MIS
+                ON MIS.JGI_NO = JM.JGI_NO
+             <include refid="sosWhere" />
+           )
+        ,EXCEPT AS (SELECT
+                  <include refid="sosColumn" />
+                  ,COUNT(DISTINCT EDI.INS_NO) AS EXCEPT_COUNT
+                  ,MAX(EDI.UP_DATE) AS EXCEPT_UP_DATE
+              FROM DPS_C_JGI_MST JM
+                   <!-- パフォーマンスが出ないので、外部結合は従業員ビューを通さない -->
+                   INNER JOIN DPS_C_MR_INS MI
+                ON MI.MR_NO = JM.JGI_NO
+                AND ((JM.ONC_SOS_FLG = '1' AND JM.JGI_KB IN ('0','1')) OR (JM.ONC_SOS_FLG = '0' AND JM.JGI_KB IN ('0','1','8')))
+                   LEFT OUTER JOIN (SELECT * FROM DPS_I_EXCEPT_DIST_INS WHERE REGIST_TYPE = '1') EDI
+                ON EDI.INS_NO = MI.INS_NO
+                  <include refid="sosWhere" />
+           )
+        ,SPECIAL AS (SELECT
+                  <include refid="sosColumn" />
+                  ,COUNT(DISTINCT SIP.INS_NO) AS SPECIAL_COUNT
+                  ,MAX(SIP.UP_DATE) AS SPECIAL_UP_DATE
+              FROM DPS_C_JGI_MST JM
+                   INNER JOIN DPS_C_MR_INS MI
+                ON MI.MR_NO = JM.JGI_NO
+                   LEFT OUTER JOIN DPS_I_SPECIAL_INS_PLAN SIP
+                ON SIP.INS_NO = MI.INS_NO
+             <include refid="sosWhere" />
+           )
+        ,MR_PLAN AS (SELECT
+                  <include refid="sosColumn" />
+                  ,MAX(MRP.UP_DATE) AS MR_PLAN_UP_DATE
+              FROM DPS_C_JGI_MST JM
+                   INNER JOIN DPS_C_MR_INS MI
+                ON MI.MR_NO = JM.JGI_NO
+                   LEFT OUTER JOIN DPS_I_MR_PLAN MRP
+                ON MRP.JGI_NO = JM.JGI_NO
+             <include refid="sosWhere" />
+        )
+
+    SELECT SM.SOS_CD
+          ,SM.BUMON_SEI_NAME
+          ,MIKAKUTOKU_UP_DATE
+          ,EXCEPT_COUNT
+          ,EXCEPT_UP_DATE
+          ,SPECIAL_COUNT
+          ,SPECIAL_UP_DATE
+          ,MR_PLAN_UP_DATE
+      FROM DPS_C_SOS_MST SM
+           INNER JOIN MIKAKUTOKU
+        ON SM.SOS_CD = MIKAKUTOKU.SOS_CD
+           INNER JOIN EXCEPT
+        ON SM.SOS_CD = EXCEPT.SOS_CD
+           INNER JOIN SPECIAL
+        ON SM.SOS_CD = SPECIAL.SOS_CD
+           INNER JOIN MR_PLAN
+        ON SM.SOS_CD = MR_PLAN.SOS_CD
+
+    </select>
+
+</sqlMap>

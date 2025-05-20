@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_C_OUTPUT_FILE_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.OutputFile" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="OUTPUT_TYPE" property="outputType" jdbcType="CHAR" />
+    <result column="OUTPUT_FILE_NAME" property="outputFileName" jdbcType="VARCHAR" />
+    <result column="FREE_DATA" property="freeData" jdbcType="VARCHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,OUTPUT_TYPE
+          ,OUTPUT_FILE_NAME
+          ,FREE_DATA
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_C_OUTPUT_FILE
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.OutputFile" >
+    INSERT INTO DPS_C_OUTPUT_FILE
+          (SEQ_KEY
+          ,OUTPUT_TYPE
+          ,OUTPUT_FILE_NAME
+          ,FREE_DATA
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (#seqKey:BIGINT#
+          ,#outputType:CHAR#
+          ,#outputFileName:VARCHAR#
+          ,#freeData:VARCHAR#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_C_OUTPUT_FILE
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </delete>
+
+  <!-- シーケンス取得 -->
+  <select id="getSeqKey"  resultClass="java.lang.Long" >
+    SELECT ORADPX01.SEQ_DPS_C_OUTPUT_FILE.NEXTVAL FROM DUAL
+  </select>
+
+</sqlMap>

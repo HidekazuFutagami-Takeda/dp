@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_EST_PARAM_OFFICE_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.EstParamOffice" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="ESTIMATION_BASE" property="estimationParam.estimationBase" jdbcType="CHAR" />
+    <result column="INDEX_RYH_RTSU" property="estimationParam.indexRyhRtsu" jdbcType="INTEGER" />
+    <result column="INDEX_MIKAKUTOKU" property="estimationParam.indexMikakutoku" jdbcType="INTEGER" />
+    <result column="INDEX_DELIVERY" property="estimationParam.indexDelivery" jdbcType="INTEGER" />
+    <result column="INDEX_FREE_1" property="estimationParam.indexFree1" jdbcType="INTEGER" />
+    <result column="INDEX_FREE_2" property="estimationParam.indexFree2" jdbcType="INTEGER" />
+    <result column="INDEX_FREE_3" property="estimationParam.indexFree3" jdbcType="INTEGER" />
+    <result column="INDEX_FREE_NAME_1" property="estimationParam.indexFreeName1" jdbcType="VARCHAR" />
+    <result column="INDEX_FREE_NAME_2" property="estimationParam.indexFreeName2" jdbcType="VARCHAR" />
+    <result column="INDEX_FREE_NAME_3" property="estimationParam.indexFreeName3" jdbcType="VARCHAR" />
+    <result column="REF_PROD_CODE" property="baseParam.refProdCode" jdbcType="CHAR" />
+    <result column="REF_PROD_NAME" property="baseParam.refProdInfo.prodName" jdbcType="VARCHAR" />
+    <result column="REF_PROD_TYPE" property="baseParam.refProdInfo.prodType" jdbcType="VARCHAR" />
+    <result column="REF_FROM" property="baseParam.refFrom" jdbcType="CHAR" />
+    <result column="REF_TO" property="baseParam.refTo" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_1" property="baseParam.resultRefProdCode1" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_2" property="baseParam.resultRefProdCode2" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_3" property="baseParam.resultRefProdCode3" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_4" property="baseParam.resultRefProdCode4" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_NAME_1" property="baseParam.resultRefProdName1" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_NAME_2" property="baseParam.resultRefProdName2" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_NAME_3" property="baseParam.resultRefProdName3" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_NAME_4" property="baseParam.resultRefProdName4" jdbcType="VARCHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="columnList">
+           EPO.SEQ_KEY
+          ,EPO.SOS_CD
+          ,EPO.PROD_CODE
+          ,EPO.ESTIMATION_BASE
+          ,EPO.INDEX_RYH_RTSU
+          ,EPO.INDEX_MIKAKUTOKU
+          ,EPO.INDEX_DELIVERY
+          ,EPO.INDEX_FREE_1
+          ,EPO.INDEX_FREE_2
+          ,EPO.INDEX_FREE_3
+          ,EPO.INDEX_FREE_NAME_1
+          ,EPO.INDEX_FREE_NAME_2
+          ,EPO.INDEX_FREE_NAME_3
+          ,EPO.REF_PROD_CODE
+          ,REF_PP.PROD_NAME AS REF_PROD_NAME
+          ,REF_PP.PROD_TYPE AS REF_PROD_TYPE
+          ,EPO.REF_FROM
+          ,EPO.REF_TO
+          ,EPO.RESULT_REF_PROD_CODE_1
+          ,RESULT_PP1.PROD_NAME AS RESULT_REF_PROD_NAME_1
+          ,EPO.RESULT_REF_PROD_CODE_2
+          ,RESULT_PP2.PROD_NAME AS RESULT_REF_PROD_NAME_2
+          ,EPO.RESULT_REF_PROD_CODE_3
+          ,RESULT_PP3.PROD_NAME AS RESULT_REF_PROD_NAME_3
+          ,EPO.RESULT_REF_PROD_CODE_4
+          ,RESULT_PP4.PROD_NAME AS RESULT_REF_PROD_NAME_4
+          ,EPO.IS_JGI_NO
+          ,EPO.IS_JGI_NAME
+          ,EPO.IS_DATE
+          ,EPO.UP_JGI_NO
+          ,EPO.UP_JGI_NAME
+          ,EPO.UP_DATE
+  </sql>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH REF_PROD AS (<include refid="COMMON_SqlMap.refProd"/>)
+    SELECT <include refid="columnList"/>
+      FROM DPS_I_EST_PARAM_OFFICE EPO
+           LEFT OUTER JOIN REF_PROD REF_PP
+        ON EPO.REF_PROD_CODE = REF_PP.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP1
+        ON EPO.RESULT_REF_PROD_CODE_1 = RESULT_PP1.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP2
+        ON EPO.RESULT_REF_PROD_CODE_2 = RESULT_PP2.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP3
+        ON EPO.RESULT_REF_PROD_CODE_3 = RESULT_PP3.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP4
+        ON EPO.RESULT_REF_PROD_CODE_4 = RESULT_PP4.PROD_CODE
+     WHERE EPO.SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.EstParamOffice" >
+    WITH REF_PROD AS (<include refid="COMMON_SqlMap.refProd"/>)
+    SELECT <include refid="columnList"/>
+      FROM DPS_I_EST_PARAM_OFFICE EPO
+           LEFT OUTER JOIN REF_PROD REF_PP
+        ON EPO.REF_PROD_CODE = REF_PP.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP1
+        ON EPO.RESULT_REF_PROD_CODE_1 = RESULT_PP1.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP2
+        ON EPO.RESULT_REF_PROD_CODE_2 = RESULT_PP2.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP3
+        ON EPO.RESULT_REF_PROD_CODE_3 = RESULT_PP3.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP4
+        ON EPO.RESULT_REF_PROD_CODE_4 = RESULT_PP4.PROD_CODE
+     WHERE EPO.SOS_CD = #sosCd:VARCHAR#
+       AND EPO.PROD_CODE = #prodCode:CHAR#
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.EstParamOffice" >
+    INSERT INTO DPS_I_EST_PARAM_OFFICE
+          (SEQ_KEY
+          ,SOS_CD
+          ,PROD_CODE
+          ,ESTIMATION_BASE
+          ,INDEX_RYH_RTSU
+          ,INDEX_MIKAKUTOKU
+          ,INDEX_DELIVERY
+          ,INDEX_FREE_1
+          ,INDEX_FREE_2
+          ,INDEX_FREE_3
+          ,INDEX_FREE_NAME_1
+          ,INDEX_FREE_NAME_2
+          ,INDEX_FREE_NAME_3
+          ,REF_PROD_CODE
+          ,REF_FROM
+          ,REF_TO
+          ,RESULT_REF_PROD_CODE_1
+          ,RESULT_REF_PROD_CODE_2
+          ,RESULT_REF_PROD_CODE_3
+          ,RESULT_REF_PROD_CODE_4
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+   VALUES (ORADPX01.SEQ_DPS_I_EST_PARAM_OFFICE.NEXTVAL
+          ,#sosCd:VARCHAR#
+          ,#prodCode:CHAR#
+          ,#estimationParam.estimationBase:CHAR#
+          ,#estimationParam.indexRyhRtsu:INTEGER#
+          ,#estimationParam.indexMikakutoku:INTEGER#
+          ,#estimationParam.indexDelivery:INTEGER#
+          ,#estimationParam.indexFree1:INTEGER#
+          ,#estimationParam.indexFree2:INTEGER#
+          ,#estimationParam.indexFree3:INTEGER#
+          ,#estimationParam.indexFreeName1:VARCHAR#
+          ,#estimationParam.indexFreeName2:VARCHAR#
+          ,#estimationParam.indexFreeName3:VARCHAR#
+          ,#baseParam.refProdCode:CHAR#
+          ,#baseParam.refFrom:CHAR#
+          ,#baseParam.refTo:CHAR#
+          ,#baseParam.resultRefProdCode1:CHAR#
+          ,#baseParam.resultRefProdCode2:CHAR#
+          ,#baseParam.resultRefProdCode3:CHAR#
+          ,#baseParam.resultRefProdCode4:CHAR#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.EstParamOffice" >
+    UPDATE DPS_I_EST_PARAM_OFFICE
+       SET SOS_CD = #sosCd:VARCHAR#
+          ,PROD_CODE = #prodCode:CHAR#
+          ,ESTIMATION_BASE = #estimationParam.estimationBase:CHAR#
+          ,INDEX_RYH_RTSU = #estimationParam.indexRyhRtsu:INTEGER#
+          ,INDEX_MIKAKUTOKU = #estimationParam.indexMikakutoku:INTEGER#
+          ,INDEX_DELIVERY = #estimationParam.indexDelivery:INTEGER#
+          ,INDEX_FREE_1 = #estimationParam.indexFree1:INTEGER#
+          ,INDEX_FREE_2 = #estimationParam.indexFree2:INTEGER#
+          ,INDEX_FREE_3 = #estimationParam.indexFree3:INTEGER#
+          ,INDEX_FREE_NAME_1 = #estimationParam.indexFreeName1:VARCHAR#
+          ,INDEX_FREE_NAME_2 = #estimationParam.indexFreeName2:VARCHAR#
+          ,INDEX_FREE_NAME_3 = #estimationParam.indexFreeName3:VARCHAR#
+          ,REF_PROD_CODE = #baseParam.refProdCode:CHAR#
+          ,REF_FROM = #baseParam.refFrom:CHAR#
+          ,REF_TO = #baseParam.refTo:CHAR#
+          ,RESULT_REF_PROD_CODE_1 = #baseParam.resultRefProdCode1:CHAR#
+          ,RESULT_REF_PROD_CODE_2 = #baseParam.resultRefProdCode2:CHAR#
+          ,RESULT_REF_PROD_CODE_3 = #baseParam.resultRefProdCode3:CHAR#
+          ,RESULT_REF_PROD_CODE_4 = #baseParam.resultRefProdCode4:CHAR#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_EST_PARAM_OFFICE
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </delete>
+
+</sqlMap>

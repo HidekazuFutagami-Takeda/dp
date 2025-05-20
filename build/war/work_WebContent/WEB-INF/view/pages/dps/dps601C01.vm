@@ -1,0 +1,418 @@
+#set( $layout = "defaultLayout_JQ.vm" )
+#set($q = '"')
+#set($pageTitle = $text.get("dps601C01","title"))
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dps601C01x01.vm")
+#set($GridObjName = "dps601C01Grid")
+#set($gridHeight1 = $text.get("${GridObjName}1","grid"))
+#set($gridHeight2 = $text.get("${GridObjName}2","grid"))
+#set($CoverId = "dps601C01CoverId")
+
+## 権限設定
+#set($authRehaibun = false)
+#set($authOpen = false)
+#set($authFix = false)
+#if($security.hasAuthEdit("DPS601"))
+    #set($authRehaibun = true)
+#end
+#if($security.hasAuthEdit("DPS601"))
+    #set($authOpen = true)
+#end
+#if($security.hasAuthEdit("DPS601"))
+    #set($authFix = true)
+#end
+## 副担当モードの場合は実行不可
+#if($form.getRequestData('SUB_MR_MODE'))
+	#set($authRehaibun = false)
+	#set($authOpen = false)
+	#set($authFix = false)
+#end
+## ステータス最終更新日時
+#set( $statusLastUpdate = "")
+#if ( $form.getRequestData("DPS601C01_DATA_R"))
+    #set( $resultDataList = $form.getRequestData("DPS601C01_DATA_R"))
+    #if ($resultDataList && $resultDataList.size() > 0)
+        #set( $statusLastUpdate = $resultDataList.get(0).statusLastUpdate.time)
+    #end
+#end
+
+## -----------------------------
+## addReadyScript
+## ダブルクオート(")を表示させたい場合は${q}を使用すること
+## -----------------------------
+#set($addReadyScript = "
+
+	${GridObjName} = createDhtmlXGridLodingExt('${GridObjName}', '${CoverId}');
+
+    ##
+    ##従業員まで特定している場合
+    ##
+    #if($form.bean.jgiNoTran && $form.bean.jgiNoTran !='')
+        ${GridObjName}.setHeader('選択,品目名称,計画<BR>参照,施設医師別計画立案状況,UH,#cspan,#cspan,P,#cspan,#cspan');
+        ${GridObjName}.attachHeader('#rspan,#rspan,#rspan,配分状況,担当者別計画<br>[１],施設医師別計画<br>積上 [２],調整金額<br>[１] &#8210 [２],担当者別計画<br>[１],施設医師別計画<br>積上 [２],調整金額<br>[１] &#8210 [２]');
+        ${GridObjName}.setInitWidths('30,130,40,85,100,100,100,100,100,100');
+        ${GridObjName}.setColAlign('center,left,center,center,right,right,right,right,right,right');
+        ${GridObjName}.setColTypes('ch,ro,ro,ro,ron,ron,ron,ron,ron,ron');
+        ${GridObjName}.enableResizing('false,false,false,false,false,false,false,false,false,false');
+        ${GridObjName}.enableTooltips('false,false,false,false,false,false,false,false,false,false');
+        ${GridObjName}.setNumberFormat('0,000',4);
+        ${GridObjName}.setNumberFormat('0,000',5);
+        ${GridObjName}.setNumberFormat('0,000',6);
+        ${GridObjName}.setNumberFormat('0,000',7);
+        ${GridObjName}.setNumberFormat('0,000',8);
+        ${GridObjName}.setNumberFormat('0,000',9);
+        ${GridObjName}.enableAutoHeight(true, getGridHeight('dps601C01_1', $!gridHeight1));
+    ##
+    ##従業員まで特定していない場合（「編集」列なし）
+    ##
+    #else
+        ${GridObjName}.setHeader('選択,品目名称,施設医師別計画立案状況,UH,#cspan,#cspan,P,#cspan,#cspan');
+        ${GridObjName}.attachHeader('#rspan,#rspan,配分状況<br><div id=${q}statusArea${q}></div>,担当者別計画<br>[１],施設医師別計画<br>積上 [２],調整金額<br>[１] &#8210 [２],担当者別計画<br>[１],施設医師別計画<br>積上 [２],調整金額<br>[１] &#8210 [２]');
+        ${GridObjName}.setInitWidths('30,130,85,100,100,100,100,100,100');
+        ${GridObjName}.setColAlign('center,left,center,right,right,right,right,right,right');
+        ${GridObjName}.setColTypes('ch,ro,ro,ron,ron,ron,ron,ron,ron');
+        ${GridObjName}.enableResizing('false,false,false,false,false,false,false,false,false');
+        ${GridObjName}.enableTooltips('false,false,false,false,false,false,false,false,false');
+        ${GridObjName}.setNumberFormat('0,000',3);
+        ${GridObjName}.setNumberFormat('0,000',4);
+        ${GridObjName}.setNumberFormat('0,000',5);
+        ${GridObjName}.setNumberFormat('0,000',6);
+        ${GridObjName}.setNumberFormat('0,000',7);
+        ${GridObjName}.setNumberFormat('0,000',8);
+        ${GridObjName}.enableAutoHeight(true, getGridHeight('dps601C01_2', $!gridHeight2));
+    #end
+    ${GridObjName}.enableDistributedParsing(true,50,300);
+    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter('\t');
+    ${GridObjName}.splitAt(2);
+    ${GridObjName}.setStyle('','height:45px;','','');
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.attachEvent('onKeyPress',function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.attachEvent('onXLE',function(){
+        #set ($clickScrollPos = $form.bean.getClickRowId())
+        #if ($clickScrollPos && $clickScrollPos != '')
+        	JQ('.objbox').scrollTop($clickScrollPos);
+        #end
+    });
+
+    ##
+    ##ヘッダーの実行ボタン
+    ##
+    #if($form.getRequestData('DATA_EXIST'))
+	    #if($authOpen)
+			JQ('#mrOpenArea').append(${q}<input type='button' value='公開' onclick='dps601C01F16Execute()'/>${q});
+			JQ('#mrOpenArea').append(${q}<input type='button' value='解除' onclick='dps601C01F17Execute()' style='margin-left: 5px;'/>${q});
+	    #end
+	    #if($authFix)
+			JQ('#mrFixArea').append(${q}<input type='button' value='確定' onclick='dps601C01F18Execute()'/>${q});
+			JQ('#mrFixArea').append(${q}<input type='button' value='解除' onclick='dps601C01F19Execute()' style='margin-left: 5px;'/>${q});
+	    #end
+    #end
+
+    ## 検索結果データの読込
+    if (document.getElementById('$dataListFileName')) {
+        var loadXMLString = document.getElementById('$dataListFileName').value;
+        if (loadXMLString != null && loadXMLString != '') {
+            ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete('${CoverId}');
+        }
+    }
+
+    ## 組織設定（ログインユーザが従業員の場合は前回検索した従業員を設定	）
+	#if($form.bean.rank == '3')
+		setSosJgi('$!security.defaultSosCd', '$form.bean.jgiNoTran');
+	#else
+		setSosJgi('$!security.defaultSosCd', '$!security.defaultJgiNo');
+	#end
+
+")
+
+## -----------------------------
+## addHeaderScript
+## ダブルクオート(")を表示させたい場合は${q}を使用すること
+## -----------------------------
+#set($addHeaderScript = "
+
+	var ${GridObjName};
+
+	## 現在のグリッドスクロール位置取得
+	function getCurScrollPos(){
+		return JQ('.objbox').scrollTop();
+	}
+
+	## 組織従業員設定（ログインユーザが従業員の場合は設定従業員を変更しない）
+	function setSosJgi(sosCd, jgiNo){
+		#if($form.bean.rank == '3')
+		    sosApplyExt(sosCd, jgiNo, '04', false, false);
+		#else
+		    sosApplyExt(sosCd, jgiNo, '04', true, false);
+		#end
+	}
+
+	## 施設医師別計画「再配分」処理
+	function dps601C01F15Execute() {
+	    if (!executeValidation(true,false)) {return;}
+##	    if(JQ('#doPlanClear').is(':checked')){
+	    	execute(${q}$text.get('DPS601C01.002','dialogue')${q}, ${q}$link.setAction('dps601C01F15Execute')${q},false);
+##	    } else {
+##	    	execute(${q}$text.get('DPS601C01.001','dialogue')${q}, ${q}$link.setAction('dps601C01F15Execute')${q},false);
+##	    }
+	}
+
+	## 施設医師別計画「公開」処理
+	function dps601C01F16Execute() {
+	    if (!executeValidation(false,true)) {return;}
+	    execute(${q}$text.get('DPS601C01.003','dialogue')${q}, ${q}$link.setAction('dps601C01F16Execute')${q},false);
+	}
+
+	## 施設医師別計画「公開解除」処理
+	function dps601C01F17Execute() {
+	    if (!executeValidation(false,true)) {return;}
+	    execute(${q}$text.get('DPS601C01.004','dialogue')${q}, ${q}$link.setAction('dps601C01F17Execute')${q},false);
+	}
+
+	## 施設医師別計画「確定」処理
+	function dps601C01F18Execute() {
+	    if (!executeValidation(false,true)) {return;}
+	    execute(${q}$text.get('DPS601C01.005','dialogue')${q}, ${q}$link.setAction('dps601C01F18Execute')${q},true);
+	}
+
+	## 施設医師別計画「確定解除」処理
+	function dps601C01F19Execute() {
+	    if (!executeValidation(false,true)) {return;}
+	    execute(${q}$text.get('DPS601C01.006','dialogue')${q}, ${q}$link.setAction('dps601C01F19Execute')${q},false);
+	}
+
+	## 更新処理
+	function execute(confirmMsg, actionPath, fixFlg) {
+
+	    ##調整金額チェック
+	    if(fixFlg){
+	        if(!validation()){
+	            return;
+	        }
+	        ##調整金額チェック
+	        for (rowId = 1; rowId <= ${GridObjName}.getRowsNum(); rowId++) {
+	            if(${GridObjName}.cells(rowId,0).getValue().toString() != '1')
+	                continue;{
+	            }
+	            var prodName  = ${GridObjName}.cells(rowId,1).getValue().toString();
+	            var sUH = ${GridObjName}.getUserData(rowId, 'sUH');
+	            if(isEntered(sUH) && sUH != '0'){
+	                if (!confirm('品目名称【' + prodName + '】対象【UH】' + ${q}$text.get('DPS601C01.007','dialogue')${q})) {
+	                    return false;
+	                }
+	            }
+	            var sP = ${GridObjName}.getUserData(rowId, 'sP');
+	            if(isEntered(sP) && sP != '0'){
+	                if (!confirm('品目名称【' + prodName + '】対象【P】' + ${q}$text.get('DPS601C01.007','dialogue')${q})) {
+	                    return false;
+	                }
+	            }
+	        }
+	    }
+	    ##確認
+	    if (!confirm(confirmMsg)) {
+	        return;
+	    }
+	    ##送信データ作成
+	    addCheckRowIdList(document.dps601C01Form, ${GridObjName}, 'selectRowIdList', 'rowIdList', 0);
+	    ##送信
+	    document.dps601C01Form.action = actionPath;
+	    document.dps601C01Form.submit();
+	    dps601C0XF05 = blockIt;
+	    dps601C01F10Execute = blockIt;
+	    dps601C01F15Execute = blockIt;
+	    dps601C01F16Execute = blockIt;
+	    dps601C01F17Execute = blockIt;
+	    dps601C01F18Execute = blockIt;
+	    dps601C01F19Execute = blockIt;
+	}
+
+	## 検索処理
+	function dps601C0XF05() {
+	    if (dps601C01F05Validation()) {
+	        var actionPath = '$link.setAction('dps601C01F05')';
+	        document.dps601C01Form.action = actionPath;
+	        document.dps601C01Form.submit();
+	        dps601C01F10Execute = blockIt;
+	        dps601C01F15Execute = blockIt;
+	        dps601C01F16Execute = blockIt;
+	        dps601C01F17Execute = blockIt;
+	        dps601C01F18Execute = blockIt;
+	        dps601C01F19Execute = blockIt;
+	        dps601C0XF05 = blockIt;
+	    }
+	}
+	## 画面入力チェック
+	function dps601C01F05Validation() {
+	    ## 入力フォーム
+	    form = document.dps601C01Form;
+	    ## [必須] 組織
+	    value = form.sosCd3.value;
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+	    errorMsg = ${q}$text.get('DPC1025E',['組織・従業員','エリア','従業員'])${q};
+##	    errorMsg = ${q}$text.get('DPC1025E',['組織・従業員','営業所','従業員'])${q};
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+	    addErrorInfo(!isEntered(value), errorMsg);
+	    return validation();
+	}
+	function executeValidation(doMrCheck,doProdCheck) {
+	    ## 入力フォーム
+	    form = document.dps601C01Form;
+
+	    ## [必須] 組織
+	    value = form.sosCd3.value;
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+	    errorMsg = ${q}$text.get('DPC1025E',['組織・従業員','エリア','従業員'])${q};
+##	    errorMsg = ${q}$text.get('DPC1025E',['組織・従業員','営業所','従業員'])${q};
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+	    addErrorInfo(!isEntered(value), errorMsg);
+
+	    ## [条件必須] 担当者
+	    if(doMrCheck){
+	        value = form.jgiNo.value;
+	        errorMsg = ${q}$text.get('DPC1024E',['組織・従業員','従業員'])${q};
+	        addErrorInfo(!isEntered(value), errorMsg);
+	    }
+
+	    ## [条件必須] 選択が1以上チェックされている
+	    if(doProdCheck){
+		    var value = ${GridObjName}.getCheckedRows(0);
+		    errorMsg = ${q}$text.get('DPC1006E',['品目'])${q};
+		    addErrorInfo(!isEntered(value), errorMsg);
+	    }
+
+	    return validation();
+	}
+	##営業所計画編集画面へ遷移
+	function officeG() {
+	    document.choseiForm.action = '$link.setAction('dps000C00F00')';
+	    document.choseiForm.defFlg.value = 'false';
+	    document.choseiForm.initDispFlg.value = 'false';
+	    #if($form.bean.sosCd3Tran)
+	    document.choseiForm.settingSosCd.value = '$form.bean.sosCd3Tran';
+	    #else
+	    document.choseiForm.settingSosCd.value = '';
+	    #end
+	    document.choseiForm.settingJgiNo.value = '';
+	    document.choseiForm.redirectPath.value = 'dps300C00F00';
+	    document.choseiForm.submit();
+	    return false;
+	}
+	##TPMターゲティング患者数入力画面ポップアップ
+	function popupTPM() {
+		openModalWindow('$!service.getTargetPlanPatientUrl()');
+		## 再検索後のスクロールの位置設定
+		JQ('<input>').attr({type: 'hidden',id: 'clickRowId',name: 'clickRowId',value: getCurScrollPos()}).appendTo('#dps601C01Form');
+		dps601C0XF05();
+	}
+")
+
+## -----------------------------
+## HTML
+## -----------------------------
+#if($form.bean.rank != "3")
+	#tabbar("sienSisetuTokuyaku", "dps601C00F00")
+#else
+	#tabbar("sienSisetuTokuyaku", "dps601C01F00")
+#end
+<div id="tabBox">
+<form id="dps601C01Form" name="dps601C01Form" method="post">
+    <span style="float: right;">
+        #if($form.bean.rank)
+        #if($form.bean.rank == "1")
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        <a href='#' onclick='officeG()'>エリア計画へ</a>　
+##        <a href='#' onclick='officeG()'>営業所計画へ</a>　
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        #end
+        #if($form.bean.rank == "1" || $form.bean.rank == "2")
+        <a href='$link.setAction("dps601C00F00")'>担当者一覧へ</a>
+        #end
+        #end
+    </span>
+    <table class="gridLine" cellspacing="0" cellpadding="1">
+        <tr>
+            <td class="gridIndex" style="width: 150px;">組織・従業員*</td>
+			## 従業員の場合は主担当検索
+			#if($form.bean.rank == "3")
+	            <td>#sosDialogBaseMainMr("setSosJgi",$security.getSettingUserJgiNo(),"true")</td>
+			#else
+    	        <td>#sosDialogBase2("setSosJgi","01", "02", "04",$security.hasSosJgi("04"), "false")</td>
+			#end
+        </tr>
+    </table>
+    <table style="margin-top: 2px; margin-bottom: 2px;">
+        <tr>
+            <td><input type='button' value='検索' style="width: 80px;" onclick='dps601C0XF05()'></td>
+		    #if($form.bean.jgiNoTran && $form.bean.jgiNoTran !="" && $authRehaibun && $form.getRequestData('DATA_EXIST'))
+	        <td style="padding-left:20px">
+##	            <label for="cb">修正計画をクリアする</label>
+##	            <input id="doPlanClear" type="checkbox" name="doPlanClear" id="cb" #if ($!form.bean.doPlanClear) checked #end/>
+	            <input type="button" value="再配分を実行" onclick="dps601C01F15Execute()" />
+	        </td>
+	        <td style="padding-left:20px">
+	            <a href='javascript:;' onclick="popupTPM()">症例数変更</a>
+	        </td>
+		    #end
+        </tr>
+    </table>
+	#if(!$form.getRequestData('SUB_MR_MODE'))
+    #if($form.bean.jgiNoTran && $form.bean.jgiNoTran !="" && $authRehaibun && $form.getRequestData('DATA_EXIST'))
+        <div class="guide">※【再配分を実行】ボタンをクリックすると、すべての品目が再配分されます。</div>
+    #end
+	#end
+    <table width="100%" style="float: left; margin-top: 0px; margin-bottom: 0px;">
+        <tr>
+            <td class="statusEnd legendSize">&nbsp;</td>
+            <td style="padding-right: 10px;"><label>：作業が完了している状態</label></td>
+            <td class="statusIng legendSize">&nbsp;</td>
+            <td style="padding-right: 10px;"><label>：作業を実行することが可能な状態</label></td>
+            <td class="statusNot legendSize">&nbsp;</td>
+            <td style="padding-right: 10px;"><label>：作業を実行することができない状態</label></td>
+            <td rowspan="2" style="width: 220px;vertical-align:bottom;">
+            <div class="label" style="clear: both; text-align: right; vertical-align: bottom; width: 100%;">$consts.tableHeaderY</div>
+            </td>
+        </tr>
+        <tr>
+	        <td colspan="6">
+            <a href='#' onClick='allCheckboxChange(${GridObjName},0,true)' class="allCheckboxChange">すべての品目を選択</a>
+            <a href='#' onClick='allCheckboxChange(${GridObjName},0,false)' class="allCheckboxChange">すべての品目を解除</a>
+            </td>
+        </tr>
+    </table>
+    #loadingGridDiv2("${GridObjName}", "${CoverId}", "width: 100%; clear: both;")
+	#if(!$form.getRequestData('SUB_MR_MODE'))
+##    #if($form.bean.rank == "1")
+##        <div class="guide">※施設医師別計画の状態を変更する場合は、変更対象の品目を選択(複数可)し、【公開】【確定】【解除】ボタンをクリックしてください。<br></div>
+##    #else
+##        <div class="guide">※施設医師別計画を確定する場合は、変更対象の品目を選択(複数可)し、【確定】ボタンをクリックしてください。<br></div>
+##    #end
+    #end
+    #if($form.bean.jgiNoTran && $form.bean.jgiNoTran !="")
+        <div class="guide">※参照リンクをクリックすると、施設医師別計画参照画面を表示します。<br></div>
+    #end
+
+    ##hidden項目
+    #token()
+    <input type="hidden" id="rank" name="rank" value="$!form.bean.getRank()" />
+    <input type="hidden" id="statusLastUpdate" name="statusLastUpdate" value="$!statusLastUpdate" />
+</form>
+</div>
+
+<form name="choseiForm" id="choseiForm" method="post">
+<input type="hidden" name="defFlg" id="defFlg" />
+<input type="hidden" name="initDispFlg" id="initDispFlg" />
+<input type="hidden" name="settingSosCd" id="settingSosCd" />
+<input type="hidden" name="settingJgiNo" id="settingJgiNo" />
+<input type="hidden" name="redirectPath" id="redirectPath" />
+</form>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_DIST_PARAM_HONBU_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.DistParamHonbu" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INS_TYPE" property="insType" jdbcType="CHAR" />
+    <result column="DISTRIBUTION_TYPE" property="distParam.distributionType" jdbcType="CHAR" />
+    <result column="ZERO_DIST_FLG" property="distParam.zeroDistFlg" jdbcType="CHAR" />
+    <result column="REF_PROD_CODE" property="baseParam.refProdCode" jdbcType="CHAR" />
+    <result column="REF_PROD_NAME" property="baseParam.refProdInfo.prodName" jdbcType="VARCHAR" />
+    <result column="REF_PROD_TYPE" property="baseParam.refProdInfo.prodType" jdbcType="VARCHAR" />
+    <result column="REF_FROM" property="baseParam.refFrom" jdbcType="CHAR" />
+    <result column="REF_TO" property="baseParam.refTo" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_1" property="baseParam.resultRefProdCode1" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_2" property="baseParam.resultRefProdCode2" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_3" property="baseParam.resultRefProdCode3" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_CODE_4" property="baseParam.resultRefProdCode4" jdbcType="CHAR" />
+    <result column="RESULT_REF_PROD_NAME_1" property="baseParam.resultRefProdName1" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_NAME_2" property="baseParam.resultRefProdName2" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_NAME_3" property="baseParam.resultRefProdName3" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_NAME_4" property="baseParam.resultRefProdName4" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_TYPE_1" property="baseParam.resultRefProdType1" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_TYPE_2" property="baseParam.resultRefProdType2" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_TYPE_3" property="baseParam.resultRefProdType3" jdbcType="VARCHAR" />
+    <result column="RESULT_REF_PROD_TYPE_4" property="baseParam.resultRefProdType4" jdbcType="VARCHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="columnList">
+     DPH.SEQ_KEY
+          ,DPH.PROD_CODE
+          ,DPH.INS_TYPE
+          ,DPH.DISTRIBUTION_TYPE
+          ,DPH.ZERO_DIST_FLG
+          ,DPH.REF_PROD_CODE
+          ,REF_PP.PROD_NAME AS REF_PROD_NAME
+          ,REF_PP.PROD_TYPE AS REF_PROD_TYPE
+          ,DPH.REF_FROM
+          ,DPH.REF_TO
+          ,DPH.RESULT_REF_PROD_CODE_1
+          ,DPH.RESULT_REF_PROD_CODE_2
+          ,DPH.RESULT_REF_PROD_CODE_3
+          ,DPH.RESULT_REF_PROD_CODE_4
+          ,RESULT_PP1.PROD_NAME AS RESULT_REF_PROD_NAME_1
+          ,RESULT_PP2.PROD_NAME AS RESULT_REF_PROD_NAME_2
+          ,RESULT_PP3.PROD_NAME AS RESULT_REF_PROD_NAME_3
+          ,RESULT_PP4.PROD_NAME AS RESULT_REF_PROD_NAME_4
+          ,RESULT_PP1.PROD_TYPE AS RESULT_REF_PROD_TYPE_1
+          ,RESULT_PP2.PROD_TYPE AS RESULT_REF_PROD_TYPE_2
+          ,RESULT_PP3.PROD_TYPE AS RESULT_REF_PROD_TYPE_3
+          ,RESULT_PP4.PROD_TYPE AS RESULT_REF_PROD_TYPE_4
+          ,DPH.IS_JGI_NO
+          ,DPH.IS_JGI_NAME
+          ,DPH.IS_DATE
+          ,DPH.UP_JGI_NO
+          ,DPH.UP_JGI_NAME
+          ,DPH.UP_DATE
+  </sql>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH REF_PROD AS (<include refid="COMMON_SqlMap.refProd"/>)
+    SELECT <include refid="columnList"/>
+      FROM DPS_I_DIST_PARAM_HONBU DPH
+           LEFT OUTER JOIN REF_PROD REF_PP
+        ON DPH.REF_PROD_CODE = REF_PP.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP1
+        ON DPH.RESULT_REF_PROD_CODE_1 = RESULT_PP1.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP2
+        ON DPH.RESULT_REF_PROD_CODE_2 = RESULT_PP2.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP3
+        ON DPH.RESULT_REF_PROD_CODE_3 = RESULT_PP3.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP4
+        ON DPH.RESULT_REF_PROD_CODE_4 = RESULT_PP4.PROD_CODE
+     WHERE DPH.SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.DistParamHonbu" >
+    WITH REF_PROD AS (<include refid="COMMON_SqlMap.refProd"/>)
+    SELECT <include refid="columnList"/>
+      FROM DPS_I_DIST_PARAM_HONBU DPH
+           LEFT OUTER JOIN REF_PROD REF_PP
+        ON DPH.REF_PROD_CODE = REF_PP.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP1
+        ON DPH.RESULT_REF_PROD_CODE_1 = RESULT_PP1.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP2
+        ON DPH.RESULT_REF_PROD_CODE_2 = RESULT_PP2.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP3
+        ON DPH.RESULT_REF_PROD_CODE_3 = RESULT_PP3.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP4
+        ON DPH.RESULT_REF_PROD_CODE_4 = RESULT_PP4.PROD_CODE
+     WHERE DPH.PROD_CODE = #prodCode:CHAR#
+       AND DPH.INS_TYPE = #insType:CHAR#
+       AND DPH.DISTRIBUTION_TYPE = #distParam.distributionType:CHAR#
+  </select>
+
+  <!-- 検索リスト -->
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH REF_PROD AS (<include refid="COMMON_SqlMap.refProd"/>)
+    SELECT
+      <include refid="columnList"/>
+      ,PP.GROUP_CODE
+      ,PP.STAT_PROD_CODE
+    FROM
+      DPS_I_DIST_PARAM_HONBU DPH INNER JOIN DPS_C_PLANNED_PROD PP ON DPH.PROD_CODE = PP.PROD_CODE
+        LEFT OUTER JOIN REF_PROD REF_PP ON DPH.REF_PROD_CODE = REF_PP.PROD_CODE
+          LEFT OUTER JOIN REF_PROD RESULT_PP1 ON DPH.RESULT_REF_PROD_CODE_1 = RESULT_PP1.PROD_CODE
+           LEFT OUTER JOIN REF_PROD RESULT_PP2 ON DPH.RESULT_REF_PROD_CODE_2 = RESULT_PP2.PROD_CODE
+             LEFT OUTER JOIN REF_PROD RESULT_PP3 ON DPH.RESULT_REF_PROD_CODE_3 = RESULT_PP3.PROD_CODE
+               LEFT OUTER JOIN REF_PROD RESULT_PP4 ON DPH.RESULT_REF_PROD_CODE_4 = RESULT_PP4.PROD_CODE
+    WHERE
+      DPH.DISTRIBUTION_TYPE = #distributionType:CHAR#
+      AND PP.SALES = #sales:CHAR#
+      AND PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+      <isNotNull prepend="AND" property="prodCode">
+       DPH.PROD_CODE = #prodCode:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="insType">
+       DPH.INS_TYPE = #insType:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="category">
+       PP.CATEGORY = #category:CHAR#
+      </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+</sqlMap>

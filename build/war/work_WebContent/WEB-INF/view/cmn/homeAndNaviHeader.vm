@@ -1,0 +1,33 @@
+<div id="homeAndNavi">
+#set($dpsFlg = $!security.hasDps())
+#set($dpmFlg = $!security.hasDpm())
+#set($iyakuFlg = $!security.hasIyaku())
+#set($wakutinFlg = $!security.hasVaccine())
+
+#if($dpsFlg)
+    #if($iyakuFlg)
+        #set($menuLink = $!link.setAction('dps000C00F00'))
+    #elseif($wakutinFlg)
+        #set($menuLink = $!link.setAction('dps000C00F50'))
+    #end
+#elseif($dpmFlg)
+    #if($iyakuFlg)
+        #set($menuLink = $!link.setAction('dpm000C00F00'))
+    #elseif($wakutinFlg)
+        #set($menuLink = $!link.setAction('dpm000C00F50'))
+    #end
+#end
+
+    <p class="floatL">&nbsp;$format.sysDate("yyyy年MM月dd日(E)")</p>
+    <p class="floatL">&nbsp;&nbsp;$!security.getSettingUserJgiName()&nbsp;&nbsp;</p>
+    <p class="floatR">
+        #if($menuLink)
+        	#if($dpsFlg)
+        	<a href="$!menuLink" tabindex="-1">計画支援メニューへ</a>&nbsp;
+        	#elseif($dpmFlg)
+        	<a href="$!menuLink" tabindex="-1">計画管理メニューへ</a>&nbsp;
+        	#end
+        #end
+        <a href="$!service.getHomeAndNaviPath()" tabindex="-1">ホームへ</a>
+    </p>
+</div>

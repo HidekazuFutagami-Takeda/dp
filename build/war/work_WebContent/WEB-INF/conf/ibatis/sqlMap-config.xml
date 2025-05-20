@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-config-2.dtd" >
+<sqlMapConfig>
+
+    <settings
+     cacheModelsEnabled="true"
+     enhancementEnabled="true"
+     lazyLoadingEnabled="false"
+     useStatementNamespaces="true"
+     statementCachingEnabled="true"
+     classInfoCacheEnabled="true" />
+
+    <!-- typeAlias -->
+    <!-- model.div -->
+    <typeAlias alias="ActivityType" type="jp.co.takeda.model.div.ActivityType" />
+    <typeAlias alias="AttSystemKey" type="jp.co.takeda.model.div.AttSystemKey" />
+    <typeAlias alias="BumonRank" type="jp.co.takeda.model.div.BumonRank" />
+    <typeAlias alias="CalcType" type="jp.co.takeda.model.div.CalcType" />
+    <typeAlias alias="DistBasisType" type="jp.co.takeda.model.div.DistBasisType" />
+    <typeAlias alias="DistributionType" type="jp.co.takeda.model.div.DistributionType" />
+    <typeAlias alias="EstimationBase" type="jp.co.takeda.model.div.EstimationBase" />
+    <typeAlias alias="HoInsType" type="jp.co.takeda.model.div.HoInsType" />
+    <typeAlias alias="DpsHoInsType" type="jp.co.takeda.model.div.DpsHoInsType" />
+    <typeAlias alias="InputStateForMrPlan" type="jp.co.takeda.model.div.InputStateForMrPlan" />
+    <typeAlias alias="InsClass" type="jp.co.takeda.model.div.InsClass" />
+    <typeAlias alias="InsType" type="jp.co.takeda.model.div.InsType" />
+    <typeAlias alias="JgiKb" type="jp.co.takeda.model.div.JgiKb" />
+    <typeAlias alias="JokenSet" type="jp.co.takeda.model.div.JokenSet" />
+    <typeAlias alias="KaBaseKb" type="jp.co.takeda.model.div.KaBaseKb" />
+    <typeAlias alias="KaBaseKbForVac" type="jp.co.takeda.model.div.KaBaseKbForVac" />
+    <typeAlias alias="MarketClass" type="jp.co.takeda.model.div.MarketClass" />
+    <typeAlias alias="MarketType" type="jp.co.takeda.model.div.MarketType" />
+    <typeAlias alias="MrCat" type="jp.co.takeda.model.div.MrCat" />
+    <typeAlias alias="OldInsrFlg" type="jp.co.takeda.model.div.OldInsrFlg" />
+    <typeAlias alias="OutputType" type="jp.co.takeda.model.div.OutputType" />
+    <typeAlias alias="PlannedType" type="jp.co.takeda.model.div.PlannedType" />
+    <typeAlias alias="PlanType" type="jp.co.takeda.model.div.PlanType" />
+    <typeAlias alias="Prefecture" type="jp.co.takeda.model.div.Prefecture" />
+    <typeAlias alias="ProdCategory" type="jp.co.takeda.model.div.ProdCategory" />
+    <typeAlias alias="ProdInsInfoErrKbn" type="jp.co.takeda.model.div.ProdInsInfoErrKbn" />
+    <typeAlias alias="ProdInsInfoDistKbn" type="jp.co.takeda.model.div.ProdInsInfoDistKbn" />
+    <typeAlias alias="ProdInsInfoImpInsKbn" type="jp.co.takeda.model.div.ProdInsInfoImpInsKbn" />
+    <typeAlias alias="ProdInsInfoScanDispKbn" type="jp.co.takeda.model.div.ProdInsInfoScanDispKbn" />
+    <typeAlias alias="RegistType" type="jp.co.takeda.model.div.RegistType" />
+    <typeAlias alias="Sales" type="jp.co.takeda.model.div.Sales" />
+    <typeAlias alias="PrescriptionType" type="jp.co.takeda.model.div.PrescriptionType" />
+    <typeAlias alias="Shokusei" type="jp.co.takeda.model.div.Shokusei" />
+    <typeAlias alias="Shokushu" type="jp.co.takeda.model.div.Shokushu" />
+    <typeAlias alias="StatusForInsWsPlan" type="jp.co.takeda.model.div.StatusForInsWsPlan" />
+    <typeAlias alias="StatusForInsDocPlan" type="jp.co.takeda.model.div.StatusForInsDocPlan" />
+    <typeAlias alias="StatusForMrPlan" type="jp.co.takeda.model.div.StatusForMrPlan" />
+    <typeAlias alias="StatusForOffice" type="jp.co.takeda.model.div.StatusForOffice" />
+    <typeAlias alias="StatusForWs" type="jp.co.takeda.model.div.StatusForWs" />
+    <typeAlias alias="StatusForWsSlide" type="jp.co.takeda.model.div.StatusForWsSlide" />
+    <typeAlias alias="SysClass" type="jp.co.takeda.model.div.SysClass" />
+    <typeAlias alias="SysType" type="jp.co.takeda.model.div.SysType" />
+    <typeAlias alias="Term" type="jp.co.takeda.model.div.Term" />
+    <typeAlias alias="TradeType" type="jp.co.takeda.model.div.TradeType" />
+    <typeAlias alias="TytenKisLevel" type="jp.co.takeda.model.div.TytenKisLevel" />
+    <typeAlias alias="RefPeriod" type="jp.co.takeda.model.div.RefPeriod" />
+    <typeAlias alias="EstimationBasePlan" type="jp.co.takeda.model.div.EstimationBasePlan" />
+    <typeAlias alias="JknGrpId" type="jp.co.takeda.model.div.JknGrpId" />
+    <typeAlias alias="JokenKbn" type="jp.co.takeda.model.div.JokenKbn" />
+    <typeAlias alias="SosLvl" type="jp.co.takeda.model.div.SosLvl" />
+
+    <!-- Type Handler -->
+    <typeHandler javaType="java.lang.Boolean" callback="jp.co.takeda.bean.BooleanTypeHandler" />
+    <!-- model.div -->
+    <typeHandler javaType="ActivityType" callback="jp.co.takeda.model.div.ActivityType$ActivityTypeTypeHandler" />
+    <typeHandler javaType="AttSystemKey" callback="jp.co.takeda.model.div.AttSystemKey$AttSystemKeyTypeHandler" />
+    <typeHandler javaType="BumonRank" callback="jp.co.takeda.model.div.BumonRank$BumonRankTypeHandler" />
+    <typeHandler javaType="CalcType" callback="jp.co.takeda.model.div.CalcType$CalcTypeTypeHandler" />
+    <typeHandler javaType="DistBasisType" callback="jp.co.takeda.model.div.DistBasisType$DistBasisTypeTypeHandler" />
+    <typeHandler javaType="DistributionType" callback="jp.co.takeda.model.div.DistributionType$DistributionTypeTypeHandler" />
+    <typeHandler javaType="EstimationBase" callback="jp.co.takeda.model.div.EstimationBase$EstimationBaseTypeHandler" />
+    <typeHandler javaType="HoInsType" callback="jp.co.takeda.model.div.HoInsType$HoInsTypeTypeHandler" />
+    <typeHandler javaType="DpsHoInsType" callback="jp.co.takeda.model.div.DpsHoInsType$DpsHoInsTypeTypeHandler" />
+    <typeHandler javaType="InputStateForMrPlan" callback="jp.co.takeda.model.div.InputStateForMrPlan$InputStateForMrPlanTypeHandler" />
+    <typeHandler javaType="InsClass" callback="jp.co.takeda.model.div.InsClass$InsClassTypeHandler" />
+    <typeHandler javaType="InsType" callback="jp.co.takeda.model.div.InsType$InsTypeTypeHandler" />
+    <typeHandler javaType="JgiKb" callback="jp.co.takeda.model.div.JgiKb$JgiKbTypeHandler" />
+    <typeHandler javaType="JokenSet" callback="jp.co.takeda.model.div.JokenSet$JokenSetTypeHandler" />
+    <typeHandler javaType="KaBaseKb" callback="jp.co.takeda.model.div.KaBaseKb$KaBaseKbTypeHandler" />
+    <typeHandler javaType="KaBaseKbForVac" callback="jp.co.takeda.model.div.KaBaseKbForVac$KaBaseKbForVacTypeHandler" />
+    <typeHandler javaType="MarketClass" callback="jp.co.takeda.model.div.MarketClass$MarketClassTypeHandler" />
+    <typeHandler javaType="MarketType" callback="jp.co.takeda.model.div.MarketType$MarketTypeTypeHandler" />
+    <typeHandler javaType="MrCat" callback="jp.co.takeda.model.div.MrCat$MrCatTypeHandler" />
+    <typeHandler javaType="OldInsrFlg" callback="jp.co.takeda.model.div.OldInsrFlg$OldInsrFlgTypeHandler" />
+    <typeHandler javaType="OutputType" callback="jp.co.takeda.model.div.OutputType$OutputTypeTypeHandler" />
+    <typeHandler javaType="PlannedType" callback="jp.co.takeda.model.div.PlannedType$PlannedTypeTypeHandler" />
+    <typeHandler javaType="PlanType" callback="jp.co.takeda.model.div.PlanType$PlanTypeTypeHandler" />
+    <typeHandler javaType="Prefecture" callback="jp.co.takeda.model.div.Prefecture$PrefectureTypeHandler" />
+    <typeHandler javaType="ProdCategory" callback="jp.co.takeda.model.div.ProdCategory$ProdCategoryTypeHandler" />
+    <typeHandler javaType="ProdInsInfoErrKbn" callback="jp.co.takeda.model.div.ProdInsInfoErrKbn$ProdInsInfoErrKbnHandler" />
+    <typeHandler javaType="ProdInsInfoDistKbn" callback="jp.co.takeda.model.div.ProdInsInfoDistKbn$ProdInsInfoDistKbnHandler" />
+    <typeHandler javaType="ProdInsInfoImpInsKbn" callback="jp.co.takeda.model.div.ProdInsInfoImpInsKbn$ProdInsInfoImpInsKbnHandler" />
+    <typeHandler javaType="ProdInsInfoScanDispKbn" callback="jp.co.takeda.model.div.ProdInsInfoScanDispKbn$ProdInsInfoScanDispKbnHandler" />
+    <typeHandler javaType="RefPeriod" callback="jp.co.takeda.model.div.RefPeriod$RefPeriodTypeHandler" />
+    <typeHandler javaType="RegistType" callback="jp.co.takeda.model.div.RegistType$RegistTypeTypeHandler" />
+    <typeHandler javaType="Sales" callback="jp.co.takeda.model.div.Sales$SalesTypeHandler" />
+    <typeHandler javaType="PrescriptionType" callback="jp.co.takeda.model.div.PrescriptionType$PrescriptionTypeHandler" />
+    <typeHandler javaType="Shokusei" callback="jp.co.takeda.model.div.Shokusei$ShokuseiTypeHandler" />
+    <typeHandler javaType="Shokushu" callback="jp.co.takeda.model.div.Shokushu$ShokushuTypeHandler" />
+    <typeHandler javaType="StatusForInsWsPlan" callback="jp.co.takeda.model.div.StatusForInsWsPlan$StatusForInsWsPlanTypeHandler" />
+    <typeHandler javaType="StatusForInsDocPlan" callback="jp.co.takeda.model.div.StatusForInsDocPlan$StatusForInsDocPlanTypeHandler" />
+    <typeHandler javaType="StatusForMrPlan" callback="jp.co.takeda.model.div.StatusForMrPlan$StatusForMrPlanTypeHandler" />
+    <typeHandler javaType="StatusForOffice" callback="jp.co.takeda.model.div.StatusForOffice$StatusForOfficeTypeHandler" />
+    <typeHandler javaType="StatusForWs" callback="jp.co.takeda.model.div.StatusForWs$StatusForWsTypeHandler" />
+    <typeHandler javaType="StatusForWsSlide" callback="jp.co.takeda.model.div.StatusForWsSlide$StatusForWsSlideTypeHandler" />
+    <typeHandler javaType="SysClass" callback="jp.co.takeda.model.div.SysClass$SysClassTypeHandler" />
+    <typeHandler javaType="SysType" callback="jp.co.takeda.model.div.SysType$SysTypeTypeHandler" />
+    <typeHandler javaType="Term" callback="jp.co.takeda.model.div.Term$TermTypeHandler" />
+    <typeHandler javaType="TradeType" callback="jp.co.takeda.model.div.TradeType$TradeTypeTypeHandler" />
+    <typeHandler javaType="TytenKisLevel" callback="jp.co.takeda.model.div.TytenKisLevel$TytenKisLevelTypeHandler" />
+    <typeHandler javaType="EstimationBasePlan" callback="jp.co.takeda.model.div.EstimationBasePlan$EstimationBasePlanTypeHandler" />
+    <typeHandler javaType="JknGrpId" callback="jp.co.takeda.model.div.JknGrpId$JknGrpIdTypeHandler" />
+    <typeHandler javaType="JokenKbn" callback="jp.co.takeda.model.div.JokenKbn$JokenKbnTypeHandler" />
+    <typeHandler javaType="SosLvl" callback="jp.co.takeda.model.div.SosLvl$SosLvlTypeHandler" />
+
+
+    <!-- SQL Map resource -->
+    <!-- DPS -->
+    <sqlMap resource="jp/co/takeda/dao/sql/COMMON_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_ANNOUNCE_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_INS_MST_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_JGI_MST_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_MR_DIST_MISS_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_OUTPUT_FILE_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_PLANNED_PROD_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_PROD_INS_INFO_K_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_REF_TOTAL_PROD_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_SOS_DIST_MISS_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_SOS_MST_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_CHANGE_PARAM_YAKKA_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_CHANGE_PARAM_YT_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_CHOSEI_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_DELIVERY_RESULT_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_DELIVERY_RESULT_MR_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_DIST_PARAM_HONBU_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_DIST_PARAM_OFFICE_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_DIST_WEIGHTING_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_EST_PARAM_HONBU_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_EST_PARAM_OFFICE_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_EXCEPT_DIST_INS_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_INS_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_INS_WS_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_INS_WS_PLAN_STATUS_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_DOC_DIST_PARAM_HONBU_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_DOC_DIST_PARAM_OFFICE_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_INS_DOC_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_INS_DOC_PLAN_STATUS_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_MIKAKUTOKU_SIJOU_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_MR_PLAN_FREE_INDEX_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_MR_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_MR_PLAN_STATUS_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_OFFICE_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_OFFICE_PLAN_STATUS_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_SPECIAL_INS_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_TEAM_INPUT_STATUS_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_TEAM_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_WS_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_WS_PLAN_STATUS_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_YAKKOU_SIJOU_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_I_MAIN_SUB_RELATION_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_S_SY_ATT_ADDR_GRP_IF_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_S_SY_ATT_BASE_IF_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_S_SY_ATT_LINKS_IF_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_S_SY_COM_CAL_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_S_SY_COM_INS_MARKET_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_S_SY_COM_LNK_TKCITY_SOS_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_S_SY_M_JGI_JOKEN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_S_SY_T_JIS_MST_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_S_SYS_MANAGE_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_S_T_TMS_TYTEN_MST_UN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_V_ACTIVITY_TYPE_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_V_CHANGE_PARAM_BT_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_V_DELIVERY_RESULT_MR_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_V_DELIVERY_RESULT_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_V_DIST_PARAM_HONBU_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_V_INS_WS_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_V_INS_WS_PLAN_STATUS_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_V_MR_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_V_SPECIAL_INS_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_V_WS_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_V_WS_PLAN_STATUS_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_CD_MST_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_PLANNED_CTG_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_VI_SOS_CTG_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_JKN_GRP_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_EXCEPT_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_SY_COM_INS_OYAKO_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPS_C_KAKUTEI_ERR_MSG_SqlMap.xml" /><!-- add 2022/7/13 R.takamoto ④No.6 一括確定のエラー表示対応 -->
+    <!-- DPM -->
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_PLANNED_PROD_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_VI_INS_MST_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_VI_JGI_MST_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_VI_SOS_MST_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_VI_T_TMS_TYTEN_MST_UN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_I_BRANCH_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_I_CHANGE_PARAM_YT_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_I_CHOSEI_BRANCH_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_I_CHOSEI_IYAKU_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_I_CHOSEI_MR_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_I_CHOSEI_OFFICE_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_I_CHOSEI_TEAM_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_I_INS_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_I_INS_WS_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_I_IYAKU_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_I_MR_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_I_OFFICE_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_I_TEAM_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_I_WS_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_V_INS_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_V_INS_WS_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_V_WS_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_V_CHANGE_PARAM_BT_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_CD_MST_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_PLANNED_CTG_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_MASTER_C_PLANNED_PROD_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_VI_SOS_CTG_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_JKN_GRP_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_INS_M_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_MR_M_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_OFFICE_M_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_BRANCH_M_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_IYAKU_M_PLAN_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_S_SY_COM_PCAT_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_SY_COM_INS_OYAKO_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/DPM_C_MR_INS_PROD_SqlMap.xml"/><!-- add 2022/6/15 R.takamoto INC1796156 施設品目別計画編集画面の担当外エラー対応 -->
+    <!-- View -->
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_DeliveryResultInsTypeSummary_SqlMap.xml" />
+
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_DistributionElement_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_EstimationProd_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_InsWsPlanForRef_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_InsWsPlanForVacForRef_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_InsWsPlanForVacSummary_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_InsWsPlanForVacSummaryByIns_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_InsWsPlanForVacSummaryByInsTyten_SqlMap.xml" /> <!-- add Start 2022/12/1  Y.Taniguchi バックログNo.31 -->
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_JgiEachKindInfo_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_JgiEachKindInfoForVac_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_JgiStatusSummary_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_JgiStatusSummaryForVac_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_MikakutokuSijouInsTypeSummary_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_MrEstimationRatio_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_ProdSummary_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_SosChoseiSummary_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_SosEachKindInfo_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_SosEachKindInfoForVac_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_SosStatusSummary_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_SosStatusSummaryForVac_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_SpecialInsPlanSosSummary_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_WsPlanForVacSummary_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_WsPlanForVacSummary2_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_WsPlanStatusSummary_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_WsPlanSummary_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_WsPlanSummary2_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_TmsTytenPlanDistProd_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_DistributionProd_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_DistributionForVacProd_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_InsDocHaibun_SqlMap.xml" />
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_DPS_C_VI_CPROD_XLS_SqlMap.xml" /> <!-- add 2016/12/12 S.Hayashi J16-0015_ユーザ要望改定 -->
+    <sqlMap resource="jp/co/takeda/dao/sql/VIEW_SupportFollow_SqlMap.xml" /> <!-- add Start 2022/6/08 H.Futagami バックログNo.4　削除施設・調整あり計画データのダウンロード機能 -->
+    <!-- ETC -->
+    <sqlMap resource="jp/co/takeda/dao/sql/COM_USER_INFO_SqlMap.xml" />
+
+ </sqlMapConfig>

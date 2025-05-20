@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_C_VI_INS_MST_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.InsMst" >
+    <result column="INS_NO" property="insNo" jdbcType="VARCHAR" />
+    <result column="INS_CLASS" property="insClass" jdbcType="VARCHAR" />
+    <result column="RELN_INS_NO" property="relnInsNo" jdbcType="VARCHAR" />
+    <result column="RELN_INS_CODE" property="relnInsCode" jdbcType="VARCHAR" />
+    <result column="OLD_INSR_FLG" property="oldInsrFlg" jdbcType="VARCHAR" />
+    <result column="INS_KANA" property="insKana" jdbcType="VARCHAR" />
+    <result column="INS_KANA_SRCH" property="insKanaSrch" jdbcType="VARCHAR" />
+    <result column="INS_ABBR_NAME" property="insAbbrName" jdbcType="VARCHAR" />
+    <result column="INS_FORMAL_NAME" property="insFormalName" jdbcType="VARCHAR" />
+    <result column="ADDR_CODE_PREF" property="addrCodePref" jdbcType="VARCHAR" />
+    <result column="ADDR_CODE_CITY" property="addrCodeCity" jdbcType="VARCHAR" />
+    <result column="TRADE_TYPE" property="tradeType" jdbcType="VARCHAR" />
+    <result column="HO_INS_TYPE" property="hoInsType" jdbcType="VARCHAR" />
+    <result column="REQ_FLG" property="reqFlg" jdbcType="INTEGER" />
+    <result column="DEL_FLG" property="delFlg" jdbcType="INTEGER" />
+    <result column="ACTIVITY_TYPE" property="activityType" jdbcType="CHAR" />
+    <result column="FUKEN_MEI_KJ" property="fukenMeiKj" jdbcType="VARCHAR" />
+    <result column="SHIKUCHOSON_MEI_KJ" property="shikuchosonMeiKj" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="resultMapList" class="jp.co.takeda.model.InsMst" >
+    <result column="INS_NO" property="insNo" jdbcType="VARCHAR" />
+    <result column="INS_CLASS" property="insClass" jdbcType="VARCHAR" />
+    <result column="RELN_INS_NO" property="relnInsNo" jdbcType="VARCHAR" />
+    <result column="RELN_INS_CODE" property="relnInsCode" jdbcType="VARCHAR" />
+    <result column="OLD_INSR_FLG" property="oldInsrFlg" jdbcType="VARCHAR" />
+    <result column="INS_KANA" property="insKana" jdbcType="VARCHAR" />
+    <result column="INS_KANA_SRCH" property="insKanaSrch" jdbcType="VARCHAR" />
+    <result column="INS_ABBR_NAME" property="insAbbrName" jdbcType="VARCHAR" />
+    <result column="INS_FORMAL_NAME" property="insFormalName" jdbcType="VARCHAR" />
+    <result column="ADDR_CODE_PREF" property="addrCodePref" jdbcType="VARCHAR" />
+    <result column="ADDR_CODE_CITY" property="addrCodeCity" jdbcType="VARCHAR" />
+    <result column="TRADE_TYPE" property="tradeType" jdbcType="VARCHAR" />
+    <result column="HO_INS_TYPE" property="hoInsType" jdbcType="VARCHAR" />
+    <result column="REQ_FLG" property="reqFlg" jdbcType="INTEGER" />
+    <result column="DEL_FLG" property="delFlg" jdbcType="INTEGER" />
+    <result column="ACTIVITY_TYPE" property="activityType" jdbcType="CHAR" />
+    <result column="FUKEN_MEI_KJ" property="fukenMeiKj" jdbcType="VARCHAR" />
+    <result column="SHIKUCHOSON_MEI_KJ" property="shikuchosonMeiKj" jdbcType="VARCHAR" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="COM_JGI_NO" property="comJgiNo" jdbcType="INTEGER" />
+    <result column="COM_JGI_NAME" property="comJgiName" jdbcType="VARCHAR" />
+    <result column="SP_JGI_NO" property="spJgiNo" jdbcType="INTEGER" />
+    <result column="SP_JGI_NAME" property="spJgiName" jdbcType="VARCHAR" />
+    <result column="ONC_JGI_NO" property="oncJgiNo" jdbcType="INTEGER" />
+    <result column="ONC_JGI_NAME" property="oncJgiName" jdbcType="VARCHAR" />
+    <result column="KOKEI_JGI_NO" property="kokeiJgiNo" jdbcType="INTEGER" />
+    <result column="KOKEI_JGI_NAME" property="kokeiJgiName" jdbcType="VARCHAR" />
+    <result column="VAC_JGI_NO" property="vacJgiNo" jdbcType="INTEGER" />
+    <result column="VAC_JGI_NAME" property="vacJgiName" jdbcType="VARCHAR" />
+<!-- add Start 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+    <result column="BU2CS_MR_JGI_NO" property="bu2csMrJgiNo" jdbcType="INTEGER" />
+    <result column="BU2CS_MR_JGI_NAME" property="bu2csMrJgiName" jdbcType="VARCHAR" />
+    <result column="JOHLC_MR_JGI_NO" property="johlcMrJgiNo" jdbcType="INTEGER" />
+    <result column="JOHLC_MR_JGI_NAME" property="johlcMrJgiName" jdbcType="VARCHAR" />
+    <result column="BU2BLO_MR_JGI_NO" property="bu2bloMrJgiNo" jdbcType="INTEGER" />
+    <result column="BU2BLO_MR_JGI_NAME" property="bu2bloMrJgiName" jdbcType="VARCHAR" />
+    <result column="BU2HER_MR_JGI_NO" property="bu2herMrJgiNo" jdbcType="INTEGER" />
+    <result column="BU2HER_MR_JGI_NAME" property="bu2herMrJgiName" jdbcType="VARCHAR" />
+    <result column="JOGUH_MR_JGI_NO" property="joguhMrJgiNo" jdbcType="INTEGER" />
+    <result column="JOGUH_MR_JGI_NAME" property="joguhMrJgiName" jdbcType="VARCHAR" />
+    <result column="BU1LAM_MR_JGI_NO" property="bu1lamMrJgiNo" jdbcType="INTEGER" />
+    <result column="BU1LAM_MR_JGI_NAME" property="bu1lamMrJgiName" jdbcType="VARCHAR" />
+<!-- add End 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+  </resultMap>
+
+  <sql id="mr_ins_join">
+    ,COM_MR AS (
+        SELECT  TARGET_INS.INS_NO, MRI.MR_NO, JM.JGI_NAME, JM.SHOKUSEI_CD, JM.SHOKUSHU_CD, JM.SOS_CD, JM.ETC_SOS_FLG
+        FROM
+            TARGET_INS
+            INNER JOIN DPM_C_VI_MR_INS MRI ON TARGET_INS.INS_NO = MRI.INS_NO AND MRI.MR_CAT = '01' AND MRI.MAIN_MR = '0'
+            INNER JOIN DPM_C_VI_JGI_MST JM ON MRI.MR_NO = JM.JGI_NO
+    )
+    ,SP_MR AS (
+        SELECT  TARGET_INS.INS_NO, MRI.MR_NO, JM.JGI_NAME
+        FROM
+            TARGET_INS
+            INNER JOIN DPM_C_VI_MR_INS MRI ON TARGET_INS.INS_NO = MRI.INS_NO AND MRI.MR_CAT = '03' AND MRI.MAIN_MR = '0'
+            INNER JOIN DPM_C_VI_JGI_MST JM ON MRI.MR_NO = JM.JGI_NO
+    )
+    ,ONC_MR AS (
+        SELECT  TARGET_INS.INS_NO, MRI.MR_NO, JM.JGI_NAME
+        FROM
+            TARGET_INS
+            INNER JOIN DPM_C_VI_MR_INS MRI ON TARGET_INS.INS_NO = MRI.INS_NO AND MRI.MR_CAT = '05' AND MRI.MAIN_MR = '0'
+            INNER JOIN DPM_C_VI_JGI_MST JM ON MRI.MR_NO = JM.JGI_NO
+    )
+    ,KOKEI_MR AS (
+        SELECT  TARGET_INS.INS_NO, MRI.MR_NO, JM.JGI_NAME
+        FROM
+            TARGET_INS
+            INNER JOIN DPM_C_VI_MR_INS MRI ON TARGET_INS.INS_NO = MRI.INS_NO AND MRI.MR_CAT = '12' AND MRI.MAIN_MR = '0'
+            INNER JOIN DPM_C_VI_JGI_MST JM ON MRI.MR_NO = JM.JGI_NO
+    )
+    ,VAC_MR AS (
+        SELECT  TARGET_INS.INS_NO, MRI.MR_NO, JM.JGI_NAME, JM.SHOKUSEI_CD, JM.SHOKUSHU_CD, JM.SOS_CD, JM.ETC_SOS_FLG
+        FROM
+            TARGET_INS
+            INNER JOIN DPM_C_VI_MR_INS MRI ON TARGET_INS.INS_NO = MRI.INS_NO AND MRI.MR_CAT = '02' AND MRI.MAIN_MR = '0'
+            INNER JOIN DPM_C_VI_JGI_MST JM ON MRI.MR_NO = JM.JGI_NO
+    )
+
+<!-- add Start 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+    ,BU2CS_MR AS (
+        SELECT  TARGET_INS.INS_NO, MRI.MR_NO, JM.JGI_NAME, JM.SHOKUSEI_CD, JM.SHOKUSHU_CD, JM.SOS_CD, JM.ETC_SOS_FLG
+        FROM
+            TARGET_INS
+            INNER JOIN DPM_C_VI_MR_INS MRI ON TARGET_INS.INS_NO = MRI.INS_NO AND MRI.MR_CAT = '03' AND MRI.MAIN_MR = '0'
+            INNER JOIN DPM_C_VI_JGI_MST JM ON MRI.MR_NO = JM.JGI_NO
+    )
+    ,JOHLC_MR AS (
+        SELECT  TARGET_INS.INS_NO, MRI.MR_NO, JM.JGI_NAME, JM.SHOKUSEI_CD, JM.SHOKUSHU_CD, JM.SOS_CD, JM.ETC_SOS_FLG
+        FROM
+            TARGET_INS
+            INNER JOIN DPM_C_VI_MR_INS MRI ON TARGET_INS.INS_NO = MRI.INS_NO AND MRI.MR_CAT = '05' AND MRI.MAIN_MR = '0'
+            INNER JOIN DPM_C_VI_JGI_MST JM ON MRI.MR_NO = JM.JGI_NO
+    )
+    ,BU2BLO_MR AS (
+        SELECT  TARGET_INS.INS_NO, MRI.MR_NO, JM.JGI_NAME, JM.SHOKUSEI_CD, JM.SHOKUSHU_CD, JM.SOS_CD, JM.ETC_SOS_FLG
+        FROM
+            TARGET_INS
+            INNER JOIN DPM_C_VI_MR_INS MRI ON TARGET_INS.INS_NO = MRI.INS_NO AND MRI.MR_CAT = '09' AND MRI.MAIN_MR = '0'
+            INNER JOIN DPM_C_VI_JGI_MST JM ON MRI.MR_NO = JM.JGI_NO
+    )
+    ,BU2HER_MR AS (
+        SELECT  TARGET_INS.INS_NO, MRI.MR_NO, JM.JGI_NAME, JM.SHOKUSEI_CD, JM.SHOKUSHU_CD, JM.SOS_CD, JM.ETC_SOS_FLG
+        FROM
+            TARGET_INS
+            INNER JOIN DPM_C_VI_MR_INS MRI ON TARGET_INS.INS_NO = MRI.INS_NO AND MRI.MR_CAT = '11' AND MRI.MAIN_MR = '0'
+            INNER JOIN DPM_C_VI_JGI_MST JM ON MRI.MR_NO = JM.JGI_NO
+    )
+    ,JOGUH_MR AS (
+        SELECT  TARGET_INS.INS_NO, MRI.MR_NO, JM.JGI_NAME, JM.SHOKUSEI_CD, JM.SHOKUSHU_CD, JM.SOS_CD, JM.ETC_SOS_FLG
+        FROM
+            TARGET_INS
+            INNER JOIN DPM_C_VI_MR_INS MRI ON TARGET_INS.INS_NO = MRI.INS_NO AND MRI.MR_CAT = '12' AND MRI.MAIN_MR = '0'
+            INNER JOIN DPM_C_VI_JGI_MST JM ON MRI.MR_NO = JM.JGI_NO
+    )
+    ,BU1LAM_MR AS (
+        SELECT  TARGET_INS.INS_NO, MRI.MR_NO, JM.JGI_NAME, JM.SHOKUSEI_CD, JM.SHOKUSHU_CD, JM.SOS_CD, JM.ETC_SOS_FLG
+        FROM
+            TARGET_INS
+            INNER JOIN DPM_C_VI_MR_INS MRI ON TARGET_INS.INS_NO = MRI.INS_NO AND MRI.MR_CAT = '21' AND MRI.MAIN_MR = '0'
+            INNER JOIN DPM_C_VI_JGI_MST JM ON MRI.MR_NO = JM.JGI_NO
+    )
+<!-- add End 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+  </sql>
+
+
+  <!-- 検索 -->
+  <select id="selectReal" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT INS.INS_NO
+          ,INS.INS_CLASS
+          ,INS.RELN_INS_NO
+          ,INS.RELN_INS_CODE
+          ,INS.OLD_INSR_FLG
+          ,INS.INS_KANA
+          ,INS.INS_KANA_SRCH
+          ,INS.INS_ABBR_NAME
+          ,INS.INS_FORMAL_NAME
+          ,INS.ADDR_CODE_PREF
+          ,INS.ADDR_CODE_CITY
+          ,INS.TRADE_TYPE
+          ,INS.HO_INS_TYPE
+          ,INS.REQ_FLG
+          ,INS.DEL_FLG
+          ,AT.ACTIVITY_TYPE
+          ,FUKEN_MEI_KJ
+          ,SHIKUCHOSON_MEI_KJ
+      FROM DPM_C_VI_INS_MST INS
+           LEFT JOIN DPM_V_VI_ACTIVITY_TYPE AT
+        ON INS.INS_NO = AT.INS_NO
+       AND AT.CAL_YEAR = '$calYear$'
+       AND AT.CAL_TERM = '$calTerm.dbValue$'
+           LEFT JOIN DPS_S_SY_T_JIS_MST JIS
+        ON INS.ADDR_CODE_PREF = JIS.TODOUFUKEN_CD
+       AND INS.ADDR_CODE_CITY = JIS.SHIKUCHOSON_CD
+     WHERE INS.INS_NO = #insNo:VARCHAR#
+  </select>
+
+  <!-- 検索/担当施設 -->
+  <select id="selectRealList" resultMap="resultMapList" parameterClass="java.util.Map" >
+    WITH TARGET_INS AS (
+        SELECT
+        	MRI.INS_NO,
+            <isNotNull property="jgiNo">
+        	MAX(JM.JGI_NO) AS JGI_NO,
+        	MAX(JM.JGI_NAME) AS JGI_NAME,
+            </isNotNull>
+            <isNull property="jgiNo">
+        	NULL AS JGI_NO,
+        	NULL AS JGI_NAME,
+            </isNull>
+        	MAX(AT.ACTIVITY_TYPE) AS ACTIVITY_TYPE
+        FROM
+            DPM_C_VI_MR_INS MRI
+            <!-- NSG親子紐づけ対応-->
+            LEFT JOIN DPM_C_MR_INS_PROD MIP ON MRI.INS_NO = MIP.INS_NO AND MRI.MR_CAT = MIP.MR_CAT AND MRI.MAIN_MR = MIP.MAIN_MR
+	        INNER JOIN DPM_C_VI_INS_MST INS ON MRI.INS_NO = INS.INS_NO
+	        <!-- INNER JOIN DPM_C_VI_JGI_MST JM ON JM.JGI_NO = MRI.MR_NO	NSG親子紐づけ対応-->
+            INNER JOIN DPM_C_VI_JGI_MST JM ON JM.JGI_NO = NVL(MIP.MR_NO,MRI.MR_NO)
+    	    <isNotNull property="likeSearchFlg">
+		    INNER JOIN DPS_S_SY_COM_INS_MST_SRCH SRCH ON INS.INS_NO = SRCH.INS_NO
+        	</isNotNull>
+	        LEFT JOIN DPM_V_VI_ACTIVITY_TYPE AT ON INS.INS_NO = AT.INS_NO AND AT.CAL_YEAR = '$calYear$' AND AT.CAL_TERM = '$calTerm.dbValue$'
+			LEFT JOIN DPM_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+			LEFT JOIN DPM_C_VI_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+        WHERE
+            MRI.MAIN_MR = '0'
+            <isNotNull property="jgiKbList" prepend="AND">
+            <iterate prepend=" JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+                #jgiKbList[].dbValue#
+            </iterate>
+            </isNotNull>
+            <isNotNull prepend="AND" property="sosCd3">
+                JM.SOS_CD3 = #sosCd3:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="AND" property="sosCd4">
+                JM.SOS_CD4 = #sosCd4:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="AND" property="jgiNo">
+                JM.JGI_NO = #jgiNo:INTEGER#
+            </isNotNull>
+			<isNotNull prepend="AND" property="insNo">
+				INS.INS_NO = #insNo:VARCHAR#
+			</isNotNull>
+			<isNotNull prepend="AND" property="searchInsType">
+			<!--  アプリ内部で 7をワクチンの意味合いで使用する。  -->
+				<!-- DECODE(INS.INS_TYPE,'3','7',INS.HO_INS_TYPE) IN ($searchInsType$) -->
+				<!-- NSG親子紐づけ対応 -->
+				DECODE(NVL(OINS.INS_TYPE, INS.INS_TYPE),'3','7',NVL(OINS.HO_INS_TYPE, INS.HO_INS_TYPE)) IN ($searchInsType$)
+			</isNotNull>
+			<isNotNull prepend="AND" property="addrCodePref">
+				INS.ADDR_CODE_PREF = #addrCodePref:VARCHAR#
+			</isNotNull>
+			<isNotNull prepend="AND" property="addrCodeCity">
+				INS.ADDR_CODE_CITY = #addrCodeCity:VARCHAR#
+			</isNotNull>
+			<isNotEmpty prepend="AND" property="insKanaSrch">
+				CONTAINS(SRCH.SRCH_TXT, #insKanaSrch:VARCHAR#) > 0
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="insFormalName">
+				CONTAINS(SRCH.SRCH_TXT, #insFormalName:VARCHAR#) > 0
+			</isNotEmpty>
+			<isNotNull prepend="AND" property="activityType">
+				AT.ACTIVITY_TYPE = #activityType:CHAR#
+			</isNotNull>
+        GROUP BY MRI.INS_NO
+    )
+    <include refid="mr_ins_join"/>
+    SELECT
+        TARGET_INS.JGI_NO   AS JGI_NO,
+        TARGET_INS.JGI_NAME AS JGI_NAME,
+        COM_MR.MR_NO    AS COM_JGI_NO,
+        COM_MR.JGI_NAME AS COM_JGI_NAME,
+        SP_MR.MR_NO    AS SP_JGI_NO,
+        SP_MR.JGI_NAME AS SP_JGI_NAME,
+        ONC_MR.MR_NO    AS ONC_JGI_NO,
+        ONC_MR.JGI_NAME AS ONC_JGI_NAME,
+        KOKEI_MR.MR_NO    AS KOKEI_JGI_NO,
+        KOKEI_MR.JGI_NAME AS KOKEI_JGI_NAME,
+        VAC_MR.MR_NO    AS VAC_JGI_NO,
+        VAC_MR.JGI_NAME AS VAC_JGI_NAME,
+<!-- add Start 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+        BU2CS_MR.MR_NO     AS BU2CS_MR_JGI_NO,
+        BU2CS_MR.JGI_NAME  AS BU2CS_MR_JGI_NAME,
+        JOHLC_MR.MR_NO     AS JOHLC_MR_JGI_NO,
+        JOHLC_MR.JGI_NAME  AS JOHLC_MR_JGI_NAME,
+        BU2BLO_MR.MR_NO    AS BU2BLO_MR_JGI_NO,
+        BU2BLO_MR.JGI_NAME AS BU2BLO_MR_JGI_NAME,
+        BU2HER_MR.MR_NO    AS BU2HER_MR_JGI_NO,
+        BU2HER_MR.JGI_NAME AS BU2HER_MR_JGI_NAME,
+        JOGUH_MR.MR_NO     AS JOGUH_MR_JGI_NO,
+        JOGUH_MR.JGI_NAME  AS JOGUH_MR_JGI_NAME,
+        BU1LAM_MR.MR_NO    AS BU1LAM_MR_JGI_NO,
+        BU1LAM_MR.JGI_NAME AS BU1LAM_MR_JGI_NAME,
+<!-- add End 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+        INS.INS_NO,
+        INS.INS_CLASS,
+        INS.RELN_INS_NO,
+        INS.RELN_INS_CODE,
+        INS.OLD_INSR_FLG,
+        INS.INS_KANA,
+        INS.INS_KANA_SRCH,
+        INS.INS_ABBR_NAME,
+        INS.INS_FORMAL_NAME,
+        INS.ADDR_CODE_PREF,
+        INS.ADDR_CODE_CITY,
+        INS.TRADE_TYPE,
+<!--  アプリ内部で 7をワクチンの意味合いで使用する。  -->
+        <!-- DECODE(INS.INS_TYPE,'3','7',INS.HO_INS_TYPE) AS HO_INS_TYPE, -->
+        <!-- NSG親子紐づけ対応 -->
+        DECODE(NVL(OINS.INS_TYPE, INS.INS_TYPE),'3','7',NVL(OINS.HO_INS_TYPE, INS.HO_INS_TYPE)) AS HO_INS_TYPE,
+        INS.REQ_FLG,
+        INS.DEL_FLG,
+        TARGET_INS.ACTIVITY_TYPE,
+        JIS.FUKEN_MEI_KJ,
+        JIS.SHIKUCHOSON_MEI_KJ,
+        NVL(OYK.MAIN_INS_NO,'0') AS MAIN_INS_NO,
+        DECODE(1,'1',OINS.HO_INS_TYPE,OINS.HO_INS_TYPE_Z) AS OINS_HO_INS_TYPE,
+        OINS.RELN_INS_NO AS OINS_RELN_INS_NO
+    FROM
+        TARGET_INS
+        INNER JOIN DPM_C_VI_INS_MST INS ON TARGET_INS.INS_NO = INS.INS_NO
+			LEFT JOIN COM_MR ON TARGET_INS.INS_NO = COM_MR.INS_NO
+			LEFT JOIN SP_MR ON TARGET_INS.INS_NO = SP_MR.INS_NO
+			LEFT JOIN ONC_MR ON TARGET_INS.INS_NO = ONC_MR.INS_NO
+			LEFT JOIN KOKEI_MR ON TARGET_INS.INS_NO = KOKEI_MR.INS_NO
+			LEFT JOIN DPM_C_VI_SOS_MST SM ON COM_MR.SOS_CD = SM.SOS_CD AND COM_MR.ETC_SOS_FLG = SM.ETC_SOS_FLG
+			LEFT JOIN VAC_MR ON TARGET_INS.INS_NO = VAC_MR.INS_NO
+<!-- add Start 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+			LEFT JOIN BU2CS_MR ON TARGET_INS.INS_NO = BU2CS_MR.INS_NO
+			LEFT JOIN JOHLC_MR ON TARGET_INS.INS_NO = JOHLC_MR.INS_NO
+			LEFT JOIN BU2BLO_MR ON TARGET_INS.INS_NO = BU2BLO_MR.INS_NO
+			LEFT JOIN BU2HER_MR ON TARGET_INS.INS_NO = BU2HER_MR.INS_NO
+			LEFT JOIN JOGUH_MR ON TARGET_INS.INS_NO = JOGUH_MR.INS_NO
+			LEFT JOIN BU1LAM_MR ON TARGET_INS.INS_NO = BU1LAM_MR.INS_NO
+<!-- mod End 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+	        LEFT JOIN DPM_C_VI_SOS_MST SM ON VAC_MR.SOS_CD = SM.SOS_CD AND VAC_MR.ETC_SOS_FLG = SM.ETC_SOS_FLG
+			LEFT JOIN DPS_S_SY_T_JIS_MST JIS ON INS.ADDR_CODE_PREF = JIS.TODOUFUKEN_CD AND INS.ADDR_CODE_CITY = JIS.SHIKUCHOSON_CD
+			LEFT JOIN DPM_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = TARGET_INS.INS_NO
+						AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+			LEFT JOIN DPM_C_VI_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+      ORDER BY
+		SM.BR_CODE,
+		SM.DIST_SEQ,
+		SM.DIST_CODE,
+		SM.TEAM_CODE,
+		COM_MR.SHOKUSEI_CD,
+		COM_MR.SHOKUSHU_CD,
+		COM_MR.MR_NO,
+		VAC_MR.SHOKUSEI_CD,
+		VAC_MR.SHOKUSHU_CD,
+		VAC_MR.MR_NO,
+		OINS_HO_INS_TYPE,
+		OINS_RELN_INS_NO,
+		MAIN_INS_NO,
+		HO_INS_TYPE,
+		RELN_INS_NO,
+		RELN_INS_CODE
+  </select>
+
+  <!-- 検索/担当施設(施設＋(従業員 or MR種別 or 品目)指定 -->
+  <select id="selectRealByUnique" resultMap="resultMapList" parameterClass="java.util.Map" >
+    WITH TARGET_INS AS (
+        SELECT
+            T1.INS_NO,
+            T1.MR_NO
+        FROM
+            <isNull property="prodCode">
+            DPM_C_VI_MR_INS T1
+            </isNull>
+            <isNotNull property="prodCode">
+            DPM_C_MR_INS_PROD T1
+            </isNotNull>
+        WHERE
+            T1.INS_NO = #insNo:VARCHAR#
+            <isNotNull prepend="AND" property="prodCode">
+              T1.PROD_CODE = #prodCode:CHAR#
+            </isNotNull>
+            <isNotNull prepend="AND" property="jgiNo">
+              T1.MR_NO = #jgiNo:INTEGER#
+            </isNotNull>
+            <isNotNull prepend="AND" property="mrCat">
+              T1.MR_CAT = #mrCat:VARCHAR#
+            </isNotNull>
+    )
+    <include refid="mr_ins_join"/>
+    SELECT
+        JM.JGI_NO   AS JGI_NO,
+        JM.JGI_NAME AS JGI_NAME,
+        COM_MR.MR_NO    AS COM_JGI_NO,
+        COM_MR.JGI_NAME AS COM_JGI_NAME,
+        SP_MR.MR_NO     AS SP_JGI_NO,
+        SP_MR.JGI_NAME  AS SP_JGI_NAME,
+        ONC_MR.MR_NO    AS ONC_JGI_NO,
+        ONC_MR.JGI_NAME AS ONC_JGI_NAME,
+        KOKEI_MR.MR_NO    AS KOKEI_JGI_NO,
+        KOKEI_MR.JGI_NAME AS KOKEI_JGI_NAME,
+        VAC_MR.MR_NO    AS VAC_JGI_NO,
+        VAC_MR.JGI_NAME AS VAC_JGI_NAME,
+<!-- add Start 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+        BU2CS_MR.MR_NO     AS BU2CS_MR_JGI_NO,
+        BU2CS_MR.JGI_NAME  AS BU2CS_MR_JGI_NAME,
+        JOHLC_MR.MR_NO     AS JOHLC_MR_JGI_NO,
+        JOHLC_MR.JGI_NAME  AS JOHLC_MR_JGI_NAME,
+        BU2BLO_MR.MR_NO    AS BU2BLO_MR_JGI_NO,
+        BU2BLO_MR.JGI_NAME AS BU2BLO_MR_JGI_NAME,
+        BU2HER_MR.MR_NO    AS BU2HER_MR_JGI_NO,
+        BU2HER_MR.JGI_NAME AS BU2HER_MR_JGI_NAME,
+        JOGUH_MR.MR_NO     AS JOGUH_MR_JGI_NO,
+        JOGUH_MR.JGI_NAME  AS JOGUH_MR_JGI_NAME,
+        BU1LAM_MR.MR_NO    AS BU1LAM_MR_JGI_NO,
+        BU1LAM_MR.JGI_NAME AS BU1LAM_MR_JGI_NAME,
+<!-- add End 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+        INS.INS_NO,
+        INS.INS_CLASS,
+        INS.RELN_INS_NO,
+        INS.RELN_INS_CODE,
+        INS.OLD_INSR_FLG,
+        INS_KANA,
+        INS_KANA_SRCH,
+        INS.INS_ABBR_NAME,
+        INS_FORMAL_NAME,
+        INS.ADDR_CODE_PREF,
+        INS.ADDR_CODE_CITY,
+        INS.TRADE_TYPE,
+		INS.HO_INS_TYPE,
+        INS.REQ_FLG,
+        INS.DEL_FLG,
+        AT.ACTIVITY_TYPE,
+        JIS.FUKEN_MEI_KJ,
+        JIS.SHIKUCHOSON_MEI_KJ
+    FROM
+        TARGET_INS
+        INNER JOIN DPM_C_VI_INS_MST INS ON TARGET_INS.INS_NO = INS.INS_NO
+        INNER JOIN DPM_C_VI_JGI_MST JM  ON JM.JGI_NO  = TARGET_INS.MR_NO
+        INNER JOIN DPM_C_VI_SOS_MST SM  ON JM.SOS_CD  = SM.SOS_CD AND JM.ETC_SOS_FLG = SM.ETC_SOS_FLG
+	        LEFT JOIN COM_MR ON TARGET_INS.INS_NO = COM_MR.INS_NO
+	        LEFT JOIN SP_MR ON TARGET_INS.INS_NO = SP_MR.INS_NO
+	        LEFT JOIN ONC_MR ON TARGET_INS.INS_NO = ONC_MR.INS_NO
+	        LEFT JOIN KOKEI_MR ON TARGET_INS.INS_NO = KOKEI_MR.INS_NO
+	        LEFT JOIN VAC_MR ON TARGET_INS.INS_NO = VAC_MR.INS_NO
+<!-- add Start 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+			LEFT JOIN BU2CS_MR ON TARGET_INS.INS_NO = BU2CS_MR.INS_NO
+			LEFT JOIN JOHLC_MR ON TARGET_INS.INS_NO = JOHLC_MR.INS_NO
+			LEFT JOIN BU2BLO_MR ON TARGET_INS.INS_NO = BU2BLO_MR.INS_NO
+			LEFT JOIN BU2HER_MR ON TARGET_INS.INS_NO = BU2HER_MR.INS_NO
+			LEFT JOIN JOGUH_MR ON TARGET_INS.INS_NO = JOGUH_MR.INS_NO
+			LEFT JOIN BU1LAM_MR ON TARGET_INS.INS_NO = BU1LAM_MR.INS_NO
+<!-- mod End 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+        LEFT JOIN DPS_S_SY_T_JIS_MST JIS ON INS.ADDR_CODE_PREF = JIS.TODOUFUKEN_CD AND INS.ADDR_CODE_CITY = JIS.SHIKUCHOSON_CD
+        LEFT JOIN DPM_V_VI_ACTIVITY_TYPE AT ON INS.INS_NO = AT.INS_NO AND AT.CAL_YEAR = '$calYear$' AND AT.CAL_TERM = '$calTerm.dbValue$'
+  </select>
+
+  <!-- 検索/担当施設(施設＋(従業員 or MR種別 or 品目)指定 -->
+  <select id="selectRealByUniqueOyako" resultMap="resultMapList" parameterClass="java.util.Map" >
+    WITH TARGET_INS AS (
+        SELECT
+            T1.INS_NO,
+            T1.MR_NO
+        FROM
+            <isNull property="prodCode">
+            DPM_C_VI_MR_INS T1
+            </isNull>
+            <isNotNull property="prodCode">
+            DPM_C_MR_INS_PROD T1
+            </isNotNull>
+        WHERE
+            T1.INS_NO = #insNo:VARCHAR#
+            <isNotNull prepend="AND" property="prodCode">
+              T1.PROD_CODE = #prodCode:CHAR#
+            </isNotNull>
+            <isNotNull prepend="AND" property="jgiNo">
+              T1.MR_NO = #jgiNo:INTEGER#
+            </isNotNull>
+            <isNotNull prepend="AND" property="mrCat">
+              T1.MR_CAT = #mrCat:VARCHAR#
+            </isNotNull>
+    )
+    <include refid="mr_ins_join"/>
+    SELECT
+        JM.JGI_NO   AS JGI_NO,
+        JM.JGI_NAME AS JGI_NAME,
+        COM_MR.MR_NO    AS COM_JGI_NO,
+        COM_MR.JGI_NAME AS COM_JGI_NAME,
+        SP_MR.MR_NO     AS SP_JGI_NO,
+        SP_MR.JGI_NAME  AS SP_JGI_NAME,
+        ONC_MR.MR_NO    AS ONC_JGI_NO,
+        ONC_MR.JGI_NAME AS ONC_JGI_NAME,
+        KOKEI_MR.MR_NO    AS KOKEI_JGI_NO,
+        KOKEI_MR.JGI_NAME AS KOKEI_JGI_NAME,
+        VAC_MR.MR_NO    AS VAC_JGI_NO,
+        VAC_MR.JGI_NAME AS VAC_JGI_NAME,
+<!-- add Start 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+        BU2CS_MR.MR_NO     AS BU2CS_MR_JGI_NO,
+        BU2CS_MR.JGI_NAME  AS BU2CS_MR_JGI_NAME,
+        JOHLC_MR.MR_NO     AS JOHLC_MR_JGI_NO,
+        JOHLC_MR.JGI_NAME  AS JOHLC_MR_JGI_NAME,
+        BU2BLO_MR.MR_NO    AS BU2BLO_MR_JGI_NO,
+        BU2BLO_MR.JGI_NAME AS BU2BLO_MR_JGI_NAME,
+        BU2HER_MR.MR_NO    AS BU2HER_MR_JGI_NO,
+        BU2HER_MR.JGI_NAME AS BU2HER_MR_JGI_NAME,
+        JOGUH_MR.MR_NO     AS JOGUH_MR_JGI_NO,
+        JOGUH_MR.JGI_NAME  AS JOGUH_MR_JGI_NAME,
+        BU1LAM_MR.MR_NO    AS BU1LAM_MR_JGI_NO,
+        BU1LAM_MR.JGI_NAME AS BU1LAM_MR_JGI_NAME,
+<!-- add End 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+        INS.INS_NO,
+        INS.INS_CLASS,
+        INS.RELN_INS_NO,
+        INS.RELN_INS_CODE,
+        INS.OLD_INSR_FLG,
+		INS.INS_KANA,
+		INS.INS_KANA_SRCH,
+        INS.INS_ABBR_NAME,
+		INS.INS_FORMAL_NAME,
+        INS.ADDR_CODE_PREF,
+        INS.ADDR_CODE_CITY,
+        INS.TRADE_TYPE,
+		<!-- NSG親子紐づけ対応 -->
+		<!-- INS.HO_INS_TYPE, -->
+		NVL(OINS.HO_INS_TYPE, INS.HO_INS_TYPE) AS HO_INS_TYPE,
+        INS.REQ_FLG,
+        INS.DEL_FLG,
+        AT.ACTIVITY_TYPE,
+        JIS.FUKEN_MEI_KJ,
+        JIS.SHIKUCHOSON_MEI_KJ
+    FROM
+        TARGET_INS
+        INNER JOIN DPM_C_VI_INS_MST INS ON TARGET_INS.INS_NO = INS.INS_NO
+        INNER JOIN DPM_C_VI_JGI_MST JM  ON JM.JGI_NO  = TARGET_INS.MR_NO
+        INNER JOIN DPM_C_VI_SOS_MST SM  ON JM.SOS_CD  = SM.SOS_CD AND JM.ETC_SOS_FLG = SM.ETC_SOS_FLG
+	        LEFT JOIN COM_MR ON TARGET_INS.INS_NO = COM_MR.INS_NO
+	        LEFT JOIN SP_MR ON TARGET_INS.INS_NO = SP_MR.INS_NO
+	        LEFT JOIN ONC_MR ON TARGET_INS.INS_NO = ONC_MR.INS_NO
+	        LEFT JOIN KOKEI_MR ON TARGET_INS.INS_NO = KOKEI_MR.INS_NO
+	        LEFT JOIN VAC_MR ON TARGET_INS.INS_NO = VAC_MR.INS_NO
+<!-- add Start 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+			LEFT JOIN BU2CS_MR ON TARGET_INS.INS_NO = BU2CS_MR.INS_NO
+			LEFT JOIN JOHLC_MR ON TARGET_INS.INS_NO = JOHLC_MR.INS_NO
+			LEFT JOIN BU2BLO_MR ON TARGET_INS.INS_NO = BU2BLO_MR.INS_NO
+			LEFT JOIN BU2HER_MR ON TARGET_INS.INS_NO = BU2HER_MR.INS_NO
+			LEFT JOIN JOGUH_MR ON TARGET_INS.INS_NO = JOGUH_MR.INS_NO
+			LEFT JOIN BU1LAM_MR ON TARGET_INS.INS_NO = BU1LAM_MR.INS_NO
+<!-- mod End 2025/04/07 H.Futagami 施設検索の担当者表示の変更 -->
+        LEFT JOIN DPS_S_SY_T_JIS_MST JIS ON INS.ADDR_CODE_PREF = JIS.TODOUFUKEN_CD AND INS.ADDR_CODE_CITY = JIS.SHIKUCHOSON_CD
+        LEFT JOIN DPM_V_VI_ACTIVITY_TYPE AT ON INS.INS_NO = AT.INS_NO AND AT.CAL_YEAR = '$calYear$' AND AT.CAL_TERM = '$calTerm.dbValue$'
+		LEFT JOIN DPM_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+		LEFT JOIN DPM_C_VI_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+  </select>
+
+</sqlMap>

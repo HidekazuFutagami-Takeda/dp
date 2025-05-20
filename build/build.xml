@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+<project basedir="..\" default="build_DEV" name="dp">
+	<property name="debuglevel" value="source,lines,vars"/>
+	<property name="target" value="1.6"/>
+	<property name="source" value="1.6"/>
+	<property name="java6.boot.classpath" value="C:\eclipse\tomcat\9.0.31\\lib\\rt.jar"/>
+	<target depends="clean,build-war_DEV" name="build_DEV"/>
+
+
+	<!-- 古いファイルを削除 -->
+	<target name="clean">
+		<delete dir="build/war/work"/>
+		<delete dir="build/war/work_WebContent"/>
+		<delete file="build/war/${ant.project.name}_DEV.war"/>
+		<delete file="build/war/${ant.project.name}_UAT.war"/>
+		<delete file="build/war/${ant.project.name}_UAT_dps.war"/>
+	    <delete file="build/war/${ant.project.name}_PRD.war"/>
+	</target>
+
+	<!-- 作業ディレクトリ初期化 -->
+	<target name="init" >
+		<mkdir dir="build/war/work/classes"/>
+	</target>
+
+	<!-- Javaコンパイル -->
+	<target name="build-project" depends="init" >
+		<javac encoding="utf-8" debug="true" debuglevel="${debuglevel}"
+        destdir="build/war/work/classes"
+        source="${source}" target="${target}" includeantruntime="false"
+    	bootclasspath="${java6.boot.classpath}" >
+			<!--    	<compilerarg value="-Xlint:deprecation"/> -->
+			<src path="src"/>
+			<classpath>
+				<pathelement location="build/war/work/classes"/>
+				<fileset dir="WebContent/WEB-INF/lib"/>
+				<!-- mod start 2022/01/18 k.ota -->
+				<!-- <fileset dir="C:\\pleiades\\tomcat\\7\\lib"/>
+				<fileset dir="C:\eclipse\tomcat\9.0.31\\lib"/>
+				<fileset dir="C:\\pleiades\\java\\6\\jre\\lib"/> -->
+				<fileset dir="C:\eclipse\tomcat\9.0.31\\lib"/>
+				<fileset dir="C:\eclipse\jre\11\11\\lib" includes="*.jar"/>
+				<fileset dir="C:\eclipse\jre\11\11\\jre\\lib" includes="*.jar"/>
+				<!-- mod end   2022/01/18 k.ota -->
+			</classpath>
+		</javac>
+	</target>
+	<!-- WebContentsコピー -->
+	<target name="copy_resource" depends="build-project" >
+		<copy preservelastmodified="true" toDir="build/war/work/classes/">
+			<fileset dir="src/main/resources/">
+				<exclude name="sql/**/*"/>
+				<exclude name="sql"/>
+				<exclude name="log4j.xml"/>
+			</fileset>
+		</copy>
+		<copy preservelastmodified="true"
+          file="build/conf/log4j.xml"
+          toDir="build/war/work/classes/"
+	    />
+		<copy preservelastmodified="true" toDir="build/war/work_WebContent/">
+			<fileset dir="WebContent/">
+				<exclude name="META-INF/context.xml"/>
+				<exclude name="WEB-INF/conf/spring/applicationContext.xml"/>
+				<exclude name="WEB-INF/conf/spring/spring_configure.properties"/>
+			</fileset>
+		</copy>
+		<copy preservelastmodified="true"
+          file="build/conf/applicationContext.xml"
+        toDir="build/war/work_WebContent/WEB-INF/conf/spring/"
+        />
+	</target>
+
+	<!-- .warファイル作成 DEV -->
+	<target name="build-war_DEV" depends="copy_resource" >
+		<copy preservelastmodified="true"
+          file="build/conf/spring_configure_DEV.properties"
+        tofile="build/war/work_WebContent/WEB-INF/conf/spring/spring_configure.properties"
+    />
+		<copy preservelastmodified="true"
+          file="build/conf/context_DEV.xml"
+        tofile="build/war/work_WebContent/META-INF/context.xml"
+    />
+		<war destfile="build/war/${ant.project.name}_DEV.war"
+        webxml="WebContent/WEB-INF/web.xml">
+			<fileset dir="build/war/work_WebContent" >
+				<include name="**/*"  />
+				<exclude name="**/web.xml" />
+			</fileset>
+			<classes dir="build/war/work/classes" />
+		</war>
+	</target>
+	<!-- .warファイル作成 UAT -->
+	<target name="build-war_UAT" depends="copy_resource" >
+
+		<copy preservelastmodified="true"
+          file="build/conf/spring_configure_UAT.properties"
+        tofile="build/war/work_WebContent/WEB-INF/conf/spring/spring_configure.properties"
+    />
+		<copy preservelastmodified="true"
+          file="build/conf/context_UAT.xml"
+        tofile="build/war/work_WebContent/META-INF/context.xml"
+    />
+		<war destfile="build/war/${ant.project.name}_UAT.war"
+        webxml="WebContent/WEB-INF/web.xml">
+			<fileset dir="build/war/work_WebContent" >
+				<include name="**/*"  />
+				<exclude name="**/web.xml" />
+			</fileset>
+			<classes dir="build/war/work/classes" />
+		</war>
+	</target>
+	<!-- .warファイル作成 UAT dps -->
+	<target name="build-war_UAT_dps" depends="copy_resource" >
+
+		<copy preservelastmodified="true"
+          file="build/conf/spring_configure_UAT.properties"
+          tofile="build/war/work_WebContent/WEB-INF/conf/spring/spring_configure.properties"
+        />
+		<copy preservelastmodified="true"
+          file="build/conf/context_UAT.xml"
+          tofile="build/war/work_WebContent/META-INF/context.xml"
+        />
+		<copy preservelastmodified="true"
+          file="build/conf/log4j_dps.xml"
+		  tofile="build/war/work/classes/log4j.xml"
+	    />
+	    <delete file="build/war/work_WebContent/WEB-INF/conf/spring/applicationContext.xml"/>
+		<copy preservelastmodified="true"
+          file="build/conf/applicationContext_dps.xml"
+			tofile="build/war/work_WebContent/WEB-INF/conf/spring/applicationContext.xml"
+        />
+		<war destfile="build/war/${ant.project.name}_UAT_dps.war"
+        webxml="WebContent/WEB-INF/web.xml">
+			<fileset dir="build/war/work_WebContent" >
+				<include name="**/*"  />
+				<exclude name="**/web.xml" />
+			</fileset>
+			<classes dir="build/war/work/classes" />
+		</war>
+	</target>
+
+	<!-- .warファイル作成 PRD -->
+	<target name="build-war_PRD" depends="copy_resource" >
+
+		<copy preservelastmodified="true"
+          file="build/conf/spring_configure_PRD.properties"
+        tofile="build/war/work_WebContent/WEB-INF/conf/spring/spring_configure.properties"
+    />
+		<copy preservelastmodified="true"
+          file="build/conf/context_PRD.xml"
+        tofile="build/war/work_WebContent/META-INF/context.xml"
+    />
+		<war destfile="build/war/${ant.project.name}_PRD.war"
+        webxml="WebContent/WEB-INF/web.xml">
+			<fileset dir="build/war/work_WebContent" >
+				<include name="**/*"  />
+				<exclude name="**/web.xml" />
+			</fileset>
+			<classes dir="build/war/work/classes" />
+		</war>
+	</target>
+</project>

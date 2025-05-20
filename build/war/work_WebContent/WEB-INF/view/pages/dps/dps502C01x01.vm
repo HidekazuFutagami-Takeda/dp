@@ -1,0 +1,94 @@
+#set($layout = "nothingLayout.vm" )
+#if($form.getRequestData("DPS502C01_DATA_R"))
+    #set($resultDataList = $form.getRequestData("DPS502C01_DATA_R").tmsTytenPlanEditDetailList)
+#end
+#set ($editMode = false)
+#set ($inputB = "")
+#if( ($form.bean.kaBaseKb.equals("1") && !$!security.sysManage.transTFlg )
+    || ($form.bean.kaBaseKb.equals("2") && $!security.sysManage.transTFlg ) )
+#set ($editMode = true)
+#set ($inputB = "inputB")
+#end
+<rows>
+#if($resultDataList)
+    #set($subTotalId = 1)
+    #foreach($resultData in $resultDataList)
+        #if($!resultData.wsPlan.getPlanTaiGaiFlgRik())
+            #set($bgNot = "class='statusNot'")
+            #set ($inputB = "statusNot")
+            #set ($sumArea = "statusNot")
+        #else
+            #set($bgNot = "")
+            #set ($inputB = "inputB")
+            #set ($sumArea = "sumAreaTokuG")
+        #end
+
+    	#if(!$resultData.isSummary)
+            ## 明細行
+            #if($resultData.wsPlan.plannedValueUh)
+                #if($editMode)
+                    #set($typeUH="edn")
+                #else
+                    #set($typeUH="ron")
+                #end
+            #else
+                #if($editMode)
+                    #set($typeUH="ed")
+                #else
+                    #set($typeUH="ro")
+                #end
+            #end
+            #if($resultData.wsPlan.plannedValueP)
+                #if($editMode)
+                    #set($typeP="edn")
+                #else
+                    #set($typeP="ron")
+                #end
+            #else
+                #if($editMode)
+                    #set($typeP="ed")
+                #else
+                    #set($typeP="ro")
+                #end
+            #end
+            <row id='$velocityCount'>
+				<userdata name="planTaiGaiFlgRik">#if($!resultData.wsPlan.planTaiGaiFlgRik)1#end</userdata>
+			    
+                <userdata name="rowType">input</userdata>
+                <userdata name="subTotalId">$subTotalId</userdata>
+                <userdata name="updateRowId">$!resultData.wsPlan.seqKey,$!resultData.wsPlan.upDate.time,$!resultData.wsPlan.sosCd</userdata>
+                <cell $bgNot>$!resultData.wsPlan.tmsTytenMeiKj</cell>
+                <cell $bgNot>$!resultData.wsPlan.distValueUh</cell>
+                <cell $bgNot>$!resultData.wsPlan.stackValueUh</cell>
+                <cell type="$typeUH" class="$inputB">$!resultData.wsPlan.plannedValueUh</cell>
+                <cell $bgNot>$!resultData.wsPlan.distValueP</cell>
+                <cell $bgNot>$!resultData.wsPlan.stackValueP</cell>
+                <cell type="$typeP" class="$inputB">$!resultData.wsPlan.plannedValueP</cell>
+            </row>
+        #else
+            #if($resultData.wsPlan.plannedValueUh)
+                #set($typeUH="ron")
+            #else
+                #set($typeUH="ro")
+            #end
+            #if($resultData.wsPlan.plannedValueP)
+                #set($typeP="ron")
+            #else
+                #set($typeP="ro")
+            #end
+            <row id='$velocityCount'>
+                <userdata name="rowType">subTotal</userdata>
+                <userdata name="subTotalId">$subTotalId</userdata>
+                <cell class="$sumArea">合計</cell>
+                <cell class="$sumArea">$!resultData.wsPlan.distValueUh</cell>
+                <cell class="$sumArea">$!resultData.wsPlan.stackValueUh</cell>
+                <cell type="$typeUH" class="$sumArea">$!resultData.wsPlan.plannedValueUh</cell>
+                <cell class="$sumArea">$!resultData.wsPlan.distValueP</cell>
+                <cell class="$sumArea">$!resultData.wsPlan.stackValueP</cell>
+                <cell type="$typeP" class="$sumArea">$!resultData.wsPlan.plannedValueP</cell>
+            </row>
+            #set($subTotalId = $subTotalId + 1)
+        #end
+    #end
+#end
+</rows>

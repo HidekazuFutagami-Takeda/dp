@@ -1,0 +1,882 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_SupportFollow_SqlMap" >
+
+  <resultMap id="resultMap1" class="jp.co.takeda.model.view.AreaPersonInChargeAdjustment" >
+    <result column="BR_CODE" property="brCode" jdbcType="CHAR" />
+    <result column="DIST_CODE" property="distCode" jdbcType="CHAR" />
+    <result column="BUMON_RYAKU_NAME" property="bumonRyakuName" jdbcType="VARCHAR" />
+    <result column="INS_TYPE" property="insType" jdbcType="VARCHAR" />
+    <result column="SUM_PLAN" property="sumPlan" jdbcType="BIGINT" />
+  </resultMap>
+
+  <resultMap id="resultMap2" class="jp.co.takeda.model.view.PersonInChargeFacilityAdjustmentList" >
+    <result column="BR_CODE" property="brCode" jdbcType="CHAR" />
+    <result column="DIST_CODE" property="distCode" jdbcType="CHAR" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="BUMON_RYAKU_NAME" property="bumonRyakuName" jdbcType="VARCHAR" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="INS_TYPE" property="insType" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="SUM_PLAN" property="sumPlan" jdbcType="BIGINT" />
+  </resultMap>
+
+  <resultMap id="resultMap3" class="jp.co.takeda.model.view.AreaFacilityPersonInChargeAdjustment" >
+    <result column="BR_CODE" property="brCode" jdbcType="CHAR" />
+    <result column="DIST_CODE" property="distCode" jdbcType="CHAR" />
+    <result column="BUMON_RYAKU_NAME" property="bumonRyakuName" jdbcType="VARCHAR" />
+    <result column="INS_TYPE" property="insType" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="SUM_PLAN" property="sumPlan" jdbcType="BIGINT" />
+  </resultMap>
+
+  <resultMap id="resultMap4" class="jp.co.takeda.model.view.DeletedFacilityPersonInChargeplan" >
+    <result column="BR_CODE" property="brCode" jdbcType="CHAR" />
+    <result column="DIST_CODE" property="distCode" jdbcType="CHAR" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="INS_TYPE" property="insType" jdbcType="VARCHAR" />
+    <result column="INS_NO" property="insNo" jdbcType="VARCHAR" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="DEL_FLG" property="delFlg" jdbcType="CHAR" />
+    <result column="REQ_FLG" property="reqFlg" jdbcType="INTEGER" />
+    <result column="BUMON_RYAKU_NAME" property="bumonRyakuName" jdbcType="VARCHAR" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="INS_FORMAL_NAME" property="insFormalName" jdbcType="VARCHAR" />
+    <!-- add Start 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+    <result column="INS_ABBR_NAME" property="insAbbrName" jdbcType="VARCHAR" />
+    <!-- add End 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+    <result column="TMS_NAME" property="tmsName" jdbcType="VARCHAR" />
+    <result column="SUM_PLAN" property="sumPlan" jdbcType="BIGINT" />
+  </resultMap>
+
+  <!-- エリア・担当者調整 -->
+  <select id="search1" resultMap="resultMap1" parameterClass="java.util.Map" >
+	SELECT
+		KJ.BR_CODE
+	   ,KJ.DIST_CODE
+	   ,KJ.BUMON_RYAKU_NAME
+	   ,JK.INS_TYPE
+	   ,SUM(DECODE(HJ.STAT_PROD_CODE,#statProdCode:CHAR#,(JK.PLAN - NVL(KK.PLAN,0))/1000,0)) AS SUM_PLAN
+	FROM
+		<!-- 営業所計画取得（開始）-->
+		(
+		SELECT
+			'UHP' AS ins_type,
+			A.SOS_CD,
+			A.PROD_CODE,
+			NVL(A.PLANNED_VALUE_UH_Y,0) + NVL(A.PLANNED_VALUE_P_Y,0) as PLAN
+	    FROM
+			oradpx01.DPS_I_OFFICE_PLAN A
+	    INNER JOIN
+			oradpx01.DPS_C_PLANNED_PROD B
+		ON
+			A.PROD_CODE = B.PROD_CODE
+		WHERE
+	        B.CATEGORY = #category:CHAR#
+		UNION
+		SELECT
+			'UH' as ins_type,
+			A.SOS_CD,
+			A.PROD_CODE,
+			NVL(A.PLANNED_VALUE_UH_Y,0) as PLAN
+	    FROM
+			oradpx01.DPS_I_OFFICE_PLAN A
+	    INNER JOIN
+			oradpx01.DPS_C_PLANNED_PROD B
+		ON
+			A.PROD_CODE = B.PROD_CODE
+		WHERE
+	        B.CATEGORY = #category:CHAR#
+		UNION
+		SELECT
+			'P' as ins_type,
+			A.SOS_CD,
+			A.PROD_CODE,
+			NVL(A.PLANNED_VALUE_P_Y,0) as PLAN
+	    FROM
+			oradpx01.DPS_I_OFFICE_PLAN A
+	    INNER JOIN
+			oradpx01.DPS_C_PLANNED_PROD B
+		ON
+			A.PROD_CODE = B.PROD_CODE
+		WHERE
+	        B.CATEGORY = #category:CHAR#
+	    ) JK
+		<!-- 営業所計画取得（終了） -->
+		<!-- 担当者別計画取得（開始）-->
+		left outer join
+		(
+		SELECT
+			'UHP' as ins_type,
+			B.SOS_CD3,
+			A.PROD_CODE,
+			sum(NVL(A.PLANNED_VALUE_UH_Y,0)) + sum(NVL(A.PLANNED_VALUE_P_Y,0)) as PLAN
+		FROM
+			oradpx01.DPS_I_MR_PLAN A
+	    INNER JOIN
+			oradpx01.DPS_C_JGI_MST B
+	    ON
+			A.JGI_NO = B.JGI_NO
+		GROUP BY
+			B.SOS_CD3,
+	        A.PROD_CODE
+		UNION
+		SELECT
+			'UH' as ins_type,
+			B.SOS_CD3,
+			A.PROD_CODE,
+			sum(NVL(A.PLANNED_VALUE_UH_Y,0)) as PLAN
+		FROM
+			oradpx01.DPS_I_MR_PLAN A
+	    INNER JOIN
+			oradpx01.DPS_C_JGI_MST B
+	    ON
+			A.JGI_NO = B.JGI_NO
+		GROUP BY
+			B.SOS_CD3,
+	        A.PROD_CODE
+		UNION
+		select
+			'P' as ins_type,
+			B.SOS_CD3,
+			A.PROD_CODE,
+			sum(NVL(A.PLANNED_VALUE_P_Y,0)) as PLAN
+		FROM
+			oradpx01.DPS_I_MR_PLAN A
+	    INNER JOIN
+			oradpx01.DPS_C_JGI_MST B
+	    ON
+			A.JGI_NO = B.JGI_NO
+		GROUP BY
+			B.SOS_CD3,
+	        A.PROD_CODE
+		) KK
+		ON
+			JK.SOS_CD = KK.SOS_CD3
+			and JK.PROD_CODE = KK.PROD_CODE
+			and JK.INS_TYPE = KK.INS_TYPE
+		<!--担当者別計画取得（終了）-->
+		<!--計画立案品目（開始）-->
+		INNER JOIN
+			oradpx01.DPS_C_PLANNED_PROD HJ
+		ON
+	    	JK.PROD_CODE = HJ.PROD_CODE
+		<!--計画立案品目（終了）-->
+		<!--基本情報取得（開始）-->
+		INNER JOIN
+			oradpx01.DPS_C_SOS_MST KJ <!--組織（営業所）-->
+		ON
+			JK.SOS_CD = KJ.SOS_CD
+		<!--基本情報取得（終了）-->
+	WHERE
+	    HJ.CATEGORY = #category:CHAR#
+		AND HJ.PLAN_TARGET_FLG = '1'
+	GROUP BY
+		KJ.BR_CODE,
+		KJ.DIST_CODE,
+		KJ.BUMON_RYAKU_NAME,
+		JK.INS_TYPE
+	ORDER BY
+		KJ.BR_CODE ASC,
+		KJ.DIST_CODE ASC,
+		JK.INS_TYPE DESC
+  </select>
+
+  <!-- 担当者・施設特約店別計画調整 -->
+  <select id="search2" resultMap="resultMap2" parameterClass="java.util.Map" >
+	SELECT
+	     KJ2.BR_CODE
+	    ,KJ2.DIST_CODE
+	    ,KJ1.JGI_NO
+	    ,KJ2.BUMON_RYAKU_NAME
+	    ,KJ1.JGI_NAME
+	    ,JK.INS_TYPE
+	    ,DECODE(MIN(NVL(PS.STATUS, 0)), 4, '確定済', '未確定')  AS STATUS
+	    ,SUM(DECODE(HJ.STAT_PROD_CODE,#statProdCode:CHAR#,(JK.PLAN - NVL(KK.PLAN,0))/1000,0)) AS SUM_PLAN
+	FROM
+	    <!-- 担当者別計画取得（開始）-->
+	    (
+	    SELECT
+	        'UHP' AS INS_TYPE,
+	        A.JGI_NO,
+	        A.PROD_CODE,
+	        NVL(A.PLANNED_VALUE_UH_Y,0) + NVL(A.PLANNED_VALUE_P_Y,0) AS PLAN
+	    FROM
+	        ORADPX01.DPS_I_MR_PLAN A
+	    WHERE
+	        EXISTS ( SELECT 'X' FROM  ORADPX01.DPS_C_JGI_MST B WHERE A.JGI_NO = B.JGI_NO)
+	    UNION ALL
+	    SELECT
+	        'UH' AS INS_TYPE,
+	        A.JGI_NO,
+	        A.PROD_CODE,
+	        NVL(A.PLANNED_VALUE_UH_Y,0) AS PLAN
+	    FROM
+	        ORADPX01.DPS_I_MR_PLAN A
+	    WHERE
+	        EXISTS ( SELECT 'X' FROM  ORADPX01.DPS_C_JGI_MST B WHERE A.JGI_NO = B.JGI_NO)
+	    UNION ALL
+	    SELECT
+	        'P' AS INS_TYPE,
+	        A.JGI_NO,
+	        A.PROD_CODE,
+	        NVL(A.PLANNED_VALUE_P_Y,0) AS PLAN
+	    FROM
+	        ORADPX01.DPS_I_MR_PLAN A
+	    WHERE
+	        EXISTS ( SELECT 'X' FROM  ORADPX01.DPS_C_JGI_MST B WHERE A.JGI_NO = B.JGI_NO)
+	    ) JK
+	    <!-- 担当者別計画取得（終了）-->
+	    <!-- 施設特約店別計画取得（開始）-->
+	    LEFT OUTER JOIN
+	    (
+	    SELECT
+	        'UHP' AS INS_TYPE,
+	        A.JGI_NO,
+	        A.PROD_CODE,
+	        SUM(NVL(A.PLANNED_VALUE_Y,0)) AS PLAN
+	    FROM
+	        ORADPX01.DPS_I_INS_WS_PLAN A
+	    WHERE EXISTS( SELECT  'X' FROM ORADPX01.DPS_S_VI_CPROD_INS_TYPE B
+	                              WHERE A.INS_NO = B.KEY_INS_NO
+	                              AND A.PROD_CODE = B.PROD_CODE
+	                              AND B.HO_INS_TYPE IN ('1', '2', '3','4')
+	        )
+	    AND EXISTS(SELECT 'X' FROM ORADPX01.DPS_C_PLANNED_PROD C
+	                          WHERE A.PROD_CODE = C.PROD_CODE
+	                          AND C.CATEGORY = #category:CHAR#
+	        )
+	    AND A.PROD_CODE = #prodCode:CHAR#
+	    GROUP BY
+	        A.JGI_NO,
+	        A.PROD_CODE
+	    UNION ALL
+	    SELECT
+	        'UH' AS INS_TYPE,
+	        A.JGI_NO,
+	        A.PROD_CODE,
+	        SUM(NVL(A.PLANNED_VALUE_Y,0)) AS PLAN
+	    FROM
+	        ORADPX01.DPS_I_INS_WS_PLAN A
+	    WHERE EXISTS( SELECT  'X' FROM ORADPX01.DPS_S_VI_CPROD_INS_TYPE B
+	                              WHERE A.INS_NO = B.KEY_INS_NO
+	                              AND A.PROD_CODE = B.PROD_CODE
+	                              AND B.HO_INS_TYPE IN ('1', '2')
+	        )
+	    AND EXISTS(SELECT 'X' FROM ORADPX01.DPS_C_PLANNED_PROD C
+	                          WHERE A.PROD_CODE = C.PROD_CODE
+	                          AND C.CATEGORY = #category:CHAR#
+	        )
+	    AND A.PROD_CODE = #prodCode:CHAR#
+	    GROUP BY
+	        A.JGI_NO,
+	        A.PROD_CODE
+	    UNION ALL
+	    SELECT
+	        'P' AS INS_TYPE,
+	        A.JGI_NO,
+	        A.PROD_CODE,
+	        SUM(NVL(A.PLANNED_VALUE_Y,0)) AS PLAN
+	    FROM
+	        ORADPX01.DPS_I_INS_WS_PLAN A
+	    WHERE EXISTS( SELECT  'X' FROM ORADPX01.DPS_S_VI_CPROD_INS_TYPE B
+	                              WHERE A.INS_NO = B.KEY_INS_NO
+	                              AND A.PROD_CODE = B.PROD_CODE
+	                              AND B.HO_INS_TYPE IN ('3', '4')
+	        )
+	    AND EXISTS(SELECT 'X' FROM ORADPX01.DPS_C_PLANNED_PROD C
+	                          WHERE A.PROD_CODE = C.PROD_CODE
+	                          AND C.CATEGORY = #category:CHAR#
+	        )
+	    AND A.PROD_CODE = #prodCode:CHAR#
+	    GROUP BY
+	        A.JGI_NO,
+	        A.PROD_CODE
+	    ) KK
+	    ON
+	        JK.JGI_NO = KK.JGI_NO
+	        AND JK.PROD_CODE = KK.PROD_CODE
+	        AND JK.INS_TYPE = KK.INS_TYPE
+	    <!-- 施設特約店別計画取得（終了）-->
+	    <!-- 計画立案品目（開始）-->
+	    INNER JOIN
+	        ORADPX01.DPS_C_PLANNED_PROD HJ
+	    ON
+	        JK.PROD_CODE = HJ.PROD_CODE
+	    <!-- 計画立案品目（終了）-->
+	    <!-- 基本情報取得（開始）-->
+	    INNER JOIN
+	        ORADPX01.DPS_C_JGI_MST KJ1
+	    ON
+	        JK.JGI_NO = KJ1.JGI_NO
+	    INNER JOIN
+	        ORADPX01.DPS_C_SOS_MST KJ2
+	    ON
+	        KJ1.SOS_CD3 = KJ2.SOS_CD
+	    <!-- 基本情報取得（終了）-->
+	    <!-- 施設特約店別計画ステータス取得（開始）-->
+	    LEFT OUTER JOIN
+	        ORADPX01.DPS_I_INS_WS_PLAN_STATUS PS
+	    ON
+	        PS.JGI_NO = JK.JGI_NO
+	        AND PS.PROD_CODE = JK.PROD_CODE
+	    <!-- 施設特約店別計画ステータス取得（終了）-->
+	WHERE
+	    HJ.CATEGORY = #category:CHAR#
+	    AND HJ.PLAN_TARGET_FLG = '1'
+	GROUP BY
+	    KJ2.BR_CODE,
+	    KJ2.DIST_CODE,
+	    KJ1.JGI_NO,
+	    KJ2.BUMON_RYAKU_NAME,
+	    KJ1.JGI_NAME,
+	    JK.INS_TYPE,
+	    KJ1.SHOKUSEI_CD,
+	    KJ1.SHOKUSHU_CD
+	ORDER BY
+	    KJ2.BR_CODE ASC,
+	    KJ2.DIST_CODE ASC,
+	    KJ1.SHOKUSEI_CD ASC,
+	    KJ1.SHOKUSHU_CD ASC,
+	    KJ1.JGI_NO ASC,
+	    JK.INS_TYPE DESC
+  </select>
+
+  <!-- エリア・施設特約店別調整(仕入以外) -->
+  <select id="search3" resultMap="resultMap3" parameterClass="java.util.Map" >
+	SELECT
+	    KJ.BR_CODE
+	   ,KJ.DIST_CODE
+	   ,KJ.BUMON_RYAKU_NAME
+	   ,MAIN.INS_TYPE
+	   ,MAIN.STATUS
+	   ,MAIN.SUM_PLAN
+	FROM(
+	    SELECT
+	      JK.SOS_CD
+	     ,JK.INS_TYPE
+	     ,DECODE(MIN(NVL(KS.STATUS, 0)), 4, '確定済', '未確定') AS STATUS
+	     ,SUM(DECODE(JK.PROD_CODE,#prodCode:CHAR#,(JK.PLAN - NVL(KK.PLAN,0))/1000,0)) AS SUM_PLAN
+	    FROM
+	        (
+	        SELECT
+	            'UHP' AS INS_TYPE,
+	            A.SOS_CD,
+	            A.PROD_CODE,
+	            NVL(A.PLANNED_VALUE_UH_Y,0) + NVL(A.PLANNED_VALUE_P_Y,0) AS PLAN
+	        FROM
+	            ORADPX01.DPS_I_OFFICE_PLAN A
+	        INNER JOIN
+	            ORADPX01.DPS_C_PLANNED_PROD B
+	        ON
+	            A.PROD_CODE = B.PROD_CODE
+	        WHERE B.CATEGORY = #category:CHAR#
+            AND
+            EXISTS(
+               select * from ORADPX01.DPS_C_PLANNED_PROD HJ  where A.PROD_CODE = HJ.PROD_CODE
+               and  HJ.CATEGORY = #category:CHAR#
+               AND HJ.PLAN_TARGET_FLG = '1'
+            )
+	        UNION ALL
+	        SELECT
+	            'UH' AS INS_TYPE,
+	            A.SOS_CD,
+	            A.PROD_CODE,
+	            NVL(A.PLANNED_VALUE_UH_Y,0) AS PLAN
+	        FROM
+	            ORADPX01.DPS_I_OFFICE_PLAN A
+	        INNER JOIN
+	            ORADPX01.DPS_C_PLANNED_PROD B
+	        ON
+	            A.PROD_CODE = B.PROD_CODE
+	        WHERE B.CATEGORY = #category:CHAR#
+            AND
+            EXISTS(
+               select * from ORADPX01.DPS_C_PLANNED_PROD HJ  where A.PROD_CODE = HJ.PROD_CODE
+               and  HJ.CATEGORY = #category:CHAR#
+               AND HJ.PLAN_TARGET_FLG = '1'
+            )
+	        UNION ALL
+	        SELECT
+	            'P' AS INS_TYPE,
+	            A.SOS_CD,
+	            A.PROD_CODE,
+	            NVL(A.PLANNED_VALUE_P_Y,0) AS PLAN
+	        FROM
+	            ORADPX01.DPS_I_OFFICE_PLAN A
+	        INNER JOIN
+	            ORADPX01.DPS_C_PLANNED_PROD B
+	        ON
+	            A.PROD_CODE = B.PROD_CODE
+	        WHERE B.CATEGORY = #category:CHAR#
+            AND
+            EXISTS(
+               select * from ORADPX01.DPS_C_PLANNED_PROD HJ  where A.PROD_CODE = HJ.PROD_CODE
+               and  HJ.CATEGORY = #category:CHAR#
+               AND HJ.PLAN_TARGET_FLG = '1'
+            )
+	        ) JK
+	        LEFT OUTER JOIN
+	        (
+	        SELECT
+	            'UHP' AS INS_TYPE,
+	            C.SOS_CD3 AS SOS_CD,
+	            A.PROD_CODE,
+	            SUM(NVL(A.PLANNED_VALUE_Y,0)) AS PLAN
+	        FROM
+	            ORADPX01.DPS_I_INS_WS_PLAN A
+	            INNER JOIN
+	            ORADPX01.DPS_S_VI_CPROD_INS_TYPE B
+	        ON
+	            A.INS_NO = B.KEY_INS_NO
+	        AND
+	            A.PROD_CODE = B.PROD_CODE
+	        INNER JOIN
+	            ORADPX01.DPS_C_JGI_MST C
+	        ON
+	            A.JGI_NO = C.JGI_NO
+	        WHERE
+	            B.HO_INS_TYPE IN ('1', '2', '3','4')
+	        AND
+	            A.PROD_CODE = #prodCode:CHAR#
+	        GROUP BY
+	            C.SOS_CD3,
+	            A.PROD_CODE
+	        UNION ALL
+	        SELECT
+	            'UH' AS INS_TYPE,
+	            C.SOS_CD3 AS SOS_CD,
+	            A.PROD_CODE,
+	            SUM(NVL(A.PLANNED_VALUE_Y,0)) AS PLAN
+	        FROM
+	            ORADPX01.DPS_I_INS_WS_PLAN A
+	        INNER JOIN
+	            ORADPX01.DPS_S_VI_CPROD_INS_TYPE B
+	        ON
+	            A.INS_NO = B.KEY_INS_NO
+	        AND
+	            A.PROD_CODE = B.PROD_CODE
+	        INNER JOIN
+	            ORADPX01.DPS_C_JGI_MST C
+	        ON
+	            A.JGI_NO = C.JGI_NO
+	        WHERE
+	            B.HO_INS_TYPE IN ('1', '2')
+	        AND
+	            A.PROD_CODE = #prodCode:CHAR#
+	        GROUP BY
+	            C.SOS_CD3,
+	            A.PROD_CODE
+	        UNION ALL
+	        SELECT
+	            'P' AS INS_TYPE,
+	            C.SOS_CD3 AS SOS_CD,
+	            A.PROD_CODE,
+	            SUM(NVL(A.PLANNED_VALUE_Y,0)) AS PLAN
+	        FROM
+	            ORADPX01.DPS_I_INS_WS_PLAN A
+	        INNER JOIN
+	            ORADPX01.DPS_S_VI_CPROD_INS_TYPE B
+	        ON
+	            A.INS_NO = B.KEY_INS_NO
+	        AND
+	            A.PROD_CODE = B.PROD_CODE
+	        INNER JOIN
+	            ORADPX01.DPS_C_JGI_MST C
+	        ON
+	            A.JGI_NO = C.JGI_NO
+	        WHERE
+	            B.HO_INS_TYPE IN ('3','4')
+	        AND
+	            A.PROD_CODE = #prodCode:CHAR#
+	        GROUP BY
+	            C.SOS_CD3,
+	            A.PROD_CODE
+	        ) KK
+	        ON
+	            JK.SOS_CD = KK.SOS_CD
+	            AND JK.PROD_CODE = KK.PROD_CODE
+	            AND JK.INS_TYPE = KK.INS_TYPE
+	        LEFT OUTER JOIN
+	        (
+	        SELECT
+	            B.SOS_CD3 AS SOS_CD,
+	            A.PROD_CODE,
+	            MIN(NVL(A.STATUS, 0)) AS STATUS
+	        FROM
+	            ORADPX01.DPS_I_INS_WS_PLAN_STATUS A
+	        INNER JOIN
+	            ORADPX01.DPS_C_JGI_MST B
+	        ON
+	            A.JGI_NO = B.JGI_NO
+	        GROUP BY
+	            B.SOS_CD3,
+	            A.PROD_CODE
+	        ) KS
+	        ON
+	            JK.SOS_CD = KS.SOS_CD
+	            AND JK.PROD_CODE = KS.PROD_CODE
+	    GROUP BY
+	        JK.SOS_CD,
+	        JK.INS_TYPE
+	)MAIN
+	INNER JOIN
+	    ORADPX01.DPS_C_SOS_MST KJ
+	ON
+	    MAIN.SOS_CD = KJ.SOS_CD
+	ORDER BY
+	    KJ.BR_CODE ASC,
+	    KJ.DIST_CODE ASC,
+	    MAIN.INS_TYPE DESC
+  </select>
+
+  <!-- エリア・施設特約店別調整(仕入) -->
+  <select id="search3Shiire" resultMap="resultMap3" parameterClass="java.util.Map" >
+	SELECT
+	    KJ.BR_CODE
+	    ,KJ.DIST_CODE
+	    ,KJ.BUMON_RYAKU_NAME
+	    ,JK.INS_TYPE
+	    ,NULL AS STATUS
+	    ,SUM(DECODE(HJ.STAT_PROD_CODE,#statProdCode:CHAR#,(JK.PLAN - NVL(KK.PLAN,0))/1000,0)) AS SUM_PLAN
+	FROM
+	    (
+	    SELECT
+	        'UHP' AS INS_TYPE,
+	        A.SOS_CD,
+	        A.PROD_CODE,
+	        NVL(A.PLANNED_VALUE_UH_Y,0) + NVL(A.PLANNED_VALUE_P_Y,0) AS PLAN
+	    FROM
+	        ORADPX01.DPS_I_OFFICE_PLAN A
+	    INNER JOIN
+	        ORADPX01.DPS_C_PLANNED_PROD B
+	    ON
+	        A.PROD_CODE = B.PROD_CODE
+	    WHERE B.CATEGORY = #category:CHAR#
+	    UNION
+	    SELECT
+	        'UH' AS INS_TYPE,
+	        A.SOS_CD,
+	        A.PROD_CODE,
+	        NVL(A.PLANNED_VALUE_UH_Y,0) AS PLAN
+	    FROM
+	        ORADPX01.DPS_I_OFFICE_PLAN A
+	    INNER JOIN
+	        ORADPX01.DPS_C_PLANNED_PROD B
+	    ON
+	        A.PROD_CODE = B.PROD_CODE
+	    WHERE B.CATEGORY = #category:CHAR#
+	    UNION
+	    SELECT
+	        'P' AS INS_TYPE,
+	        A.SOS_CD,
+	        A.PROD_CODE,
+	        NVL(A.PLANNED_VALUE_P_Y,0) AS PLAN
+	    FROM
+	        ORADPX01.DPS_I_OFFICE_PLAN A
+	    INNER JOIN
+	        ORADPX01.DPS_C_PLANNED_PROD B
+	    ON
+	        A.PROD_CODE = B.PROD_CODE
+	    WHERE B.CATEGORY = #category:CHAR#
+	    ) JK
+	    LEFT OUTER JOIN
+	    (
+	    SELECT
+	        'UHP' AS INS_TYPE,
+	        C.SOS_CD3 AS SOS_CD,
+	        A.PROD_CODE,
+	        SUM(NVL(A.PLANNED_VALUE_Y,0)) AS PLAN
+	    FROM
+	        ORADPX01.DPS_I_INS_WS_PLAN A
+	        INNER JOIN
+	        ORADPX01.DPS_C_INS_MST B
+	    ON
+	        A.INS_NO = B.INS_NO
+	    INNER JOIN
+	        ORADPX01.DPS_C_JGI_MST C
+	    ON
+	        A.JGI_NO = C.JGI_NO
+	    WHERE
+	        B.HO_INS_TYPE IN ('1', '2', '3','4')
+	    GROUP BY
+	        C.SOS_CD3,
+	        A.PROD_CODE
+	    UNION
+	    SELECT
+	        'UH' AS INS_TYPE,
+	        C.SOS_CD3 AS SOS_CD,
+	        A.PROD_CODE,
+	        SUM(NVL(A.PLANNED_VALUE_Y,0)) AS PLAN
+	    FROM
+	        ORADPX01.DPS_I_INS_WS_PLAN A
+	        INNER JOIN
+	        ORADPX01.DPS_C_INS_MST B
+	    ON
+	        A.INS_NO = B.INS_NO
+	    INNER JOIN
+	        ORADPX01.DPS_C_JGI_MST C
+	    ON
+	        A.JGI_NO = C.JGI_NO
+	    WHERE
+	        B.HO_INS_TYPE IN ('1', '2')
+	    GROUP BY
+	        C.SOS_CD3,
+	        A.PROD_CODE
+	    UNION
+	    SELECT
+	        'P' AS INS_TYPE,
+	        C.SOS_CD3 AS SOS_CD,
+	        A.PROD_CODE,
+	        SUM(NVL(A.PLANNED_VALUE_Y,0)) AS PLAN
+	    FROM
+	        ORADPX01.DPS_I_INS_WS_PLAN A
+	        INNER JOIN
+	        ORADPX01.DPS_C_INS_MST B
+	    ON
+	        A.INS_NO = B.INS_NO
+	    INNER JOIN
+	        ORADPX01.DPS_C_JGI_MST C
+	    ON
+	        A.JGI_NO = C.JGI_NO
+	    WHERE
+	        B.HO_INS_TYPE IN ('3','4')
+	    GROUP BY
+	        C.SOS_CD3,
+	        A.PROD_CODE
+	    ) KK
+	    ON
+	        JK.SOS_CD = KK.SOS_CD
+	        AND JK.PROD_CODE = KK.PROD_CODE
+	        AND JK.INS_TYPE = KK.INS_TYPE
+	    INNER JOIN
+	        ORADPX01.DPS_C_PLANNED_PROD HJ
+	    ON
+	        JK.PROD_CODE = HJ.PROD_CODE
+	    INNER JOIN
+	        ORADPX01.DPS_C_SOS_MST KJ
+	    ON
+	        JK.SOS_CD = KJ.SOS_CD
+	WHERE
+	    HJ.CATEGORY = #category:CHAR#
+	    AND HJ.PLAN_TARGET_FLG = '1'
+	GROUP BY
+	    KJ.BR_CODE,
+	    KJ.DIST_CODE,
+	    KJ.BUMON_RYAKU_NAME,
+	    JK.INS_TYPE
+	ORDER BY
+	    KJ.BR_CODE ASC,
+	    KJ.DIST_CODE ASC,
+	    JK.INS_TYPE DESC
+  </select>
+
+  <!-- 削除施設・施設特約店別計画(仕入以外) -->
+  <select id="search4" resultMap="resultMap4" parameterClass="java.util.Map" >
+	SELECT
+	     KJ2.BR_CODE
+	    ,KJ2.DIST_CODE
+	    ,KJ1.JGI_NO
+	    ,KK.INS_TYPE
+	    ,KK.INS_NO
+	    ,KK.TMS_TYTEN_CD
+	    ,KK.DEL_FLG
+	    ,KK.REQ_FLG
+	    ,KJ2.BUMON_RYAKU_NAME
+	    ,KJ1.JGI_NAME
+	    ,KK.INS_FORMAL_NAME
+	    <!-- add Start 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+	    ,KK.INS_ABBR_NAME
+	    <!-- add End 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+	    ,KK.TMS_NAME
+	    ,SUM(DECODE(HJ.STAT_PROD_CODE,#statProdCode:CHAR#,(NVL(KK.PLAN,0))/1000,0))　AS SUM_PLAN
+	FROM
+	    (
+	    SELECT
+	        A.JGI_NO,
+	        <!-- mod Start 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+	        <!-- DECODE(F.HO_INS_TYPE, '1', 'ＵＨ', '2', '3', 'Ｐ', '4', '雑', 'ＮＧ') AS INS_TYPE, -->
+	        DECODE(F.HO_INS_TYPE, '1', 'ＵＨ', '2', 'ＵＨ', '3', 'Ｐ', '4', '雑', 'ＮＧ') AS INS_TYPE,
+	        <!-- mod End 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+	        F.HO_INS_TYPE,
+	        A.INS_NO,
+	        B.RELN_INS_NO,
+	        B.RELN_INS_CODE,
+	        B.INS_FORMAL_NAME,
+	        <!-- add Start 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+            B.INS_ABBR_NAME,
+            <!-- add End 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+	        A.TMS_TYTEN_CD,
+	        C.HONTEN_MEI_KJ || C.SHISHA_MEI_KJ || C.SHITEN_MEI_KJ || C.KA_MEI_KJ || C.BLK_1_MEI_KJ AS TMS_NAME,
+	        A.PROD_CODE,
+	        A.PLANNED_VALUE_Y AS PLAN,
+	        D.DEL_FLG,
+	        D.REQ_FLG
+	    FROM
+	        ORADPX01.DPS_I_INS_WS_PLAN A
+	    INNER JOIN
+	        ORADPX01.DPS_C_INS_MST B
+	    ON
+	        A.INS_NO = B.INS_NO
+	    INNER JOIN
+	        ORADPX01.DPS_S_T_TMS_TYTEN_MST_UN C
+	    ON
+	        A.TMS_TYTEN_CD = C.TMS_TYTEN_CD
+	    INNER JOIN
+	        ORADPX01.DPS_S_VI_COM_INS_MST D
+	    ON
+	        A.INS_NO = D.INS_NO
+	    INNER JOIN
+	        ORADPX01.DPS_S_VI_CPROD_INS_TYPE F
+	    ON
+	        A.INS_NO = F.KEY_INS_NO
+	    AND
+	        A.PROD_CODE = F.PROD_CODE
+	    WHERE (D.DEL_FLG = '1'or D.REQ_FLG = '1' or D.INS_ABBR_NAME LIKE '●%' or D.INS_ABBR_NAME LIKE '〇%')
+	    AND EXISTS (SELECT * FROM ORADPX01.DPS_C_PLANNED_PROD E WHERE A.PROD_CODE = E.PROD_CODE AND E.CATEGORY = #category:CHAR#)
+	    ) KK
+	    INNER JOIN
+	        ORADPX01.DPS_C_PLANNED_PROD HJ
+	    ON
+	        KK.PROD_CODE = HJ.PROD_CODE
+	    INNER JOIN
+	        ORADPX01.DPS_C_JGI_MST KJ1
+	    ON
+	        KK.JGI_NO = KJ1.JGI_NO
+	    INNER JOIN
+	        ORADPX01.DPS_C_SOS_MST KJ2
+	    ON  KJ1.SOS_CD3 = KJ2.SOS_CD
+	WHERE
+	    HJ.CATEGORY = #category:CHAR#
+	    AND HJ.PLAN_TARGET_FLG = '1'
+	GROUP BY
+	    KJ2.BR_CODE,
+	    KJ2.DIST_CODE,
+	    KJ1.JGI_NO,
+	    KK.INS_TYPE,
+	    KK.HO_INS_TYPE,
+	    KK.INS_NO,
+	    KK.RELN_INS_NO,
+	    KK.RELN_INS_CODE,
+	    KK.TMS_TYTEN_CD,
+	    KK.DEL_FLG,
+	    KK.REQ_FLG,
+	    KJ2.BUMON_RYAKU_NAME,
+	    KJ1.SHOKUSHU_CD,
+	    KJ1.JGI_NAME,
+	    KK.INS_FORMAL_NAME,
+	    <!-- add Start 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+	    KK.INS_ABBR_NAME,
+	    <!-- add End 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+	    KK.TMS_NAME
+	ORDER BY
+	    KJ2.BR_CODE ASC,
+	    KJ2.DIST_CODE ASC,
+	    KJ1.SHOKUSHU_CD ASC,
+	    KJ1.JGI_NO ASC,
+	    KK.HO_INS_TYPE ASC,
+	    KK.RELN_INS_NO ASC,
+	    KK.RELN_INS_CODE ASC
+  </select>
+
+  <!-- 削除施設・施設特約店別計画(仕入) -->
+  <select id="search4Shiire" resultMap="resultMap4" parameterClass="java.util.Map" >
+	SELECT
+	     KJ2.BR_CODE
+	    ,KJ2.DIST_CODE
+	    ,KJ1.JGI_NO
+	    ,KK.INS_TYPE
+	    ,KK.INS_NO
+	    ,KK.TMS_TYTEN_CD
+	    ,KK.DEL_FLG
+	    ,KK.REQ_FLG
+	    ,KJ2.BUMON_RYAKU_NAME
+	    ,KJ1.JGI_NAME
+	    ,KK.INS_FORMAL_NAME
+	    <!-- add Start 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+	    ,KK.INS_ABBR_NAME
+	    <!-- add End 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+	    ,KK.TMS_NAME
+	    ,SUM(DECODE(HJ.STAT_PROD_CODE,#statProdCode:CHAR#,NVL(KK.PLAN,0)/1000,0)) AS SUM_PLAN
+	FROM
+	    (
+	    SELECT
+	        A.JGI_NO,
+	        DECODE(B.HO_INS_TYPE, '1', 'ＵＨ', '2', 'ＵＨ', '3', 'Ｐ', '4', '雑', 'ＮＧ') AS INS_TYPE,
+	        B.HO_INS_TYPE,
+	        A.INS_NO,
+	        B.RELN_INS_NO,
+	        B.RELN_INS_CODE,
+	        B.INS_FORMAL_NAME,
+	        <!-- add Start 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+	        B.INS_ABBR_NAME,
+	        <!-- add End 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+	        A.TMS_TYTEN_CD,
+	        C.HONTEN_MEI_KJ || C.SHISHA_MEI_KJ || C.SHITEN_MEI_KJ || C.KA_MEI_KJ || C.BLK_1_MEI_KJ AS TMS_NAME,
+	        A.PROD_CODE,
+	        A.PLANNED_VALUE_Y AS PLAN,
+	        D.DEL_FLG,
+	        D.REQ_FLG
+	    FROM
+	        ORADPX01.DPS_I_INS_WS_PLAN A
+	    INNER JOIN
+	        ORADPX01.DPS_C_INS_MST B
+	    ON
+	        A.INS_NO = B.INS_NO
+	    INNER JOIN
+	        ORADPX01.DPS_S_T_TMS_TYTEN_MST_UN C
+	    ON
+	        A.TMS_TYTEN_CD = C.TMS_TYTEN_CD
+	    INNER JOIN
+	        ORADPX01.DPS_S_VI_COM_INS_MST D
+	    ON
+	        A.INS_NO = D.INS_NO
+	    WHERE (D.DEL_FLG = '1'or D.REQ_FLG = '1' or D.INS_ABBR_NAME LIKE '●%' or D.INS_ABBR_NAME LIKE '〇%')
+	    ) KK
+	    INNER JOIN
+	        ORADPX01.DPS_C_PLANNED_PROD HJ
+	    ON
+	        KK.PROD_CODE = HJ.PROD_CODE
+	    INNER JOIN
+	        ORADPX01.DPS_C_JGI_MST KJ1
+	    ON
+	        KK.JGI_NO = KJ1.JGI_NO
+	    INNER JOIN
+	        ORADPX01.DPS_C_SOS_MST KJ2
+	    ON  KJ1.SOS_CD3 = KJ2.SOS_CD
+	WHERE
+	    HJ.CATEGORY = #category:CHAR#
+	    AND HJ.PLAN_TARGET_FLG = '1'
+	GROUP BY
+	    KJ2.BR_CODE,
+	    KJ2.DIST_CODE,
+	    KJ1.JGI_NO,
+	    KK.INS_TYPE,
+	    KK.HO_INS_TYPE,
+	    KK.INS_NO,
+	    KK.RELN_INS_NO,
+	    KK.RELN_INS_CODE,
+	    KK.TMS_TYTEN_CD,
+	    KK.DEL_FLG,
+	    KK.REQ_FLG,
+	    KJ2.BUMON_RYAKU_NAME,
+	    KJ1.JGI_NAME,
+	    KK.INS_FORMAL_NAME,
+	    <!-- add Start 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+	    KK.INS_ABBR_NAME,
+	    <!-- add End 2022/9/14 H.Futagami 本番障害対応No.30　計画支援フォロー修正（SCTASK1718778） -->
+	    KK.TMS_NAME,
+	    KJ1.SHOKUSEI_CD,
+	    KJ1.SHOKUSHU_CD
+	ORDER BY
+	    KJ2.BR_CODE ASC,
+	    KJ2.DIST_CODE ASC,
+	    KJ1.SHOKUSEI_CD ASC,
+	    KJ1.SHOKUSHU_CD ASC,
+	    KJ1.JGI_NO ASC,
+	    KK.HO_INS_TYPE ASC,
+	    KK.RELN_INS_NO ASC,
+	    KK.RELN_INS_CODE ASC
+  </select>
+
+</sqlMap>

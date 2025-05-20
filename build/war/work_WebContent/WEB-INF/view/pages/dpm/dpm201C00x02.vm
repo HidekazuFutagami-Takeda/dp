@@ -1,0 +1,15 @@
+## (医)施設品目別計画編集画面 集計行
+#set( $layout = "nothingLayout.vm" )
+#if($form.getRequestData("DPM201C00_DATA_R_HEADER"))
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+    <row id='1'>
+        <cell class="psumB">$!prodCategory計</cell>
+        <cell class="psumB"></cell>
+        <cell class="psumB"></cell>
+        # 計算用ユーザデータ
+        <userdata name="rowType">total</userdata>
+        <userdata name="subTotalId">none</userdata>
+    </row>
+</rows>
+#end

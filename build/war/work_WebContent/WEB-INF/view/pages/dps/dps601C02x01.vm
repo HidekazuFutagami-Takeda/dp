@@ -1,0 +1,154 @@
+#set( $layout = "nothingLayout.vm" )
+#set($dataHeader = $form.getRequestData("DPS601C02_HEAD_R"))
+#set($resultDataList = $form.getRequestData("DPS601C02_DATA_R"))
+#if ($resultDataList && $resultDataList.size() > 0)
+#set($decimalFormat = $form.bean.getDefaultRateFormat())
+$!consts.getDhtmlxGridXmlHeader()
+
+## 行のインデックス
+#set($rowIndex = 1)
+## 集計単位のインデックス
+#set($subTotalIndex = 1)
+
+<rows>
+#set($prevInsNo = "")
+#set($prevRelnInsNo = "")
+#foreach($resultData in $resultDataList)
+
+    #set( $insStyle = "")
+    ## --------------------------------
+	## 施設親子情報
+    ## --------------------------------
+	## -- 前行の「施設コード」が同じの場合、名前非表示、上線非表示
+	#set( $dispIns = true)
+    #if($prevInsNo == $resultData.insNo)
+		#set( $dispIns = false)
+	    #set( $insStyle = $insStyle + "border-top-width:0px;")
+    #end
+	## -- 次行の「施設コード」が同じ場合、下線非表示
+    #if($resultDataList.size() > $velocityCount &&  $resultDataList.get($velocityCount).insNo == $resultData.insNo)
+	    #set( $insStyle = $insStyle + "border-bottom-width:0px;")
+    #end
+	## -- 施設関連情報
+	#set( $insInfoName = "")
+	#set( $insColor = "000")
+	#if($resultData.insInfoName)
+		#set( $insInfoName = "<br>$!resultData.insInfoName" )
+		#set( $insColor = "$!resultData.dispFontColCd")
+	#end
+    ## --------------------------------
+	## 副担当編集
+    ## --------------------------------
+	## -- 編集可能（副担モード、かつ、医師担当でない場合は編集不可）
+	#set( $enableEdit = true)
+	#if($form.getRequestData('SUB_MR_MODE') && $resultData.docMrNo != $!security.defaultJgiNo)
+		#set( $enableEdit = false )
+	#end
+	## -- ステータスが確定している場合は編集不可
+	#if($dataHeader.isStatusMrCompleted)
+		#set( $enableEdit = false )
+	#end
+    ## ***************************************
+	## TODO:現状、ステータスにかかわらず編集不可のため固定設定
+	#set( $enableEdit = false )
+    ## ***************************************
+    ## --------------------------------
+	## 施設背景色（優先順位：配分除外 ＜ 削除施設）
+    ## --------------------------------
+	#set( $bgInsClass = "")
+	## -- 配分除外
+	#if($resultData.exceptDistInsFlg)
+		#set( $bgInsClass = "exceptDist" )
+	#end
+	## -- 削除施設
+	#if($resultData.delInsFlg)
+		#set( $bgInsClass = "delIns" )
+	#end
+    ## --------------------------------
+	## 医師背景色（優先順位：医師異動 ＜ 副担編集）
+    ## --------------------------------
+	## -- 異動医師
+	#set( $bgDocClass = $bgInsClass)
+	#if($resultData.docMovedFlg)
+		#set( $bgDocClass = "delIns" )
+	#end
+	## -- 副担編集判定（最終更新者が自分以外の医師担当の場合は赤表示）
+	#if( $resultData.insMrNo && $resultData.docMrNo && $resultData.upJgiNo)
+	#if(!$form.getRequestData('SUB_MR_MODE') && $resultData.insMrNo != $resultData.docMrNo && $resultData.docMrNo == $resultData.upJgiNo)
+		#set( $bgDocClass = "subMrEdit" )
+	#end
+	#end
+
+    ## --------------------------------
+	## 明細行
+    ## --------------------------------
+    #if(!$resultData.isSumRow)
+    <row id='$rowIndex'>
+    	## 施設情報
+       <userdata name="insName">$!resultData.insName</userdata>
+       <userdata name="insNo">$!resultData.insNo</userdata>
+       <userdata name="mainInsNo">$!resultData.mainInsNo</userdata>
+       <userdata name="errFlg">$!resultData.errFlg</userdata>
+       <userdata name="alertFlg">$!resultData.alertFlg</userdata>
+    	## 行情報
+       <userdata name="rowType">input</userdata>
+       <userdata name="subTotalId">$subTotalIndex</userdata>
+       ##送信データ
+       <userdata name="selectRowId">$!resultData.seqKey,$!resultData.upDate.Time,$!resultData.insNo,$!resultData.mainInsNo,$!resultData.docNo,$!resultData.exceptDistInsFlg,$!resultData.delInsFlg</userdata>
+       <cell class="$bgInsClass" style="$insStyle">#if($dispIns) $!resultData.insHeader #end</cell>
+       <cell class="$bgInsClass" style="$insStyle">#if($dispIns) <![CDATA[<span style='color:#$insColor'>$!resultData.insName $insInfoName</span>]]> #end</cell>
+       #if($resultData.docMrKanjName)
+       <cell class="$bgDocClass">$!{resultData.docMrKanjName}（$!{resultData.docMrShokushuName}）</cell>
+       #else
+       <cell class="$bgDocClass">$!{resultData.docMrKanjName}</cell>
+       #end
+       <cell class="$bgDocClass">$!resultData.deptKanjName</cell>
+       <cell class="$bgDocClass">$!resultData.postKanjName</cell>
+       <cell class="$bgDocClass">$!resultData.docKanj</cell>
+       <cell class="$bgDocClass">$!resultData.nonPatientCnt</cell>
+       <cell class="$bgDocClass">$!resultData.totPatientCnt</cell>
+       <cell class="$bgDocClass">$!resultData.tkdPatientCnt</cell>
+       <cell class="$bgDocClass" style='#setMinusStyle($!resultData.currentPeriod)'     type='#setColType( $!resultData.currentPeriod,"ro" ,"ron")'>$format.parseMoneyToThousandUnit($!resultData.currentPeriod)</cell>
+       <cell class="$bgDocClass" style='#setMinusStyle($!resultData.advancePeriod)'     type='#setColType( $!resultData.advancePeriod,"ro" ,"ron")'>$format.parseMoneyToThousandUnit($!resultData.advancePeriod)</cell>
+       <cell class="$bgDocClass" style='#setMinusStyle($!resultData.theoreticalIncValueY)' type='#setColType( $!resultData.theoreticalIncValueY,"ro" ,"ron")'>$format.parseMoneyToThousandUnit($!resultData.theoreticalIncValueY)</cell>
+       #if( $enableEdit )
+       <cell class='inputB'      style='#setMinusStyle($!resultData.plannedIncValueY)'  type='#setColType( $!resultData.plannedIncValueY,"ed" ,"edn")'>$format.parseMoneyToThousandUnit($!resultData.plannedIncValueY)</cell>
+       #else
+       <cell class="$bgDocClass" style='#setMinusStyle($!resultData.plannedIncValueY)'  type='#setColType( $!resultData.plannedIncValueY,"ro" ,"ron")'>$format.parseMoneyToThousandUnit($!resultData.plannedIncValueY)</cell>
+       #end
+       <cell class="$bgDocClass" style='#setMinusStyle($!resultData.theoreticalValueY)' type='#setColType( $!resultData.theoreticalValueY,"ro" ,"ron")'>$format.parseMoneyToThousandUnit($!resultData.theoreticalValueY)</cell>
+       <cell class="$bgDocClass" style='#setMinusStyle($!resultData.plannedValueY)'     type='#setColType( $!resultData.plannedValueY,"ro" ,"ron")'>$format.parseMoneyToThousandUnit($!resultData.plannedValueY)</cell>
+    </row>
+
+    ## --------------------------------
+	## 合計行
+    ## --------------------------------
+    #else
+    <row id='$rowIndex'>
+       <userdata name="rowType">subTotal</userdata>
+       <userdata name="subTotalId">$subTotalIndex</userdata>
+       <cell style="background-color: #c6e5b7;border-right-style:none">合計</cell>
+       <cell style="background-color: #c6e5b7;border-right-style:none;border-left-style:none"></cell>
+       <cell style="background-color: #c6e5b7;border-right-style:none;border-left-style:none"></cell>
+       <cell style="background-color: #c6e5b7;border-right-style:none;border-left-style:none"></cell>
+       <cell style="background-color: #c6e5b7;border-right-style:none;border-left-style:none"></cell>
+       <cell style="background-color: #c6e5b7;border-left-style:none"></cell>
+       <cell style="background-color: #c6e5b7;">$!resultData.nonPatientCnt</cell>
+       <cell style="background-color: #c6e5b7;">$!resultData.totPatientCnt</cell>
+       <cell style="background-color: #c6e5b7;">$!resultData.tkdPatientCnt</cell>
+       <cell style='background-color: #c6e5b7;#setMinusStyle($!resultData.currentPeriod)' type='#setColType( $!resultData.currentPeriod,"ro" ,"ron")'>$format.parseMoneyToThousandUnit($!resultData.currentPeriod)</cell>
+       <cell style='background-color: #c6e5b7;#setMinusStyle($!resultData.advancePeriod)' type='#setColType( $!resultData.advancePeriod,"ro" ,"ron")'>$format.parseMoneyToThousandUnit($!resultData.advancePeriod)</cell>
+       <cell style='background-color: #c6e5b7;#setMinusStyle($!resultData.theoreticalIncValueY)' type='#setColType( $!resultData.theoreticalIncValueY,"ro" ,"ron")'>$format.parseMoneyToThousandUnit($!resultData.theoreticalIncValueY)</cell>
+       <cell style='background-color: #c6e5b7;' type='ro'></cell>
+       <cell style='background-color: #c6e5b7;#setMinusStyle($!resultData.theoreticalValueY)' type='#setColType( $!resultData.theoreticalValueY,"ro" ,"ron")'>$format.parseMoneyToThousandUnit($!resultData.theoreticalValueY)</cell>
+       <cell style='background-color: #c6e5b7;#setMinusStyle($!resultData.plannedValueY)' type='#setColType( $!resultData.plannedValueY,"ro" ,"ron")'>$format.parseMoneyToThousandUnit($!resultData.plannedValueY)</cell>
+    </row>
+	#set($subTotalIndex = $subTotalIndex + 1)
+	#end
+
+	#set($prevInsNo = $resultData.insNo)
+	#set($prevRelnInsNo = $resultData.relnInsNo)
+	#set($rowIndex = $rowIndex + 1)
+#end
+</rows>
+#end

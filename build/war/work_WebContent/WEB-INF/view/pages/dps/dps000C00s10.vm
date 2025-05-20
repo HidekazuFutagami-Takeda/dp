@@ -1,0 +1,169 @@
+#if ($!security.hasVaccine())
+#set ($dps000ApplyName = "dps000C00F50")
+#set ($actionPath = $link.setAction("dps000C00F50"))
+#else
+#set ($dps000ApplyName = "dps000C00F00")
+#set ($actionPath = $link.setAction("dps000C00F00"))
+#end
+<script language="javascript">
+<!--
+function ${dps000ApplyName}Change(defFlg, initDispFlg, settingSosCd, settingJgiNo, redirectPath) {
+    document.${dps000ApplyName}ProgressForm.action = '$actionPath';
+    document.getElementById("defFlg").value = defFlg;
+    document.getElementById("initDispFlg").value = initDispFlg;
+    document.getElementById("settingSosCd").value = settingSosCd;
+    document.getElementById("settingJgiNo").value = settingJgiNo;
+    document.getElementById("redirectPath").value = redirectPath;
+    document.${dps000ApplyName}ProgressForm.submit();
+    return false;
+}
+##営業所計画編集画面へ遷移
+function officeG(sosCd, category) {
+    ${dps000ApplyName}Change("false", "false", sosCd, null, "dps300C00F00?category=" + category);
+    return false;
+}
+##施設特約店別計画品目一覧画面へ
+function inswsG(sosCd, jgiNo, category) {
+    ${dps000ApplyName}Change("false", "false", sosCd, jgiNo, "dps401C01F00?category=" + category);
+    return false;
+}
+##施設医師別計画品目一覧画面へ
+function insdocG(sosCd, jgiNo) {
+    ${dps000ApplyName}Change("false", "false", sosCd, jgiNo, "dps601C01F00");
+    return false;
+}
+//-->
+</script>
+##-------------------------------
+##パンくずリスト
+##-------------------------------
+<div id="statusErea">
+<div class="titleBg">
+#set($panList = $progress.createPanList())
+<p>業務進捗状況　　　　
+#set($listSize = $panList.size())
+#foreach($panLink in $panList)
+$panLink
+#if($listSize != $velocityCount)
+　＞　
+#end
+#end
+</p>
+</div>
+
+##-------------------------------
+##業務進捗状況表
+##-------------------------------
+<div id="statusContents" style="position:relative;">
+#if ($progress.isTYYakkaDispFlg())
+    #parse("WEB-INF/view/pages/dps/dps000C00s25.vm")
+    #if(!$bodyOnloadMethod)
+        #set($bodyOnloadMethod = "dps000C00F25()")
+    #end
+#end
+#if ($progress.isIyakuRegistDataDispFlg())
+    #parse("WEB-INF/view/pages/dps/dps000C00s26.vm")
+    #if(!$bodyOnloadMethod)
+        #set($bodyOnloadMethod = "dps000C00F26()")
+    #end
+#end
+
+#if($progress.isTokuyakutenUser() == false)
+	##参照権限のあるカテゴリのリストを取得し、ループで各カテゴリごとに出力する
+	## mod Start 2021/7/28 H.Kaneko Top画面業務進捗状況表順変更 DATA_VALUE→DATA_SEQ
+	## DATA_VALUE順
+	#set($categoryList = $progress.getDispBusinessProgressCategoryList())
+	## DATA_SEQ順
+	###set($categoryList = $progress.getDispBusinessProgressCategoryListBySeq())
+	## mod End
+	#foreach($category in $categoryList)
+		##カレントカテゴリ
+		#set($categoryCode = $category.dbValue)
+		#set($categoryName = $category.prodCategoryName)
+		##次のカテゴリのロードスクリプト名　※順番にデータをロードさせる仕組みために次のカテゴリのロードスクリプト名を示す変数が必要(dps000C00S20.vmの『${GridObjName}.load』のくだり参照)
+		#set($nextLoadFunction = '""')
+		#if($velocityCount < $categoryList.size())
+			#set($nextLoadFunction = "dps000C00Fc${categoryList.get($velocityCount).dbValue}")
+		#else
+		    #if ($progress.isWsPlanDispFlg())
+				#set($nextLoadFunction = "dps000C00F29")
+			#end
+		#end
+
+		##仕入品とそれ以外でvmをわける
+		#if($categoryCode.equals("02"))
+			##仕入品
+		    #parse("WEB-INF/view/pages/dps/dps000C00s28.vm")
+		#else
+			##仕入品以外
+		    #parse("WEB-INF/view/pages/dps/dps000C00s20.vm")
+		#end
+	    #if(!$bodyOnloadMethod)
+	        #set($bodyOnloadMethod = "dps000C00Fc${categoryCode}()")
+	    #end
+	#end
+#end
+
+## 特約店別計画（GMBU品、仕入品、ONC品、SPBU品）
+#if ($progress.isWsPlanDispFlg())
+    #parse("WEB-INF/view/pages/dps/dps000C00s29.vm")
+    #if(!$bodyOnloadMethod)
+        #set($bodyOnloadMethod = "dps000C00F29()")
+    #end
+#end
+#if ($progress.isTBDispFlg())
+    #parse("WEB-INF/view/pages/dps/dps000C00s75.vm")
+    #if(!$bodyOnloadMethod)
+        #set($bodyOnloadMethod = "dps000C00F75()")
+    #end
+#end
+#if ($progress.isWakutinRegistDataDispFlg())
+    #parse("WEB-INF/view/pages/dps/dps000C00s76.vm")
+    #if(!$bodyOnloadMethod)
+        #set($bodyOnloadMethod = "dps000C00F76()")
+    #end
+#end
+#if ($progress.isWakutinTableDispFlg())
+    #parse("WEB-INF/view/pages/dps/dps000C00s77.vm")
+    #if(!$bodyOnloadMethod)
+        #set($bodyOnloadMethod = "dps000C00F77()")
+    #end
+#end
+#if ($progress.isWakutinWsPlanDispFlg())
+    #parse("WEB-INF/view/pages/dps/dps000C00s78.vm")
+    #if(!$bodyOnloadMethod)
+        #set($bodyOnloadMethod = "dps000C00F78()")
+    #end
+#end
+<form name="${dps000ApplyName}ProgressForm" id="${dps000ApplyName}ProgressForm" method="post">
+<input type="hidden" name="defFlg" id="defFlg" value="" />
+<input type="hidden" name="initDispFlg" id="initDispFlg" value="" />
+<input type="hidden" name="settingSosCd" id="settingSosCd" value="" />
+<input type="hidden" name="settingJgiNo" id="settingJgiNo" value="" />
+<input type="hidden" name="redirectPath" id="redirectPath" value="" />
+<input type="hidden" name="shiireFixAllFinished" id="shiireFixAllFinished" value="$form.bean.isShiireFixAllFinished()" />
+<input type="hidden" name="shiireFixAllFinishedWithError" id="shiireFixAllFinishedWithError" value="$form.bean.isShiireFixAllFinishedWithError()" />
+
+</form>
+<script>
+<!--
+function alertOfShiireFixAllFinished(){
+
+	if(document.getElementById('shiireFixAllFinished').value == "true"){
+		if(document.getElementById('shiireFixAllFinishedWithError').value == "true"){
+			alert("一括確定が完了しました。（確定できなかった計画が存在します。）");
+## add Start 2022/7/13 R.takamoto ④No.6 一括確定のエラー表示対応
+			var url = '$link.setAction('dps940C00F01')';
+			var childWindow = openModalWindowW2(url,900,650);
+## add End 2022/7/13 R.takamoto ④No.6 一括確定のエラー表示対応
+		}else{
+			alert("一括確定が完了しました。");
+		}
+	}
+}
+alertOfShiireFixAllFinished();
+
+//-->
+</script>
+</div>
+</div>

@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_INS_PLAN_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.InsPlan" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INS_NO" property="insNo" jdbcType="CHAR" />
+    <result column="RELN_INS_NO" property="relnInsNo" jdbcType="VARCHAR" />
+    <result column="THEORETICAL_INC_VALUE_Y" property="theoreticalIncValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_INC_VALUE_Y" property="plannedIncValueY" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_Y" property="theoreticalValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_Y" property="plannedValueY" jdbcType="BIGINT" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="existChoseiInsWsMap" class="java.util.HashMap" >
+    <result column="EXIST_DIFF_UH" property="existDiffUh" jdbcType="CHAR" javaType="java.lang.Boolean"/>
+    <result column="EXIST_DIFF_P" property="existDiffP" jdbcType="CHAR" javaType="java.lang.Boolean"/>
+  </resultMap>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,INS_NO
+          ,THEORETICAL_INC_VALUE_Y
+          ,PLANNED_INC_VALUE_Y
+          ,THEORETICAL_VALUE_Y
+          ,PLANNED_VALUE_Y
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_INS_PLAN
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.InsPlan" >
+    SELECT SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,INS_NO
+          ,THEORETICAL_INC_VALUE_Y
+          ,PLANNED_INC_VALUE_Y
+          ,THEORETICAL_VALUE_Y
+          ,PLANNED_VALUE_Y
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_INS_PLAN
+     WHERE JGI_NO = #jgiNo:INTEGER#
+       AND PROD_CODE = #prodCode:CHAR#
+       AND INS_NO = #insNo:CHAR#
+  </select>
+
+  <!-- 検索リスト -->
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT IWP.SEQ_KEY
+          ,IWP.JGI_NO
+          ,IWP.PROD_CODE
+          ,IWP.INS_NO
+          ,INS.RELN_INS_NO
+          ,IWP.THEORETICAL_INC_VALUE_Y
+          ,IWP.PLANNED_INC_VALUE_Y
+          ,IWP.THEORETICAL_VALUE_Y
+          ,IWP.PLANNED_VALUE_Y
+          ,IWP.IS_JGI_NO
+          ,IWP.IS_JGI_NAME
+          ,IWP.IS_DATE
+          ,IWP.UP_JGI_NO
+          ,IWP.UP_JGI_NAME
+          ,IWP.UP_DATE
+      FROM DPS_I_INS_PLAN IWP
+           INNER JOIN DPS_C_INS_MST_ALL INS
+        ON IWP.INS_NO = INS.INS_NO
+     WHERE IWP.JGI_NO = #jgiNo:INTEGER#
+       AND IWP.PROD_CODE = #prodCode:CHAR#
+       <isNotNull property="hoInsTypeList">
+           <iterate prepend="AND INS.HO_INS_TYPE IN" open="(" close=")" conjunction=","  property="hoInsTypeList">
+               #hoInsTypeList[].dbValue#
+           </iterate>
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.InsPlan" >
+    INSERT INTO DPS_I_INS_PLAN
+          (SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,INS_NO
+          ,THEORETICAL_INC_VALUE_Y
+          ,PLANNED_INC_VALUE_Y
+          ,THEORETICAL_VALUE_Y
+          ,PLANNED_VALUE_Y
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (ORADPX01.SEQ_DPS_I_INS_PLAN.NEXTVAL
+          ,#jgiNo:INTEGER#
+          ,#prodCode:CHAR#
+          ,#insNo:CHAR#
+          ,#theoreticalIncValueY:BIGINT#
+          ,#plannedIncValueY:BIGINT#
+          ,#theoreticalValueY:BIGINT#
+          ,#plannedValueY:BIGINT#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 登録（医師別計画積上げ）-->
+  <update id="insertTumiage" parameterClass="java.util.Map" >
+	INSERT INTO DPS_I_INS_PLAN
+	(
+		 SEQ_KEY
+		,JGI_NO
+		,PROD_CODE
+		,INS_NO
+		,ADVANCE_PERIOD
+		,THEORETICAL_INC_VALUE_Y
+		,PLANNED_INC_VALUE_Y
+		,THEORETICAL_VALUE_Y
+		,PLANNED_VALUE_Y
+		,PLANNED_VALUE_T
+		,IS_JGI_NO
+		,IS_JGI_NAME
+		,IS_DATE
+		,UP_JGI_NO
+		,UP_JGI_NAME
+		,UP_DATE
+	)
+	WITH SUM AS (
+			SELECT
+			  PL.JGI_NO,
+			  PL.PROD_CODE,
+			  PL.MAIN_INS_NO AS INS_NO,
+			  NVL(SUM(PL.ADVANCE_PERIOD),0) AS ADVANCE_PERIOD,
+			  NVL(SUM(PL.THEORETICAL_INC_VALUE_Y),0) AS THEORETICAL_INC_VALUE_Y,
+			  NVL(SUM(NVL(PL.PLANNED_INC_VALUE_Y,PL.THEORETICAL_INC_VALUE_Y)),0) AS PLANNED_INC_VALUE_Y,
+			  NVL(SUM(PL.THEORETICAL_VALUE_Y),0) AS THEORETICAL_VALUE_Y,
+			  NVL(SUM(PL.PLANNED_VALUE_Y),0) AS PLANNED_VALUE_Y
+			FROM DPS_I_INS_DOC_PLAN PL
+			     INNER JOIN DPS_C_INS_MST_ALL INS ON PL.INS_NO = INS.INS_NO
+			WHERE
+			      PL.JGI_NO = #jgiNo:INTEGER#
+			  AND PL.PROD_CODE = #prodCode:CHAR#
+			  AND PL.PLANNED_VALUE_Y IS NOT NULL
+			<isNotNull property="hoInsTypeList">
+			    <iterate prepend="AND INS.HO_INS_TYPE IN" open="(" close=")" conjunction=","  property="hoInsTypeList">
+			        #hoInsTypeList[].dbValue#
+			    </iterate>
+			</isNotNull>
+			GROUP BY PL.JGI_NO,PL.PROD_CODE,PL.MAIN_INS_NO
+	)
+	SELECT
+		 ORADPX01.SEQ_DPS_I_INS_PLAN.NEXTVAL
+		,SUM.JGI_NO
+		,SUM.PROD_CODE
+		,SUM.INS_NO
+		,SUM.ADVANCE_PERIOD
+		,SUM.THEORETICAL_INC_VALUE_Y
+		,SUM.PLANNED_INC_VALUE_Y
+		,SUM.THEORETICAL_VALUE_Y
+		,SUM.PLANNED_VALUE_Y
+		,NULL
+		,#upJgiNo:INTEGER#
+		,#upJgiName:VARCHAR#
+		,SYSDATE
+		,#upJgiNo:INTEGER#
+		,#upJgiName:VARCHAR#
+		,SYSDATE
+	FROM SUM
+  </update>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.InsPlan" >
+    UPDATE DPS_I_INS_PLAN
+       SET PLANNED_INC_VALUE_Y = #plannedIncValueY:BIGINT#
+          ,PLANNED_VALUE_Y  = #plannedValueY:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_INS_PLAN
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </delete>
+
+  <!-- 削除（医師別計画積上げ） -->
+  <delete id="deleteTumiage" parameterClass="java.util.Map" >
+    DELETE
+    FROM DPS_I_INS_PLAN PL
+     WHERE PL.JGI_NO = #jgiNo:INTEGER#
+	   AND PL.PROD_CODE = #prodCode:CHAR#
+     AND EXISTS (
+     	SELECT 'X' FROM DPS_C_INS_MST_ALL INS
+     	WHERE INS.INS_NO = PL.INS_NO
+		<isNotNull property="hoInsTypeList">
+		    <iterate prepend="AND INS.HO_INS_TYPE IN" open="(" close=")" conjunction=","  property="hoInsTypeList">
+		        #hoInsTypeList[].dbValue#
+		    </iterate>
+		</isNotNull>
+     	)
+  </delete>
+
+  <!-- 施設-施設特約 調整有無 -->
+  <select id="existChoseiInsWs" resultMap="existChoseiInsWsMap" parameterClass="java.util.Map" >
+	WITH
+	 INS_WS_PLAN_UH AS (
+		SELECT
+		  INS_NO AS INS_NO,
+		  SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_Y
+		FROM
+		(
+			SELECT
+				NVL(INS.MAIN_INS_NO,INS.INS_NO) AS INS_NO ,
+				IWP.PLANNED_VALUE_Y
+			FROM
+				DPS_I_INS_WS_PLAN IWP
+				INNER JOIN DPS_C_INS_MST INS ON IWP.INS_NO = INS.INS_NO
+				INNER JOIN DPS_C_VI_JGI_MST JM  ON IWP.JGI_NO = JM.JGI_NO
+			WHERE
+			    IWP.PROD_CODE = #prodCode:CHAR#
+			AND INS.HO_INS_TYPE IN ('1','2')
+            <isNotNull property="jgiNo" >
+			AND JM.JGI_NO = #jgiNo:INTEGER#
+            </isNotNull>
+            <isNull property="jgiNo" >
+            <isNotNull property="jgiKbList">
+                <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+                    #jgiKbList[].dbValue#
+                </iterate>
+            </isNotNull>
+            <isNotNull prepend="AND" property="jokenSetList">
+            EXISTS (SELECT JO.JGI_NO
+            FROM DPS_C_JGI_JOKEN JO
+            WHERE JO.JGI_NO = JM.JGI_NO
+                <isNotNull property="jokenSetList">
+                    <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                        #jokenSetList[].dbValue#
+                    </iterate>
+                </isNotNull>
+            )
+            </isNotNull>
+			<isNotNull prepend="AND" property="sosCd3">
+			    JM.SOS_CD3 = #sosCd3:VARCHAR#
+			</isNotNull>
+			<isNotNull prepend="AND" property="sosCd4">
+			    JM.SOS_CD4 = #sosCd4:VARCHAR#
+			</isNotNull>
+            </isNull>
+		)
+		GROUP BY INS_NO
+	)
+	,INS_PLAN_UH AS (
+		SELECT
+			IP.INS_NO AS INS_NO,
+			IP.PLANNED_VALUE_Y AS PLANNED_VALUE_Y
+		FROM
+			DPS_I_INS_PLAN IP
+			INNER JOIN DPS_C_INS_MST_ALL INS ON IP.INS_NO = INS.INS_NO
+			INNER JOIN DPS_C_VI_JGI_MST JM  ON IP.JGI_NO = JM.JGI_NO
+		WHERE
+			    IP.PROD_CODE = #prodCode:CHAR#
+			AND INS.HO_INS_TYPE IN ('1','2')
+            <isNotNull property="jgiNo" >
+			AND JM.JGI_NO = #jgiNo:INTEGER#
+            </isNotNull>
+            <isNull property="jgiNo" >
+                <isNotNull property="jgiKbList">
+                    <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+                        #jgiKbList[].dbValue#
+                    </iterate>
+                </isNotNull>
+                <isNotNull prepend="AND" property="jokenSetList">
+                EXISTS (SELECT JO.JGI_NO
+                FROM DPS_C_JGI_JOKEN JO
+                WHERE JO.JGI_NO = JM.JGI_NO
+                    <isNotNull property="jokenSetList">
+                        <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                            #jokenSetList[].dbValue#
+                        </iterate>
+                    </isNotNull>
+                )
+                </isNotNull>
+			<isNotNull prepend="AND" property="sosCd3">
+			    JM.SOS_CD3 = #sosCd3:VARCHAR#
+			</isNotNull>
+			<isNotNull prepend="AND" property="sosCd4">
+			    JM.SOS_CD4 = #sosCd4:VARCHAR#
+			</isNotNull>
+            </isNull>
+	)
+	,INS_WS_PLAN_P AS (
+		SELECT
+		  INS_NO AS INS_NO,
+		  SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_Y
+		FROM
+		(
+			SELECT
+				NVL(INS.MAIN_INS_NO,INS.INS_NO) AS INS_NO ,
+				IWP.PLANNED_VALUE_Y
+			FROM
+				DPS_I_INS_WS_PLAN IWP
+				INNER JOIN DPS_C_INS_MST INS ON IWP.INS_NO = INS.INS_NO
+				INNER JOIN DPS_C_VI_JGI_MST JM  ON IWP.JGI_NO = JM.JGI_NO
+			WHERE
+			    IWP.PROD_CODE = #prodCode:CHAR#
+			AND INS.HO_INS_TYPE IN ('3')
+            <isNotNull property="jgiNo" >
+			AND JM.JGI_NO = #jgiNo:INTEGER#
+            </isNotNull>
+            <isNull property="jgiNo" >
+                <isNotNull property="jgiKbList">
+                    <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+                        #jgiKbList[].dbValue#
+                    </iterate>
+                </isNotNull>
+                <isNotNull prepend="AND" property="jokenSetList">
+                EXISTS (SELECT JO.JGI_NO
+                FROM DPS_C_JGI_JOKEN JO
+                WHERE JO.JGI_NO = JM.JGI_NO
+                    <isNotNull property="jokenSetList">
+                        <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                            #jokenSetList[].dbValue#
+                        </iterate>
+                    </isNotNull>
+                )
+                </isNotNull>
+			<isNotNull prepend="AND" property="sosCd3">
+			    JM.SOS_CD3 = #sosCd3:VARCHAR#
+			</isNotNull>
+			<isNotNull prepend="AND" property="sosCd4">
+			    JM.SOS_CD4 = #sosCd4:VARCHAR#
+			</isNotNull>
+            </isNull>
+		)
+		GROUP BY INS_NO
+	)
+	,INS_PLAN_P AS (
+		SELECT
+			IP.INS_NO AS INS_NO,
+			IP.PLANNED_VALUE_Y AS PLANNED_VALUE_Y
+		FROM
+			DPS_I_INS_PLAN IP
+			INNER JOIN DPS_C_INS_MST_ALL INS ON IP.INS_NO = INS.INS_NO
+			INNER JOIN DPS_C_VI_JGI_MST JM  ON IP.JGI_NO = JM.JGI_NO
+		WHERE
+			    IP.PROD_CODE = #prodCode:CHAR#
+			AND INS.HO_INS_TYPE IN ('3')
+            <isNotNull property="jgiNo" >
+			AND JM.JGI_NO = #jgiNo:INTEGER#
+            </isNotNull>
+            <isNull property="jgiNo" >
+                <isNotNull property="jgiKbList">
+                    <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+                        #jgiKbList[].dbValue#
+                    </iterate>
+                </isNotNull>
+                <isNotNull prepend="AND" property="jokenSetList">
+                EXISTS (SELECT JO.JGI_NO
+                FROM DPS_C_JGI_JOKEN JO
+                WHERE JO.JGI_NO = JM.JGI_NO
+                    <isNotNull property="jokenSetList">
+                        <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                            #jokenSetList[].dbValue#
+                        </iterate>
+                    </isNotNull>
+                )
+                </isNotNull>
+			<isNotNull prepend="AND" property="sosCd3">
+			    JM.SOS_CD3 = #sosCd3:VARCHAR#
+			</isNotNull>
+			<isNotNull prepend="AND" property="sosCd4">
+			    JM.SOS_CD4 = #sosCd4:VARCHAR#
+			</isNotNull>
+            </isNull>
+	)
+	,CHOSEI_TBL AS (
+		SELECT
+			CASE WHEN NVL(INS_WS_PLAN_UH.PLANNED_VALUE_Y,0) = NVL(INS_PLAN_UH.PLANNED_VALUE_Y,0) THEN 0 ELSE 1 END AS EXIST_DIFF_UH,
+			0 AS EXIST_DIFF_P
+		FROM
+			INS_WS_PLAN_UH FULL OUTER JOIN INS_PLAN_UH ON INS_WS_PLAN_UH.INS_NO = INS_PLAN_UH.INS_NO
+		UNION ALL
+		SELECT
+			0 AS EXIST_DIFF_UH,
+			CASE WHEN NVL(INS_WS_PLAN_P.PLANNED_VALUE_Y,0) = NVL(INS_PLAN_P.PLANNED_VALUE_Y,0) THEN 0 ELSE 1 END AS EXIST_DIFF_P
+		FROM
+			INS_WS_PLAN_P FULL OUTER JOIN INS_PLAN_P ON INS_WS_PLAN_P.INS_NO = INS_PLAN_P.INS_NO
+	)
+	SELECT
+		NVL(MAX(EXIST_DIFF_UH),0) AS EXIST_DIFF_UH,
+		NVL(MAX(EXIST_DIFF_P),0)  AS EXIST_DIFF_P
+	FROM CHOSEI_TBL
+  </select>
+
+</sqlMap>

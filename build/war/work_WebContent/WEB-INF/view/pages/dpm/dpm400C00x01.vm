@@ -1,0 +1,180 @@
+#set( $layout = "nothingLayout.vm" )
+#set( $data = $form.getRequestData("DPM400C00_DATA_R"))
+#set( $dataList = $data.getDetailList())
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#if($form.bean.prodCategory)
+    #set( $formProdCategory = $form.bean.prodCategory )
+#else
+    #set( $formProdCategory = 1 )
+#end
+##RowId用カウンタ
+#set( $idcnt = 1 )
+##各集計行集計範囲
+#set( $srange = "" )
+#set( $hrange = "" )
+#set( $mrange = "" )
+##各集計行
+#set( $srowids = "" )
+#set( $hrowids = "" )
+#set( $mrowids = "" )
+##追加ボタンId
+#set( $bid = 1 )
+#foreach($resultData in $dataList)
+    ##集計行
+    #set( $q = '"' )
+    #set($bgClass = "")
+    ## 削除施設の場合
+    #if($resultData.delInsFlg)
+        ## 背景色グレー
+        #set( $bgClass = " class='delIns'" )
+        ## 入力項目なし
+        #set( $inputBgClass = " class='inputB2'" )
+    #end
+    ## 特約店明細の有無で処理分岐
+    #if($resultData.getWsList())
+        #foreach($wsData in $resultData.getWsList())
+            #if($velocityCount == 1)
+                #set( $InsName = $!resultData.getInsName() )
+                #set( $InsNo = $!resultData.getInsNo() )
+                #if ($!security.hasAuthEdit("DPM40"))
+                    #set( $addButton = "<![CDATA[<input type='button' value='追加' onClick='inspos = $bid;openModalWindowW(${q}${link.setAction('dpm912C04F00')}?tmsSelectMode=$tmsselect.getGrayAndDisableButtonMode()&tytenApplyFuncName=dpm400C00TytenApply&sosCd=$!form.bean.sosCd3${q})' />]]>" )
+                #else
+                    #set( $addButton = "" )
+                #end
+		        ## 編集不可の場合
+		        #if(!$resultData.enableEdit)
+		            #set( $addButton = "" )
+		        #end
+            #else
+                #set( $InsName = "" )
+                #set( $InsNo = "" )
+                #set( $addButton = "" )
+            #end
+            #if($wsData.getBaseT())
+                #set( $type = "edn" )
+            #else
+                #set( $type = "ed" )
+            #end
+            #set( $inputBgClass = " class='inputB2'" )
+            #if($wsData.getTmsTytenCd())
+                #set( $sumRowFlg = "false" )
+            #else
+                #set( $type = "ro" )
+                #set( $inputBgClass = "" )
+                #set( $sumRowFlg = "true" )
+            #end
+            <row id='$idcnt'>
+                ##メッセージ見出し用
+                <userdata name="insName">$!resultData.getInsName()</userdata>
+                <userdata name="tmsTytenName">$!wsData.getTmsTytemName()</userdata>
+                ##ツールチップ用
+                <userdata name="toolTip">$!wsData.getUpJgiName()&#13;$!format.toString($!wsData.getUpDate(), "yyyy/MM/dd HH:mm:ss")</userdata>
+                ##送信データ
+                <userdata name="rowIdList">$!form.bean.prodCode,$!resultData.getInsNo(),$!wsData.getTmsTytenCd(),$!wsData.getSeqKey(),$!wsData.getUpDate().getTime(),$!wsData.getBeforeBaseT()</userdata>
+                ##計算、追加用インデックス
+                <userdata name="tyChangeRate">$!data.getTyChangeRate()</userdata>
+                ##追加ボタンインデックス
+                <userdata name="bid">$bid</userdata>
+                <userdata name="rowType">input</userdata>
+                <userdata name="subTotalId">$bid</userdata>
+                <userdata name="tmsTytenCd">$!wsData.getTmsTytenCd()</userdata>
+                <userdata name="planTaiGaiFlgTok">$!wsData.getPlanTaiGaiFlgTok()</userdata>
+                <cell$bgClass style="border-width:0px 1px 0px 1px;">$!InsName</cell>
+                <cell$bgClass style="border-width:0px 1px 0px 1px;">$!InsNo</cell>
+                <cell$bgClass>#if($!wsData.getPlanTaiGaiFlgTok())${tmsselect.planTaiGaiLabel}#end$!wsData.getTmsTytemName()</cell>
+                <cell$bgClass>$!wsData.getTmsTytenCd()</cell>
+                <cell$bgClass style="border-width:0px 1px 0px 1px;">$!addButton</cell>
+                <cell$bgClass>$!wsData.getBaseY()</cell>
+                #if($form.bean.isRyutsu())
+                    <cell$bgClass>$!wsData.getBeforeBaseT()</cell>
+                #else
+                    <cell$bgClass></cell>
+                #end
+                #if($form.bean.isRyutsu())
+		        #if(!$resultData.enableEdit)
+	                <cell$bgClass type='#setColType( $!wsData.getBaseT(), "ro" ,"ron")'>$!wsData.getBaseT()</cell>
+		        #else
+	                <cell$inputBgClass type='#setColType( $!wsData.getBaseT(), "ed" ,"edn")'>$!wsData.getBaseT()</cell>
+		        #end
+		        #else
+		            <cell$bgClass type="ron"></cell>
+		        #end
+                #set( $srange = $srange + "," + $idcnt)
+                #set( $idcnt = $idcnt + 1 )
+            </row>
+        #end
+    #else
+        #set( $InsName = $!resultData.getInsName() )
+        #set( $InsNo = $!resultData.getInsNo() )
+        #if ($!security.hasAuthEdit("DPM40"))
+            #set( $addButton = "<![CDATA[<input type='button' value='追加' onClick='inspos = $bid;openModalWindowW(${q}${link.setAction('dpm912C04F00')}?tmsSelectMode=$tmsselect.getGrayAndDisableButtonMode()&tytenApplyFuncName=dpm400C00TytenApply&sosCd=$!form.bean.sosCd3${q})' />]]>" )
+        #else
+            #set( $addButton = "" )
+        #end
+        ## 編集不可の場合
+        #if(!$resultData.enableEdit)
+            #set( $addButton = "" )
+        #end
+        <row id='$idcnt'>
+            ##メッセージ見出し用
+            <userdata name="insName">$!resultData.getInsName()</userdata>
+            ##送信データ
+            <userdata name="rowIdList">$!form.bean.prodCode,$!resultData.getInsNo(),,,,</userdata>
+            ##計算、追加用インデックス
+            <userdata name="tyChangeRate">$!data.getTyChangeRate()</userdata>
+            ##追加ボタンインデックス
+            <userdata name="bid">$bid</userdata>
+            <cell$bgClass style="border-width:0px 1px 0px 1px;">$!InsName</cell>
+            <cell$bgClass style="border-width:0px 1px 0px 1px;">$!InsNo</cell>
+            <cell$bgClass></cell>
+            <cell$bgClass></cell>
+            <cell$bgClass style="border-width:0px 1px 0px 1px;">$!addButton</cell>
+            <cell$bgClass type='ro'></cell>
+            <cell$bgClass type='ro'></cell>
+            <cell$bgClass type='ro'></cell>
+            #set( $srange = $srange + "," + $idcnt)
+            #set( $idcnt = $idcnt + 1 )
+        </row>
+    #end
+    ##施設合計
+    <row id='$idcnt'>
+    <userdata name="srange">$srange</userdata>
+    <userdata name="sumRowFlg">true</userdata>
+    <userdata name="rowType">subTotal</userdata>
+    ## 重複チェック用の特約店コードのリスト
+    #set($checkCdList = "")
+    #if($!resultData.tmsTytenCdList)
+        #foreach($checkCd in $resultData.tmsTytenCdList)
+            #if($velocityCount == 1)
+                #set($checkCdList = $checkCd)
+            #else
+                #set($checkCdList = $checkCdList + "," + $checkCd)
+            #end
+        #end
+    #end
+    <userdata name="checkCdList">$checkCdList</userdata>
+    <userdata name="subTotalId">$bid</userdata>
+    <userdata name="tyChangeRate">$!data.getTyChangeRate()</userdata>
+        <cell$bgClass style="border-width:0px 1px 1px 1px;"></cell>
+        <cell$bgClass style="border-width:0px 1px 1px 1px;"></cell>
+        <cell$bgClass style="font-weight:bold;text-align:left;border-width:1px 0px 1px 1px;">施設合計</cell>
+        <cell$bgClass style="text-align:left;border-width:1px 0px 1px 1px;"></cell>
+        <cell$bgClass style="border-width:1px 0px 1px 0px;"></cell>
+        <cell$bgClass style="font-weight:bold;"></cell>
+        <cell$bgClass style="font-weight:bold;"></cell>
+        <cell$bgClass style="font-weight:bold;" type="ron"></cell>
+        #set( $srange = "" )
+        #set( $bid = $bid + 1 )
+        #set( $hrange = $hrange + "," + $idcnt )
+        #set( $idcnt = $idcnt + 1 )
+     </row>
+#end
+
+##特約店追加用インデックス・合計行T/Y変換率
+<userdata name="srowids">$hrange</userdata>
+<userdata name="hrowids">,1</userdata>
+<userdata name="tyChangeRate">$!data.getTyChangeRate()</userdata>
+</rows>
+#end

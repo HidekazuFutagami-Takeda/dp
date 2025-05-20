@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_S_SY_M_SOS_GRP_M_SqlMap" >
+  <resultMap id="resultMap" class="jp.co.takeda.model.SosGrp" >
+    <result column="SOS_GROP" property="sosGrop" jdbcType="VARCHAR" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SOS_GROP
+          ,SOS_CD
+      FROM DPS_S_SY_M_SOS_GRP_M
+     WHERE SOS_CD = #sosCd:VARCHAR#
+  </select>
+</sqlMap>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Context path="/takeda_dp" reloadable="true">
+    <Resource name="jdbc/ORADPX01DS" auth="Container" type="javax.sql.DataSource"
+        driverClassName="oracle.jdbc.driver.OracleDriver"
+         url="jdbc:oracle:thin:@jptyospdbord1.cie4ijpuyjwp.ap-northeast-1.rds.amazonaws.com/ORCL"
+        username="SP_DEVRDS_WEB_SVCUSR" password="ojgdaksTRWEF$#752" />
+</Context>

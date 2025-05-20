@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_V_WS_PLAN_SqlMap" >
+  <resultMap id="resultMap" class="jp.co.takeda.model.ManageWsPlanForVac" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="CAL_YEAR" property="calYear" jdbcType="CHAR" />
+    <result column="CAL_TERM" property="calTerm" jdbcType="CHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="PLANNED_1_VALUE_Y" property="implPlanForVac.planned1ValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_1_VALUE_T" property="implPlanForVac.planned1ValueT" jdbcType="BIGINT" />
+    <result column="PLANNED_2_VALUE_Y" property="implPlanForVac.planned2ValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_2_VALUE_T" property="implPlanForVac.planned2ValueT" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_1_VALUE_Y" property="implPlanForVac.befPlanned1ValueY" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_1_VALUE_T" property="implPlanForVac.befPlanned1ValueT" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_2_VALUE_Y" property="implPlanForVac.befPlanned2ValueY" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_2_VALUE_T" property="implPlanForVac.befPlanned2ValueT" jdbcType="BIGINT" />
+    <result column="DEL_FLG" property="delFlg" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="IS_PG_ID" property="isPgId" jdbcType="VARCHAR" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="UP_PG_ID" property="upPgId" jdbcType="VARCHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result column="TMS_TYTEN_MEI_KJ" property="tmsTytenName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="column">
+     SEQ_KEY
+          ,CAL_YEAR
+          ,CAL_TERM
+          ,PROD_CODE
+          ,TMS_TYTEN_CD
+          ,PLANNED_1_VALUE_Y
+          ,PLANNED_1_VALUE_T
+          ,PLANNED_2_VALUE_Y
+          ,PLANNED_2_VALUE_T
+          ,BEF_PLANNED_1_VALUE_Y
+          ,BEF_PLANNED_1_VALUE_T
+          ,BEF_PLANNED_2_VALUE_Y
+          ,BEF_PLANNED_2_VALUE_T
+          ,DEL_FLG
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,IS_PG_ID
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+          ,UP_PG_ID
+          ,NULL AS PROD_NAME
+          ,NULL AS TMS_TYTEN_MEI_KJ
+  </sql>
+
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT <include refid="column"/>
+      FROM DPM_I_WS_PLAN
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND CAL_YEAR = #calYear:CHAR#
+       AND CAL_TERM = #calTerm:CHAR#
+  </select>
+
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.ManageWsPlanForVac" >
+    SELECT <include refid="column"/>
+      FROM DPM_I_WS_PLAN
+     WHERE CAL_YEAR = #calYear:CHAR#
+       AND CAL_TERM = #calTerm:CHAR#
+       AND PROD_CODE = #prodCode:CHAR#
+       AND TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+  </select>
+
+  <select id="selectListByProd" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT WP.SEQ_KEY
+          ,WP.CAL_YEAR
+          ,WP.CAL_TERM
+          ,#prodCode:CHAR# AS PROD_CODE
+          ,TMS.TMS_TYTEN_CD
+          ,WP.PLANNED_1_VALUE_Y
+          ,WP.PLANNED_1_VALUE_T
+          ,WP.PLANNED_2_VALUE_Y
+          ,WP.PLANNED_2_VALUE_T
+          ,WP.BEF_PLANNED_1_VALUE_Y
+          ,WP.BEF_PLANNED_1_VALUE_T
+          ,WP.BEF_PLANNED_2_VALUE_Y
+          ,WP.BEF_PLANNED_2_VALUE_T
+          ,WP.DEL_FLG
+          ,WP.IS_JGI_NO
+          ,WP.IS_JGI_NAME
+          ,WP.IS_DATE
+          ,WP.IS_PG_ID
+          ,WP.UP_JGI_NO
+          ,WP.UP_JGI_NAME
+          ,WP.UP_DATE
+          ,WP.UP_PG_ID
+          ,NULL AS PROD_NAME
+          ,TMS.TMS_TYTEN_MEI_KJ
+      FROM (<include refid="COMMON_SqlMap.add_tmsView"/>) TMS
+       <isNotNull property="allWsFlg">
+           LEFT JOIN DPM_I_WS_PLAN WP
+       </isNotNull>
+       <isNull property="allWsFlg">
+           INNER JOIN DPM_I_WS_PLAN WP
+       </isNull>
+        ON TMS.TMS_TYTEN_CD = WP.TMS_TYTEN_CD
+       AND WP.CAL_YEAR = #calYear:CHAR#
+       AND WP.CAL_TERM = #calTerm:CHAR#
+       AND WP.PROD_CODE = #prodCode:CHAR#
+       <isNull property="allWsFlg" prepend="AND">
+           WP.DEL_FLG = '0'
+       </isNull>
+     WHERE TMS.TMS_TYTEN_CD LIKE #tmsTytenCd:CHAR# ESCAPE '~'
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+
+  <insert id="insert" parameterClass="jp.co.takeda.model.ManageWsPlanForVac" >
+    INSERT INTO DPM_I_WS_PLAN
+           (SEQ_KEY
+          , CAL_YEAR
+          , CAL_TERM
+          , INS_TYPE
+          , PROD_CODE
+          , TMS_TYTEN_CD
+          , PLANNED_1_VALUE_Y
+          , PLANNED_1_VALUE_T
+          , PLANNED_2_VALUE_Y
+          , PLANNED_2_VALUE_T
+          , BEF_PLANNED_1_VALUE_Y
+          , BEF_PLANNED_1_VALUE_T
+          , BEF_PLANNED_2_VALUE_Y
+          , BEF_PLANNED_2_VALUE_T
+          , DEL_FLG
+          , IS_JGI_NO
+          , IS_JGI_NAME
+          , IS_DATE
+          , IS_PG_ID
+          , UP_JGI_NO
+          , UP_JGI_NAME
+          , UP_DATE
+          , UP_PG_ID)
+    VALUES (ORADPX01.SEQ_DPM_I_WS_PLAN.NEXTVAL
+          , #calYear:CHAR#
+          , #calTerm:CHAR#
+          , #insType:CHAR#
+          , #prodCode:CHAR#
+          , #tmsTytenCd:CHAR#
+          , #implPlanForVac.planned1ValueY:BIGINT#
+          , #implPlanForVac.planned1ValueT:BIGINT#
+          , #implPlanForVac.planned2ValueY:BIGINT#
+          , #implPlanForVac.planned2ValueT:BIGINT#
+          , #implPlanForVac.befPlanned1ValueY:BIGINT#
+          , #implPlanForVac.befPlanned1ValueT:BIGINT#
+          , #implPlanForVac.befPlanned2ValueY:BIGINT#
+          , #implPlanForVac.befPlanned2ValueT:BIGINT#
+          , #delFlg:CHAR#
+          , #isJgiNo:INTEGER#
+          , #isJgiName:VARCHAR#
+          , SYSTIMESTAMP
+          , #isPgId:VARCHAR#
+          , #upJgiNo:INTEGER#
+          , #upJgiName:VARCHAR#
+          , SYSTIMESTAMP
+          , #upPgId:VARCHAR#)
+  </insert>
+
+  <update id="update" parameterClass="jp.co.takeda.model.ManageWsPlanForVac" >
+    UPDATE DPM_I_WS_PLAN
+       SET DEL_FLG = #delFlg:CHAR#
+          ,PLANNED_1_VALUE_Y = #implPlanForVac.planned1ValueY:BIGINT#
+          ,PLANNED_1_VALUE_T = #implPlanForVac.planned1ValueT:BIGINT#
+          ,PLANNED_2_VALUE_Y = #implPlanForVac.planned2ValueY:BIGINT#
+          ,PLANNED_2_VALUE_T = #implPlanForVac.planned2ValueT:BIGINT#
+          ,BEF_PLANNED_1_VALUE_Y = #implPlanForVac.befPlanned1ValueY:BIGINT#
+          ,BEF_PLANNED_1_VALUE_T = #implPlanForVac.befPlanned1ValueT:BIGINT#
+          ,BEF_PLANNED_2_VALUE_Y = #implPlanForVac.befPlanned2ValueY:BIGINT#
+          ,BEF_PLANNED_2_VALUE_T = #implPlanForVac.befPlanned2ValueT:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+          ,UP_PG_ID = #upPgId:VARCHAR#
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+</sqlMap>

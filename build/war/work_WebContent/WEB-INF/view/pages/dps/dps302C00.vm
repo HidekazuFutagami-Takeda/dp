@@ -1,0 +1,195 @@
+#set($pageTitle = $text.get("dps302C00","title"))
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($bodyOnloadMethod  = "dps302C00F00(),dps302C00F00Grid()")
+#if ( $form.getRequestData("DPS302C00_DATA_R_SEARCH_RESULT"))
+    #set( $dto = $form.getRequestData("DPS302C00_DATA_R_SEARCH_RESULT"))
+    #set( $dataList = $form.getRequestData("DPS302C00_DATA_R_SEARCH_RESULT").resultList)
+#end
+## 試算タイプの判定用
+#set($calcType = "")
+#if($!dto.calcType)
+    #set($calcType = $!dto.calcType.getDbValue())
+#end
+
+## ワクチンのカテゴリコード取得
+#set($vaccineCode = $service.getShienVaccineCode())
+
+## ヘッダ(営業所)
+#set($headerOffice = $form.bean.headerOffice)
+## 追加ヘッダ(担当)
+#set($attachHeaderMr = $form.bean.attachHeaderMr)
+
+<script language="javascript">
+<!--
+## 初期表示
+function dps302C00F00() {
+    ## 組織選択の初期化
+    sosApply("$!security.defaultSosCd", "$!security.defaultJgiNo", "04");
+}
+## 検索処理
+function dps302C00F05() {
+    if (searchValidation()) {
+        var actionPath = '$link.setAction('dps302C00F05')';
+        document.dps302C00Form.action = actionPath;
+        document.dps302C00Form.submit();
+        dps302C00F05 = blockIt;
+        dps302C06F00 = blockIt;
+    }
+}
+## 検索時入力チェック
+function searchValidation() {
+    ## 入力フォーム
+    form = document.dps302C00Form;
+    ## [必須] 組織・従業員
+    value = form.sosCd3.value;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    errorMsg = '$text.get("DPC1025E",["組織・従業員", "エリア", "従業員"])';
+##    errorMsg = '$text.get("DPC1025E",["組織・従業員", "営業所", "従業員"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    addErrorInfo(!isEntered(value), errorMsg);
+    ## [必須] カテゴリ
+    value = document.getElementById("category").value;
+    errorMsg = '$text.get("DPC1003E",["カテゴリ"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    return validation();
+}
+
+## 組織・従業員選択後の処理
+function changeSos(sosCd, jgiNo, sosMaxSrchGetValue, etcSosFlg) {
+
+	let memorizer = new CategoryAndProdCodeMemorizerForDps();
+	sosApply(sosCd, jgiNo, sosMaxSrchGetValue, etcSosFlg);
+	changeCategory();
+
+    memorizer.undoCategoryCodeValue();
+}
+
+## カテゴリリストの変更処理
+## 組織・担当者を変更した時
+function changeCategory() {
+	var form = document.dps302C00Form;
+	## 選択した組織のカテゴリ
+    var sosCategoryAry = document.getElementById('sosCategory').value.split(',');
+
+    ## 組織コードの取得
+    var sosCd;
+    if(isEntered(form.jgiNo.value)){
+      sosCd = form.sosCd3.value;
+    } else if(isEntered(form.sosCd3.value)){
+      sosCd = form.sosCd3.value;
+    } else {
+      sosCd = null;
+    }
+
+    ## 計画対象カテゴリ領域より、立案レベルを条件にカテゴリを取得
+    var planLvCtgList = [];
+    ##if (isEntered(form.jgiNo.value)) {
+      planLvCtgList = [
+                      #foreach($val in $service.getDpsCategoryByPlanLevel($form.getField("DPS302C00_PLANLEVEL_MR")))
+                      , '$val'
+                      #end
+                      ];
+    ##} else if (isEntered(form.sosCd3.value)) {
+    ##  planLvCtgList = [
+    ##                  #foreach($val in $service.getDpsCategoryByPlanLevel($form.getField("DPS302C00_PLANLEVEL_OFFICE")))
+    ##                  , '$val'
+    ##                  #end
+    ##                  ];
+    ##} else {
+    ##  planLvCtgList = [
+    ##                  #foreach($val in $service.getDpsCategoryByPlanLevel($form.getField("DPS302C00_PLANLEVEL_ALL")))
+    ##                  , '$val'
+    ##                  #end
+    ##                  ];
+    ##}
+
+
+	## 選択した組織のカテゴリは、このタイミングでvelocityで取得できないので、カテゴリを一旦全て取得
+    var categoryList = [
+                      #foreach($codeAndValue in $service.getDpsCategoryPlanList(null, '1', false))
+                      , { text: '$codeAndValue.value', value: '$codeAndValue.code' }
+                      #end
+                     ];
+
+    ## カテゴリのselectbox
+	var prodCategory = document.getElementsByName('category')[0];
+	## 一旦selectboxのoptionを削除
+	while(category.lastChild)
+	{
+		category.removeChild(category.lastChild);
+	}
+
+	## optionを作成
+	var option;
+	document.createElement('option');
+
+	## 組織選択時
+	## 選択した組織のカテゴリのみ残す
+    for (var i = 1; i < categoryList.length; i++){
+    	for(var j = 0; j < sosCategoryAry.length; j++) {
+    		if (categoryList[i].value == sosCategoryAry[j] && planLvCtgList.includes(categoryList[i].value)) {
+				option = document.createElement('option');
+				option.setAttribute('value', categoryList[i].value);
+				option.innerHTML = categoryList[i].text;
+    			prodCategory.appendChild(option);
+    		}
+		}
+    }
+}
+
+//-->
+</script>
+#tabbar("sienSosiki", "dps302C00F00")
+<div id="tabBox">
+<form name="dps302C00Form" method="post">
+<table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+        <td class="gridIndex" style="width:150px;">組織・従業員*</td>
+        ##<td>#sosDialog("01", "02", "04")</td>
+        <td>#sosDialogExt2("changeSos","01", "02", "04", "DPS302")</td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width:150px;">カテゴリ*</td>
+        <td>
+        <table  cellspacing="0" cellpadding="0">
+            <tr>
+                 <td>#select ("category",  $!form.bean.prodCategoryList, $!form.bean.category)</td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+</table>
+<table style="margin-top:2px;margin-bottom:2px;">
+    <tr>
+        <td><input type="button" value="検索" style="width:80px;" onclick="dps302C00F05()" /></td>
+        <td>
+        #if($!dto.officeFlg)
+            #if ($!security.hasAuthRefer("DPS302C00"))
+            <input type="button" name="teamMrOutputButton" id="teamMrOutputButton" onClick="dps998C00F00()" value="担当者計画検討表出力" />
+            #end
+        #end
+        </td>
+        <td>
+        #if($!dto.officeFlg)
+            <input type="button" value="計画値の一括コピー" onclick="dps302C06F00()" #if($calcType.equals(""))disabled #end/>
+        #end
+        </td>
+    </tr>
+</table>
+##担当者パターン
+#if ($!dto.mrFlg)
+    #parse("WEB-INF/view/pages/dps/dps302C00s03.vm")
+##チームパターン
+#elseif ($!dto.teamFlg)
+    #parse("WEB-INF/view/pages/dps/dps302C00s02.vm")
+##営業所パターン
+#elseif ($!dto.officeFlg)
+    #parse("WEB-INF/view/pages/dps/dps302C00s01.vm")
+##上記以外のパターン
+#else
+    #parse("WEB-INF/view/pages/dps/dps302C00s04.vm")
+#end
+#token()
+</form>
+</div>

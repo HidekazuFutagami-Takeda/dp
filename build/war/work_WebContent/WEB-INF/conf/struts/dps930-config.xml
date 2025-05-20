@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+ "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+
+    <form-beans>
+        <form-bean name="Dps930C00Form" type="jp.co.takeda.web.in.dps.Dps930C00Form" />
+    </form-beans>
+
+<action-mappings type="jp.co.takeda.web.cmn.action.DpActionMapping">
+
+<!-- ***********************************************************************
+
+    (医)計画立案準備ダウンロード画面
+
+ ***********************************************************************  -->
+<action path="/dps930C00F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps930C00Action" name="Dps930C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps930C00F00" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps930C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps930C00.vm" />
+</action>
+
+<action path="/dps930C00F10Output"
+ type="jp.co.takeda.web.ctrl.dps.Dps930C00Action" name="Dps930C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps930C00F10Output" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps930C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps930C00.vm" />
+</action>
+<action path="/dps930C00F10Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps930C00Action" name="Dps930C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps930C00F10Execute" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps930C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps930C00.vm" />
+</action>
+<action path="/dps930C00F10ErrorOutput"
+ type="jp.co.takeda.web.ctrl.dps.Dps930C00Action" name="Dps930C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps930C00F10ErrorOutput" />
+    <set-property property="generateToken" value="false" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps930C00.vm" />
+</action>
+
+</action-mappings>
+
+<!-- ファイルアップロードに関する定義 -->
+    <!-- ファイルサイズの上限を１メガに設定 -->
+    <controller maxFileSize="1M"/>
+</struts-config>

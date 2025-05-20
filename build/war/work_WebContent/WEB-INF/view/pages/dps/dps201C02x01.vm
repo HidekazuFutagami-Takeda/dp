@@ -1,0 +1,50 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS201C02_DATA_R"))
+    #set( $dto = $form.getRequestData("DPS201C02_DATA_R"))
+    #set( $dataList = $dto.prodList)
+#end
+#if($dataList)
+    $!consts.getDhtmlxGridXmlHeader()
+    <rows total_count='$dataList.size()'>
+    #foreach($resultObj in $dataList)
+## del start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+##        #if($resultObj.getCategory() && $resultObj.getCategory() == "1")
+##            #set($categoryName = "JPBU(STARS)")
+##        #elseif($resultObj.getCategory() && $resultObj.getCategory() == "3")
+##            #set($categoryName = "ONC品")
+##        #else
+##            #set($categoryName = "仕入品(一般・麻薬)")
+##        #end
+## del end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+    <row id='$velocityCount'>
+        <userdata name="prodCode">$!resultObj.getProdCode()</userdata>
+        <userdata name="category">$!resultObj.getCategory()</userdata>
+##        #set($prodChecked = "")
+##        #if($form.bean.prodCode)
+##            #foreach($prod in $form.bean.prodCode)
+##                #if($prod.equals($!resultObj.getProdCode()))
+##                    #set($prodChecked = 1)
+##                #end
+##            #end
+##        #end
+##        <cell>$prodChecked</cell>
+        #set($estimationFlgChecked = "")
+        #if($!resultObj.getStrEstimationFlg().equals("1"))
+            #set($estimationFlgChecked = 1)
+        #end
+        <cell>$estimationFlgChecked</cell>
+        #set($exceptFlgChecked = "")
+        #if($!resultObj.getStrExceptFlg().equals("1"))
+            #set($exceptFlgChecked = 1)
+        #end
+        <cell>$exceptFlgChecked</cell>
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+##      <cell>$categoryName</cell>
+##        <cell>$!service.getProdCategoryName($resultObj.getCategory())</cell>
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+        <cell>$!resultObj.getCategoryName()</cell>
+        <cell>$!resultObj.getProdName()</cell>
+    </row>
+    #end
+    </rows>
+#end

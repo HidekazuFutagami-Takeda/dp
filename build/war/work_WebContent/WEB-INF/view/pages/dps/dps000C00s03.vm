@@ -1,0 +1,60 @@
+#if ($!security.hasVaccine())
+#set ($dps000ApplyName = "dps000C00F51")
+#set ($actionPath = $link.setAction("dps000C00F51Output"))
+#else
+#set ($dps000ApplyName = "dps000C00F01")
+#set ($actionPath = $link.setAction("dps000C00F01Output"))
+#end
+#set( $dataList = $service.getAnnounce())
+<script language="javascript">
+<!--
+## 出力ボタンクリック時
+function ${dps000ApplyName}Output(outputFileId) {
+	var flag = confirm('$text.get("DPS000C00.002","dialogue")');
+    if (flag) {
+        document.${dps000ApplyName}AnnounceForm.action = '$actionPath';
+        document.getElementById("announceOutputFileId").value = outputFileId;
+        document.${dps000ApplyName}AnnounceForm.submit();
+    }
+    return false;
+}
+## 削除ボタンクリック時
+function dps000C00F02Execute(seqKey, upDate) {
+    var flag = confirm('$text.get("DPS000C00.001","dialogue")');
+    if (flag) {
+        document.${dps000ApplyName}AnnounceForm.action = '$link.setAction('dps000C00F02Execute')';
+        document.getElementById("announceSeqKey").value = seqKey;
+        document.getElementById("announceUpDate").value = upDate;
+        document.${dps000ApplyName}AnnounceForm.submit();
+        dps000C00F02Execute = blockIt;
+    }
+    return false;
+}
+//-->
+</script>
+<div id="infoErea">
+    <div class="titleBg">
+    <p>お知らせ</p>
+    </div>
+<div id="infoContents">
+<form name="${dps000ApplyName}AnnounceForm" id="${dps000ApplyName}AnnounceForm" method="post">
+<input type="hidden" name="announceSeqKey" id="announceSeqKey" value="" />
+<input type="hidden" name="announceUpDate" id="announceUpDate" value=""  />
+<input type="hidden" name="announceOutputFileId" id="announceOutputFileId" value=""  />
+#token()
+</form>
+#if ($dataList)
+    #foreach($announceDto in $dataList)
+    #set ($announce = $announceDto.getAnnounce())
+    <div id="news">
+    <span class="attentionText">◆$format.toString($announce.getIsDate(), "yyyy/MM/dd")</span><br>
+    $announce.getMessage()<br>
+    #if ($announceDto.getOutputFile())<input type="button" value="出力する" onclick="${dps000ApplyName}Output('$announce.outputFileId')" />#end
+    <input type="button" value="削除する" onclick="dps000C00F02Execute('$announce.seqKey','$announce.upDate.time')" /><br>
+    </div>
+    #end
+#else
+<div id="news" style="border-bottom: 0px"><center><br>お知らせはありません。<br></center></div>
+#end
+</div>
+</div>

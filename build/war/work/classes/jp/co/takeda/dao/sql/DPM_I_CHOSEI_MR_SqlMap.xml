@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_I_CHOSEI_MR_SqlMap" >
+  <resultMap id="resultMap" class="jp.co.takeda.model.ChoseiMr" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="INS_TYPE" property="insType" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="DECIMAL" />
+    <result column="CHOSEI_VALUE_Y" property="choseiValueY" jdbcType="BIGINT" />
+    <result column="CHOSEI_VALUE_T" property="choseiValueT" jdbcType="BIGINT" />
+    <result column="DEL_FLG" property="delFlg" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="IS_PG_ID" property="isPgId" jdbcType="VARCHAR" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="UP_PG_ID" property="upPgId" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.ChoseiMr" >
+    SELECT SEQ_KEY
+          ,INS_TYPE
+          ,PROD_CODE
+          ,JGI_NO
+          ,CHOSEI_VALUE_Y
+          ,CHOSEI_VALUE_T
+          ,DEL_FLG
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,IS_PG_ID
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+          ,UP_PG_ID
+      FROM DPM_I_CHOSEI_MR
+     WHERE INS_TYPE = #insType:VARCHAR#
+       AND PROD_CODE = #prodCode:CHAR#
+       AND JGI_NO = #jgiNo:INTEGER#
+  </select>
+
+</sqlMap>

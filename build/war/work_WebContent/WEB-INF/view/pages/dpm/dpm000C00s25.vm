@@ -1,0 +1,157 @@
+## ----------------------------------------
+## 組織一覧
+## ----------------------------------------
+#set($bodyOnloadMethod = "dpm000C00F00s25()")
+#set($GridObjName = "dpm000C00s25Grid")
+#set($CoverId = "dpm000C00CoverId")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+<script language="javascript">
+<!--
+##組織一覧切替時
+function dpm000C00F05(sosCd, bumonRank) {
+    document.dpm000C00Form.action = "$link.setAction('dpm000C00F05')";
+    document.getElementById("targetSosCd").value = sosCd;
+    document.getElementById("targetBumonRank").value = bumonRank;
+    document.dpm000C00Form.submit();
+    return false;
+}
+##組織別計画編集への遷移
+function executeLinkSos(sosCd, bumonRank) {
+    document.dpm000C00Form.action = "$link.setAction('dpm100C00F01')";
+    document.getElementById("topSosCd").value = sosCd;
+    document.getElementById("topBumonRank").value = bumonRank;
+    document.dpm000C00Form.submit();
+    return false;
+}
+##品目別計画編集への遷移
+function executeLinkPrd(sosCd, bumonRank, prodCategory) {
+    if (prodCategory != 'undefined' && prodCategory != null && prodCategory != '') {
+        document.getElementById("prodCategory").value = prodCategory;
+        document.getElementById("searchFlg").value = "true";
+    } else {
+        document.getElementById("searchFlg").value = "false";
+    }
+    document.dpm000C00Form.action = "$link.setAction('dpm101C00F01')";
+    document.getElementById("topSosCd").value = sosCd;
+    document.getElementById("topBumonRank").value = bumonRank;
+    document.dpm000C00Form.submit();
+    return false;
+}
+##【月別】組織別計画編集への遷移
+function executeLinkSosMonthly(sosCd, bumonRank) {
+    document.dpm000C00Form.action = "$link.setAction('dpm500C00F01')";
+    document.getElementById("topSosCd").value = sosCd;
+    document.getElementById("topBumonRank").value = bumonRank;
+    document.dpm000C00Form.submit();
+    return false;
+}
+##【月別】品目別計画編集への遷移
+function executeLinkPrdMonthly(sosCd, bumonRank, prodCategory) {
+    if (prodCategory != 'undefined' && prodCategory != null && prodCategory != '') {
+        document.getElementById("prodCategory").value = prodCategory;
+        document.getElementById("searchFlg").value = "true";
+    } else {
+        document.getElementById("searchFlg").value = "false";
+    }
+    document.dpm000C00Form.action = "$link.setAction('dpm501C00F01')";
+    document.getElementById("topSosCd").value = sosCd;
+    document.getElementById("topBumonRank").value = bumonRank;
+    document.dpm000C00Form.submit();
+    return false;
+}
+
+
+##施設別計画編集への遷移
+function executeLinkInsJgi(jgiNo) {
+    document.dpm000C00Form.action = "$link.setAction('dpm200C00F01')";
+    document.getElementById("topJgiNo").value = jgiNo;
+    document.dpm000C00Form.submit();
+    return false;
+}
+##品目別計画編集への遷移
+function executeLinkPrdJgi(jgiNo, prodCategory) {
+    document.dpm000C00Form.action = "$link.setAction('dpm101C00F01')";
+    if (prodCategory != 'undefined' && prodCategory != null && prodCategory != '') {
+        document.getElementById("prodCategory").value = prodCategory;
+        document.getElementById("searchFlg").value = "true";
+    } else {
+        document.getElementById("searchFlg").value = "false";
+    }
+    document.getElementById("topJgiNo").value = jgiNo;
+    document.dpm000C00Form.submit();
+    return false;
+}
+##【月別】施設別計画編集への遷移
+function executeLinkInsJgiMonthly(jgiNo) {
+    document.dpm000C00Form.action = "$link.setAction('dpm600C00F01')";
+    document.getElementById("topJgiNo").value = jgiNo;
+    document.dpm000C00Form.submit();
+    return false;
+}
+##【月別】品目別計画編集への遷移
+function executeLinkPrdJgiMonthly(jgiNo, prodCategory) {
+    document.dpm000C00Form.action = "$link.setAction('dpm501C00F01')";
+    if (prodCategory != 'undefined' && prodCategory != null && prodCategory != '') {
+        document.getElementById("prodCategory").value = prodCategory;
+        document.getElementById("searchFlg").value = "true";
+    } else {
+        document.getElementById("searchFlg").value = "false";
+    }
+    document.getElementById("topJgiNo").value = jgiNo;
+    document.dpm000C00Form.submit();
+    return false;
+}
+
+var ${GridObjName};
+## 初期表示＋読込処理
+function dpm000C00F00s25() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("組織,期別計画,#cspan,月別計画,#cspan,配下組織の調整計画,#cspan,#cspan,調整計画,#cspan,#cspan");
+    ${GridObjName}.attachHeader("#rspan,自社品,#rspan,仕入品<br>(一般・麻薬),#rspan,ワクチン品,自社品,仕入品<br>(一般・麻薬),ワクチン品");
+    ${GridObjName}.setInitWidths("255,*,*,*,*,*,*,*,*,*,*");
+    ${GridObjName}.setColAlign("left,center,center,center,center,center,center,center,center,center,center");
+    ${GridObjName}.setColTypes("ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dpm000C00s25', $!gridHeight));
+    ${GridObjName}.enableAutoWidth(true);
+    $("#${GridObjName}").width( document.getElementById('sosArea').clientWidth - 12 );
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.objBox.style.overflowY="scroll";
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.load("$link.setAction('dpm000C00F25?sFlg=true')", "");
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+}
+//-->
+</script>
+#set($DPM000C00_DATE_DATA_R = $form.getRequestData("DPM000C00_DATE_DATA_R"))
+<form name="dpm000C00Form" method="post">
+<input type="hidden" name="targetSosCd" id="targetSosCd" value="" />
+<input type="hidden" name="targetBumonRank" id="targetBumonRank" value="" />
+<input type="hidden" name="prodCategory" id="prodCategory" value="" />
+<input type="hidden" name="topSosCd" id="topSosCd" value="" />
+<input type="hidden" name="topBumonRank" id="topBumonRank" value="" />
+<input type="hidden" name="topJgiNo" id="topJgiNo" value="" />
+<input type="hidden" name="searchFlg" id="searchFlg" value="" />
+<div id="sosArea">
+<div class="titleBg" style="margin-right:2px;">
+    <div style="float:left"><p>組織一覧</p></div>
+    <div style="float:right"><p>
+    #if($DPM000C00_DATE_DATA_R)
+        データ作成日時：$format.toString($DPM000C00_DATE_DATA_R, "yyyy年MM月dd日 HH:mm:ss")
+    #else
+        データ作成日時：-
+    #end
+    </p></div>
+</div>
+#loadingGridDiv("${GridObjName}", "${CoverId}")
+</div>
+</form>

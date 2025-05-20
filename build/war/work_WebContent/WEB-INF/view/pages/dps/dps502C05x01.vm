@@ -1,0 +1,43 @@
+#set($layout = "nothingLayout.vm" )
+#if($form.getRequestData("DPS502C05_DATA_R_SEARCH_RESULT"))
+    #set($resultDataList = $form.getRequestData("DPS502C05_DATA_R_SEARCH_RESULT").detailList)
+#end
+#if($resultDataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+    #foreach($resultData in $resultDataList)
+    <row id='$velocityCount'>
+        ## 品目コード
+        #set($prodCode = "")
+        #if($resultData.plannedProd.prodCode)
+            #set($prodCode = $resultData.plannedProd.prodCode)
+        #end
+        ## 品目名
+        #set($prodName = "")
+        #if($resultData.plannedProd.prodName)
+            #set($prodName = $resultData.plannedProd.prodName)
+        #end
+        ## 特約店別計画
+        #set($plannedValue = "")
+        #if($resultData.wsPlanForVac.plannedValue)
+            #set ($plannedValue = $format.parseMoneyToThousandUnit($resultData.wsPlanForVac.plannedValue))
+        #end
+        ## 立案済の場合はラベル表示
+        #if($resultData.wsPlanForVac.seqKey)
+            #set($class   = "noInput")
+            #set($type    = "ron")
+        #else
+            #set($class="inputB")
+            #set($type="ed")
+            ## 念のため計画値に空をセット
+            #set ($plannedValue = "")
+        #end
+        <cell>$prodName</cell>
+        <cell class="$class" style="#setMinusStyle($!resultData.wsPlanForVac.plannedValue)" type="$type" >$plannedValue</cell>
+        ## 更新行判別用ユーザデータ
+        ## シーケンスキー・品目コード・登録ボタン押下後に入力した計画値を追加
+        <userdata name="updateRowId">$!resultData.wsPlanForVac.seqKey,$prodCode</userdata>
+    </row>
+    #end
+</rows>
+#end

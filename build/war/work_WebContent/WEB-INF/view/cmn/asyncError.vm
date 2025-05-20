@@ -1,0 +1,3 @@
+#set( $layout = "nothingLayout.vm" )
+$!consts.getDhtmlxGridXmlHeader()
+<rows></rows>

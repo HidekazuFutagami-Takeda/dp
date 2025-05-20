@@ -1,0 +1,57 @@
+## (医)施設別計画編集画面 明細行
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPM200C00_DATA_R_SEARCH_RESULT"))
+    #set( $dataList = $form.getRequestData("DPM200C00_DATA_R_SEARCH_RESULT").detailList)
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#set( $rowId = 1 )
+#foreach($resultObj in $dataList)
+    ## Y価ベース
+    #set( $yBaseValue = "")
+    #set( $yBaseValueType = "ed")
+        #if($resultObj.yBaseValue)
+            #set( $yBaseValue = $resultObj.yBaseValue)
+            #set( $yBaseValueType = "edn")
+        #end
+    ## 最終更新情報(ツールチップ)
+    #set( $lastUpName = "")
+    #set( $lastUpDate = "")
+        #if($resultObj.upDate)
+            #set( $lastUpName = "$!resultObj.upJgiName&#13;")
+            #set( $lastUpDate = "$!format.toString($!resultObj.upDate, 'yyyy/MM/dd HH:mm:ss')")
+        #end
+    ## 削除予定施設の背景色
+    #set( $bgColor = "" )
+        #if($resultObj.DeletePlan)
+            #set( $bgColor = "class='delIns'" )
+        #end
+    ##
+    #set( $enableEdit = false )
+        #if($resultObj.EnableEdit && $!security.hasAuthEdit("DPM20"))
+            #set( $enableEdit = true )
+        #end
+    ## 明細行
+    <row id='$rowId'>
+        <cell $bgColor>$!resultObj.insName</cell>
+        <cell $bgColor>$!resultObj.insNo</cell>
+        <cell $bgColor><![CDATA[<a href="#" onclick="dpm201C00F05('$!resultObj.insNo')">品目別</a>]]></cell>
+        #if($enableEdit)
+            <cell class="inputB" type="$yBaseValueType">$yBaseValue</cell>
+        #else
+            <cell $bgColor type="ron">$yBaseValue</cell>
+        #end
+        ## 計算用ユーザデータ
+        <userdata name="toolTip">$lastUpName$lastUpDate</userdata>
+        <userdata name="rowType">input</userdata>
+        <userdata name="subTotalId">1</userdata>
+        <userdata name="tyChangeRate">$!resultObj.tyChangeRate</userdata>
+        ## 更新用ユーザデータ
+        ## 施設コード・対象区分・品目コード・シーケンスキー・最終更新日時・データ取得時の計画値 ＋ 登録ボタン押下後の入力計画値(追加)
+        <userdata name="updateRowId">$!resultObj.insNo,$!form.bean.insType,$!form.bean.prodCode,$!resultObj.seqKey,$!resultObj.upDate.Time,$yBaseValue</userdata>
+    </row>
+    #set( $rowId = $rowId + 1 )
+#end
+</rows>
+#end

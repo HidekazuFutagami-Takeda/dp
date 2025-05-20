@@ -1,0 +1,417 @@
+#set($layout = "nothingLayout.vm" )
+#if($form.getRequestData("DPS302C02_DATA_R"))
+    #set($resultOfficeData = $form.getRequestData("DPS302C02_DATA_R").getOfficePlanDto())
+    #set($dSize = 0)
+    #if($resultOfficeData)
+        $!consts.getDhtmlxGridXmlHeader()
+        #set($s1 = "border-width:1px 1px 4px 1px;border-bottom-style:double;")
+        #set($decimalFormat = $form.bean.getDefaultRateFormat())
+        #set($totalCount = 1)
+        #set($deliveryResultSummaryDtoList = $resultOfficeData.getDeliveryResultSummaryDtoList())
+        #if($deliveryResultSummaryDtoList)
+            #set($dSize = $deliveryResultSummaryDtoList.size())
+        #end
+    #end
+    <rows>
+        ## 営業所計(営業所のみ)
+        #if (!$form.bean.isTeamRank)
+        <row id="$totalCount">
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            <cell style="$s1" class="gridColor">エリア計画</cell>
+            <cell style="$s1">エリア計</cell>
+##            <cell style="$s1" class="gridColor">営業所計画</cell>
+##            <cell style="$s1">営業所計</cell>
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            ## 実績
+            #set( $result = "")
+            #set( $result = $resultOfficeData.resultValueDto)
+            <cell style="$s1 #setMinusStyle($!{result.preFarAdvancePeriod})">$!{result.preFarAdvancePeriod}</cell>
+            <cell style="$s1 #setMinusStyle($!{result.farAdvancePeriod})">$!{result.farAdvancePeriod}</cell>
+            <cell style="$s1 #setMinusStyle($!{result.advancePeriod})">$!{result.advancePeriod}</cell>
+            <cell style="$s1 #setMinusStyle($!{result.currentPlanValue})">$!{result.currentPlanValue}</cell>
+            <cell style="$s1 #setMinusStyle($!{result.currentPeriod})">$!{result.currentPeriod}</cell>
+            <cell style="$s1 #setMinusStyle($!{result.currentRate})">$!format.doubleToString($!{result.currentRate}, $decimalFormat)</cell>
+            ## 計画
+            #set( $planned = "")
+            #set( $planned = $resultOfficeData.plannedValueDto)
+            <userdata name="hiddenAdvancePeriodUnitYen">$!{planned.hiddenAdvancePeriodUnitYen}</userdata>
+            <cell style="$s1 #setMinusStyle($!{planned.specialInsPlanValueY})">$!{planned.specialInsPlanValueY}</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.planForUp1})">$!{planned.planForUp1}</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.theoreticalValue1})">$!{planned.theoreticalValue1}</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.lastSameRatio1})">$!format.doubleToString($!{planned.lastSameRatio1}, $decimalFormat)</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.planForUp2})">$!{planned.planForUp2}</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.theoreticalValue2})">$!{planned.theoreticalValue2}</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.lastSameRatio2})">$!format.doubleToString($!{planned.lastSameRatio2}, $decimalFormat)</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.officeValueY})" sub="s1" subId="0">$!{planned.officeValueY}</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.plannedValueY})" sub="s1" subId="0">$!{planned.plannedValueY}</cell>
+            <cell style="$s1"></cell>
+            #if ($deliveryResultSummaryDtoList)
+            #foreach($deliveryResultSummaryDto in $deliveryResultSummaryDtoList)
+            #set($officeSummary = $deliveryResultSummaryDto.getOfficeSummary())
+            #if($officeSummary)
+            <cell style="$s1 #setMinusStyle($!{officeSummary.preFarAdvancePeriod})">$!format.parseMoneyToThousandUnit($!officeSummary.preFarAdvancePeriod)</cell>
+            <cell style="$s1 #setMinusStyle($!{officeSummary.farAdvancePeriod})">$!format.parseMoneyToThousandUnit($!officeSummary.farAdvancePeriod)</cell>
+            <cell style="$s1 #setMinusStyle($!{officeSummary.advancePeriod})">$!format.parseMoneyToThousandUnit($!officeSummary.advancePeriod)</cell>
+            <cell style="$s1 #setMinusStyle($!{officeSummary.currentPlanValue})">$!format.parseMoneyToThousandUnit($!officeSummary.currentPlanValue)</cell>
+            <cell style="$s1 #setMinusStyle($!{officeSummary.currentPeriod})">$!format.parseMoneyToThousandUnit($!officeSummary.currentPeriod)</cell>
+            <cell style="$s1 #setMinusStyle($!{officeSummary.currentRate})">$!format.doubleToString($!officeSummary.currentRate, $decimalFormat)</cell>
+            #else
+            <cell style="$s1"></cell>
+            <cell style="$s1"></cell>
+            <cell style="$s1"></cell>
+            <cell style="$s1"></cell>
+            <cell style="$s1"></cell>
+            <cell style="$s1"></cell>
+            #end
+            #end
+            #end
+        </row>
+        #set( $totalCount = $totalCount + 1)
+        #end
+        ##
+        ## チーム別計画
+        ##
+        ## 調整金額（営業所のみ）
+        #if (!$form.bean.isTeamRank)
+        <row id="$totalCount">
+            <cell class="gridColor">チーム別計画</cell>
+            <cell class="nonUse" style="border-right:0px">調整金額</cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell sub="target" subId="0"></cell>
+            <cell sub="target" subId="0"></cell>
+            <cell class="nonUse"></cell>
+            #if ($deliveryResultSummaryDtoList)
+            #foreach($deliveryResultSummaryDto in $deliveryResultSummaryDtoList)
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            <cell class="nonUse"></cell>
+            #end
+            #end
+        </row>
+        #set( $totalCount = $totalCount + 1)
+        #end
+        ## チーム別計画
+        #set( $teamCount = 1)
+        #foreach($resultTeamData in $resultOfficeData.teamPlanDtoList)
+            ## 営業所案、決定が設定されていない場合は、edに変更
+            #if(($form.bean.insType != "1" && $form.bean.insType != "2") || $form.bean.isTeamRank)
+                #set( $inputTypeOfficeValueY = "ron")
+                #set( $inputTypePlannedValueY = "ron")
+                #set( $inputClass = "")
+            #else
+                #set( $inputClass = "inputB")
+                #if(!${resultTeamData.plannedValueDto.officeValueY})
+                    #set( $inputTypeOfficeValueY = "ed")
+                #else
+                    #set( $inputTypeOfficeValueY = "edn")
+                #end
+                #if(!${resultTeamData.plannedValueDto.plannedValueY})
+                    #set( $inputTypePlannedValueY = "ed")
+                #else
+                    #set( $inputTypePlannedValueY = "edn")
+                #end
+            #end
+            <row id="$totalCount">
+                <userdata name="rowType">input</userdata>
+                <userdata name="subTotalId">1</userdata>
+                <cell style="border-right:0px;">$!{resultTeamData.sosName}</cell>
+                <cell style="border-left:0px;"></cell>
+                ## 実績
+                #set( $result = "")
+                #set( $result = $resultTeamData.resultValueDto)
+                <cell style="#setMinusStyle($!{result.preFarAdvancePeriod})">$!{result.preFarAdvancePeriod}</cell>
+                <cell style="#setMinusStyle($!{result.farAdvancePeriod})">$!{result.farAdvancePeriod}</cell>
+                <cell style="#setMinusStyle($!{result.advancePeriod})">$!{result.advancePeriod}</cell>
+                <cell style="#setMinusStyle($!{result.currentPlanValue})">$!{result.currentPlanValue}</cell>
+                <cell style="#setMinusStyle($!{result.currentPeriod})">$!{result.currentPeriod}</cell>
+                <cell style="#setMinusStyle($!{result.currentRate})">$!format.doubleToString($!{result.currentRate}, $decimalFormat)</cell>
+                ## 計画
+                #set( $planned = "")
+                #set( $planned = $resultTeamData.plannedValueDto)
+                <userdata name="hiddenAdvancePeriodUnitYen">$!{planned.hiddenAdvancePeriodUnitYen}</userdata>
+                <cell style="#setMinusStyle($!{planned.specialInsPlanValueY})">$!{planned.specialInsPlanValueY}</cell>
+                <cell style="#setMinusStyle($!{planned.planForUp1})">$!{planned.planForUp1}</cell>
+                <cell style="#setMinusStyle($!{planned.theoreticalValue1})">$!{planned.theoreticalValue1}</cell>
+                <cell style="#setMinusStyle($!{planned.lastSameRatio1})">$!format.doubleToString($!{planned.lastSameRatio1}, $decimalFormat)</cell>
+                <cell style="#setMinusStyle($!{planned.planForUp2})">$!{planned.planForUp2}</cell>
+                <cell style="#setMinusStyle($!{planned.theoreticalValue2})">$!{planned.theoreticalValue2}</cell>
+                <cell style="#setMinusStyle($!{planned.lastSameRatio2})">$!format.doubleToString($!{planned.lastSameRatio2}, $decimalFormat)</cell>
+                <cell style="#setMinusStyle($!{planned.officeValueY})" type="$inputTypeOfficeValueY" class="$inputClass" sub="s1" subId="$teamCount">$!{planned.officeValueY}</cell>
+                <cell style="#setMinusStyle($!{planned.plannedValueY})" type="$inputTypePlannedValueY" class="$inputClass" sub="s1" subId="$teamCount">$!{planned.plannedValueY}</cell>
+                <cell style=""></cell>
+                ##参照実績
+                #set ($teamDeliExistFlg = false)
+                #if ($deliveryResultSummaryDtoList)
+                    #set($sosCd = $resultTeamData.getSosCd())
+                    #foreach($deliveryResultSummaryDto in $deliveryResultSummaryDtoList)
+                        #set($teamSummaryMap = $deliveryResultSummaryDto.getTeamSummaryMap())
+                        #if($sosCd && $teamSummaryMap && $teamSummaryMap.get($!sosCd))
+                            #set($teamSummary = $teamSummaryMap.get($!sosCd))
+                            #if($teamSummary)
+                            #set ($teamDeliExistFlg = true)
+                            <cell style="#setMinusStyle($!{teamSummary.preFarAdvancePeriod})">$!format.parseMoneyToThousandUnit($!{teamSummary.preFarAdvancePeriod})</cell>
+                            <cell style="#setMinusStyle($!{teamSummary.farAdvancePeriod})">$!format.parseMoneyToThousandUnit($!{teamSummary.farAdvancePeriod})</cell>
+                            <cell style="#setMinusStyle($!{teamSummary.advancePeriod})">$!format.parseMoneyToThousandUnit($!{teamSummary.advancePeriod})</cell>
+                            <cell style="#setMinusStyle($!{teamSummary.currentPlanValue})">$!format.parseMoneyToThousandUnit($!{teamSummary.currentPlanValue})</cell>
+                            <cell style="#setMinusStyle($!{teamSummary.currentPeriod})">$!format.parseMoneyToThousandUnit($!{teamSummary.currentPeriod})</cell>
+                            <cell style="#setMinusStyle($!{teamSummary.currentRate})">$!format.doubleToString($!teamSummary.currentRate, $decimalFormat)</cell>
+                            #end
+                        #end
+                        #if (!$teamDeliExistFlg)
+                            <cell></cell>
+                            <cell></cell>
+                            <cell></cell>
+                            <cell></cell>
+                            <cell></cell>
+                            <cell></cell>
+                        #end
+                    #end
+                #end
+                <userdata name="updateRowId">$!resultTeamData.seqKey,$!resultTeamData.sosCd,$!resultTeamData.upDate.Time</userdata>
+                #if($form.bean.insType == "1")
+                    <userdata name="hiddenUh">0</userdata>
+                    <userdata name="hiddenP">$!{planned.hiddenPlannedValuePY}</userdata>
+                #elseif($form.bean.insType == "2")
+                    <userdata name="hiddenUh">$!{planned.hiddenPlannedValueUhY}</userdata>
+                    <userdata name="hiddenP">0</userdata>
+                #else
+                    <userdata name="hiddenUh">$!{planned.hiddenPlannedValueUhY}</userdata>
+                    <userdata name="hiddenP">$!{planned.hiddenPlannedValuePY}</userdata>
+                #end
+
+            </row>
+            ## 送信情報
+            #set( $totalCount = $totalCount + 1)
+            #set( $teamCount = $teamCount + 1)
+        #end
+        ## チーム別計画合計
+        #if (!$form.bean.isTeamRank)
+        #set( $teamTotalData = $!{resultOfficeData.totalTeamPlanDto})
+        <row id="$totalCount">
+            <userdata name="rowType">subTotal</userdata>
+            <userdata name="subTotalId">1</userdata>
+            <cell style="border-width:1px 0px 4px 1px;border-bottom-style:double;" class="sumOfficeTokuG">計</cell>
+            <cell style="border-width:1px 1px 4px 0px;border-bottom-style:double;" class="sumOfficeTokuG"></cell>
+            ## 実績
+            #set( $result = "")
+            #set( $result = $teamTotalData.resultValueDto)
+            <cell style="$s1 #setMinusStyle($!{result.preFarAdvancePeriod})" class="sumOfficeTokuG">$!{result.preFarAdvancePeriod}</cell>
+            <cell style="$s1 #setMinusStyle($!{result.farAdvancePeriod})" class="sumOfficeTokuG">$!{result.farAdvancePeriod}</cell>
+            <cell style="$s1 #setMinusStyle($!{result.advancePeriod})" class="sumOfficeTokuG">$!{result.advancePeriod}</cell>
+            <cell style="$s1 #setMinusStyle($!{result.currentPlanValue})" class="sumOfficeTokuG">$!{result.currentPlanValue}</cell>
+            <cell style="$s1 #setMinusStyle($!{result.currentPeriod})" class="sumOfficeTokuG">$!{result.currentPeriod}</cell>
+            <cell style="$s1 #setMinusStyle($!{result.currentRate})" class="sumOfficeTokuG">$!format.doubleToString($!{result.currentRate}, $decimalFormat)</cell>
+            ## 計画
+            #set( $planned = "")
+            #set( $planned = $teamTotalData.plannedValueDto)
+            <userdata name="hiddenAdvancePeriodUnitYen">$!{planned.hiddenAdvancePeriodUnitYen}</userdata>
+            <cell style="$s1 #setMinusStyle($!{planned.specialInsPlanValueY})" class="sumOfficeTokuG">$!{planned.specialInsPlanValueY}</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.planForUp1})" class="sumOfficeTokuG">$!{planned.planForUp1}</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.theoreticalValue1})" class="sumOfficeTokuG">$!{planned.theoreticalValue1}</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.lastSameRatio1})" class="sumOfficeTokuG">$!format.doubleToString($!{planned.lastSameRatio1}, $decimalFormat)</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.planForUp2})" class="sumOfficeTokuG">$!{planned.planForUp2}</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.theoreticalValue2})" class="sumOfficeTokuG">$!{planned.theoreticalValue2}</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.lastSameRatio2})" class="sumOfficeTokuG">$!format.doubleToString($!{planned.lastSameRatio2}, $decimalFormat)</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.officeValueY})" class="sumOfficeTokuG" sub="s2" subId="0">$!{planned.officeValueY}</cell>
+            <cell style="$s1 #setMinusStyle($!{planned.plannedValueY})" class="sumOfficeTokuG" sub="s2" subId="0">$!{planned.plannedValueY}</cell>
+            <cell style="$s1 " class="sumOfficeTokuG"></cell>
+            #if ($deliveryResultSummaryDtoList)
+            #foreach($deliveryResultSummaryDto in $deliveryResultSummaryDtoList)
+            #set($allTeamSummary = $deliveryResultSummaryDto.getAllTeamSummary())
+            #if($allTeamSummary)
+            <cell class="sumOfficeTokuG" style="$s1 #setMinusStyle($!{allTeamSummary.preFarAdvancePeriod})">$!format.parseMoneyToThousandUnit($!allTeamSummary.preFarAdvancePeriod)</cell>
+            <cell class="sumOfficeTokuG" style="$s1 #setMinusStyle($!{allTeamSummary.farAdvancePeriod})">$!format.parseMoneyToThousandUnit($!allTeamSummary.farAdvancePeriod)</cell>
+            <cell class="sumOfficeTokuG" style="$s1 #setMinusStyle($!{allTeamSummary.advancePeriod})">$!format.parseMoneyToThousandUnit($!allTeamSummary.advancePeriod)</cell>
+            <cell class="sumOfficeTokuG" style="$s1 #setMinusStyle($!{allTeamSummary.currentPlanValue})">$!format.parseMoneyToThousandUnit($!allTeamSummary.currentPlanValue)</cell>
+            <cell class="sumOfficeTokuG" style="$s1 #setMinusStyle($!{allTeamSummary.currentPeriod})">$!format.parseMoneyToThousandUnit($!allTeamSummary.currentPeriod)</cell>
+            <cell class="sumOfficeTokuG" style="$s1 #setMinusStyle($!{allTeamSummary.currentRate})">$!format.doubleToString($!allTeamSummary.currentRate, $decimalFormat)</cell>
+            #else
+            <cell class="sumOfficeTokuG" style="$s1"></cell>
+            <cell class="sumOfficeTokuG" style="$s1"></cell>
+            <cell class="sumOfficeTokuG" style="$s1"></cell>
+            <cell class="sumOfficeTokuG" style="$s1"></cell>
+            <cell class="sumOfficeTokuG" style="$s1"></cell>
+            <cell class="sumOfficeTokuG" style="$s1"></cell>
+            #end
+            #end
+            #end
+        </row>
+        #set( $totalCount = $totalCount + 1)
+        #end
+        ##
+        ## 担当者別計画
+        ##
+        #set( $teamCount = 1)
+        #foreach($resultTeamData in $resultOfficeData.teamPlanDtoList)
+            ## 調整金額
+            <row id="$totalCount">
+                <cell class="gridColor">担当者別計画</cell>
+                <cell class="nonUse">調整金額</cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse" sub="target" subId="$teamCount"></cell>
+                <cell class="nonUse" sub="target" subId="$teamCount"></cell>
+                <cell class="nonUse"></cell>
+                #if ($deliveryResultSummaryDtoList)
+                #foreach($deliveryResultSummaryDto in $deliveryResultSummaryDtoList)
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                <cell class="nonUse"></cell>
+                #end
+                #end
+            </row>
+            #set( $totalCount = $totalCount + 1)
+            ## 担当者別計画
+            #foreach($resultMrData in $resultTeamData.mrPlanDtoList)
+                <row id="$totalCount">
+                    #if($velocityCount == 1)
+                        <cell style="border-bottom:0px">$!{resultTeamData.sosName}</cell>
+                    #else
+                        <cell style="border-bottom:0px"></cell>
+                    #end
+                    <cell>$!{resultMrData.jgiName}（$!{resultMrData.shokushuName}）</cell>
+                    ## 実績
+                    #set( $result = "")
+                    #set( $result = $resultMrData.resultValueDto)
+                    <cell style="#setMinusStyle($!{result.preFarAdvancePeriod})">$!{result.preFarAdvancePeriod}</cell>
+                    <cell style="#setMinusStyle($!{result.farAdvancePeriod})">$!{result.farAdvancePeriod}</cell>
+                    <cell style="#setMinusStyle($!{result.advancePeriod})">$!{result.advancePeriod}</cell>
+                    <cell style="#setMinusStyle($!{result.currentPlanValue})">$!{result.currentPlanValue}</cell>
+                    <cell style="#setMinusStyle($!{result.currentPeriod})">$!{result.currentPeriod}</cell>
+                    <cell style="#setMinusStyle($!{result.currentRate})">$!format.doubleToString($!{result.currentRate}, $decimalFormat)</cell>
+                    ## 計画
+                    #set( $planned = "")
+                    #set( $planned = $resultMrData.plannedValueDto)
+                    <userdata name="hiddenAdvancePeriodUnitYen">$!{planned.hiddenAdvancePeriodUnitYen}</userdata>
+                    <cell style="#setMinusStyle($!{planned.specialInsPlanValueY})">$!{planned.specialInsPlanValueY}</cell>
+                    <cell style="#setMinusStyle($!{planned.planForUp1})">$!{planned.planForUp1}</cell>
+                    <cell style="#setMinusStyle($!{planned.theoreticalValue1})">$!{planned.theoreticalValue1}</cell>
+                    <cell style="#setMinusStyle($!{planned.lastSameRatio1})">$!format.doubleToString($!{planned.lastSameRatio1}, $decimalFormat)</cell>
+                    <cell style="#setMinusStyle($!{planned.planForUp2})">$!{planned.planForUp2}</cell>
+                    <cell style="#setMinusStyle($!{planned.theoreticalValue2})">$!{planned.theoreticalValue2}</cell>
+                    <cell style="#setMinusStyle($!{planned.lastSameRatio2})">$!format.doubleToString($!{planned.lastSameRatio2}, $decimalFormat)</cell>
+                    <cell style="#setMinusStyle($!{planned.officeValueY})">$!{planned.officeValueY}</cell>
+                    <cell style="#setMinusStyle($!{planned.plannedValueY})">$!{planned.plannedValueY}</cell>
+                    <cell></cell>
+                    ##参照実績
+                    #set ($mrDeliExistFlg = false)
+                    #set($jgiNo = $resultMrData.getJgiNo())
+                    #if ($deliveryResultSummaryDtoList)
+                        #foreach($deliveryResultSummaryDto in $deliveryResultSummaryDtoList)
+                            #set($mrSummaryMap = $deliveryResultSummaryDto.getMrSummaryMap())
+                            #if($jgiNo && $mrSummaryMap && $mrSummaryMap.get($!jgiNo))
+                               #set($mrSummary = $mrSummaryMap.get($!jgiNo))
+                               #if($mrSummary)
+                               #set ($mrDeliExistFlg = true)
+                               <cell style="#setMinusStyle($!{mrSummary.preFarAdvancePeriod})">$!format.parseMoneyToThousandUnit($!{mrSummary.preFarAdvancePeriod})</cell>
+                               <cell style="#setMinusStyle($!{mrSummary.farAdvancePeriod})">$!format.parseMoneyToThousandUnit($!{mrSummary.farAdvancePeriod})</cell>
+                               <cell style="#setMinusStyle($!{mrSummary.advancePeriod})">$!format.parseMoneyToThousandUnit($!{mrSummary.advancePeriod})</cell>
+                               <cell style="#setMinusStyle($!{mrSummary.currentPlanValue})">$!format.parseMoneyToThousandUnit($!{mrSummary.currentPlanValue})</cell>
+                               <cell style="#setMinusStyle($!{mrSummary.currentPeriod})">$!format.parseMoneyToThousandUnit($!{mrSummary.currentPeriod})</cell>
+                               <cell class="#setMinusStyle($!{mrSummary.currentRate})">$!format.doubleToString($!mrSummary.currentRate, $decimalFormat)</cell>
+                               #end
+                            #end
+                            #if (!$mrDeliExistFlg)
+                               <cell></cell>
+                               <cell></cell>
+                               <cell></cell>
+                               <cell></cell>
+                               <cell></cell>
+                               <cell></cell>
+                            #end
+                        #end
+                    #end
+                </row>
+                #set( $totalCount = $totalCount + 1)
+            #end
+            ## チーム内担当者別計画合計
+            #set( $mrTotalData = $!{resultTeamData.totalMrPlanDto})
+            <row id="$totalCount">
+                <cell></cell>
+                <cell class="sumTeam">計</cell>
+                ## 実績
+                #set( $result = "")
+                #set( $result = $mrTotalData.resultValueDto)
+                <cell style="#setMinusStyle($!{result.preFarAdvancePeriod})" class="sumTeam">$!{result.preFarAdvancePeriod}</cell>
+                <cell style="#setMinusStyle($!{result.farAdvancePeriod})" class="sumTeam">$!{result.farAdvancePeriod}</cell>
+                <cell style="#setMinusStyle($!{result.advancePeriod})" class="sumTeam">$!{result.advancePeriod}</cell>
+                <cell style="#setMinusStyle($!{result.currentPlanValue})" class="sumTeam">$!{result.currentPlanValue}</cell>
+                <cell style="#setMinusStyle($!{result.currentPeriod})" class="sumTeam">$!{result.currentPeriod}</cell>
+                <cell style="#setMinusStyle($!{result.currentRate})" class="sumTeam">$!format.doubleToString($!{result.currentRate}, $decimalFormat)</cell>
+                ## 計画
+                #set( $planned = "")
+                #set( $planned = $mrTotalData.plannedValueDto)
+                <userdata name="hiddenAdvancePeriodUnitYen">$!{planned.hiddenAdvancePeriodUnitYen}</userdata>
+                <cell style="#setMinusStyle($!{planned.specialInsPlanValueY})" class="sumTeam">$!{planned.specialInsPlanValueY}</cell>
+                <cell style="#setMinusStyle($!{planned.planForUp1})" class="sumTeam">$!{planned.planForUp1}</cell>
+                <cell style="#setMinusStyle($!{planned.theoreticalValue1})" class="sumTeam">$!{planned.theoreticalValue1}</cell>
+                <cell style="#setMinusStyle($!{planned.lastSameRatio1})" class="sumTeam">$!format.doubleToString($!{planned.lastSameRatio1}, $decimalFormat)</cell>
+                <cell style="#setMinusStyle($!{planned.planForUp2})" class="sumTeam">$!{planned.planForUp2}</cell>
+                <cell style="#setMinusStyle($!{planned.theoreticalValue2})" class="sumTeam">$!{planned.theoreticalValue2}</cell>
+                <cell style="#setMinusStyle($!{planned.lastSameRatio2})" class="sumTeam">$!format.doubleToString($!{planned.lastSameRatio2}, $decimalFormat)</cell>
+                <cell style="#setMinusStyle($!{planned.officeValueY})" class="sumTeam" sub="s2" subId="$teamCount">$!{planned.officeValueY}</cell>
+                <cell style="#setMinusStyle($!{planned.plannedValueY})" class="sumTeam" sub="s2" subId="$teamCount">$!{planned.plannedValueY}</cell>
+                <cell style="" class="sumTeam"></cell>
+                ##参照実績
+                #set ($teamSumExistFlg = false)
+                #if ($deliveryResultSummaryDtoList)
+                    #set($sosCd = $resultTeamData.getSosCd())
+                    #foreach($deliveryResultSummaryDto in $deliveryResultSummaryDtoList)
+                        #set($teamSummaryMap = $deliveryResultSummaryDto.getTeamSummaryMap())
+                        #if($teamSummaryMap)
+                            #set($teamSummary = $teamSummaryMap.get($!sosCd))
+                            #if($teamSummary)
+                            #set ($teamSumExistFlg = true)
+                            <cell class="sumTeam" sub="s2" subId="$teamCount" style="#setMinusStyle($!{teamSummary.preFarAdvancePeriod})">$!format.parseMoneyToThousandUnit($!{teamSummary.preFarAdvancePeriod})</cell>
+                            <cell class="sumTeam" sub="s2" subId="$teamCount" style="#setMinusStyle($!{teamSummary.farAdvancePeriod})">$!format.parseMoneyToThousandUnit($!{teamSummary.farAdvancePeriod})</cell>
+                            <cell class="sumTeam" sub="s2" subId="$teamCount" style="#setMinusStyle($!{teamSummary.advancePeriod})">$!format.parseMoneyToThousandUnit($!{teamSummary.advancePeriod})</cell>
+                            <cell class="sumTeam" sub="s2" subId="$teamCount" style="#setMinusStyle($!{teamSummary.currentPlanValue})">$!format.parseMoneyToThousandUnit($!{teamSummary.currentPlanValue})</cell>
+                            <cell class="sumTeam" sub="s2" subId="$teamCount" style="#setMinusStyle($!{teamSummary.currentPeriod})">$!format.parseMoneyToThousandUnit($!{teamSummary.currentPeriod})</cell>
+                            <cell class="sumTeam" sub="s2" subId="$teamCount" style="#setMinusStyle($!{mrSummary.currentRate})">$!format.doubleToString($!teamSummary.currentRate, $decimalFormat)</cell>
+                            #end
+                        #end
+                        #if (!$teamSumExistFlg)
+                            <cell class="sumTeam" sub="s2" subId="$teamCount"></cell>
+                            <cell class="sumTeam" sub="s2" subId="$teamCount"></cell>
+                            <cell class="sumTeam" sub="s2" subId="$teamCount"></cell>
+                            <cell class="sumTeam" sub="s2" subId="$teamCount"></cell>
+                            <cell class="sumTeam" sub="s2" subId="$teamCount"></cell>
+                            <cell class="sumTeam" sub="s2" subId="$teamCount"></cell>
+                        #end
+                    #end
+                #end
+            </row>
+            #set( $totalCount = $totalCount + 1)
+            #set( $teamCount = $teamCount + 1)
+        #end
+    </rows>
+#end

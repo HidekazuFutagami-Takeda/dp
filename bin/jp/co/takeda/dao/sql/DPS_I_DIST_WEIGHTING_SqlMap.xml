@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_DIST_WEIGHTING_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.Weighting" >
+    <result column="MARKET_CLASS" property="marketClass" jdbcType="VARCHAR" />
+    <result column="MARKET_TYPE" property="marketType" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT MARKET_CLASS
+          ,MARKET_TYPE
+          ,PROD_CODE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_DIST_WEIGHTING
+     WHERE MARKET_CLASS = #marketClass:VARCHAR#
+       AND MARKET_TYPE = #marketType:VARCHAR#
+       AND PROD_CODE = #prodCode:CHAR#
+  </select>
+
+  <insert id="insert" parameterClass="jp.co.takeda.model.Weighting" >
+    INSERT INTO DPS_I_DIST_WEIGHTING
+          (MARKET_CLASS
+          ,MARKET_TYPE
+          ,PROD_CODE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (#marketClass:VARCHAR#
+          ,#marketType:VARCHAR#
+          ,#prodCode:CHAR#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE from DPS_I_DIST_WEIGHTING
+     WHERE MARKET_CLASS = #marketClass:VARCHAR#
+       AND MARKET_TYPE = #marketType:VARCHAR#
+       AND PROD_CODE = #prodCode:CHAR#
+  </delete>
+
+</sqlMap>

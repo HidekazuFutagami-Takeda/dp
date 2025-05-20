@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_MrEstimationRatio_SqlMap" >
+
+  <resultMap id="estimationRatioList" class="jp.co.takeda.model.view.EstimationRatio" >
+    <result column="INS_TYPE" property="insType" jdbcType="CHAR" />
+    <result column="MIKAKUTOKU_VALUE" property="mikakutokuValue" jdbcType="BIGINT" />
+    <result column="MIKAKUTOKU_RATIO" property="mikakutokuRatio" jdbcType="DOUBLE" />
+    <result column="KAKO_JISSEKI_VALUE" property="kakoJissekiValue" jdbcType="BIGINT" />
+    <result column="KAKO_JISSEKI_RATIO" property="kakoJissekiRatio" jdbcType="DOUBLE" />
+    <result column="FREE_1_VALUE" property="free1Value" jdbcType="BIGINT" />
+    <result column="FREE_1_RATIO" property="free1Ratio" jdbcType="DOUBLE" />
+    <result column="FREE_2_VALUE" property="free2Value" jdbcType="BIGINT" />
+    <result column="FREE_2_RATIO" property="free2Ratio" jdbcType="DOUBLE" />
+    <result column="FREE_3_VALUE" property="free3Value" jdbcType="BIGINT" />
+    <result column="FREE_3_RATIO" property="free3Ratio" jdbcType="DOUBLE" />
+    <result column="SPECIAL_VALUE" property="specialValue" jdbcType="BIGINT" />
+    <result column="OWN_KAKO_JISSEKI_VALUE" property="ownKakoJissekiValue" jdbcType="BIGINT" />
+  </resultMap>
+
+  <resultMap id="resultMapList" class="jp.co.takeda.model.view.MrEstimationRatio" groupBy="jgiNo" >
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result property="estimationRatioList" resultMap="VIEW_MrEstimationRatio_SqlMap.estimationRatioList" />
+  </resultMap>
+
+  <!-- 組織、対象区分集約検索一覧 -->
+  <select id="selectList" resultMap="resultMapList" parameterClass="java.util.Map" >
+    WITH
+    <!-- □ 翌期計画品目-->
+    	YOKUHIN AS (
+    		SELECT PROD_CODE, YAKKOU_SIJOU_CODE
+    		FROM DPS_C_PLANNED_PROD
+    		WHERE PROD_CODE = #prodCode:CHAR#
+    	)
+    <!-- □ 従業員の選択 (★テンポラリ★)-->
+    	, JYUGYOUIN AS (
+    		SELECT JGI_NO
+                  ,BR_CODE
+                  ,DIST_SEQ
+                  ,DIST_CODE
+                  ,TEAM_CODE
+                  ,SHOKUSEI_CD
+                  ,SHOKUSHU_CD
+    		  FROM DPS_C_VI_JGI_MST JM
+                   INNER JOIN DPS_C_SOS_MST SM
+                ON JM.SOS_CD = SM.SOS_CD
+     	     WHERE KENMU_KB = 0
+               <isNotNull property="jgiKbList">
+                   <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+                       #jgiKbList[].dbValue#
+                   </iterate>
+               </isNotNull>
+               <isNotNull prepend="AND" property="jokenSetList">
+               EXISTS (SELECT JO.JGI_NO
+               FROM DPS_C_JGI_JOKEN JO
+               WHERE JO.JGI_NO = JM.JGI_NO
+                   <isNotNull property="jokenSetList">
+                       <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                       #jokenSetList[].dbValue#
+                       </iterate>
+                   </isNotNull>
+               )
+               </isNotNull>
+               <isNotNull prepend="AND" property="sosCd3">
+                   SOS_CD3 = #sosCd3:VARCHAR#
+               </isNotNull>
+               <isNotNull prepend="AND" property="sosCd4">
+                   SOS_CD4 = #sosCd4:VARCHAR#
+               </isNotNull>
+    	)
+    <!-- □ 施設出力対象区分-->
+    	, INS_TYPE AS (
+    		SELECT '1' AS INS_TYPE
+    		FROM DUAL
+    		UNION
+    		SELECT '2' AS INS_TYPE
+    		FROM DUAL
+    		<!--雑をPに含める。過去実績率 UNION
+    		SELECT '3' AS INS_TYPE
+    		FROM DUAL -->
+    		UNION
+    		SELECT 'T' AS INS_TYPE
+    		FROM DUAL
+    	)
+    <!-- □ 配分除外施設を配分除外品目の製品コードとして設定する。-->
+    	, JOGAI AS (
+    		SELECT
+    			<!-- [配分除外施設・品目]品目固定コードがnullの場合は品目固定コードとして割り当てる-->
+    			NVL(PROD_CODE, (SELECT PROD_CODE FROM YOKUHIN)) AS PROD_CODE,
+    			DPS_I_EXCEPT_DIST_INS.INS_NO
+    		FROM DPS_I_EXCEPT_DIST_INS
+    		WHERE (PROD_CODE = (SELECT PROD_CODE FROM YOKUHIN) OR PROD_CODE IS NULL)
+    		AND ESTIMATION_FLG = '1'
+    	)
+    <!-- □ 特定施設個別計画をサマリーとする。-->
+    	, TOKUTEISISETU AS (
+    		SELECT
+    			DPS_I_SPECIAL_INS_PLAN.PROD_CODE,
+    			DPS_I_SPECIAL_INS_PLAN.JGI_NO,
+    			DPS_I_SPECIAL_INS_PLAN.INS_NO,
+    			<!-- [特定施設個別計画]対象区分⇒計画立案対象区分-->
+    			<!-- CASE HO_INS_TYPE	親子紐づけ-->
+    			CASE NVL(OINS.HO_INS_TYPE, INS.HO_INS_TYPE)
+    				WHEN '1' THEN '1'
+    				WHEN '2' THEN '1'
+    				WHEN '3' THEN '2'
+    				<!--雑をPに含める。過去実績率 WHEN '4' THEN '3'-->
+    				WHEN '4' THEN '2'
+    			END AS INS_TYPE,
+    			<!-- [特定施設個別計画]合計値 -->
+    			SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_Y
+    		FROM DPS_I_SPECIAL_INS_PLAN
+    			<!-- 施設 join (in) 施設コード-->
+    			INNER JOIN DPS_C_INS_MST INS
+    			ON DPS_I_SPECIAL_INS_PLAN.INS_NO = INS.INS_NO
+    			<!-- 翌期計画品目 join (in) 品目固定コード-->
+    			INNER JOIN YOKUHIN
+    			ON DPS_I_SPECIAL_INS_PLAN.PROD_CODE = YOKUHIN.PROD_CODE
+    			<!-- 従業員 join (in) 従業員番号-->
+    			INNER JOIN JYUGYOUIN
+    			ON DPS_I_SPECIAL_INS_PLAN.JGI_NO = JYUGYOUIN.JGI_NO
+    			<!-- 親子紐づけ-->
+    			LEFT JOIN DPS_C_SY_COM_INS_OYAKO OYK
+    			ON OYK.INS_NO = INS.INS_NO AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+				LEFT JOIN DPS_C_INS_MST OINS
+				ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+			WHERE DPS_I_SPECIAL_INS_PLAN.PLAN_TYPE = '1'
+			<!-- GROUP BY DPS_I_SPECIAL_INS_PLAN.PROD_CODE, DPS_I_SPECIAL_INS_PLAN.JGI_NO, DPS_I_SPECIAL_INS_PLAN.INS_NO, HO_INS_TYPE	親子紐づけ-->
+			GROUP BY DPS_I_SPECIAL_INS_PLAN.PROD_CODE, DPS_I_SPECIAL_INS_PLAN.JGI_NO, DPS_I_SPECIAL_INS_PLAN.INS_NO,
+				CASE nvl(oins.ho_ins_type,ins.ho_ins_type)
+					WHEN '1'   THEN '1'
+					WHEN '2'   THEN '1'
+					WHEN '3'   THEN '2'
+					WHEN '4'   THEN '2'
+				END
+		)
+    <!-- □ 特定施設個別計画を担当者別にサマリーとする。-->
+        , TOKUTEISISETU_SUM AS (
+            SELECT
+                TOKUTEISISETU.PROD_CODE,
+                TOKUTEISISETU.JGI_NO,
+                TOKUTEISISETU.INS_TYPE,
+                SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_Y
+            FROM TOKUTEISISETU
+            GROUP BY TOKUTEISISETU.PROD_CODE, TOKUTEISISETU.JGI_NO, INS_TYPE
+        )
+    <!-- ■ 未獲得市場-->
+    <!-- □ 未獲得市場の比率の算出-->
+    	, MIKAKUTOKU AS (
+    		SELECT
+    			<!-- 従業員番号-->
+    			JYUGYOUIN.JGI_NO,
+    			<!-- 施設出力対象区分(対象が合計の場合は'T'とする。ROLLUPでの結合対応)-->
+    			<!--雑をPに含める。過去実績率 NVL(MIKAKU.INS_TYPE, 'T') AS INS_TYPE,-->
+    			<!-- CASE
+					WHEN MIKAKU.INS_TYPE = '3' THEN '2'
+					ELSE NVL(MIKAKU.INS_TYPE, 'T')
+				END INS_TYPE,	親子紐づけ-->
+    			CASE NVL(OINS.HO_INS_TYPE, SISETSU.HO_INS_TYPE)
+    				WHEN '1' THEN '1'
+    				WHEN '2' THEN '1'
+    				WHEN '3' THEN '2'
+    				<!--雑をPに含める。過去実績率 WHEN '4' THEN '3'-->
+    				WHEN '4' THEN '2'
+    				<!--施設の対象区分がない場合、未獲得市場の対象区分を使う。-->
+    				<!--INS_TYPEがnullになる(UHとPの合計)として、'T'を設定-->
+    				ELSE NVL(MIKAKU.INS_TYPE, 'T')
+    			END AS INS_TYPE,
+    			<!-- 合計値-->
+    			SUM(DIST_PLAN_MIKAKUTOKU) AS SUM_DIST_PLAN,
+    			<!-- 未獲得市場比率-->
+    			<!-- RATIO_TO_REPORT(SUM(DIST_PLAN_MIKAKUTOKU)) OVER (PARTITION by MIKAKU.INS_TYPE) AS RATIO_DIST_PLAN-->
+    			RATIO_TO_REPORT(SUM(DIST_PLAN_MIKAKUTOKU)) OVER (PARTITION by
+    				CASE nvl(oins.ho_ins_type,sisetsu.ho_ins_type)
+						WHEN '1'   THEN '1'
+						WHEN '2'   THEN '1'
+						WHEN '3'   THEN '2'
+						WHEN '4'   THEN '2'
+						ELSE NVL(MIKAKU.INS_TYPE, 'T')
+					END
+				) AS RATIO_DIST_PLAN
+    		FROM DPS_I_MIKAKUTOKU_SIJOU MIKAKU
+    			<!-- 翌期計画品目 join (in) 薬効市場コード-->
+    			INNER JOIN YOKUHIN
+    			ON YOKUHIN.YAKKOU_SIJOU_CODE = MIKAKU.YAKKOU_SIJOU_CODE
+    			<!-- 従業員 join (in) 従業員コード-->
+    			INNER JOIN JYUGYOUIN
+    			ON JYUGYOUIN.JGI_NO = MIKAKU.JGI_NO
+                <!-- 施設情報 join (left) 施設コード-->
+    			LEFT JOIN DPS_C_INS_MST SISETSU
+    			ON MIKAKU.INS_NO = SISETSU.INS_NO
+    			<!-- 特定施設個別計画 join (left) 試算品目コード、施設コード-->
+    			LEFT JOIN TOKUTEISISETU
+    			ON YOKUHIN.PROD_CODE = TOKUTEISISETU.PROD_CODE AND MIKAKU.INS_NO = TOKUTEISISETU.INS_NO
+    			<!-- 配分除外品目 join (left) 試算品目コード、施設コード-->
+    			LEFT JOIN JOGAI
+    			ON YOKUHIN.PROD_CODE = JOGAI.PROD_CODE AND MIKAKU.INS_NO = JOGAI.INS_NO
+    			<!-- 親子紐づけ-->
+    			LEFT JOIN DPS_C_SY_COM_INS_OYAKO OYK
+    			ON OYK.INS_NO = SISETSU.INS_NO AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+				LEFT JOIN DPS_C_INS_MST OINS
+				ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+    		WHERE
+    			<!-- 特定施設個別計画に指定されていない(ある場合は未獲得市場のデータから削除)-->
+    			TOKUTEISISETU.INS_NO IS NULL
+    			<!-- 配分除外施設・品目に指定されていない(ある場合は未獲得市場のデータから削除)-->
+    			AND JOGAI.INS_NO IS NULL
+    			<!-- 従業員・施設対象(小計)別-->
+			<!-- GROUP BY JYUGYOUIN.JGI_NO, ROLLUP(MIKAKU.INS_TYPE)	親子紐づけ-->
+			GROUP BY JYUGYOUIN.JGI_NO,
+				ROLLUP(CASE nvl(oins.ho_ins_type,sisetsu.ho_ins_type)
+						WHEN '1'   THEN '1'
+						WHEN '2'   THEN '1'
+						WHEN '3'   THEN '2'
+						WHEN '4'   THEN '2'
+						ELSE NVL(MIKAKU.INS_TYPE, 'T')
+					END)
+    	)
+    <!-- ■ 未獲得市場-->
+    <!-- □ INS_TYPEがnullになる(UHとPの合計)ケース'T'を想定だが、nullのままで集計されないための対処。親子紐づけ対応-->
+    	, MIKAKUTOKU_SIJYOU AS (
+    		SELECT
+    			MIKAKUTOKU.JGI_NO,
+    			NVL(MIKAKUTOKU.INS_TYPE,'T') AS INS_TYPE,
+    			MIKAKUTOKU.SUM_DIST_PLAN,
+    			MIKAKUTOKU.RATIO_DIST_PLAN
+    		FROM MIKAKUTOKU
+    	)
+    <!-- ■ 過去実績-->
+    <!-- □ 過去実績サマリー-->
+    	, KAKO_SUMMARY AS (
+    		SELECT
+    			DPS_I_DELIVERY_RESULT.PROD_CODE,
+    			DPS_I_DELIVERY_RESULT.JGI_NO,
+    			<!--雑をPに含める。過去実績率 DPS_I_DELIVERY_RESULT.INS_TYPE,-->
+    			CASE
+					WHEN DPS_I_DELIVERY_RESULT.INS_TYPE = '3' THEN '2'
+					ELSE DPS_I_DELIVERY_RESULT.INS_TYPE
+				END INS_TYPE,
+    			SUM(DELIVERY_RECORD_01) AS DELIVERY_RECORD_01,
+    			SUM(DELIVERY_RECORD_02) AS DELIVERY_RECORD_02,
+    			SUM(DELIVERY_RECORD_03) AS DELIVERY_RECORD_03,
+    			SUM(DELIVERY_RECORD_04) AS DELIVERY_RECORD_04,
+    			SUM(DELIVERY_RECORD_05) AS DELIVERY_RECORD_05,
+    			SUM(DELIVERY_RECORD_06) AS DELIVERY_RECORD_06,
+    			SUM(DELIVERY_RECORD_07) AS DELIVERY_RECORD_07,
+    			SUM(DELIVERY_RECORD_08) AS DELIVERY_RECORD_08,
+    			SUM(DELIVERY_RECORD_09) AS DELIVERY_RECORD_09,
+    			SUM(DELIVERY_RECORD_10) AS DELIVERY_RECORD_10,
+    			SUM(DELIVERY_RECORD_11) AS DELIVERY_RECORD_11,
+    			SUM(DELIVERY_RECORD_12) AS DELIVERY_RECORD_12,
+    			SUM(DELIVERY_RECORD_13) AS DELIVERY_RECORD_13,
+    			SUM(DELIVERY_RECORD_14) AS DELIVERY_RECORD_14,
+    			SUM(DELIVERY_RECORD_15) AS DELIVERY_RECORD_15,
+    			SUM(DELIVERY_RECORD_16) AS DELIVERY_RECORD_16,
+    			SUM(DELIVERY_RECORD_17) AS DELIVERY_RECORD_17,
+    			SUM(DELIVERY_RECORD_18) AS DELIVERY_RECORD_18,
+    			SUM(DELIVERY_RECORD_19) AS DELIVERY_RECORD_19,
+    			SUM(DELIVERY_RECORD_20) AS DELIVERY_RECORD_20,
+    			SUM(DELIVERY_RECORD_21) AS DELIVERY_RECORD_21,
+    			SUM(DELIVERY_RECORD_22) AS DELIVERY_RECORD_22,
+    			SUM(DELIVERY_RECORD_23) AS DELIVERY_RECORD_23,
+    			SUM(DELIVERY_RECORD_24) AS DELIVERY_RECORD_24
+     		FROM DPS_I_DELIVERY_RESULT
+    			<!-- 従業員 join (in) 従業員コード-->
+    			INNER JOIN JYUGYOUIN
+    			ON JYUGYOUIN.JGI_NO = DPS_I_DELIVERY_RESULT.JGI_NO
+    			<!-- 施設情報 join (in) 施設コード-->
+    			INNER JOIN DPS_C_INS_MST SISETSU
+    			ON DPS_I_DELIVERY_RESULT.INS_NO = SISETSU.INS_NO
+    			<!-- 特定施設個別計画 join (left) 施設コード-->
+    			LEFT JOIN TOKUTEISISETU
+    			ON DPS_I_DELIVERY_RESULT.INS_NO = TOKUTEISISETU.INS_NO
+    			<!-- 配分除外品目 join (left) 設コード-->
+    			LEFT JOIN JOGAI
+    			ON DPS_I_DELIVERY_RESULT.INS_NO = JOGAI.INS_NO
+    			<!-- 特定施設に無い-->
+    	  WHERE TOKUTEISISETU.INS_NO IS NULL
+    			<!-- 配分除外に無い-->
+    			AND JOGAI.INS_NO IS NULL
+    			<!-- 従業員・施設対象別-->
+    		GROUP BY DPS_I_DELIVERY_RESULT.PROD_CODE, DPS_I_DELIVERY_RESULT.JGI_NO, DPS_I_DELIVERY_RESULT.INS_TYPE
+    	)
+    <!-- □ 過去実績行列入れ替え-->
+    	, KAKO_TRANS AS (
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_01 AS DELIVERY_RECORD, '01' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_02 AS DELIVERY_RECORD, '02' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_03 AS DELIVERY_RECORD, '03' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_04 AS DELIVERY_RECORD, '04' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_05 AS DELIVERY_RECORD, '05' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_06 AS DELIVERY_RECORD, '06' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_07 AS DELIVERY_RECORD, '07' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_08 AS DELIVERY_RECORD, '08' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_09 AS DELIVERY_RECORD, '09' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_10 AS DELIVERY_RECORD, '10' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_11 AS DELIVERY_RECORD, '11' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_12 AS DELIVERY_RECORD, '12' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_13 AS DELIVERY_RECORD, '13' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_14 AS DELIVERY_RECORD, '14' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_15 AS DELIVERY_RECORD, '15' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_16 AS DELIVERY_RECORD, '16' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_17 AS DELIVERY_RECORD, '17' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_18 AS DELIVERY_RECORD, '18' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_19 AS DELIVERY_RECORD, '19' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_20 AS DELIVERY_RECORD, '20' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_21 AS DELIVERY_RECORD, '21' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_22 AS DELIVERY_RECORD, '22' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_23 AS DELIVERY_RECORD, '23' AS REF_PERIOD FROM KAKO_SUMMARY
+    		UNION
+    		SELECT PROD_CODE, JGI_NO, INS_TYPE, DELIVERY_RECORD_24 AS DELIVERY_RECORD, '24' AS REF_PERIOD FROM KAKO_SUMMARY
+    	)
+    <!-- □ 過去実績のサマリー算出-->
+    	, KAKO_JISSEKI_TEMP AS (
+    		SELECT
+                PROD_CODE,
+    			<!-- 従業員コード-->
+    			JGI_NO,
+    			<!-- 施設出力対象区分-->
+                INS_TYPE,
+    			<!-- 合計値-->
+                SUM(DELIVERY_RECORD) AS SUM_RESULT
+    		FROM KAKO_TRANS
+    		WHERE REF_PERIOD BETWEEN #refFrom:CHAR# AND #refTo:CHAR#
+    			<!-- 参照期間-->
+    		GROUP BY PROD_CODE, JGI_NO, INS_TYPE
+    	)
+    <!-- □ 過去実績の比率算出-->
+        , KAKO_JISSEKI AS (
+            SELECT
+                PROD_CODE,
+                <!-- 従業員コード-->
+                JGI_NO,
+    			<!-- 施設出力対象区分(対象が合計の場合は'T'とする。ROLLUPでの結合対応)-->
+                NVL(INS_TYPE, 'T') AS INS_TYPE,
+                <!-- 合計値-->
+                SUM(SUM_RESULT) AS SUM_RESULT,
+                <!-- 構成比-->
+                RATIO_TO_REPORT(SUM(SUM_RESULT)) OVER (PARTITION BY INS_TYPE) AS RATIO_RESULT
+            FROM KAKO_JISSEKI_TEMP
+           WHERE PROD_CODE = #refProdCode:CHAR#
+           GROUP BY PROD_CODE, JGI_NO, ROLLUP(INS_TYPE)
+        )
+    <!-- □ 自品目過去実績のサマリー算出(参照期間は前期固定)-->
+        , OWN_KAKO_JISSEKI_TEMP AS (
+            SELECT
+                PROD_CODE,
+                <!-- 従業員コード-->
+                JGI_NO,
+                <!-- 施設出力対象区分-->
+                INS_TYPE,
+                <!-- 合計値-->
+                SUM(DELIVERY_RECORD) AS SUM_RESULT
+            FROM KAKO_TRANS
+            WHERE REF_PERIOD BETWEEN '13' AND '18'
+                <!-- 参照期間-->
+            GROUP BY PROD_CODE, JGI_NO, INS_TYPE
+        )
+    <!-- □ 自品目過去実績の算出-->
+        , OWN_KAKO_JISSEKI AS (
+            SELECT
+                PROD_CODE,
+                <!-- 従業員コード-->
+                JGI_NO,
+                <!-- 施設出力対象区分(対象が合計の場合は'T'とする。ROLLUPでの結合対応)-->
+                NVL(INS_TYPE, 'T') AS INS_TYPE,
+                <!-- 合計値-->
+                SUM(SUM_RESULT) AS SUM_RESULT
+            FROM OWN_KAKO_JISSEKI_TEMP
+           WHERE PROD_CODE = #prodCode:CHAR#
+           GROUP BY PROD_CODE, JGI_NO, ROLLUP(INS_TYPE)
+        )
+    <!-- ■ フリー項目-->
+    <!-- □ フリー項目サマリー-->
+    	, FREE_SUMMARY AS (
+    		SELECT
+    			DPS_I_MR_PLAN_FREE_INDEX.JGI_NO,
+    			INDEX_FREE_VALUE_UH_1,
+    			RATIO_TO_REPORT(INDEX_FREE_VALUE_UH_1) over () AS RATIO_UH_1,
+    			INDEX_FREE_VALUE_P_1,
+    			RATIO_TO_REPORT(INDEX_FREE_VALUE_P_1) over () AS RATIO_P_1,
+    			NVL(INDEX_FREE_VALUE_UH_1,0) + NVL(INDEX_FREE_VALUE_P_1,0) AS INDEX_FREE_VALUE_ALL_1,
+    			RATIO_TO_REPORT(NVL(INDEX_FREE_VALUE_UH_1,0) + NVL(INDEX_FREE_VALUE_P_1,0)) over () AS RATIO_ALL_1,
+    			INDEX_FREE_VALUE_UH_2,
+    			RATIO_TO_REPORT(INDEX_FREE_VALUE_UH_2) over () AS RATIO_UH_2,
+    			INDEX_FREE_VALUE_P_2,
+    			RATIO_TO_REPORT(INDEX_FREE_VALUE_P_2) over () AS RATIO_P_2,
+    			NVL(INDEX_FREE_VALUE_UH_2,0) + NVL(INDEX_FREE_VALUE_P_2,0) AS INDEX_FREE_VALUE_ALL_2,
+    			RATIO_TO_REPORT(NVL(INDEX_FREE_VALUE_UH_2,0) + NVL(INDEX_FREE_VALUE_P_2,0)) over () AS RATIO_ALL_2,
+    			INDEX_FREE_VALUE_UH_3,
+    			RATIO_TO_REPORT(INDEX_FREE_VALUE_UH_3) over () AS RATIO_UH_3,
+    			INDEX_FREE_VALUE_P_3,
+    			RATIO_TO_REPORT(INDEX_FREE_VALUE_P_3) over () AS RATIO_P_3,
+    			NVL(INDEX_FREE_VALUE_UH_3,0) + NVL(INDEX_FREE_VALUE_P_3,0) AS INDEX_FREE_VALUE_ALL_3,
+    			RATIO_TO_REPORT(NVL(INDEX_FREE_VALUE_UH_3,0) + NVL(INDEX_FREE_VALUE_P_3,0)) over () AS RATIO_ALL_3
+    		FROM DPS_I_MR_PLAN_FREE_INDEX
+    			<!-- 翌期計画品目 join (in) 薬効市場コード-->
+    			INNER JOIN YOKUHIN
+    			ON YOKUHIN.PROD_CODE = DPS_I_MR_PLAN_FREE_INDEX.PROD_CODE
+    			<!-- 従業員 join (in) 従業員コード-->
+    			INNER JOIN JYUGYOUIN
+    			ON JYUGYOUIN.JGI_NO = DPS_I_MR_PLAN_FREE_INDEX.JGI_NO
+    	)
+    <!-- □ フリー項目値1-->
+    	, FREE_1 AS (
+    		SELECT JGI_NO, '1' AS INS_TYPE, INDEX_FREE_VALUE_UH_1 AS FREE_VALUE, RATIO_UH_1 AS RATIO_FREE FROM FREE_SUMMARY
+    		UNION
+    		SELECT JGI_NO, '2' AS INS_TYPE, INDEX_FREE_VALUE_P_1 AS FREE_VALUE, RATIO_P_1 AS RATIO_FREE FROM FREE_SUMMARY
+    		UNION
+    		<!-- 対象が合計の場合は'T'とする。-->
+    		SELECT JGI_NO, 'T' AS INS_TYPE, INDEX_FREE_VALUE_ALL_1 AS FREE_VALUE, RATIO_ALL_1 AS RATIO_FREE FROM FREE_SUMMARY
+    	)
+    <!-- □ フリー項目値2-->
+    	, FREE_2 AS (
+    		SELECT JGI_NO, '1' AS INS_TYPE, INDEX_FREE_VALUE_UH_2 AS FREE_VALUE, RATIO_UH_2 AS RATIO_FREE FROM FREE_SUMMARY
+    		UNION
+    		SELECT JGI_NO, '2' AS INS_TYPE, INDEX_FREE_VALUE_P_2 AS FREE_VALUE, RATIO_P_2 AS RATIO_FREE FROM FREE_SUMMARY
+    		UNION
+    		<!-- 対象が合計の場合は'T'とする。-->
+    		SELECT JGI_NO, 'T' AS INS_TYPE, INDEX_FREE_VALUE_ALL_2 AS FREE_VALUE, RATIO_ALL_2 AS RATIO_FREE FROM FREE_SUMMARY
+    	)
+    <!-- □ フリー項目値3-->
+    	, FREE_3 AS (
+    		SELECT JGI_NO, '1' AS INS_TYPE, INDEX_FREE_VALUE_UH_3 AS FREE_VALUE, RATIO_UH_3 AS RATIO_FREE FROM FREE_SUMMARY
+    		UNION
+    		SELECT JGI_NO, '2' AS INS_TYPE, INDEX_FREE_VALUE_P_3 AS FREE_VALUE, RATIO_P_3 AS RATIO_FREE FROM FREE_SUMMARY
+    		UNION
+    		<!-- 対象が合計の場合は'T'とする。-->
+    		SELECT JGI_NO, 'T' AS INS_TYPE, INDEX_FREE_VALUE_ALL_3 AS FREE_VALUE, RATIO_ALL_3 AS RATIO_FREE FROM FREE_SUMMARY
+    	)
+    <!-- □ 試算比率-->
+    	SELECT BASE.JGI_NO
+              ,#prodCode:CHAR# AS PROD_CODE
+    		  ,CASE BASE.INS_TYPE
+                WHEN 'T' THEN NULL
+                ELSE BASE.INS_TYPE
+               END AS INS_TYPE
+    		<!-- [試算結果] 試算比率-->
+    		  ,NVL(MIKAKUTOKU_SIJYOU.SUM_DIST_PLAN,0) AS MIKAKUTOKU_VALUE
+    		  ,NVL(MIKAKUTOKU_SIJYOU.RATIO_DIST_PLAN,0) AS MIKAKUTOKU_RATIO
+    		  ,NVL(KAKO_JISSEKI.SUM_RESULT,0) AS KAKO_JISSEKI_VALUE
+    		  ,NVL(KAKO_JISSEKI.RATIO_RESULT,0) AS KAKO_JISSEKI_RATIO
+    		  ,NVL(FREE_1.FREE_VALUE,0) AS FREE_1_VALUE
+    		  ,NVL(FREE_1.RATIO_FREE,0) AS FREE_1_RATIO
+    		  ,NVL(FREE_2.FREE_VALUE,0) AS FREE_2_VALUE
+    		  ,NVL(FREE_2.RATIO_FREE,0) AS FREE_2_RATIO
+    		  ,NVL(FREE_3.FREE_VALUE,0) AS FREE_3_VALUE
+    		  ,NVL(FREE_3.RATIO_FREE,0) AS FREE_3_RATIO
+    		<!-- [試算結果] 特定施設-->
+    		  ,TOKUTEISISETU_SUM.PLANNED_VALUE_Y AS SPECIAL_VALUE
+            <!-- [自品目] 実績-->
+              ,NVL(OWN_KAKO_JISSEKI.SUM_RESULT,0) AS OWN_KAKO_JISSEKI_VALUE
+    	  FROM (SELECT * FROM JYUGYOUIN,INS_TYPE) BASE
+    		    LEFT JOIN MIKAKUTOKU_SIJYOU
+    			ON BASE.JGI_NO = MIKAKUTOKU_SIJYOU.JGI_NO AND BASE.INS_TYPE = MIKAKUTOKU_SIJYOU.INS_TYPE
+    			LEFT JOIN KAKO_JISSEKI
+    			ON BASE.JGI_NO = KAKO_JISSEKI.JGI_NO AND BASE.INS_TYPE = KAKO_JISSEKI.INS_TYPE
+                LEFT JOIN OWN_KAKO_JISSEKI
+                ON BASE.JGI_NO = OWN_KAKO_JISSEKI.JGI_NO AND BASE.INS_TYPE = OWN_KAKO_JISSEKI.INS_TYPE
+    			LEFT JOIN FREE_1
+    			ON BASE.JGI_NO = FREE_1.JGI_NO AND BASE.INS_TYPE = FREE_1.INS_TYPE
+    			LEFT JOIN FREE_2
+    			ON BASE.JGI_NO = FREE_2.JGI_NO AND BASE.INS_TYPE = FREE_2.INS_TYPE
+    			LEFT JOIN FREE_3
+    			ON BASE.JGI_NO = FREE_3.JGI_NO AND BASE.INS_TYPE = FREE_3.INS_TYPE
+    			LEFT JOIN TOKUTEISISETU_SUM
+    			ON BASE.JGI_NO = TOKUTEISISETU_SUM.JGI_NO AND BASE.INS_TYPE = TOKUTEISISETU_SUM.INS_TYPE
+    	ORDER BY BR_CODE
+                ,DIST_SEQ
+                ,DIST_CODE
+                ,TEAM_CODE
+                ,SHOKUSEI_CD
+                ,SHOKUSHU_CD
+                ,BASE.JGI_NO
+                ,BASE.INS_TYPE
+  </select>
+
+</sqlMap>

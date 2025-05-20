@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_S_T_TMS_TYTEN_MST_UN_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.TmsTytenMstUn" >
+    <result column="T_TMS_TYTEN_MST_UNQ_KEY" property="tTmsTytenMstUnqKey" jdbcType="INTEGER" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="TEKIYO_YMD" property="tekiyoYmd" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD_HONTEN" property="tmsTytenCdHonten" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD_SHISHA" property="tmsTytenCdShisha" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD_SHITEN" property="tmsTytenCdShiten" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD_KA" property="tmsTytenCdKa" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD_BLK_1" property="tmsTytenCdBlk1" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD_BLK_2" property="tmsTytenCdBlk2" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_MEI_KJ" property="tmsTytenMeiKj" jdbcType="VARCHAR" />
+    <result column="HONTEN_MEI_KJ" property="hontenMeiKj" jdbcType="VARCHAR" />
+    <result column="SHISHA_MEI_KJ" property="shishaMeiKj" jdbcType="VARCHAR" />
+    <result column="SHITEN_MEI_KJ" property="shitenMeiKj" jdbcType="VARCHAR" />
+    <result column="KA_MEI_KJ" property="kaMeiKj" jdbcType="VARCHAR" />
+    <result column="BLK_1_MEI_KJ" property="blk1MeiKj" jdbcType="VARCHAR" />
+    <result column="BLK_2_MEI_KJ" property="blk2MeiKj" jdbcType="VARCHAR" />
+    <result column="TYTEN_KIS_LVLL" property="tytenKisLvll" jdbcType="CHAR" />
+    <result column="TAKEDA_SSK_1_CD" property="takedaSsk1Cd" jdbcType="CHAR" />
+    <result column="TAKEDA_SSK_2_CD" property="takedaSsk2Cd" jdbcType="CHAR" />
+    <result column="JIS_FUKEN_CD" property="jisFukenCd" jdbcType="CHAR" />
+    <result column="TEKIYO_END_YMD" property="tekiyoEndYmd" jdbcType="CHAR" />
+    <result column="UPD_TS" property="updTs" jdbcType="TIMESTAMP" />
+    <result column="PLAN_TAI_GAI_FLG_TOK" property="planTaiGaiFlgTok" jdbcType="CHAR" />
+    <result column="PLAN_TAI_GAI_FLG_RIK" property="planTaiGaiFlgRik" jdbcType="CHAR" />
+    <result column="DELIVERY_FLG" property="deliveryFlg" jdbcType="CHAR" />
+  </resultMap>
+
+  <resultMap id="resultHontenMap" class="java.util.HashMap" >
+    <result property="tmsTytenMstUn" resultMap="DPS_S_T_TMS_TYTEN_MST_UN_SqlMap.resultMap" />
+    <result column="SHISHA_EXIST_FLG" property="shishaExistFlg" javaType="boolean"  jdbcType="CHAR" />
+  </resultMap>
+
+  <!-- 追加時特約店情報取得 -->
+  <sql id="add_tms">
+    <isNotNull property="jgiNo">
+      SELECT DISTINCT
+      <include refid="columnListForDelivery" />
+      FROM DPS_S_T_TMS_TYTEN_MST_UN TYT
+      LEFT OUTER JOIN DPS_I_DELIVERY_RESULT DELI
+      ON DELI.TMS_TYTEN_CD = TYT.TMS_TYTEN_CD
+      AND DELI.JGI_NO = #jgiNo:CHAR#
+      AND DELI.PROD_CODE = #prodCode:CHAR#
+      AND DELI.INS_TYPE = #insType:CHAR#
+    </isNotNull>
+    <isNull property="jgiNo">
+      SELECT *
+        FROM DPS_S_T_TMS_TYTEN_MST_UN
+    </isNull>
+  </sql>
+
+  <sql id="columnList">
+       T_TMS_TYTEN_MST_UNQ_KEY
+      ,TMS_TYTEN_CD
+      ,TEKIYO_YMD
+      ,TMS_TYTEN_CD_HONTEN
+      ,TMS_TYTEN_CD_SHISHA
+      ,TMS_TYTEN_CD_SHITEN
+      ,TMS_TYTEN_CD_KA
+      ,TMS_TYTEN_CD_BLK_1
+      ,TMS_TYTEN_CD_BLK_2
+      ,TMS_TYTEN_MEI_KJ
+      ,HONTEN_MEI_KJ
+      ,SHISHA_MEI_KJ
+      ,SHITEN_MEI_KJ
+      ,KA_MEI_KJ
+      ,BLK_1_MEI_KJ
+      ,BLK_2_MEI_KJ
+      ,TYTEN_KIS_LVLL
+      ,TAKEDA_SSK_1_CD
+      ,TAKEDA_SSK_2_CD
+      ,JIS_FUKEN_CD
+      ,TEKIYO_END_YMD
+      ,UPD_TS
+      ,PLAN_TAI_GAI_FLG_TOK
+      ,PLAN_TAI_GAI_FLG_RIK
+    <isNotNull property="jgiNo">
+      ,CASE WHEN JGI_NO IS NOT NULL THEN '1' ELSE '0' END AS DELIVERY_FLG
+    </isNotNull>
+    <isNull property="jgiNo">
+      ,NULL AS DELIVERY_FLG
+    </isNull>
+  </sql>
+
+  <sql id="columnListForDelivery">
+       TYT.T_TMS_TYTEN_MST_UNQ_KEY
+      ,TYT.TMS_TYTEN_CD
+      ,TYT.TEKIYO_YMD
+      ,TYT.TMS_TYTEN_CD_HONTEN
+      ,TYT.TMS_TYTEN_CD_SHISHA
+      ,TYT.TMS_TYTEN_CD_SHITEN
+      ,TYT.TMS_TYTEN_CD_KA
+      ,TYT.TMS_TYTEN_CD_BLK_1
+      ,TYT.TMS_TYTEN_CD_BLK_2
+      ,TYT.TMS_TYTEN_MEI_KJ
+      ,TYT.HONTEN_MEI_KJ
+      ,TYT.SHISHA_MEI_KJ
+      ,TYT.SHITEN_MEI_KJ
+      ,TYT.KA_MEI_KJ
+      ,TYT.BLK_1_MEI_KJ
+      ,TYT.BLK_2_MEI_KJ
+      ,TYT.TYTEN_KIS_LVLL
+      ,TYT.TAKEDA_SSK_1_CD
+      ,TYT.TAKEDA_SSK_2_CD
+      ,TYT.JIS_FUKEN_CD
+      ,TYT.TEKIYO_END_YMD
+      ,TYT.UPD_TS
+      ,TYT.PLAN_TAI_GAI_FLG_TOK
+      ,TYT.PLAN_TAI_GAI_FLG_RIK
+      ,DELI.JGI_NO
+  </sql>
+  <sql id="whereList">
+     <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="tytenKisLvll">
+        TYTEN_KIS_LVLL = #tytenKisLvll:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="tmsTytenCd">
+        TMS_TYTEN_CD LIKE #tmsTytenCd:CHAR# ESCAPE '~'
+      </isNotNull>
+      <isNotNull prepend="AND" property="tmsTytenCdHonten">
+        TMS_TYTEN_CD_HONTEN = #tmsTytenCdHonten:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="tmsTytenCdShisha">
+        TMS_TYTEN_CD_SHISHA = #tmsTytenCdShisha:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="tmsTytenCdShiten">
+        TMS_TYTEN_CD_SHITEN = #tmsTytenCdShiten:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd2">
+        TAKEDA_SSK_1_CD = (SELECT BR_CODE || '  ' FROM DPS_C_SOS_MST WHERE SOS_CD = #sosCd2:VARCHAR#)
+      </isNotNull>
+      <isNotNull prepend="AND" property="hontenMeiKn">
+        HONTEN_MEI_KN LIKE #hontenMeiKn:VARCHAR# ESCAPE '~'
+      </isNotNull>
+     </dynamic>
+  </sql>
+
+  <!-- 検索 ユニークキー-->
+  <select id="selectUk" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT <include refid="columnList" />
+      FROM (<include refid="add_tms" />) TMS
+     WHERE TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+   </select>
+
+  <!-- 検索 -->
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT <include refid="columnList" />
+      FROM (<include refid="add_tms" />) TMS
+     <include refid="whereList" />
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 検索 実績-->
+  <select id="selectResultsList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT DISTINCT <include refid="columnList" />
+      FROM (<include refid="add_tms" />) TMS
+           INNER JOIN DPS_S_SY_NJY2_SOS_WS SOSW
+        ON TMS.TMS_TYTEN_CD_HONTEN = SOSW.WSHQ_CODE
+       AND TMS.TMS_TYTEN_CD_SHISHA = CASE SOSW.WSBR_CODE
+       									WHEN '*' THEN '00'
+       									ELSE SOSW.WSBR_CODE
+       								 END
+       AND TMS.TMS_TYTEN_CD_SHITEN = CASE SOSW.WSDI_CODE
+       									WHEN '*' THEN '00'
+       									ELSE SOSW.WSDI_CODE
+       								 END
+       AND TMS.TMS_TYTEN_CD_KA = '00'
+       AND TMS.TMS_TYTEN_CD_BLK_1 = '00'
+       AND TMS.TMS_TYTEN_CD_BLK_2 = '00'
+     WHERE SOSW.SOS_CODE = #sosCd:VARCHAR#
+      <isNotNull prepend="AND" property="tmsTytenCd">
+        TMS.TMS_TYTEN_CD LIKE #tmsTytenCd:CHAR# ESCAPE '~'
+      </isNotNull>
+      <isNotNull prepend="AND" property="hontenMeiKn">
+        TMS.HONTEN_MEI_KN LIKE #hontenMeiKn:VARCHAR# ESCAPE '~'
+      </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 検索(本店) -->
+  <select id="selectHontenList" resultMap="resultHontenMap" parameterClass="java.util.Map" >
+    SELECT <include refid="columnList" />
+          ,CASE (SELECT COUNT(TMS_TYTEN_CD)
+                   FROM (<include refid="add_tms" />) TMS2
+                  WHERE TMS2.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+                    AND TMS2.TYTEN_KIS_LVLL=#tytenKisLvllShisha:CHAR#)
+            WHEN 0 THEN '0'
+            ELSE '1'
+           END AS SHISHA_EXIST_FLG
+      FROM (<include refid="add_tms" />) TMS
+     <include refid="whereList" />
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+</sqlMap>

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_OFFICE_PLAN_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.OfficePlan" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="PLANNED_VALUE_UH_Y" property="plannedValueUhY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_P_Y" property="plannedValuePY" jdbcType="BIGINT" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultMapList" class="jp.co.takeda.model.OfficePlan" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result property="prodInfo" resultMap="COMMON_SqlMap.prodInfo" />
+    <result column="PLANNED_VALUE_UH_Y" property="plannedValueUhY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_P_Y" property="plannedValuePY" jdbcType="BIGINT" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultMapList2" class="jp.co.takeda.model.view.OfficePlanWithChosei" >
+    <result column="SEQ_KEY" property="officePlan.seqKey" jdbcType="BIGINT" />
+    <result column="SOS_CD" property="officePlan.sosCd" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="officePlan.prodCode" jdbcType="CHAR" />
+    <result property="officePlan.prodInfo" resultMap="COMMON_SqlMap.prodInfo" />
+    <result column="PLANNED_VALUE_UH_Y" property="officePlan.plannedValueUhY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_P_Y" property="officePlan.plannedValuePY" jdbcType="BIGINT" />
+    <result column="UP_JGI_NO" property="officePlan.upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="officePlan.upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="officePlan.upDate" jdbcType="TIMESTAMP" />
+    <result column="OFFICE_MR_CHOSEI_UH_Y" property="officeChosei.officeMrChoseiUhY" jdbcType="BIGINT" />
+    <result column="OFFICE_INSWS_CHOSEI_UH_Y" property="officeChosei.officeInswsChoseiUhY" jdbcType="BIGINT" />
+    <result column="MR_INSWS_CHOSEI_UH_FLG" property="officeChosei.mrInswsChoseiUhFlg" jdbcType="CHAR" />
+    <result column="OFFICE_MR_CHOSEI_P_Y" property="officeChosei.officeMrChoseiPY" jdbcType="BIGINT" />
+    <result column="OFFICE_INSWS_CHOSEI_P_Y" property="officeChosei.officeInswsChoseiPY" jdbcType="BIGINT" />
+    <result column="MR_INSWS_CHOSEI_P_FLG" property="officeChosei.mrInswsChoseiPFlg" jdbcType="CHAR" />
+    <result column="OFFICE_MR_CHOSEI_UHP_Y" property="officeChosei.officeMrChoseiUHPY" jdbcType="BIGINT" />
+    <result column="OFFICE_INSWS_CHOSEI_UHP_Y" property="officeChosei.officeInswsChoseiUHPY" jdbcType="BIGINT" />
+    <result column="MR_INSWS_CHOSEI_UHP_FLG" property="officeChosei.mrInswsChoseiUHPFlg" jdbcType="CHAR" />
+    <result column="STATUS" property="statusForMrPlan" jdbcType="CHAR" />
+    <result column="MR_DR_CHOSEI_UH_FLG" property="officeChosei.mrDrChoseiUhFlg" jdbcType="CHAR" />
+    <result column="MR_DR_CHOSEI_P_FLG" property="officeChosei.mrDrChoseiPFlg" jdbcType="CHAR" />
+    <result column="MR_DR_CHOSEI_UHP_FLG" property="officeChosei.mrDrChoseiUHPFlg" jdbcType="CHAR" />
+  </resultMap>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,SOS_CD
+          ,PROD_CODE
+          ,PLANNED_VALUE_UH_Y
+          ,PLANNED_VALUE_P_Y
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_OFFICE_PLAN
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.OfficePlan" >
+    SELECT SEQ_KEY
+          ,SOS_CD
+          ,PROD_CODE
+          ,PLANNED_VALUE_UH_Y
+          ,PLANNED_VALUE_P_Y
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_OFFICE_PLAN
+     WHERE SOS_CD = #sosCd:VARCHAR#
+       AND PROD_CODE = #prodCode:CHAR#
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.OfficePlan" >
+    INSERT INTO DPS_I_OFFICE_PLAN
+          (SEQ_KEY
+          ,SOS_CD
+          ,PROD_CODE
+          ,PLANNED_VALUE_UH_Y
+          ,PLANNED_VALUE_P_Y
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (ORADPX01.SEQ_DPS_I_OFFICE_PLAN.NEXTVAL
+          ,#sosCd:VARCHAR#
+          ,#prodCode:CHAR#
+          ,#plannedValueUhY:BIGINT#
+          ,#plannedValuePY:BIGINT#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.OfficePlan" >
+    UPDATE DPS_I_OFFICE_PLAN
+       SET SOS_CD = #sosCd:VARCHAR#
+          ,PROD_CODE = #prodCode:CHAR#
+          ,PLANNED_VALUE_UH_Y = #plannedValueUhY:BIGINT#
+          ,PLANNED_VALUE_P_Y = #plannedValuePY:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+    WHERE SEQ_KEY = #seqKey:BIGINT#
+      AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_OFFICE_PLAN
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </delete>
+
+  <!-- 検索/営業所・カテゴリ -->
+  <select id="selectList" resultMap="resultMapList" parameterClass="java.util.Map" >
+    SELECT OP.SEQ_KEY
+          ,OP.SOS_CD
+          ,PR.PROD_CODE
+          ,PR.PROD_NAME
+          ,OP.PLANNED_VALUE_UH_Y
+          ,OP.PLANNED_VALUE_P_Y
+          ,OP.UP_JGI_NO
+          ,OP.UP_JGI_NAME
+          ,OP.UP_DATE
+          ,PR.GROUP_CODE
+          ,PR.STAT_PROD_CODE
+          ,PR.PROD_ABBR_NAME
+          ,PR.PROD_NAME
+          ,PR.CATEGORY
+          ,PR.PLAN_LEVEL_INS_DOC
+          ,PR.PRESCRIPTION_TYPE
+      FROM DPS_C_PLANNED_PROD PR
+    <isNotNull property="mrCat">
+      INNER JOIN DPS_C_MR_PROD_FIELD PF ON PR.PROD_CODE = PF.PROD_CODE AND PF.MR_CAT = #mrCat:VARCHAR#
+    </isNotNull>
+           LEFT OUTER JOIN DPS_I_OFFICE_PLAN OP
+        ON PR.PROD_CODE = OP.PROD_CODE
+       AND SOS_CD = #sosCd3:VARCHAR#
+     WHERE CATEGORY = #category:CHAR#
+       AND SALES = #sales:CHAR#
+       AND PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+<!-- add start 2016/12/12 S.Hayashi J16-0015_ユーザ要望改定 -->
+  <!-- 帳票用検索/営業所・カテゴリ -->
+  <select id="selectListReport" resultMap="resultMapList" parameterClass="java.util.Map" >
+    SELECT MIN(OP.SEQ_KEY) SEQ_KEY
+          ,OP.SOS_CD
+          ,PR.PCAT_CODE PROD_CODE
+          ,PR.PCAT_NAME PROD_NAME
+          ,SUM(OP.PLANNED_VALUE_UH_Y) PLANNED_VALUE_UH_Y
+          ,SUM(OP.PLANNED_VALUE_P_Y) PLANNED_VALUE_P_Y
+          ,MAX(OP.UP_JGI_NO) UP_JGI_NO
+          ,MAX(OP.UP_JGI_NAME) UP_JGI_NAME
+          ,MAX(OP.UP_DATE) UP_DATE
+          ,MIN(PR.GROUP_CODE) GROUP_CODE
+          ,MIN(PR.STAT_PROD_CODE) STAT_PROD_CODE
+          ,MIN(PR.PROD_ABBR_NAME) PROD_ABBR_NAME
+          ,PR.PCAT_NAME PROD_NAME
+          ,MIN(PR.CATEGORY) CATEGORY
+          ,MIN(PR.PLAN_LEVEL_INS_DOC) PLAN_LEVEL_INS_DOC
+          ,MIN(PR.PRESCRIPTION_TYPE) PRESCRIPTION_TYPE
+      FROM DPS_C_VI_CPROD_XLS PR
+    <isNotNull property="mrCat">
+      INNER JOIN DPS_C_MR_PROD_FIELD PF ON PR.PROD_CODE = PF.PROD_CODE AND PF.MR_CAT = #mrCat:VARCHAR#
+    </isNotNull>
+           LEFT OUTER JOIN DPS_I_OFFICE_PLAN OP
+        ON PR.PROD_CODE = OP.PROD_CODE
+       AND SOS_CD = #sosCd3:VARCHAR#
+     WHERE CATEGORY = #category:CHAR#
+       AND SALES = #sales:CHAR#
+       AND PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+　　GROUP BY OP.SOS_CD, PR.PCAT_CODE, PR.PCAT_NAME
+　　ORDER BY MIN(PR.SORT_ID)
+  </select>
+<!-- add end   2016/12/12 S.Hayashi J16-0015_ユーザ要望改定 -->
+
+    <!-- 検索/営業所・カテゴリ 調整額有無表示用 -->
+  <select id="selectList2" resultMap="resultMapList2" parameterClass="java.util.Map" >
+    SELECT OP.SEQ_KEY
+          ,OP.SOS_CD
+          ,PR.PROD_CODE
+          ,PR.PROD_NAME
+          ,OP.PLANNED_VALUE_UH_Y
+          ,OP.PLANNED_VALUE_P_Y
+          ,OP.UP_JGI_NO
+          ,OP.UP_JGI_NAME
+          ,OP.UP_DATE
+          ,PR.GROUP_CODE
+          ,PR.STAT_PROD_CODE
+          ,PR.PROD_ABBR_NAME
+          ,PR.PROD_NAME
+          ,PR.CATEGORY
+          ,PR.PLAN_LEVEL_INS_DOC
+          ,PR.PRESCRIPTION_TYPE
+          ,CO.OFFICE_MR_CHOSEI_UH_Y
+          ,CO.OFFICE_INSWS_CHOSEI_UH_Y
+          ,CO.MR_INSWS_CHOSEI_UH_FLG
+          ,CO.OFFICE_MR_CHOSEI_P_Y
+          ,CO.OFFICE_INSWS_CHOSEI_P_Y
+          ,CO.MR_INSWS_CHOSEI_P_FLG
+          ,CO.OFFICE_MR_CHOSEI_UHP_Y
+          ,CO.OFFICE_INSWS_CHOSEI_UHP_Y
+          ,CO.MR_INSWS_CHOSEI_UHP_FLG
+          ,CO.MR_DR_CHOSEI_UH_FLG
+          ,CO.MR_DR_CHOSEI_P_FLG
+          ,CO.MR_DR_CHOSEI_UHP_FLG
+          ,MRS.STATUS
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM
+        DPS_C_PLANNED_PROD PR
+        LEFT JOIN DPS_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PR.PROD_CODE = CM.DATA_CD
+    <isNotNull property="mrCat">
+          INNER JOIN DPS_C_MR_PROD_FIELD PF ON PR.PROD_CODE = PF.PROD_CODE AND PF.MR_CAT = #mrCat:VARCHAR#
+    </isNotNull>
+          LEFT OUTER JOIN DPS_I_OFFICE_PLAN OP ON PR.PROD_CODE = OP.PROD_CODE AND SOS_CD = #sosCd3:VARCHAR#
+            LEFT OUTER JOIN DPS_I_CHOSEI_OFFICE CO ON PR.PROD_CODE = CO.PROD_CODE AND OP.SOS_CD = CO.SOS_CD
+              LEFT OUTER JOIN DPS_I_MR_PLAN_STATUS MRS ON PR.PROD_CODE = MRS.PROD_CODE AND OP.SOS_CD = MRS.SOS_CD
+     WHERE
+       CATEGORY = #category:CHAR#
+       AND SALES = #sales:CHAR#
+       AND PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+</sqlMap>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+ "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+
+    <form-beans>
+      <form-bean name="Dps910C00Form" type="jp.co.takeda.web.in.dps.Dps910C00Form" />
+    </form-beans>
+
+<action-mappings type="jp.co.takeda.web.cmn.action.DpActionMapping">
+<!-- ***********************************************************************
+
+	組織・従業員検索画面
+
+ ***********************************************************************  -->
+<action path="/dps910C00F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps910C00Action" name="Dps910C00Form"
+ scope="request"
+ validate="true">
+    <set-property property="actionMethod" value="dps910C00F00" />
+    <set-property property="validationMethod" value="dps910C00F00Validation" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps910C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps910C00.vm" />
+</action>
+
+<action path="/dps910C00F05"
+ type="jp.co.takeda.web.ctrl.dps.Dps910C00Action" name="Dps910C00Form"
+ scope="request"
+ validate="true">
+    <set-property property="actionMethod" value="dps910C00F05" />
+    <set-property property="validationMethod" value="dps910C00F05Validation" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps910C00d01.vm" />
+    <forward name="asyncError" path="/WEB-INF/view/cmn/asyncError.vm" />
+</action>
+
+</action-mappings>
+</struts-config>

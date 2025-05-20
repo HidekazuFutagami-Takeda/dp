@@ -1,0 +1,170 @@
+#set( $dataList = $form.getRequestData("DPS913C01_DATA_R"))
+#set( $gridList = $dataList.getResultDtoList())
+
+#set( $idcnt = 1 )
+
+##各集計行集計範囲
+#set( $srange = "" )
+#set( $hrange = "" )
+
+##各集計行
+#set( $srowids = "" )
+#set( $hrowids = "" )
+##追加ボタンId
+#set( $bid = 1 )
+#set( $sflg = false )
+#if($form.bean.page)
+    #set( $page = $format.parseInteger($form.bean.page))
+#else
+    #set( $page = $format.parseInteger("4"))
+#end
+$!consts.getDhtmlxGridXmlHeader()
+#set($decimalFormat = $form.bean.getDefaultRateFormat())
+#set($fontColor = "")
+#if($!gridList.get(0).getDispFontColCd())
+    #set($fontColor = "color:#$!{gridList.get(0).getDispFontColCd()};")
+#end
+## add Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+#set( $prodName = $dataList.getProdName())
+## add End 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+<rows>
+    <row id='$idcnt'>
+       ## add Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+       <cell style='border-width:1px 1px 0px 0px;$!{fontColor}' class='textL'>$!prodName</cell>
+       ## add End 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+       <cell style='border-width:1px 0px 1px 1px;$!{fontColor}' class='textL'>$!gridList.get(0).getInsName()</cell>
+       <cell style='border-width:1px 1px 1px 0px;'></cell>
+       #if($page == 0)
+           #if($gridList.get(0).getMonNnuValueList())
+               #set($valindex1 = 28)
+               #set($valindex2 = 29)
+               #set($valindex3 = 30)
+               #foreach($Sum in $!gridList.get(0).getMonNnuValueList())
+                   #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                       <cell>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                       #if($velocityCount == $valindex1)
+                           #set($val1 = $!Sum)
+                       #end
+                       #if($velocityCount == $valindex2)
+                           #set($val2 = $!Sum)
+                       #end
+                   #elseif($velocityCount == $valindex3)
+                       <cell>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                   #else
+                       <cell>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                   #end
+               #end
+           #end
+       #else
+           #if($gridList.get(0).getMonNnuValueList())
+               #set($valindex1 = 4)
+               #set($valindex2 = 5)
+               #set($valindex3 = 6)
+               #foreach($Sum in $paging.getPagingBean($!gridList.get(0).getMonNnuValueList(),6,$page).getCrntPageData())
+                   <cell>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+               #end
+               #foreach($Sum in $paging.getPagingBean($!gridList.get(0).getMonNnuValueList(),6,5).getCrntPageData())
+                   #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                       <cell>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                       #if($velocityCount == $valindex1)
+                           #set($val1 = $!Sum)
+                       #end
+                       #if($velocityCount == $valindex2)
+                           #set($val2 = $!Sum)
+                       #end
+                   #elseif($velocityCount == $valindex3)
+                       <cell>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                   #else
+                       <cell>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                   #end
+               #end
+           #end
+       #end
+    </row>
+    #set( $srange = $srange + "," + $idcnt)
+    #set( $idcnt = $idcnt + 1 )
+    #foreach($data in $gridList)
+    #if($velocityCount > 1)
+        #set($fontColor = "")
+        #if($!data.getDispFontColCd())
+            #set($fontColor = "color:#$!{data.getDispFontColCd()};")
+        #end
+        #if($data.getTmsTytenName() == "計")
+            #set( $style1 = " style='${fontColor}'")
+            #set( $style2 = " class='textC'")
+        #else
+            #set( $style1 = " style='border-width:1px 1px 0px 1px;${fontColor}' class='textL'" )
+            #set( $style2 = " class='textL'")
+        #end
+        <row id='$idcnt'>
+            <userdata name="bid">$bid</userdata>
+            ## add Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+            <cell style='border-width:0px 1px 0px 0px;'></cell>
+            ## add End 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+            <cell$style1>$!data.getInsName()</cell>
+            <cell$style2>$!data.getTmsTytenName()</cell>
+            #if($page == 0)
+                #if($data.getMonNnuValueList())
+                #set($valindex1 = 28)
+                #set($valindex2 = 29)
+                #set($valindex3 = 30)
+                    #foreach($Sum in $data.getMonNnuValueList())
+                        #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                           <cell>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                           #if($velocityCount == $valindex1)
+                               #set($val1 = $!Sum)
+                           #end
+                           #if($velocityCount == $valindex2)
+                                #set($val2 = $!Sum)
+                           #end
+                        #elseif($velocityCount == $valindex3)
+                            <cell>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                        #else
+                            <cell>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                        #end
+                    #end
+                #end
+            #else
+                #if($data.getMonNnuValueList())
+                    #set($valindex1 = 4)
+                    #set($valindex2 = 5)
+                    #set($valindex3 = 6)
+                    #foreach($Sum in $paging.getPagingBean($data.getMonNnuValueList(),6,$page).getCrntPageData())
+                        <cell>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                    #end
+                    #foreach($Sum in $paging.getPagingBean($data.getMonNnuValueList(),6,5).getCrntPageData())
+                        #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                            <cell>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                            #if($velocityCount == $valindex1)
+                                #set($val1 = $!Sum)
+                            #end
+                            #if($velocityCount == $valindex2)
+                                #set($val2 = $!Sum)
+                            #end
+                        #elseif($velocityCount == $valindex3)
+                            <cell>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                        #else
+                            <cell>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                        #end
+                    #end
+                #end
+            #end
+        </row>
+        #set( $srange = $srange + "," + $idcnt)
+        #set( $idcnt = $idcnt + 1 )
+    #end
+    #end
+
+##計算行だったら
+    ##set( $srange = "" )
+    ##set( $hrange = $hrange + "," + $idcnt )
+    ##set( $idcnt = $idcnt + 1 )
+    ##set( $bid = $bid + 1 )
+##
+    #set( $srowids =  $srowids + $hrange )
+    #set( $hrowids =  "," + 1)
+    ##集計行
+    <userdata name="hrange">$hrange</userdata>
+    <userdata name="srowids">$srowids</userdata>
+    <userdata name="hrowids">$hrowids</userdata>
+</rows>

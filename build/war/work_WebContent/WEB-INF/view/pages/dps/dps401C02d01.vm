@@ -1,0 +1,10 @@
+#set( $layout = "nothingLayout.vm" )
+#set( $dataList = $form.getRequestData("DPS401C02F05_DATA_R"))
+#foreach($data in $dataList)
+#if($data && $data.getInsWsPlanMonNnu())
+    #set( $monNnuList = $data.getInsWsPlanMonNnu())
+    #foreach($monNnuValue in $monNnuList)
+        ,$!monNnuValue.getPreFarAdvancePeriod(),$!monNnuValue.getFarAdvancePeriod(),$!monNnuValue.getAdvancePeriod(),$!monNnuValue.getCurrentPlanValue(),$!monNnuValue.getCurrentPeriod(),$!monNnuValue.getCurrentRate()
+    #end
+#end
+#end

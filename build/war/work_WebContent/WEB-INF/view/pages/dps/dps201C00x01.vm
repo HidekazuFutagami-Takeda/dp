@@ -1,0 +1,75 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS201C00_DATA_R"))
+    #set( $data = $form.getRequestData("DPS201C00_DATA_R"))
+    #set( $dataList = $data.getExceptDistInsDtoList())
+#end
+#if($dataList)
+    $!consts.getDhtmlxGridXmlHeader()
+    <rows total_count='$dataList.size()'>
+    #foreach($resultObj in $dataList)
+        #if($resultObj.insType && !($resultObj.insType.toString().equals("Z")))
+            ##画面登録の場合
+            #if($resultObj.getRegistType() && $resultObj.getRegistType() == "1")
+                #set( $bgClass = "" )
+            ##バッチ登録の場合
+            #else
+                #set( $bgClass = " class='exceptDistOnBatch'" )
+            #end
+            <row id='$velocityCount'>
+                ##登録済の場合
+                #if ($resultObj.upDate)
+                    <userdata name="selectRowId">$resultObj.insNo,$resultObj.jgiNo,$resultObj.upDate.Time</userdata>
+                ##未登録の場合
+                #else
+                    <userdata name="selectRowId">$resultObj.insNo,</userdata>
+                #end
+                ##編集権限がある場合
+                #if ($!security.hasAuthEdit("DPS201"))
+                    <cell $bgClass></cell>
+                ##編集権限がない場合
+                #else
+                    <cell $bgClass disabled="true"></cell>
+                #end
+
+                <cell $bgClass title="施設コード：$resultObj.insNo">
+## mod start 2021/8/17 h.Kaneko 親子紐づけ対応 対象区分を渡すよう改修
+##                    <![CDATA[<a href='#' onClick='cs_openEditDialog("$link.setAction('dps201C02F00').addQueryData('insNo',$resultObj.insNo).addQueryData('dispJgiName',$resultObj.dispJgiName).addQueryData('sosCd',$form.bean.sosCd3)",dps201C00F05);'>$resultObj.insName</a>]]>
+                    <![CDATA[<a href='#' onClick='cs_openEditDialog("$link.setAction('dps201C02F00').addQueryData('insNo',$resultObj.insNo).addQueryData('dispJgiName',$resultObj.dispJgiName).addQueryData('sosCd',$form.bean.sosCd3).addQueryData('insType',$resultObj.insType)",dps201C00F05);'>$resultObj.insName</a>]]>
+## mod end
+                </cell>
+                <cell $bgClass>$resultObj.insType</cell>
+                <cell $bgClass>$resultObj.insClass</cell>
+                #if($resultObj.getDispExceptEstiInsProd() && $resultObj.getDispExceptEstiInsProd().length() > 0)
+                    <cell $bgClass>品目</cell>
+                #elseif($resultObj.getEstimationFlg())
+                    <cell $bgClass>施設</cell>
+                #else
+                    <cell $bgClass></cell>
+                #end
+                #if($resultObj.getDispExceptDistInsProd() && $resultObj.getDispExceptDistInsProd().length() > 0)
+                    <cell $bgClass>品目</cell>
+                #elseif($resultObj.getExceptFlg())
+                    <cell $bgClass>施設</cell>
+                #else
+                    <cell $bgClass></cell>
+                #end
+                <cell $bgClass>
+                #if ($resultObj.upDate)
+                    <![CDATA[$!resultObj.upJgiName<br>($format.toString($resultObj.upDate, "yyyy/MM/dd"))]]>
+                #end
+                </cell>
+                <cell $bgClass>
+                #if($resultObj.dispExceptEstiInsProd)
+                  $!{resultObj.dispExceptEstiInsProd}
+                #end
+                </cell>
+                <cell $bgClass>
+                #if($resultObj.dispExceptDistInsProd)
+                  $!{resultObj.dispExceptDistInsProd}
+                #end
+                </cell>
+            </row>
+        #end
+    #end
+    </rows>
+#end

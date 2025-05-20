@@ -1,0 +1,7 @@
+#set( $layout = "nothingLayout.vm" )
+{
+#foreach ($data in $resultList)
+"$data.code": "$!data.value",
+#end
+"dammy": "dammy"
+}

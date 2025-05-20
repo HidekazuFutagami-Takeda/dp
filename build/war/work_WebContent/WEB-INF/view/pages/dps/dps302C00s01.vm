@@ -1,0 +1,466 @@
+## -------------------------------
+## 営業所まで特定した場合
+## -------------------------------
+#set($dataListFileName = "dps302C00x01.vm")
+#set($GridObjName = "dps302C00s01Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps302C00s01CoverId")
+<script language="javascript">
+<!--
+var ${GridObjName};
+## 初期表示＋読込処理
+function dps302C00F00Grid() {
+    doInitGrid();
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+            ## マイナス金額のテキスト色を更新
+            var rowNum = ${GridObjName}.getRowsNum();
+            for (i = 1; i <= rowNum; i++) {
+                for (j = 8; j <= 13; j++) {
+                    var value = ${GridObjName}.cells(i,j).getValue();
+                    minusStyle(${GridObjName}, i, j, value);
+                    if (typeof value === "string" && value.trim() == "") {
+                        ${GridObjName}.cells(i,j).setValue("");
+                    }
+                }
+                sagakuStyle(${GridObjName},i, 10);
+                sagakuStyle(${GridObjName},i, 13);
+            }
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+## add start 2018/06/15 S.Shiota J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによってヘッダーの文言変更「チーム」⇔「営業所・エリア」
+    ## mod Start 2021/6/30 H.Kaneko step4UAT課題223対応 「所長・AL」の文言変更→「上長」
+    ## var headerSosTitle = "所長・AL";
+    var headerSosTitle = "上長";
+    ## mod End 2021/6/30 H.Kaneko step4UAT課題223対応 「所長・AL」の文言変更→「上長」
+    ## 表示時の営業所が設定されており下位組織が存在する場合は、「チーム」とする
+    #if($form.bean.SosCd3)
+        if(document.getElementById('underSosCnt').value != "0"){
+            headerSosTitle = "TL";
+        }
+    #end
+## add end   2018/06/15 S.Shiota J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによってヘッダーの文言変更「チーム」⇔「営業所・エリア」
+
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ##${GridObjName}.setHeader("選択,品目名称,担当者別計画,#cspan,#cspan,#cspan,#cspan,#cspan,UH,#cspan,#cspan,P,#cspan,#cspan");
+    ${GridObjName}.setHeader("$headerOffice");
+## mod Start 2021/7/15 H.Kaneko step4UAT課題223対応 「所長・AL」の文言変更→「上長」
+## mod Start 2018/06/15 H.Shiota  J18-0002_【DPX】2018年4月組織変更対応（計画支援）(「TL」⇒「所長・AL」に変更)
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.attachHeader("#rspan,#rspan,試算状況,チーム別計画<br>TL公開<br><div id='teamOpenArea'></div>,チーム別計画<br>上長確定<br><div id='teamFixArea'></div>,担当者別計画<br>" + headerSosTitle + "公開<br><div id='tantoOpenArea'></div>,担当者別計画<br>" + headerSosTitle + "修正,担当者別計画<br>上長確定<br><div id='tantoFixArea'></div>,エリア計画<br>[１],担当者別計画<br>積上<br>[２],調整金額<br>[１] &#8210 [２],エリア計画<br>[３],担当者別計画<br>積上<br>[４],調整金額<br>[３] &#8210 [４]", ["","","","","","","vertical-align:top;","","","","","","",""]);
+##    ${GridObjName}.attachHeader("#rspan,#rspan,試算状況,チーム別計画<br>TL公開<br><div id='teamOpenArea'></div>,チーム別計画<br>上長確定<br><div id='teamFixArea'></div>,担当者別計画<br>" + headerSosTitle + "公開<br><div id='tantoOpenArea'></div>,担当者別計画<br>" + headerSosTitle + "修正,担当者別計画<br>上長確定<br><div id='tantoFixArea'></div>,営業所計画<br>[１],担当者別計画<br>積上<br>[２],調整金額<br>[１] &#8210 [２],営業所計画<br>[３],担当者別計画<br>積上<br>[４],調整金額<br>[３] &#8210 [４]", ["","","","","","","vertical-align:top;","","","","","","",""]);
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+##  ${GridObjName}.attachHeader("#rspan,#rspan,試算状況,チーム別計画<br>TL公開<br><div id='teamOpenArea'></div>,チーム別計画<br>所長確定<br><div id='teamFixArea'></div>,担当者別計画<br>" + headerSosTitle + "公開<br><div id='tantoOpenArea'></div>,担当者別計画<br>" + headerSosTitle + "修正,担当者別計画<br>所長確定<br><div id='tantoFixArea'></div>,エリア計画<br>[１],担当者別計画<br>積上<br>[２],調整金額<br>[１] &#8210 [２],エリア計画<br>[３],担当者別計画<br>積上<br>[４],調整金額<br>[３] &#8210 [４]");
+##  ${GridObjName}.attachHeader("#rspan,#rspan,試算状況,チーム別計画<br>TL公開<br><div id='teamOpenArea'></div>,チーム別計画<br>上長確定<br><div id='teamFixArea'></div>,担当者別計画<br>" + headerSosTitle + "公開<br><div id='tantoOpenArea'></div>,担当者別計画<br>" + headerSosTitle + "修正,担当者別計画<br>上長確定<br><div id='tantoFixArea'></div>,営業所計画<br>[１],担当者別計画<br>積上<br>[２],調整金額<br>[１] &#8210 [２],営業所計画<br>[３],担当者別計画<br>積上<br>[４],調整金額<br>[３] &#8210 [４]", ["","","","","","","vertical-align:top;","","","","","","",""]);
+## mod End   2018/06/15 H.Shiota  J18-0002_【DPX】2018年4月組織変更対応（計画支援）(「TL」⇒「所長・AL」に変更)
+    ##${GridObjName}.setInitWidths("30,130,70,85,85,85,85,85,85,85,85,85,85,85");
+	${GridObjName}.setInitWidths("30,130,105,85,85,105,105,105,85,85,85,85,85,85");
+## mod End 2021/7/15 H.Kaneko step4UAT課題223対応 「所長・AL」の文言変更→「上長」
+    ${GridObjName}.setColAlign("center,left,center,center,center,center,center,center,right,right,right,right,right,right");
+    ${GridObjName}.setColTypes("ch,ro,ro,ro,ro,ro,ro,ro,ron,ron,ron,ron,ron,ron");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableDistributedParsing(true,50,300);
+    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps302C00s01', $!gridHeight));
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.setNumberFormat("0,000",8);
+    ${GridObjName}.setNumberFormat("0,000",9);
+    ${GridObjName}.setNumberFormat("0,000",10);
+    ${GridObjName}.setNumberFormat("0,000",11);
+    ${GridObjName}.setNumberFormat("0,000",12);
+    ${GridObjName}.setNumberFormat("0,000",13);
+    ##${GridObjName}.splitAt(2);
+    ${GridObjName}.setStyle("","height:45px;","","");
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    document.getElementById("teamOpenArea").appendChild(document.getElementById("teamOpen").childNodes[0]);
+    document.getElementById("teamFixArea").appendChild(document.getElementById("teamFix").childNodes[0]);
+    document.getElementById("tantoOpenArea").appendChild(document.getElementById("tantoOpen").childNodes[0]);
+    document.getElementById("tantoFixArea").appendChild(document.getElementById("tantoFix").childNodes[0]);
+    ${GridObjName}.attachEvent("onXLE",function(){
+        #set ($clickRowId = $form.bean.getClickRowId())
+        #if ($clickRowId && $clickRowId != "")
+            ##行ＩＤが上から順番に採番されていることが前提のコード(行追加がないので、成り立つ前提)
+            var rowsNum = ${GridObjName}.getRowsNum();
+            if (rowsNum != 'undefined' && rowsNum != null && rowsNum != "" && rowsNum != 0) {
+                var showRow = $clickRowId + 4;
+                if (showRow >= rowsNum) {
+                    showRow = rowsNum;
+                }
+                ${GridObjName}.showRow(1);
+                ${GridObjName}.showRow(showRow);
+            }
+        #end
+    });
+    ## 試算タイプが営⇒担の場合、2列非表示
+    #if($calcType.equals("2"))
+            ${GridObjName}.setColumnHidden(3, true);
+            ${GridObjName}.setColumnHidden(4, true);
+    #end
+
+## add start 2018/06/20 S.Shiota J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによって2列非表示
+    #if($calcType.equals(""))
+        #if($form.bean.SosCd3)
+            if(document.getElementById('underSosCnt').value == "0"){
+                ${GridObjName}.setColumnHidden(3, true);
+                ${GridObjName}.setColumnHidden(4, true);
+            }
+        #end
+    #end
+## add end   2018/06/20 S.Shiota J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによって2列非表示
+
+}
+
+## チーム別計画「公開解除」処理
+function dps302C00F10Execute() {
+    execute('$text.get("DPS302C00.001","dialogue")', '$link.setAction("dps302C00F10Execute")');
+}
+## チーム別計画「公開」処理
+function dps302C00F11Execute() {
+    execute('$text.get("DPS302C00.002","dialogue")', '$link.setAction("dps302C00F11Execute")');
+}
+## チーム別計画「確定解除」処理
+function dps302C00F12Execute() {
+    execute('$text.get("DPS302C00.003","dialogue")', '$link.setAction("dps302C00F12Execute")');
+}
+## チーム別計画「確定」処理
+function dps302C00F13Execute() {
+    ## チーム別計画チェック
+    if (!executeValidationTuneAmount()) {
+        return;
+    }
+    execute('$text.get("DPS302C00.004","dialogue")', '$link.setAction("dps302C00F13Execute")');
+}
+## 担当者別計画「公開解除」処理
+function dps302C00F14Execute() {
+    execute('$text.get("DPS302C00.005","dialogue")', '$link.setAction("dps302C00F14Execute")');
+}
+## 担当者別計画「公開」処理
+function dps302C00F15Execute() {
+    execute('$text.get("DPS302C00.006","dialogue")', '$link.setAction("dps302C00F15Execute")');
+}
+## 担当者別計画「確定解除」処理
+function dps302C00F16Execute() {
+    execute('$text.get("DPS302C00.007","dialogue")', '$link.setAction("dps302C00F16Execute")');
+}
+## 担当者別計画「確定」処理
+function dps302C00F17Execute() {
+    ## 担当者別計画チェック
+    if (!executeValidation() || !executeValidationTeamMrAmount() || !executeValidationMrPlan()) {
+        return;
+    }
+    execute('$text.get("DPS302C00.008","dialogue")', '$link.setAction("dps302C00F17Execute")');
+}
+## 更新処理
+function execute(confirmMsg, actionPath) {
+    ##入力チェック
+    if (!executeValidation()) {
+        return;
+    }
+    ##確認
+    if (!confirm(confirmMsg)) {
+        return;
+    }
+    ##送信データ作成
+    addCheckRowIdList(document.dps302C00Form, ${GridObjName}, 'rowIdList', 'updateRowId', 0);
+    ##送信
+    document.dps302C00Form.action = actionPath;
+    document.dps302C00Form.submit();
+    execute = blockIt;
+}
+## 更新時入力チェック
+function executeValidation() {
+    ## [必須] 組織・従業員
+    value = document.dps302C00Form.sosCd3.value;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    errorMsg = '$text.get("DPC1024E",["組織","エリア"])';
+##    errorMsg = '$text.get("DPC1024E",["組織","営業所"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    addErrorInfo(!isEntered(value), errorMsg);
+    ## [必須] カテゴリ
+    value = document.getElementById("category").value;
+    errorMsg = '$text.get("DPC1003E",["カテゴリ"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+    ## [必須] 品目選択
+    var checkedRows = ${GridObjName}.getCheckedRows(0);
+    errorMsg = '$text.get("DPC1006E",["品目"])';
+    addErrorInfo(!isEntered(checkedRows), errorMsg);
+    return validation();
+}
+## チーム別・営業所・更新時調整金額チェック
+function executeValidationTuneAmount() {
+    var checkedRows = ${GridObjName}.getCheckedRows(0);
+    if (checkedRows != "") {
+        var rowIdList = checkedRows.split(",");
+        for ( var i = 0; i < rowIdList.length; i++) {
+            var index = rowIdList[i];
+            var prodName = ${GridObjName}.getUserData(index,"prodName");
+            var valueUH  = ${GridObjName}.getUserData(index,"uhTeamOfficeSagaku");
+            var valueP   = ${GridObjName}.getUserData(index,"pTeamOfficeSagaku");
+            if (valueUH != "") {
+                if (valueUH != "0") {
+                    var rowInfo = "品目名称【" + prodName + "】:対象【" + '$form.bean.headerUh' + "】";
+                    if (!confirm('$text.get("DPS302C00.009","dialogue", ["' + rowInfo + '"])')) {
+                        return false;
+                    }
+                }
+            }
+            if (valueP != "") {
+                if (valueP != "0") {
+                    var rowInfo = "品目名称【" + prodName + "】:対象【" + '$form.bean.headerP' + "】";
+                    if (!confirm('$text.get("DPS302C00.009","dialogue", ["' + rowInfo + '"])')) {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+    return true;
+}
+## チーム別・担当者別・更新時調整金額チェック
+function executeValidationTeamMrAmount() {
+    var checkedRows = ${GridObjName}.getCheckedRows(0);
+    if (checkedRows != "") {
+        var rowIdList = checkedRows.split(",");
+        for ( var i = 0; i < rowIdList.length; i++) {
+            var index = rowIdList[i];
+            var prodCode = ${GridObjName}.getUserData(index,"prodCode");
+            var url ="$link.setAction('dps302C00F18')";
+            url = url.concat("?sFlg=true");
+            url = url.concat("&checkProdCode=").concat(prodCode);
+            ##結果からメッセージ作成
+            var targetProdNameArr = false;
+            var message = "";
+            try {
+                var text = getPage(url);
+                var obj = JSON.parse(text);
+                var choseiUhFlg = obj.choseiUhFlg;
+                var choseiPFlg = obj.choseiPFlg;
+            } catch(e) {
+            }
+            var prodName = ${GridObjName}.getUserData(index,"prodName");
+            if (choseiUhFlg == "true") {
+                var rowInfo = "品目名称【" + prodName + "】:対象【" + '$form.bean.headerUh' + "】";
+                if (!confirm('$text.get("DPS302C00.009","dialogue", ["' + rowInfo + '"])')) {
+                    return false;
+                }
+            }
+            if (choseiPFlg == "true") {
+                var rowInfo = "品目名称【" + prodName + "】:対象【" + '$form.bean.headerP' + "】";
+                if (!confirm('$text.get("DPS302C00.009","dialogue", ["' + rowInfo + '"])')) {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+## 更新時担当者別計画チェック
+function executeValidationMrPlan() {
+    var checkedRows = ${GridObjName}.getCheckedRows(0);
+    if (checkedRows != "") {
+        var rowIdList = checkedRows.split(",");
+        for ( var i = 0; i < rowIdList.length; i++) {
+            var index = rowIdList[i];
+            var prodName = ${GridObjName}.getUserData(index,"prodName");
+            var valueUH  = ${GridObjName}.cells(index,9).getValue().toString();
+            var valueP   = ${GridObjName}.cells(index,12).getValue().toString();
+            if (valueUH == "") {
+                var rowInfo = "品目名称【" + prodName + "】:対象【" + '$form.bean.headerUh' + "】";
+                if (!confirm('$text.get("DPS302C00.010","dialogue", ["' + rowInfo + '"])')) {
+                    return false;
+                }
+            }
+            if (valueP == "") {
+                var rowInfo = "品目名称【" + prodName + "】:対象【" + '$form.bean.headerP' + "】";
+                if (!confirm('$text.get("DPS302C00.010","dialogue", ["' + rowInfo + '"])')) {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+##帳票出力
+var miniWindow;
+function dps998C00F00() {
+    var sosCd3 = document.dps302C00Form.sosCd3.value;
+    var category = document.dps302C00Form.category.value;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    errorMsg = '$text.get("DPC1024E",["組織","エリア"])';
+##    errorMsg = '$text.get("DPC1024E",["組織","営業所"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    var addFlg = addErrorInfo(!isEntered(sosCd3), errorMsg);
+    var sosCd4 = document.dps302C00Form.sosCd4.value;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    errorMsg = '$text.get("DPC1024E",["組織","エリア"])';
+##    errorMsg = '$text.get("DPC1024E",["組織","営業所"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    addFlg = addErrorInfo(isEntered(sosCd4), errorMsg);
+
+    if (!addFlg) {
+        if(win_closed(miniWindow)) {
+            var actionPath = '$link.setAction('dps998C00F00')';
+            actionPath = actionPath.concat('?outputSosCd=').concat(sosCd3).concat('&category=').concat(category);
+            miniWindow = window.open(actionPath, "download", "width=500,height=250");
+        }
+        miniWindow.focus();
+        return validation();
+    } else {
+        return validation();
+    }
+}
+## 計画値の一括コピー方法確認ダイアログ起動処理
+function dps302C06F00() {
+    ##起動フラグを初期化
+    document.dps302C00Form.copyFlg.value = "false";
+    ##入力チェック
+    if (!executeValidation()) {
+        return;
+    }
+    var url ="$link.setAction('dps302C06F00')";
+    url = url.concat("?calcType=").concat(document.dps302C00Form.calcType.value);
+    url = url.concat("&sosCd3=").concat("$!form.bean.sosCd3");
+    var childWindow = window.open(url,'window',"width=500px,height=400px");
+    ## 子画面が閉じるまで待機
+    var interval = setInterval(function(){
+        if(childWindow.closed){
+            clearInterval(interval);
+            if(document.dps302C00Form.copyFlg.value == "true"){
+                ## コピー中の表示切替
+                document.getElementById("${GridObjName}").style.display = "none";
+                document.getElementById("dps302C00s01CopyId").style.display = "block";
+                ## 一括コピー処理実行
+                dps302C00F20Execute();
+            }
+        }
+    }, 200);
+}
+## 計画値の一括コピー処理
+function dps302C00F20Execute() {
+    ##送信データ作成
+    addCheckRowIdList(document.dps302C00Form, ${GridObjName}, 'rowIdList', 'updateRowId', 0);
+    ##送信
+    var actionPath = '$link.setAction('dps302C00F20Execute')';
+    document.dps302C00Form.action = actionPath;
+    document.dps302C00Form.submit();
+    execute = blockIt;
+    dps302C00F05 = blockIt;
+    dps302C06F00 = blockIt;
+}
+//-->
+</script>
+##試算タイプ
+<input type="hidden" id="calcType" name="calcType" value="$!calcType" />
+##コピー処理起動フラグ
+<input type="hidden" id="copyFlg" name="copyFlg" value="false" />
+##コピー対象
+<input type="hidden" id="copyTarget" name="copyTarget" value="" />
+##コピー方法
+<input type="hidden" id="copyWay" name="copyWay" value="" />
+<table class="gridLine" cellspacing="0" cellpadding="1" align="left">
+    <tr>
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        <td class="gridIndex" style="width: 150px;">エリア計画</td>
+##        <td class="gridIndex" style="width: 150px;">営業所計画</td>
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        <td style="padding-left: 5px; padding-right: 5px;">
+            #if ( $form.getRequestData("DPS302C00_DATA_R_OFFICE_PLAN"))
+                #set( $officePlanStatus = $form.getRequestData("DPS302C00_DATA_R_OFFICE_PLAN") )
+                #set( $officePlanStatusName = "" )
+                #set( $officePlanStatusDate = "" )
+                #if ( $officePlanStatus.isDraft )
+                    #set( $officePlanStatusName = "下書" )
+                #elseif ( $officePlanStatus.isCompleted )
+                    #set( $officePlanStatusName = "確定" )
+                #else
+                    #set( $officePlanStatusName = "未登録" )
+                #end
+                #if ( $officePlanStatus.upDate )
+                    #set( $officePlanStatusDate = "($format.toString($officePlanStatus.upDate, 'yyyy/MM/dd HH:mm'))" )
+                #end
+                <label>$officePlanStatusName $officePlanStatusDate</label>
+            #else
+                <label>未登録</label>
+            #end
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td style="width:10px;"></td>
+        <td class="statusEnd legendSize">&nbsp;</td>
+        <td style="padding-right:10px;"><label>：作業が完了している状態</label></td>
+        <td class="statusIng legendSize">&nbsp;</td>
+        <td style="padding-right:10px;"><label>：作業を実行することが可能な状態</label></td>
+        <td class="statusNot legendSize">&nbsp;</td>
+        <td style="padding-right:10px;"><label>：作業を実行することができない状態</label></td>
+    </tr>
+</table>
+<div class="floatL" style="margin-top:0px; margin-bottom:0px;">
+<a href='#' onClick='allCheckboxChange(${GridObjName},0,true)' class="allCheckboxChange">すべての品目を選択</a>
+<a href='#' onClick='allCheckboxChange(${GridObjName},0,false)' class="allCheckboxChange">すべての品目を解除</a>
+</div>
+#if($form.bean.category == "$vaccineCode")
+    <div class="floatR" style="vertical-align:bottom;align:right"><label>$consts.tableHeaderB</label></div>
+#else
+    <div class="floatR" style="vertical-align:bottom;align:right"><label>$consts.tableHeaderY</label></div>
+#end
+<div class="clear"></div>
+#loadingGridDiv2("${GridObjName}", "${CoverId}", "width: 99.5%; clear: both;")
+<div id="dps302C00s01CopyId" class="dhtmlxGrid_loading" style="display:none">
+<img src='$link.getContextPath()/cmn/images/loading.gif' />$text.get("DPS302C00.011","dialogue")
+</div>
+<div class="guide">
+※品目名称をクリックすると、担当者別計画入力画面を表示します。担当者別計画の状態は、次の状態または直前の状態にのみ変更可能です。<br>
+※担当者別計画の状態を変更する場合は、変更対象の品目を選択(複数可)し、【公開】【確定】【解除】ボタンをクリックしてください。<br>
+</div>
+<div style="display:none">
+    #if ($!security.hasAuthEdit("DPS302C00"))
+    <div id="teamOpen"><span>
+        <input type="button" value="公開" onclick="dps302C00F11Execute()" />
+        <input type="button" value="解除" onclick="dps302C00F10Execute()" style="margin-left:5px;"/>
+    </span></div>
+    #else
+        <div id="teamOpen"><input type="hidden" name="dummyTeamOpen" value="dummyTeamOpen" /></div>
+    #end
+    #if ($!security.hasAuthEdit("DPS302C00"))
+    <div id="teamFix"><span>
+        <input type="button" value="確定" onclick="dps302C00F13Execute()" />
+        <input type="button" value="解除" onclick="dps302C00F12Execute()" style="margin-left:5px;"/>
+    </span></div>
+    #else
+        <div id="teamFix"><input type="hidden" name="dummyTeamFix" value="dummyTeamFix" /></div>
+    #end
+    #if ($!security.hasAuthEdit("DPS302C00"))
+    <div id="tantoOpen"><span>
+        <input type="button" value="公開" onclick="dps302C00F15Execute()" />
+        <input type="button" value="解除" onclick="dps302C00F14Execute()" style="margin-left:5px;"/>
+    </span></div>
+    #else
+        <div id="tantoOpen"><input type="hidden" name="dummyTantoOpen" value="dummyTeamFix" /></div>
+    #end
+    #if ($!security.hasAuthEdit("DPS302C00"))
+    <div id="tantoFix"><span>
+        <input type="button" value="確定" onclick="dps302C00F17Execute()" />
+        <input type="button" value="解除" onclick="dps302C00F16Execute()" style="margin-left:5px;"/>
+    </span></div>
+    #else
+        <div id="tantoFix"><input type="hidden" name="dummyTantoFix" value="dummyTantoFix" /></div>
+    #end
+</div>
