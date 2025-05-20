@@ -1,0 +1,3 @@
+#set( $layout = "nothingLayout.vm" )
+#set( $insMst = $form.getRequestData("DPM911C00F10_DATA_R"))
+$!insMst.getInsNo(),$!insMst.getInsName(),$!insMst.getInsType(),$!insMst.getInsClass(),$!insMst.getJgiName(),$!insMst.getShikuchosonMeiKj(),$!insMst.getAddrCodePref(),$!insMst.getAddrCodeCity(),$!insMst.getActivityType(),$!insMst.getFukenMeiKj()

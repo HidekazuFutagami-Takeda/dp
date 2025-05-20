@@ -1,0 +1,665 @@
+## (医)特約店別計画追加画面
+#set($pageTitle = $text.get("dps502C02","title"))
+#set($layout = "dialogueLayout.vm" )
+#set($bodyOnloadMethod = "dps502C02F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($GridObjName = "dps502C02Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps502C02CoverId")
+#set($dataListFileName = "dps502C02x01.vm")
+
+#if($form.getRequestData("DPS502C02_DATA_R"))
+    #set($resultData = $form.getRequestData("DPS502C02_DATA_R"))
+    #set($resultDataList = $form.getRequestData("DPS502C02_DATA_R").tmsTytenPlanAddDetailDtoList)
+#end
+
+<script language="javascript">
+<!--
+var ${GridObjName};
+var editFlg = false;
+document.getElementById("closeWindow").value = "true";
+## 初期表示
+function dps502C02F00(){
+    ## グリッド初期化
+    doInitGrid();
+    ## グリッドデータ読み込み
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+           ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+    var officeName = document.getElementById("officeName").value;
+    if(officeName){
+        document.getElementById("sos").childNodes[0].nodeValue = officeName;
+    }else{
+        document.getElementById("sos").childNodes[0].nodeValue = "　";
+    }
+    document.getElementById("tmsTytenCd").focus();
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+	${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("品目名称,特約店別計画,#cspan");
+    ${GridObjName}.attachHeader("#rspan,UH,P");
+    ${GridObjName}.setInitWidths("220,130,130");
+    ${GridObjName}.setColAlign("left,right,right");
+    ${GridObjName}.setColTypes("ro,edn,edn");
+    ${GridObjName}.enableResizing("false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false");
+    for(i=1;i<=2;i++){
+        ${GridObjName}.setNumberFormat("0,000",i);
+    }
+    ${GridObjName}.enableDistributedParsing(true,50,260);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps502C02', $!gridHeight));
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.init();
+    ${GridObjName}.enableEditEvents(true, false, true);
+    ##  --- 編集中に登録ボタンが押された場合のチェッカー
+    window.editValueChecker = new EditingValueChecker(${GridObjName},'$text.get("DPC1036E",[""])' );
+
+    ${GridObjName}.attachEvent("onEditCell",function(stage,rowId,cellInd,newvalue,oldvalue){
+		## --- 編集中に登録ボタンが押された場合のチェック用に値とstageを保持 ---
+		window.editValueChecker.saveState(stage,newvalue);
+        if(stage == 1){
+            editFlg=true;
+            setIme(${GridObjName},rowId,cellInd,"inactive",10);
+        }
+        if(stage == 2){
+            if(newvalue.toString() != oldvalue.toString()){
+                intCheck(${GridObjName},rowId,cellInd,newvalue);
+            }
+        }
+        return true;
+    });
+    ${GridObjName}.attachEvent("onRowCreated",function(id){
+        var cell = ${GridObjName}.cells(id,0);
+        if (cell.getAttribute("disabled")) cell.setDisabled(true);
+    });
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift, new Array("1","2"));
+        if (keycode == 86 && ctrl) {
+            editFlg=true;
+        }
+        return true;
+    });
+    ${GridObjName}.attachEvent("onRowSelect",function(rowId,cellInd){
+        ${GridObjName}.editCell();
+    });
+}
+## 表示（特約店）処理
+function dps502C02F05(){
+    ##入力チェック
+    if (!dps502C02F05Validation()) {
+        return;
+    }
+
+    ## 確認
+    if(editFlg){
+        if(!window.confirm('$text.get("DPC999C99.001","dialogue")')){
+            return false;
+        }
+    }
+
+    ##送信
+    var actionPath = '$link.setAction('dps502C02F05')';
+    document.dps502C02Form.action = actionPath;
+    document.dps502C02Form.submit();
+    dps502C02F10 = blockIt;
+    dps502C02F15 = blockIt;
+    dps502C02F16 = blockIt;
+    dps502C02F05 = blockIt;
+}
+## 表示（特約店）処理の入力チェック
+function dps502C02F05Validation(){
+    ## [必須] 特約店コード
+    tmsTytenCd = document.dps502C02Form.tmsTytenCd.value;
+    errorMsg = '$text.get("DPC1003E",["特約店コード"])';
+    isAdded = addErrorInfo(!isEntered(tmsTytenCd), errorMsg);
+
+    ## [半角数値] 特約店コード
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["特約店コード","半角数値"])';
+        isAdded = addErrorInfo(!isNumber(tmsTytenCd), errorMsg);
+
+        if (!isAdded) {
+            ## [桁数(13桁以上)]
+            min = 13;
+            errorMsg = '$text.get("DPC1027E",["特約店コード","' + min + '"])';
+            addErrorInfo(!isByteInRangeMin(tmsTytenCd, min), errorMsg);
+
+            ## [桁数(13桁以下)]
+            max = 13;
+            errorMsg = '$text.get("DPC1027E",["特約店コード","' + max + '"])';
+            addErrorInfo(!isByteInRange(tmsTytenCd, max), errorMsg);
+        }
+    }
+    return validation();
+}
+## 表示（営業所）処理
+function dps502C02F10(){
+    ##入力チェック
+    if (!dps502C02F10Validation()) {
+        return;
+    }
+    ## 確認
+    if(editFlg){
+        if(!window.confirm('$text.get("DPC999C99.001","dialogue")')){
+            return false;
+        }
+    }
+    ##送信
+    var actionPath = '$link.setAction('dps502C02F10')';
+    document.dps502C02Form.action = actionPath;
+    document.dps502C02Form.submit();
+    dps502C02F05 = blockIt;
+    dps502C02F15 = blockIt;
+    dps502C02F16 = blockIt;
+    dps502C02F10 = blockIt;
+}
+## 表示（営業所）処理の入力チェック
+function dps502C02F10Validation(){
+    ## [必須] 支店コード
+    brCodeInput = document.dps502C02Form.brCodeInput.value;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    errorMsg = '$text.get("DPC1003E",["リージョンコード"])';
+##    errorMsg = '$text.get("DPC1003E",["支店コード"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    isAdded = addErrorInfo(!isEntered(brCodeInput), errorMsg);
+    ## [半角数値] 支店コード
+    if(!isAdded){
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        errorMsg = '$text.get("DPC1004E",["リージョンコード","半角数値"])';
+##        errorMsg = '$text.get("DPC1004E",["支店コード","半角数値"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        isAdded = addErrorInfo(!isNumber(brCodeInput), errorMsg);
+        if (!isAdded) {
+            ## [桁数(3桁以上)]
+            min = 3;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            errorMsg = '$text.get("DPC1027E",["リージョンコード","' + min + '"])';
+##            errorMsg = '$text.get("DPC1027E",["支店コード","' + min + '"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            addErrorInfo(!isByteInRangeMin(brCodeInput, min), errorMsg);
+
+            ## [桁数(3桁以下)]
+            max = 3;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            errorMsg = '$text.get("DPC1027E",["リージョンコード","' + max + '"])';
+##            errorMsg = '$text.get("DPC1027E",["支店コード","' + max + '"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            addErrorInfo(!isByteInRange(brCodeInput, max), errorMsg);
+        }
+    }
+    ## [必須] 営業所コード
+    distCodeInput = document.dps502C02Form.distCodeInput.value;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    errorMsg = '$text.get("DPC1003E",["エリアコード"])';
+##    errorMsg = '$text.get("DPC1003E",["営業所コード"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    isAdded = addErrorInfo(!isEntered(distCodeInput), errorMsg);
+
+    ## [半角数値] 支店コード
+    if(!isAdded){
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        errorMsg = '$text.get("DPC1004E",["エリアコード","半角数値"])';
+##        errorMsg = '$text.get("DPC1004E",["営業所コード","半角数値"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        isAdded = addErrorInfo(!isNumber(distCodeInput), errorMsg);
+        if (!isAdded) {
+            ## [桁数(3桁以上)]
+            min = 3;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            errorMsg = '$text.get("DPC1027E",["エリアコード","' + min + '"])';
+##            errorMsg = '$text.get("DPC1027E",["営業所コード","' + min + '"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            addErrorInfo(!isByteInRangeMin(distCodeInput, min), errorMsg);
+            ## [桁数(3桁以下)]
+            max = 3;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            errorMsg = '$text.get("DPC1027E",["エリアコード","' + max + '"])';
+##            errorMsg = '$text.get("DPC1027E",["営業所コード","' + max + '"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            addErrorInfo(!isByteInRange(distCodeInput, max), errorMsg);
+        }
+    }
+    return validation();
+}
+## 検索処理
+function dps502C02F15(){
+    ##入力チェック
+    if (!dps502C02F15Validation()) {
+        return;
+    }
+    ## 確認
+    if(editFlg){
+        if(!window.confirm('$text.get("DPC999C99.001","dialogue")')){
+            return false;
+        }
+    }
+    ##送信
+    var actionPath = '$link.setAction('dps502C02F15')';
+    document.dps502C02Form.action = actionPath;
+    document.dps502C02Form.submit();
+    dps502C02F05 = blockIt;
+    dps502C02F10 = blockIt;
+    dps502C02F16 = blockIt;
+    dps502C02F15 = blockIt;
+}
+## 検索処理 入力チェック
+function dps502C02F15Validation(){
+    ## [必須] 特約店コード
+    tmsTytenCd = document.dps502C02Form.tmsTytenCd.value;
+    errorMsg = '$text.get("DPC1003E",["特約店コード"])';
+    isAdded = addErrorInfo(!isEntered(tmsTytenCd), errorMsg);
+    ## [半角数値] 特約店コード
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["特約店コード","半角数値"])';
+        isAdded = addErrorInfo(!isNumber(tmsTytenCd), errorMsg);
+        if (!isAdded) {
+            ## [桁数(13桁以上)]
+            min = 13;
+            errorMsg = '$text.get("DPC1027E",["特約店コード","' + min + '"])';
+            addErrorInfo(!isByteInRangeMin(tmsTytenCd, min), errorMsg);
+
+            ## [桁数(13桁以下)]
+            max = 13;
+            errorMsg = '$text.get("DPC1027E",["特約店コード","' + max + '"])';
+            addErrorInfo(!isByteInRange(tmsTytenCd, max), errorMsg);
+        }
+    }
+
+    ## [必須] 支店コード
+    brCodeInput = document.dps502C02Form.brCodeInput.value;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    errorMsg = '$text.get("DPC1003E",["リージョンコード"])';
+##    errorMsg = '$text.get("DPC1003E",["支店コード"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    isAdded = addErrorInfo(!isEntered(brCodeInput), errorMsg);
+    ## [半角数値] 支店コード
+    if(!isAdded){
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        errorMsg = '$text.get("DPC1004E",["リージョンコード","半角数値"])';
+##        errorMsg = '$text.get("DPC1004E",["支店コード","半角数値"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        isAdded = addErrorInfo(!isNumber(brCodeInput), errorMsg);
+        if (!isAdded) {
+            ## [桁数(3桁以上)]
+            min = 3;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            errorMsg = '$text.get("DPC1027E",["リージョンコード","' + min + '"])';
+##            errorMsg = '$text.get("DPC1027E",["支店コード","' + min + '"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            addErrorInfo(!isByteInRangeMin(brCodeInput, min), errorMsg);
+
+            ## [桁数(3桁以下)]
+            max = 3;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            errorMsg = '$text.get("DPC1027E",["リージョンコード","' + max + '"])';
+##            errorMsg = '$text.get("DPC1027E",["支店コード","' + max + '"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            addErrorInfo(!isByteInRange(brCodeInput, max), errorMsg);
+        }
+    }
+
+    ## [必須] 営業所コード
+    distCodeInput = document.dps502C02Form.distCodeInput.value;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    errorMsg = '$text.get("DPC1003E",["エリアコード"])';
+##    errorMsg = '$text.get("DPC1003E",["営業所コード"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    isAdded = addErrorInfo(!isEntered(distCodeInput), errorMsg);
+    ## [半角数値] 支店コード
+    if(!isAdded){
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        errorMsg = '$text.get("DPC1004E",["エリアコード","半角数値"])';
+##        errorMsg = '$text.get("DPC1004E",["営業所コード","半角数値"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        isAdded = addErrorInfo(!isNumber(distCodeInput), errorMsg);
+        if (!isAdded) {
+            ## [桁数(3桁以上)]
+            min = 3;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            errorMsg = '$text.get("DPC1027E",["エリアコード","' + min + '"])';
+##            errorMsg = '$text.get("DPC1027E",["営業所コード","' + min + '"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            addErrorInfo(!isByteInRangeMin(distCodeInput, min), errorMsg);
+            ## [桁数(3桁以下)]
+            max = 3;
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            errorMsg = '$text.get("DPC1027E",["エリアコード","' + max + '"])';
+##            errorMsg = '$text.get("DPC1027E",["営業所コード","' + max + '"])';
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            addErrorInfo(!isByteInRange(distCodeInput, max), errorMsg);
+        }
+    }
+    return validation();
+}
+## 登録処理
+function dps502C02F16(){
+
+    ## --- 編集中セル値の登録時チェック ---
+	if(window.editValueChecker.isValid() == false){
+		return;
+	}
+
+    ##入力チェック
+    if (!dps502C02F16Validation()) {
+        return;
+    }
+    ##確認
+    if (!confirm('$text.get("DPS502C02.001","dialogue")')) {
+        return;
+    }
+    ##送信データ作成
+    for (i = 1; i <= ${GridObjName}.getRowsNum(); i++) {
+        if(${GridObjName}.getUserData(i, "rowType") != "input"){
+            continue;
+        }
+        var userData = ${GridObjName}.getUserData(i, 'prodCode');
+        if(userData == null || userData == ""){continue;}
+        userData += "," + ${GridObjName}.cells(i,1).getValue();
+        userData += "," + ${GridObjName}.cells(i,2).getValue();
+        ${GridObjName}.setUserData(i, 'updateRowId', userData);
+    }
+    addRowIdList(document.dps502C02Form, ${GridObjName}, 'rowIdList', 'updateRowId');
+    ##送信
+    var actionPath = '$link.setAction('dps502C02F16Execute')';
+    document.dps502C02Form.action = actionPath;
+    document.dps502C02Form.submit();
+    dps502C02F05 = blockIt;
+    dps502C02F10 = blockIt;
+    dps502C02F15 = blockIt;
+    dps502C02F16 = blockIt;
+}
+## 登録処理時入力チェック
+function dps502C02F16Validation(){
+	for (rowId = 1; rowId <= ${GridObjName}.getRowsNum(); rowId++) {
+        if(${GridObjName}.getUserData(rowId, "rowType") != "input"){
+            continue;
+        }
+        prodName = ${GridObjName}.cells(rowId, 0).getValue();
+        messageHeader = "品目【" + prodName + "】の";
+        ##特約店別修正計画UH
+        errorMsgUh = '修正計画UH';
+        plannedValueUh = ${GridObjName}.cells(rowId, 1).getValue();
+        plannedValueUh += "";
+        amountValidation(errorMsgUh,plannedValueUh,10,true,messageHeader);
+        ##特約店別計画P
+        errorMsgP = '修正計画P';
+        plannedValueP = ${GridObjName}.cells(rowId, 2).getValue();
+        plannedValueP += "";
+        amountValidation(errorMsgP,plannedValueP,10,true,messageHeader);
+    }
+    return validation();
+}
+## 閉じる処理
+function closeWindow() {
+    if (editFlg) {
+        if (window.confirm('$text.get("DPC999C99.001","dialogue")')) {
+            try {
+                window.close();
+            } catch (e){}
+        }
+    }
+    else {
+        try {
+            window.close();
+        } catch (e){}
+    }
+}
+//-->
+## 特約店選択ダイアログを開く
+function openTytenDialog(){
+    var url = '$link.setAction("dps912C00F00").addQueryData("tmsSelectMode","$tmsselect.getGrayAndEnableButtonMode()").addQueryData("tytenApplyFuncName","dps502C02TytenApply")';
+    var windowname = "grandchildwindow"
+    openModalWindowW3(url, windowname);
+}
+## 特約店選択ダイアログ コールバック
+function dps502C02TytenApply(tytenCd, tytenName){
+    document.getElementById("tmsTytenCd").value = tytenCd;
+    document.getElementById("tmsTytenName").value = tytenName;
+    document.getElementById("tmsTytenNameLabel").innerHTML = "<label>" + tytenName + "</label>";
+}
+## 組織選択ダイアログ コールバック
+function dps502C02SosApply(sosCd, jgiNo, sosMaxSrchGetValue){
+	let memorizer = new CategoryAndProdCodeMemorizerForDps();
+    ## 共通コールバック関数呼び出し
+    sosApplyExt(sosCd, jgiNo, sosMaxSrchGetValue,false);
+    ## テキストにコピー
+    document.getElementById("brCodeInput").value = document.getElementById("brCode").value;
+    document.getElementById("distCodeInput").value = document.getElementById("distCode").value;
+    document.getElementById("officeName").value = document.getElementById("sos").childNodes[0].nodeValue;
+    changeCategory();
+    memorizer.undoCategoryCodeValue();
+}
+##組織選択ダイアログを開く
+function open502SosSearchDialog(sosApplyFuncName, sosSrchPtnType, sosMinSrchValue, sosMaxSrchGetValue, sosAllDispFlg){
+	var initSosCodeValue = document.getElementById('initSosCodeValue');
+	var url = "$link.setAction('dps910C00F00')?sosApplyFuncName=" + sosApplyFuncName + "&sosSrchPtnType=" + sosSrchPtnType + "&sosMinSrchValue=" + sosMinSrchValue + "&sosMaxSrchGetValue=" + sosMaxSrchGetValue + "&sosInitSosCodeValue=" + initSosCodeValue.value + "&sosAllDispFlg=" + sosAllDispFlg + "&includeSeikei=false";
+	var windowname = "grandchildwindow"
+	openModalWindowW3(url,windowname);
+}
+
+## 組織・従業員選択後の処理
+function changeSos(sosCd, jgiNo, sosMaxSrchGetValue, etcSosFlg) {
+    sosApply(sosCd, jgiNo, sosMaxSrchGetValue, etcSosFlg);
+    changeCategory();
+}
+
+## カテゴリリストの変更処理
+## 組織・担当者を変更した時
+function changeCategory() {
+    var form = document.dps502C02Form;
+    ## 選択した組織のカテゴリ
+    var sosCategoryAry = document.getElementById('sosCategory').value.split(',');
+
+    ## 組織コードの取得
+    var sosCd;
+    if(isEntered(form.sosCd3.value)){
+      sosCd = form.sosCd3.value;
+    } else {
+      sosCd = null;
+    }
+
+    ## 計画対象カテゴリ領域より、立案レベルを条件にカテゴリを取得
+    var planLvCtgList = [];
+    if (isEntered(form.sosCd3.value)) {
+      planLvCtgList = [
+                      #foreach($val in $service.getDpsCategoryByPlanLevel($form.getField("DPS502C02_PLANLEVEL_WS")))
+                      , '$val'
+                      #end
+                      ];
+    }
+
+    ## 選択した組織のカテゴリは、このタイミングでvelocityで取得できないので、カテゴリを一旦全て取得
+    var categoryList = [
+                      #foreach($codeAndValue in $service.getDpsCategoryPlanList(null, '1', false))
+                      , { text: '$codeAndValue.value', value: '$codeAndValue.code' }
+                      #end
+                     ];
+
+    ## カテゴリのselectbox
+    var prodCategory = document.getElementsByName('category')[0];
+    ## 一旦selectboxのoptionを削除
+    while(category.lastChild)
+    {
+        category.removeChild(category.lastChild);
+    }
+
+    ## optionを作成
+    var option;
+    document.createElement('option');
+
+    ## 組織選択時
+    ## 選択した組織のカテゴリのみ残す
+    for (var i = 1; i < categoryList.length; i++){
+        for(var j = 0; j < sosCategoryAry.length; j++) {
+            if (categoryList[i].value == sosCategoryAry[j] && planLvCtgList.includes(categoryList[i].value)) {
+                option = document.createElement('option');
+                option.setAttribute('value', categoryList[i].value);
+                option.innerHTML = categoryList[i].text;
+                prodCategory.appendChild(option);
+            }
+        }
+    }
+}
+//-->
+</script>
+
+## mod Start 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+##<div class="disp" style="padding:0px;margin:5px;">
+<div class="disp" style="padding:0px; margin:5px 5px 0px 5px;">
+## mod End 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+<form name="dps502C02Form" method="post">
+## 検索条件
+<div align="left" style="float: left;width: 100%;">
+    <table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+        <td class="gridIndex" style="width:150px;">特約店コード*</td>
+        <td style="width:300px;">
+            <input type="text" name="tmsTytenCd" id="tmsTytenCd" value="$!form.bean.tmsTytenCd" size="15" maxlength="13" style="ime-mode:disabled" />
+        </td>
+        <td style="padding-left:5px">
+            <input type="button"  value="表示" onClick="dps502C02F05()"  style="width:80px;" />
+        </td>
+    </tr>
+    <tr>
+        <td class="gridIndex">特約店</td>
+        <td>
+            <table class="gridLine" cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+            <tr>
+                <td style="width:300px;">
+                    <nobr><label id="tmsTytenNameLabel">$!form.bean.tmsTytenName　</label></nobr>
+                    <input type="hidden" name="tmsTytenName" id="tmsTytenName" value="$!form.bean.tmsTytenName" />
+                </td>
+            </tr>
+            </table>
+        </td>
+        <td style="padding-left:5px">
+            <input type="button" value="選択" onClick="openTytenDialog()" style="width:80px;" />
+        </td>
+    </tr>
+    </table>
+    <div style="padding:2px"></div>
+    <table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        <td class="gridIndex" style="width:150px;">リージョンコード*</td>
+##        <td class="gridIndex" style="width:150px;">支店コード*</td>
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        <td style="width:60px;">
+            <input type="text" name="brCodeInput" id="brCodeInput" value="$!form.bean.brCodeInput"  size="8" maxlength="3" style="ime-mode:disabled" />
+        </td>
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        <td class="gridIndex" style="width:150px;">エリアコード*</td>
+##        <td class="gridIndex" style="width:150px;">営業所コード*</td>
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        <td style="width:60px;">
+            <input type="text" name="distCodeInput" id="distCodeInput" value="$!form.bean.distCodeInput" size="8" maxlength="3" style="ime-mode:disabled" />
+        </td>
+        <td>
+            <input type="button"  value="表示" onClick="dps502C02F10()" style="width:80px;" />
+        </td>
+    </tr>
+    <tr>
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        <td class="gridIndex">エリア</td>
+##        <td class="gridIndex">営業所</td>
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        <td colspan="4">
+            ## 支店検索
+            <input type="hidden" id="sosCd2" name="sosCd2" />
+            <input type="hidden" id="sosCd3" name="sosCd3"  />
+            <input type="hidden" id="sosCd4" name="sosCd4"  />
+            <input type="hidden" id="jgiNo" name="jgiNo"  />
+            <input type="hidden" id="initSosCodeValue" name="initSosCodeValue"  value="$!security.defaultSosCd"/>
+            <input type="hidden" id="brCode" name="brCode"  />
+            <input type="hidden" id="distCode" name="distCode"  />
+            <input type="hidden" id="etcSosFlg" name="etcSosFlg"  />
+            <input type="hidden" id="oncSosFlg" name="oncSosFlg"  />
+            ## add start 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+            <input type="hidden" id="sosCategory" name="sosCategory"  />
+            ## add end 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+            ## add start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+            <input type="hidden" id="sosSubCategory" name="sosSubCategory"  />
+            <input type="hidden" id="underSosCnt" name="underSosCnt"  />
+            ## add end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+            <table cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+            <tr>
+                <td>
+                    <table class="gridLine" cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+                        <tr>
+                            <td style="width:281px;padding:0 10px;">
+                                <nobr><label id="sos">　</label></nobr>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td style="padding-left:5px">
+                <input type="button" value="選択" style="width:80px;" onclick="open502SosSearchDialog('dps502C02SosApply','01','02','02',true)" />
+                </td>
+            </tr>
+            </table>
+
+            <input type="hidden" name="officeName" id="officeName" value="$!form.bean.officeName" />
+        </td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width:150px;">カテゴリ*</td>
+        <td>
+        <table  cellspacing="0" cellpadding="0">
+            <tr>
+                <td>#select ("category", $!form.bean.prodCategoryList, $!form.bean.category)</td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    </table>
+</div>
+<div align="left" style="float: left;width: 100%; margin-top:5px; margin-bottom:2px;">
+	#set($disabled = "disabled")
+	#if($resultDataList && $resultData.addFlg)
+	    #set($disabled = "")
+	#end
+	<div style="display: flex;">
+		<input type="button" value="検索" onClick="dps502C02F15()" style="width:80px;" />
+		<input type="button" value="登録する" onClick="dps502C02F16()" style="width:80px;" $disabled />
+		<input type="button" value="閉じる" onClick="closeWindow()" style="width:80px;" />
+	    <div style="width:10px;"></div>
+		<div class="statusNot legendSize">&nbsp;</div>
+		<div style="padding-right:10px;"><label>：計画立案対象外特約店</label></div>
+	</div>
+</div>
+
+## 品目一覧
+<div align="left" style="float: left; width: 100%;">
+<table style="width: 52%;" cellspacing="0" cellpadding="1">
+    <tr>
+## mod Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+        #if($form.bean.kaBaseKb == "1")
+        <td class="label" style="text-align:right;vertical-align:bottom;">$consts.tableHeaderY</td>
+        #else
+        <td class="label" style="text-align:right;vertical-align:bottom;">$consts.tableHeaderS</td>
+        #end
+## mod End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+    </tr>
+</table>
+</div>
+<div align="left" style="float: left;width: 100%;">
+	#loadingGridDiv4("${GridObjName}", "${CoverId}", "width:55%; clear:both;")
+</div>
+<div class="guide">※修正計画UHおよび修正計画Pは、10千円単位で入力してください。<br></div>
+<br>
+## hidden項目
+#token()
+<input type="hidden" name="kaBaseKb"  value="$!form.bean.kaBaseKb"/>
+</form>
+</div>

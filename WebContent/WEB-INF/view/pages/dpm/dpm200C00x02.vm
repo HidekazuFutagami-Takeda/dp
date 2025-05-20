@@ -1,0 +1,62 @@
+## (医)施設別計画編集画面 集計行
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPM200C00_DATA_R_SEARCH_RESULT"))
+    #set( $resultObj = $form.getRequestData("DPM200C00_DATA_R_SEARCH_RESULT").detailTotal)
+#end
+#set($isMySosMr = false)
+#if($form.getRequestData("DPM200C00_DATA_R_SEARCH_RESULT"))
+    #set($isMySosMr = $form.getRequestData("DPM200C00_DATA_R_SEARCH_RESULT").mySosMr)
+#end
+#if($resultObj)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#set( $rowId = 1 )
+    ## Y価ベース
+    #set( $yBaseValue = "")
+    #set( $yBaseValueType = "ed")
+        #if($resultObj.yBaseValue)
+            #set( $yBaseValue = $resultObj.yBaseValue)
+            #set( $yBaseValueType = "edn")
+        #end
+    ## 最終更新情報(ツールチップ)
+    #set( $lastUpName = "")
+    #set( $lastUpDate = "")
+        #if($resultObj.upDate)
+            #set( $lastUpName = "$!resultObj.upJgiName&#13;")
+            #set( $lastUpDate = "$!format.toString($!resultObj.upDate, 'yyyy/MM/dd HH:mm:ss')")
+        #end
+    ## 担当者計画
+    <row id='$rowId'>
+        #if($resultObj.canMoveSosPlan)
+        <cell class="sumTeam" style="border-width:1px 0px 1px 1px;">#if($isMySosMr)<![CDATA[担当者計画<br><a href="#" onclick="dpm100C00F05Jgi()">▲担当者別</a>]]>#else担当者計画#end</cell>
+        #else
+        <cell class="sumTeam" style="border-width:1px 0px 1px 1px;">担当者計画</cell>
+        #end
+        <cell class="sumTeam" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="sumTeam" style="border-width:1px 1px 1px 0px;">#if($isMySosMr)<![CDATA[<a href="#" onclick="dpm101C00F05Jgi()">品目別</a>]]>#end</cell>
+        <cell class="sumTeam">$yBaseValue</cell>
+        <userdata name="toolTip">$lastUpName$lastUpDate</userdata>
+    </row>
+    ## 担当者計画 - 施設計画
+    #set( $rowId = $rowId + 1 )
+    <row id='$rowId'>
+        <cell class="sumTeam" style="border-width:1px 0px 1px 1px;">担当者計画 - 施設計画</cell>
+        <cell class="sumTeam" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="sumTeam" style="border-width:1px 1px 1px 0px;"></cell>
+        <cell class="sumTeam" style="color:#FF0000;"></cell>
+        <userdata name="hideValue">$!resultObj.hideValue</userdata>
+    </row>
+    ## 表示施設計
+    #set( $rowId = $rowId + 1 )
+    <row id='$rowId'>
+        <cell class="psumB" style="border-width:1px 0px 1px 1px;">表示施設計</cell>
+        <cell class="psumB" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="psumB" style="border-width:1px 1px 1px 0px;"></cell>
+        <cell class="psumB"></cell>
+        <userdata name="rowType">total</userdata>
+        <userdata name="subTotalId">none</userdata>
+        <userdata name="tyChangeRate">$!resultObj.tyChangeRate</userdata>
+    </row>
+    #set( $rowId = $rowId + 1 )
+</rows>
+#end

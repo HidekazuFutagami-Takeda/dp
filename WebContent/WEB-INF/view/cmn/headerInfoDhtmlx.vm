@@ -1,0 +1,28 @@
+<head>
+
+## --------------------------
+## CMN HEADER
+## --------------------------
+#parse("WEB-INF/view/cmn/cmnHttpHeader.vm")
+
+## --------------------------
+## DHTMLX CSS
+## --------------------------
+<link rel="stylesheet" type="text/css" href="$link.getContextPath()/cmn/dhtmlx/codebase/dhtmlxgrid.css" />
+
+## --------------------------
+## DHTMLX SCRIPT
+## --------------------------
+<script language="javascript" type="text/javascript" src="$link.getContextPath()/cmn/dhtmlx/codebase/dhtmlx.js"></script>
+
+## --------------------------
+## CMN SCRIPT
+## --------------------------
+#parse("WEB-INF/view/cmn/cmnJsHeader.vm")
+
+## --------------------------
+## CMN CSS
+## --------------------------
+#parse("WEB-INF/view/cmn/cmnCssHeader.vm")
+<title>#if($!security.hasDps())計画立案支援#elseif($!security.hasDpm())計画立案管理#end</title>
+</head>

@@ -1,0 +1,8 @@
+<div id="headerTitle">
+#set ($sysManageExist = $!security.isSysManageExist())
+<div>
+<p class="floatL">#if($sysManageExist)$!security.getSysClass()#end</p>
+<p class="floatL">#if($sysManageExist)【$!security.getSysYear() $!security.getSysTerm()】#end&nbsp;&nbsp;</p>
+<p class="floatL">$!pageTitle</p>
+</div>
+</div>

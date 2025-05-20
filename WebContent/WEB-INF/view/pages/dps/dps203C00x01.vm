@@ -1,0 +1,124 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS203C00_DATA_R"))
+    #set( $dataList = $form.getRequestData("DPS203C00_DATA_R"))
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#set($oldSosName = "" )
+#set($decimalFormat = $form.bean.getDefaultRateFormat())
+#foreach($mikakutokuSijou in $dataList)
+    ##未獲得市場データ変数(NULLの場合は空白を表示)
+    ##チーム
+    #set( $sosName = "")
+        #if($mikakutokuSijou.sosName)
+            #set($sosName = $mikakutokuSijou.sosName)
+        #end
+    ##担当者
+    #set( $jgiName = "")
+        #if($mikakutokuSijou.jgiName)
+            #set($shokushuName = "")
+            #if($mikakutokuSijou.shokushuName)
+            	#set($shokushuName = "（" + $mikakutokuSijou.shokushuName + "）")
+            #end
+            #set($jgiName = $mikakutokuSijou.jgiName + $shokushuName)
+        #end
+    ##対象
+    #set( $insType = "")
+        #if($mikakutokuSijou.insType)
+            #set($insType = $mikakutokuSijou.insType)
+        #end
+    ##薬効市場
+    #set( $yakkouSijouZentai = "")
+        #if($mikakutokuSijou.yakkouSijouZentai)
+            #set($yakkouSijouZentai = $mikakutokuSijou.yakkouSijouZentai)
+        #end
+    ##タケダ品
+    #set( $yakkouSijouTakeda = "")
+        #if($mikakutokuSijou.yakkouSijouTakeda)
+            #set($yakkouSijouTakeda = $mikakutokuSijou.yakkouSijouTakeda)
+        #end
+    ##未獲得市場
+    #set( $yakkouSijouMikakutoku = "")
+        #if($mikakutokuSijou.yakkouSijouMikakutoku)
+            #set($yakkouSijouMikakutoku = $mikakutokuSijou.yakkouSijouMikakutoku)
+        #end
+    ##構成(%)
+    #set( $yakkouSijouRatio = "")
+        #if($mikakutokuSijou.yakkouSijouRatio)
+            #set($yakkouSijouRatio = $!format.doubleToString($mikakutokuSijou.yakkouSijouRatio, $decimalFormat))
+        #end
+    ##増減金額
+    #set( $modifyAmount = "")
+        #if($mikakutokuSijou.modifyAmount)
+            #set($modifyAmount = $mikakutokuSijou.modifyAmount)
+        #end
+    ##営業所案 未獲得市場
+    #set( $distPlanMikakutoku = "")
+        #if($mikakutokuSijou.distPlanMikakutoku)
+            #set($distPlanMikakutoku = $mikakutokuSijou.distPlanMikakutoku)
+        #end
+    ##営業所案 構成(%)
+    #set( $distPlanRatio = "")
+        #if($mikakutokuSijou.distPlanRatio)
+            #set($distPlanRatio = $!format.doubleToString($mikakutokuSijou.distPlanRatio, $decimalFormat))
+        #end
+    ##組織別合計行判定フラグ
+    #set($isSosSumRow = $mikakutokuSijou.isSosSumRow)
+    ##対象区分合計行判定フラグ
+    #set($isInsTypeSumRow = $mikakutokuSijou.isInsTypeSumRow)
+    ##組織別合計行
+    #if($isSosSumRow)
+    <row id='$velocityCount'>
+        <cell style="background-color:#CCFFF8;border-width:1px 0px 0px 1px;border-top-color:#808080;">$oldSosName計</cell>
+        <cell style="background-color:#CCFFF8;border-width:1px 1px 0px 0px;border-top-color:#808080;"></cell>
+        <cell style="background-color:#CCFFF8;border-width:1px 1px 0px 1px;border-top-color:#808080;">$insType</cell>
+        <cell style="background-color:#CCFFF8;border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouZentai</cell>
+        <cell style="background-color:#CCFFF8;border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouTakeda</cell>
+        <cell style="background-color:#CCFFF8;border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouMikakutoku</cell>
+        <cell style="background-color:#CCFFF8;border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouRatio</cell>
+        <cell style="background-color:#CCFFF8;border-width:1px 1px 0px 1px;border-top-color:#808080;">$modifyAmount</cell>
+        <cell style="background-color:#CCFFF8;border-width:1px 1px 0px 1px;border-top-color:#808080;">$distPlanMikakutoku</cell>
+        <cell style="background-color:#CCFFF8;border-width:1px 1px 0px 1px;border-top-color:#808080;">$distPlanRatio</cell>
+    </row>
+    ##対象区分別合計行
+    #elseif($isInsTypeSumRow)
+    <row id='$velocityCount'>
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        <cell style="background-color:#FDDDFF;border-width:1px 0px 0px 1px;border-top-color:#808080;">エリア$insType計</cell>
+##        <cell style="background-color:#FDDDFF;border-width:1px 0px 0px 1px;border-top-color:#808080;">営業所$insType計</cell>
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        <cell style="background-color:#FDDDFF;border-width:1px 1px 0px 0px;border-top-color:#808080;"></cell>
+        <cell style="background-color:#FDDDFF;border-width:1px 1px 0px 1px;border-top-color:#808080;">$insType</cell>
+        <cell style="background-color:#FDDDFF;border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouZentai</cell>
+        <cell style="background-color:#FDDDFF;border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouTakeda</cell>
+        <cell style="background-color:#FDDDFF;border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouMikakutoku</cell>
+        <cell style="background-color:#FDDDFF;border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouRatio</cell>
+        <cell style="background-color:#FDDDFF;border-width:1px 1px 0px 1px;border-top-color:#808080;">$modifyAmount</cell>
+        <cell style="background-color:#FDDDFF;border-width:1px 1px 0px 1px;border-top-color:#808080;">$distPlanMikakutoku</cell>
+        <cell style="background-color:#FDDDFF;border-width:1px 1px 0px 1px;border-top-color:#808080;">$distPlanRatio</cell>
+    </row>
+    ##通常行
+    #else
+    <row id='$velocityCount'>
+    #if($oldSosName == $sosName)
+        <cell style="border-width:0px 1px 0px 1px;"></cell>
+    #else
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$sosName</cell>
+    #end
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$jgiName</cell>
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$insType</cell>
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouZentai</cell>
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouTakeda</cell>
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouMikakutoku</cell>
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouRatio</cell>
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$modifyAmount</cell>
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$distPlanMikakutoku</cell>
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$distPlanRatio</cell>
+    </row>
+    #end
+    ##現ループの組織名称を保持
+    #set($oldSosName = $sosName)
+#end
+</rows>
+#end

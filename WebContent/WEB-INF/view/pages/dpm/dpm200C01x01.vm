@@ -1,0 +1,74 @@
+## (ワ)施設別計画編集画面
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPM200C01_DATA_R_SEARCH_RESULT"))
+    #set( $tyChangeRate = $form.getRequestData("DPM200C01_DATA_R_SEARCH_RESULT_TOTAL").getTyChangeRate())
+    #set( $dataList = $form.getRequestData("DPM200C01_DATA_R_SEARCH_RESULT").getDetailList())
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#set( $rowId = 1 )
+#set( $subTotalId = 1 )
+#foreach($addrList in $dataList)
+    #foreach($resultObj in $addrList.getInsPlanList())
+        #if($velocityCount == 1)
+            #set( $ShikuchosonMeiKj = $!addrList.getShikuchosonMeiKj() )
+        #else
+            #set( $ShikuchosonMeiKj = "" )
+        #end
+        ## B価ベース
+        #set( $bBaseValue = "")
+        #set( $bBaseValueType = "ed")
+        #if($resultObj.bBaseValue)
+            #set( $bBaseValue = $resultObj.bBaseValue)
+            #set( $bBaseValueType = "edn")
+        #end
+        ## 削除予定施設の背景色
+        #set( $bgColor = "" )
+            #if($resultObj.DeletePlan)
+                #set( $bgColor = "class='delIns'" )
+            #end
+        ##
+        #set( $enableEdit = false )
+            #if($resultObj.EnableEdit && $!security.hasAuthEdit("DPM20"))
+                #set( $enableEdit = true )
+            #end
+        ## 明細行
+        <row id='$rowId'>
+            <cell style="border-width:1px 1px 0px 1px;">$!ShikuchosonMeiKj</cell>
+            <cell $bgColor>$!resultObj.insName</cell>
+            <cell $bgColor>$!resultObj.insNo</cell>
+            <cell $bgColor><![CDATA[<a href="#" onclick="dpm201C00F05('$!resultObj.insNo')">品目別</a>]]></cell>
+            #if($enableEdit)
+                <cell class="inputB" type="$bBaseValueType">$bBaseValue</cell>
+            #else
+                <cell $bgColor type="ron">$bBaseValue</cell>
+            #end
+            <userdata name="rowType">input</userdata>
+            <userdata name="subTotalId">$subTotalId</userdata>
+            <userdata name="tyChangeRate">$!resultObj.tyChangeRate</userdata>
+            <userdata name="toolTip">$!resultObj.getUpJgiName()&#13;$!format.toString($!resultObj.getUpDate(), "yyyy/MM/dd HH:mm:ss")</userdata>
+            ## 更新用ユーザデータ
+            ## 施設コード・対象区分・品目コード・シーケンスキー・最終更新日時・データ取得時の計画値 ＋ 登録ボタン押下後の入力計画値(追加)
+            <userdata name="updateRowId">$!resultObj.insNo,$!form.bean.prodCode,$!resultObj.seqKey,$!resultObj.upDate.Time,$bBaseValue</userdata>
+            <userdata name="addrCode">$!addrList.getAddrCodePref().getDbValue()$!addrList.getAddrCodeCity()</userdata>
+            <userdata name="ShikuchosonMeiKj">$addrList.getShikuchosonMeiKj()</userdata>
+        </row>
+        #set( $rowId = $rowId + 1 )
+    #end
+    ## 市区町村合計行
+    <row id='$rowId'>
+        <cell style="border-width:0px 1px 1px 1px;"></cell>
+        <cell style="border-width:1px 0px 1px 1px;">市区町村計</cell>
+        <cell style="border-width:1px 0px 1px 0px;"></cell>
+        <cell style="border-width:1px 1px 1px 0px;"></cell>
+        <cell type="ron"></cell>
+        <userdata name="rowType">subTotal</userdata>
+        <userdata name="subTotalId">$subTotalId</userdata>
+        <userdata name="tyChangeRate">$!tyChangeRate</userdata>
+        #set( $subTotalId = $subTotalId + 1 )
+    </row>
+    #set( $rowId = $rowId + 1 )
+#end
+</rows>
+#end

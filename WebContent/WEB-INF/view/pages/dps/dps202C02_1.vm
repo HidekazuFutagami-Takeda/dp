@@ -1,0 +1,58 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS202C02_DATA_R"))
+    #set( $dataList = $form.getRequestData("DPS202C02_DATA_R"))
+#end
+#set( $sosCd3 = "$!form.bean.sosCd3")
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows total_count='$dataList.size()'>
+#foreach($resultObj in $dataList)
+## 削除施設の場合、背景色グレー・選択不可
+#if($resultObj.delFlg)
+    #set($bgClass = "class='delIns'")
+## 配分除外施設の場合、黄色
+#elseif($resultObj.exceptFlg)
+    #set($bgClass = "class='exceptDist'")
+#else
+    #set($bgClass = "")
+#end
+<row id='$velocityCount'>
+#if ($resultObj.upDate)
+    <userdata name="selectRowId">$resultObj.insNo,$resultObj.jgiNo,$resultObj.upDate.Time</userdata>
+#else
+    <userdata name="selectRowId">$resultObj.insNo,$resultObj.jgiNo,</userdata>
+#end
+    #if ($!security.hasAuthEdit("DPS202C00"))
+        #if ($resultObj.upDate)
+        <cell $!bgClass></cell>
+        #else
+        <cell $!bgClass disabled="true"></cell>
+        #end
+    #else
+        <cell $!bgClass disabled="true"></cell>
+    #end
+    <cell $!bgClass title="施設コード：$resultObj.insNo">
+    ## 削除施設の場合、リンクなし
+    #if($resultObj.delFlg)
+      $resultObj.insName
+    #else
+      <![CDATA[<a href='#' onClick='cs_openEditDialog("$link.setAction('dps202C03F00').addQueryData('insNo',$resultObj.insNo).addQueryData('jgiNo',$resultObj.jgiNo).addQueryData('sosCd3', $sosCd3)",dps202C02F05);'>$resultObj.insName</a>]]>
+    #end
+    </cell>
+    <cell $!bgClass>$resultObj.insType</cell>
+    <cell $!bgClass>$resultObj.insClass</cell>
+    <cell $!bgClass>$resultObj.jgiName</cell>
+    #if ($resultObj.isRegOn)
+        <cell $!bgClass><![CDATA[<span style="font-size: 20px">○</span>]]></cell>
+    #else
+        <cell $!bgClass></cell>
+    #end
+    #if ($resultObj.upDate)
+        <cell $!bgClass><![CDATA[$resultObj.upJgiName<br>($format.toString($resultObj.upDate, "yyyy/MM/dd HH:mm"))]]></cell>
+    #else
+        <cell $!bgClass></cell>
+    #end
+</row>
+#end
+</rows>
+#end

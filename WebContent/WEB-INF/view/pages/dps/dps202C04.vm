@@ -1,0 +1,229 @@
+#set($pageTitle = $text.get("dps202C04","title"))
+#set($bodyOnloadMethod = "dps202C04F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dps202C04x01.vm")
+#if ( $form.getRequestData("DPS202C04_DATA_ADDR_CODE_CITY_LIST"))
+    #set( $addrCodeCityList = $form.getRequestData("DPS202C04_DATA_ADDR_CODE_CITY_LIST"))
+#end
+#set($GridObjName = "dps202C04Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps202C04CoverId")
+<script language="javascript">
+<!--
+var ${GridObjName};
+## 初期表示＋読込処理
+function dps202C04F00() {
+    doInitGrid();
+    if (document.getElementById("dps202C04x01.vm")) {
+        var loadXMLString = document.getElementById("dps202C04x01.vm").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("$CoverId");
+            document.getElementById("${GridObjName}").style.display = 'block';
+        }
+    }
+    sosApply("$!security.defaultSosCd", "$!security.defaultJgiNo", "04");
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+    ${GridObjName} = createDhtmlXGridLodingExt2("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("選択,施設名,重点先/一般先,施設分類,担当者,特定施設個別計画立案済,最終更新者(更新日時)");
+    ${GridObjName}.attachHeader("#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan");
+    ${GridObjName}.setInitWidths("40,180,100,120,150,160,200");
+    ${GridObjName}.setColAlign("center,left,center,center,center,center,center");
+    ${GridObjName}.setColTypes("ch,ro,ro,ro,ro,ro,ro");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,true,false,false,false,false,false");
+    ${GridObjName}.enableDistributedParsing(true,10,300);
+    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps202C04', $!gridHeight));
+    ${GridObjName}.enableAutoWidth(false);
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.objBox.style.overflowY="scroll";
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.attachEvent("onRowCreated",function(id){
+        var cell = ${GridObjName}.cells(id,0);
+        if (cell.getAttribute("disabled")) cell.setDisabled(true);
+    });
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+}
+## 市区町村プルダウンの検索処理
+function dps202C04F05() {
+    var actionPath = '$link.setAction('dps202C04F05')';
+    document.dps202C04Form.action = actionPath;
+    document.dps202C04Form.submit();
+    dps202C04F15Execute = blockIt;
+    dps202C04F10 = blockIt;
+    dps202C04F05 = blockIt;
+}
+## 一覧テーブルの検索処理
+function dps202C04F10() {
+    if (document.getElementById("${GridObjName}").style.display) {
+        var disply = document.getElementById("${GridObjName}").style.display;
+        if (disply == 'none') {
+            return blockIt();
+        }
+    }
+    if (dps202C04F10Validation()) {
+        var actionPath = '$link.setAction('dps202C04F10')';
+        document.dps202C04Form.action = actionPath;
+        document.dps202C04Form.submit();
+        dps202C04F05 = blockIt;
+        dps202C04F15Execute = blockIt;
+        dps202C04F10 = blockIt;
+    }
+}
+## 削除処理
+function dps202C04F15Execute() {
+    if (document.getElementById("${GridObjName}").style.display) {
+        var disply = document.getElementById("${GridObjName}").style.display;
+        if (disply == 'none') {
+            return blockIt();
+        }
+    }
+    var flag = confirm('$text.get("DPS202C04.001","dialogue")');
+    if (flag) {
+        form = document.dps202C04Form;
+        flag = addCheckRowIdList(form, ${GridObjName}, 'selectRowIdList', 'selectRowId', 0);
+        if (!flag) {
+            alert('$text.get("DPS202C04.002","dialogue")');
+            return;
+        }
+        var actionPath = '$link.setAction('dps202C04F15Execute')';
+        document.dps202C04Form.action = actionPath;
+        document.dps202C04Form.submit();
+        dps202C04F05 = blockIt;
+        dps202C04F10 = blockIt;
+        dps202C04F15Execute = blockIt;
+    }
+}
+## 画面入力チェック
+function dps202C04F10Validation() {
+    ## 入力フォーム
+    form = document.dps202C04Form;
+
+    ## [必須] 組織・従業員
+    value = form.sosCd3.value;
+    errorMsg = '$text.get("DPC1025E",["組織・従業員", "エリア", "従業員"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    ## [必須] 重点先/一般先
+    value = form.activityType.value;
+    errorMsg = '$text.get("DPC1003E",["重点先/一般先"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    ## [必須] 絞込条件
+    value = form.regType.value;
+    errorMsg = '$text.get("DPC1003E",["絞込条件"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    ## [条件付必須] 都道府県・市区町村選択
+    ## 重点先/一般先が[一般先]または[全て]の場合
+    var aType = form.activityType.value;
+    if (aType == "2" || aType == "3") {
+        var rType = form.regType.value;
+        ##絞込条件が[未登録]または[全て]の場合
+        if (rType == "2" || rType == "3") {
+            var addrCodePref = form.addrCodePref.value;
+            var addrCodeCity = form.addrCodeCity.value;
+            if (addrCodePref == null || addrCodePref == "" || addrCodeCity == null || addrCodeCity == "") {
+                errorMsg = '$text.get("DPC1003E",["[都道府県]および[市区郡町村]"])';
+                addErrorInfo(true, errorMsg);
+            }
+        }
+    }
+
+    ## [全角] 施設名(全角)
+    value = form.insNameZenKana.value;
+    if (value) {
+        errorMsg = '$text.get("DPC1004E",["施設名(全角)","全角"])';
+        isAdded = addErrorInfo(!isZenkakuKana(value), errorMsg);
+        if (!isAdded) {
+            ## [バイト数(80)]
+            limitByte = 80;
+            errorMsg = '$text.get("DPC1022E",["施設名(全角)","' + limitByte + '"])';
+            addErrorInfo(!isByteInRange(value, limitByte), errorMsg);
+        }
+    }
+
+    ## [半角カナ] 施設名(半角カナ)
+    value = form.insNameHanKana.value;
+    if (value) {
+        errorMsg = '$text.get("DPC1004E",["施設名(半角カナ)","半角カナ"])';
+        isAdded = addErrorInfo(!isHankakuKana(value), errorMsg);
+        if (!isAdded) {
+            ## [バイト数(15)]
+            limitByte = 15;
+            errorMsg = '$text.get("DPC1020E",["施設名(半角カナ)","' + limitByte + '"])';
+            addErrorInfo(!isByteInRange(value, limitByte), errorMsg);
+        }
+    }
+
+    return validation();
+}
+//-->
+</script>
+#tabbar("sienSisetuTokuyaku", "dps202C04F00")
+<div id="tabBox">
+<form name="dps202C04Form" method="post">
+<table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+        <td class="gridIndex" style="width:150px;">組織・従業員*</td>
+        <td>#sosDialog("02", "02", "04")</td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width:150px;">重点先/一般先*</td>
+        <td><table cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+            <tr>
+                <td style="width:100px;">#select ("activityType", $form.bean.activityTypes, $!form.bean.activityType)</td>
+                <td class="gridIndex" style="width:150px;">絞込条件*</td>
+                <td>#select ("regType", $form.bean.regTypes, $!form.bean.regType)</td>
+            </tr>
+        </table></td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width:150px;">都道府県</td>
+        <td><table cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+            <tr>
+                <td style="width:100px;">#selectWithFunc ("addrCodePref", $form.bean.prefectures, $!form.bean.addrCodePref, "dps202C04F05()")</td>
+                <td class="gridIndex" style="width:150px;">市区郡町村</td>
+                <td>#select ("addrCodeCity", $addrCodeCityList, $!form.bean.addrCodeCity)</td>
+            </tr>
+        </table></td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width:150px;">施設名(全角)</td>
+        <td><input type="text" name="insNameZenKana" value="$!sanitizing.escape($!form.bean.insNameZenKana)" size="70" style="ime-mode:active" /></td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width:150px;">施設名(半角カナ)</td>
+        <td><input type="text" name="insNameHanKana" value="$!sanitizing.escape($!form.bean.insNameHanKana)" size="70" style="ime-mode:active" /></td>
+    </tr>
+</table>
+<div class="guide">※[重点先/一般先]で「一般先」または「全て」を選択し、[絞込条件]で「未登録」または「全て」を選択した場合、[都道府県]および[市区郡町村]を指定してください。</div>
+<table style="margin-top:6px;margin-bottom:6px;">
+    <tr>
+        <td><input type="button" value="検索" style="width:80px;" onclick="dps202C04F10()" /></td>
+        #if ($!security.hasAuthEdit("DPS202C00"))
+            #if ($!form.bean.existSearchDataFlag)
+            <td><input type="button" value="削除" style="width:80px;" onclick="dps202C04F15Execute()" /></td>
+            #else
+            <td><input type="button" value="削除" style="width:80px;" onclick="dps202C04F15Execute()" disabled/></td>
+            #end
+        #end
+    </tr>
+</table>
+#loadingGridDiv3("${GridObjName}", "${CoverId}", "width: 99.5%; clear: both;")
+<div class="guide">※施設名称をクリックすると特定施設個別計画立案画面を表示します。</div>
+#token()
+</form>
+</div>

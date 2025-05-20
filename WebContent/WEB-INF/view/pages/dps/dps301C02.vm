@@ -1,0 +1,368 @@
+#set($pageTitle = $text.get("dps301C02","title"))
+#set($bodyOnloadMethod = "dps301C02F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dps301C02x01.vm")
+#set($GridObjName = "dps301C02Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps301C02CoverId")
+#set( $resultData = $form.getRequestData("DPS301C02_DATA_R"))
+## 立案対象品目
+#set( $prodName = "&nbsp;")
+#if($resultData.prodName)
+    #set($prodName = $!{resultData.prodName})
+#end
+#set( $prodType = "&nbsp;")
+#if($resultData.prodType)
+    #set($prodType = $!{resultData.prodType})
+#end
+## 試算品目
+#set( $refProdName = "&nbsp;")
+#if($resultData.refProdInfo.prodName)
+    #set($refProdName = $!{resultData.refProdInfo.prodName})
+#end
+#set( $refProdType = "&nbsp;")
+#if($resultData.refProdInfo.prodType)
+    #set($refProdType = $!{resultData.refProdInfo.prodType})
+#end
+## フリー項目名称
+#set( $indexFreeName1 = "&nbsp;")
+#if($resultData.estimationParam.indexFreeName1)
+    #set($indexFreeName1 = $!{resultData.estimationParam.indexFreeName1})
+#end
+#set( $indexFreeName2 = "&nbsp;")
+#if($resultData.estimationParam.indexFreeName2)
+    #set($indexFreeName2 = $!{resultData.estimationParam.indexFreeName2})
+#end
+#set( $indexFreeName3 = "&nbsp;")
+#if($resultData.estimationParam.indexFreeName3)
+    #set($indexFreeName3 = $!{resultData.estimationParam.indexFreeName3})
+#end
+<script language="javascript">
+<!--
+var ${GridObjName};
+##var inputColumnIdArr =  new Array("2","5","8","11","14","17");
+var inputColumnIdArr =  new Array("3","6","9","12","15","18");
+var editFlg = false;
+## 初期表示＋読込処理
+function dps301C02F00() {
+    doInitGrid();
+    if (document.getElementById("dps301C02x01.vm")) {
+        var loadXMLString = document.getElementById("dps301C02x01.vm").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+    sosApplyExt("$!form.bean.sosCd3", "", "02",false);
+    ##集計行計算
+    if ($!form.bean.existSearchDataFlag){
+        doCalc(inputColumnIdArr);
+    }
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("temp,　,担当者,$form.bean.headerUh,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,$form.bean.headerP,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan");
+    ${GridObjName}.attachHeader("temp,#rspan,#rspan,$indexFreeName1,#cspan,#cspan,$indexFreeName2,#cspan,#cspan,$indexFreeName3,#cspan,#cspan,$indexFreeName1,#cspan,#cspan,$indexFreeName2,#cspan,#cspan,$indexFreeName3,#cspan,#cspan");
+    ${GridObjName}.attachHeader("temp,#rspan,#rspan,母数,所内構成比,チーム内構成比,母数,所内構成比,チーム内構成比,母数,所内構成比,チーム内構成比,母数,所内構成比,チーム内構成比,母数,所内構成比,チーム内構成比,母数,所内構成比,チーム内構成比");
+## mod start 2020/07/01 趙 2020年4月組織変更対応（各種アプリ）
+##    ${GridObjName}.setInitWidths("120,120,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100");
+    ${GridObjName}.setInitWidths("0,120,140,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100");
+## mod end   2020/07/01 趙 2020年4月組織変更対応（各種アプリ）
+    ${GridObjName}.setColAlign("center,center,left,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right");
+    ${GridObjName}.setColTypes("ro,ro,ro,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableDistributedParsing(true,50,245);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps301C02', $!gridHeight));
+    ##${GridObjName}.objBox.style.overflowX="scroll";
+    ##${GridObjName}.objBox.style.overflowY="scroll";
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+##  ${GridObjName}.setNumberFormat("0,000",2);
+##  ${GridObjName}.setNumberFormat("00.0",3);
+##  ${GridObjName}.setNumberFormat("00.0",4);
+##  ${GridObjName}.setNumberFormat("0,000",5);
+##  ${GridObjName}.setNumberFormat("00.0",6);
+##  ${GridObjName}.setNumberFormat("00.0",7);
+##  ${GridObjName}.setNumberFormat("0,000",8);
+##  ${GridObjName}.setNumberFormat("00.0",9);
+##  ${GridObjName}.setNumberFormat("00.0",10);
+##  ${GridObjName}.setNumberFormat("0,000",11);
+##  ${GridObjName}.setNumberFormat("00.0",12);
+##  ${GridObjName}.setNumberFormat("00.0",13);
+##  ${GridObjName}.setNumberFormat("0,000",14);
+##  ${GridObjName}.setNumberFormat("00.0",15);
+##  ${GridObjName}.setNumberFormat("00.0",16);
+##  ${GridObjName}.setNumberFormat("0,000",17);
+##  ${GridObjName}.setNumberFormat("00.0",18);
+##  ${GridObjName}.setNumberFormat("00.0",19);
+    ${GridObjName}.setNumberFormat("0,000",3);
+    ${GridObjName}.setNumberFormat("00.0",4);
+    ${GridObjName}.setNumberFormat("00.0",5);
+    ${GridObjName}.setNumberFormat("0,000",6);
+    ${GridObjName}.setNumberFormat("00.0",7);
+    ${GridObjName}.setNumberFormat("00.0",8);
+    ${GridObjName}.setNumberFormat("0,000",9);
+    ${GridObjName}.setNumberFormat("00.0",10);
+    ${GridObjName}.setNumberFormat("00.0",11);
+    ${GridObjName}.setNumberFormat("0,000",12);
+    ${GridObjName}.setNumberFormat("00.0",13);
+    ${GridObjName}.setNumberFormat("00.0",14);
+    ${GridObjName}.setNumberFormat("0,000",15);
+    ${GridObjName}.setNumberFormat("00.0",16);
+    ${GridObjName}.setNumberFormat("00.0",17);
+    ${GridObjName}.setNumberFormat("0,000",18);
+    ${GridObjName}.setNumberFormat("00.0",19);
+    ${GridObjName}.setNumberFormat("00.0",20);
+    ${GridObjName}.init();
+##  ${GridObjName}.splitAt(2);
+    ${GridObjName}.splitAt(3);
+    ${GridObjName}.enableEditEvents(true, false, true);
+    ##  --- 編集中に登録ボタンが押された場合のチェッカー
+    window.editValueChecker = new EditingValueChecker(${GridObjName},'$text.get("DPC1036E",[""])' );
+
+    ${GridObjName}.attachEvent("onEditCell",function(stage,rowId,cellInd,newvalue,oldvalue){
+		## --- 編集中に登録ボタンが押された場合のチェック用に値とstageを保持 ---
+		window.editValueChecker.saveState(stage,newvalue);
+        if(stage == 1){
+            editOn();
+            setIme(${GridObjName},rowId,cellInd,"inactive",10);
+        }
+        if(stage == 2){
+            if(newvalue.toString() != oldvalue.toString()){
+                intCheck(${GridObjName},rowId,cellInd,newvalue);
+                minusStyle(${GridObjName},rowId, cellInd);
+                doCalc(new Array(cellInd.toString()));
+            }
+        }
+        return true;
+    });
+    ${GridObjName}.attachEvent("onRowSelect",function(rowId,cellInd){
+        ${GridObjName}.editCell();
+    });
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift,inputColumnIdArr);
+##      if (keycode == 86 && ctrl) {
+##          doCalc(inputColumnIdArr);
+##          editOn();
+##      }
+        return true;
+    });
+    ${GridObjName}.attachEvent("onRowPaste", function(rowId){
+        doCalc(inputColumnIdArr);
+        editOn();
+        return true;
+    });
+}
+## リンク移動
+function executeLink() {
+    var actionPath = '$link.setAction('dps301C00F00')';
+    document.dps301C02Form.action = actionPath;
+    document.dps301C02Form.submit();
+}
+##指定した集計対象列の計算
+function doCalc(columnIdArr){
+    for(colIndex=0; colIndex<columnIdArr.length; colIndex++){
+        setSum(${GridObjName},columnIdArr[colIndex]);
+        setTeamRate(${GridObjName},columnIdArr[colIndex]);
+        setOfficeRate(${GridObjName},columnIdArr[colIndex]);
+    }
+}
+## 所内構成比
+function setOfficeRate(grid,sumColumnId){
+    ##// 所内構成比列の位置(入力列からの位置)
+    var rateColumnId = (sumColumnId - 0) + 1;
+    ##// 営業所合計を取得
+    var total = 0;
+    for (rowId = 1; rowId <= grid.getRowsNum(); rowId++) {
+        var rowType = grid.getUserData(rowId, 'rowType');
+        if(rowType == "total"){
+            total = convertToInteger(grid,rowId,sumColumnId);
+        }
+    }
+    ##// 入力行の所内構成比を設定
+    for (rowId = 1; rowId <= grid.getRowsNum(); rowId++) {
+        var value = grid.cells(rowId,sumColumnId).getValue();
+        grid.cells(rowId, rateColumnId).setValue(calcRate(value,total));
+    }
+}
+## チーム内構成比
+function setTeamRate(grid,sumColumnId){
+    ##// チーム内内構成比列の位置(入力列からの位置)
+    var rateColumnId = (sumColumnId - 0) + 2;
+    ##// チーム合計MAPを取得
+    var map = new Array();
+    for (rowId = 1; rowId <= grid.getRowsNum(); rowId++) {
+        var rowType = grid.getUserData(rowId, 'rowType');
+        if(rowType == "subTotal"){
+            var subTotalId = grid.getUserData(rowId, 'subTotalId');
+            map[subTotalId] = convertToInteger(grid,rowId,sumColumnId);
+        }
+    }
+    ##// 入力行のチーム内構成比を設定
+    for (rowId = 1; rowId <= grid.getRowsNum(); rowId++) {
+        var subTotalId = grid.getUserData(rowId, 'subTotalId');
+        var subTotal = map[subTotalId];
+        var value = grid.cells(rowId,sumColumnId).getValue();
+        grid.cells(rowId, rateColumnId).setValue(calcRate(value,subTotal));
+    }
+}
+##登録時入力チェック
+function updateValidation() {
+    for (rowId = 1; rowId <= ${GridObjName}.getRowsNum(); rowId++) {
+        if(${GridObjName}.getUserData(rowId,"rowType") != "input"){
+            continue;
+        }
+##        msgHeader = '担当者【' + ${GridObjName}.cells(rowId, 1).getValue() + '】の';
+        msgHeader = '担当者【' + ${GridObjName}.cells(rowId, 2).getValue() + '】の';
+        ## UHフリー項目1
+##      value = ${GridObjName}.cells(rowId, 2).getValue().toString();
+        value = ${GridObjName}.cells(rowId, 3).getValue().toString();
+        amountValidationNotTailCheck('UH$indexFreeName1',value,10,true,msgHeader);
+        ## UHフリー項目2
+##      value = ${GridObjName}.cells(rowId, 5).getValue().toString();
+        value = ${GridObjName}.cells(rowId, 6).getValue().toString();
+        amountValidationNotTailCheck('UH$indexFreeName2',value,10,true,msgHeader);
+        ## UHフリー項目3
+##      value = ${GridObjName}.cells(rowId, 8).getValue().toString();
+        value = ${GridObjName}.cells(rowId, 9).getValue().toString();
+        amountValidationNotTailCheck('UH$indexFreeName3',value,10,true,msgHeader);
+        ## Pフリー項目1
+##      value = ${GridObjName}.cells(rowId, 11).getValue().toString();
+        value = ${GridObjName}.cells(rowId, 12).getValue().toString();
+        amountValidationNotTailCheck('P$indexFreeName1',value,10,true,msgHeader);
+        ## Pフリー項目2
+##      value = ${GridObjName}.cells(rowId, 14).getValue().toString();
+        value = ${GridObjName}.cells(rowId, 15).getValue().toString();
+        amountValidationNotTailCheck('P$indexFreeName2',value,10,true,msgHeader);
+        ## Pフリー項目3
+##      value = ${GridObjName}.cells(rowId, 17).getValue().toString();
+        value = ${GridObjName}.cells(rowId, 18).getValue().toString();
+        amountValidationNotTailCheck('P$indexFreeName3',value,10,true,msgHeader);
+    }
+    return validation();
+}
+##登録処理
+function dps301C02F05() {
+    ## --- 編集中セル値の登録時チェック ---
+	if(window.editValueChecker.isValid() == false){
+		return;
+	}
+
+	##入力チェック
+    if (!updateValidation(false)) {
+        return;
+    }
+    ##確認
+    if (!confirm('$text.get("DPS301C02.001","dialogue")')) {
+        return;
+    }
+    ##送信データ作成
+    for (i = 1; i <= ${GridObjName}.getRowsNum(); i++) {
+        var userData = ${GridObjName}.getUserData(i, 'updateRowId');
+        if(userData == null){continue;}
+##      userData += "," + ${GridObjName}.cells(i,2).getValue();
+##      userData += "," + ${GridObjName}.cells(i,5).getValue();
+##      userData += "," + ${GridObjName}.cells(i,8).getValue();
+##      userData += "," + ${GridObjName}.cells(i,11).getValue();
+##      userData += "," + ${GridObjName}.cells(i,14).getValue();
+##      userData += "," + ${GridObjName}.cells(i,17).getValue();
+        userData += "," + ${GridObjName}.cells(i,3).getValue();
+        userData += "," + ${GridObjName}.cells(i,6).getValue();
+        userData += "," + ${GridObjName}.cells(i,9).getValue();
+        userData += "," + ${GridObjName}.cells(i,12).getValue();
+        userData += "," + ${GridObjName}.cells(i,15).getValue();
+        userData += "," + ${GridObjName}.cells(i,18).getValue();
+        ${GridObjName}.setUserData(i, 'updateRowId', userData);
+    }
+    addRowIdList(document.dps301C02Form, ${GridObjName}, 'rowIdList', 'updateRowId');
+    ##送信
+    var actionPath = '$link.setAction('dps301C02F05Execute')';
+    document.dps301C02Form.action = actionPath;
+    document.dps301C02Form.submit();
+    dps301C02F05 = blockIt;
+}
+function editOn(){
+    editFlg = true;
+}
+##リンク移動確認
+function linkClick(){
+    if(editFlg){
+        var answer = window.confirm('$text.get("DPC999C99.001","dialogue")');
+        if(!answer){
+            return false;
+        }
+    }
+    return true;
+}
+//-->
+</script>
+#tabbar("sienSosiki", "dps301C00F00")
+<div id="tabBox">
+<form name="dps301C02Form" method="post">
+    ##品目情報
+    <div align="left" style="float: left;width: 70%;">
+    <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+        <tbody class="tableBody">
+            <tr>
+                <td class="header" style="width:70px;">組織</td>
+                <td  colspan="7" id="sos">　</td>
+            </tr>
+            <tr>
+                <td class="header" style="width:80px;">立案対象品目</td>
+                <td>$prodName</td>
+                <td class="header" style="width:70px;">製品区分</td>
+                <td>$prodType</td>
+                #if ($!resultData.refProdInfo)
+                    <td class="header" style="width:70px;">試算品目</td>
+                    <td>$refProdName</td>
+                    <td class="header" style="width:70px;">製品区分</td>
+                    <td>$refProdType</td>
+                #else
+                    <td class="none" style="width:70px;"></td>
+                    <td class="none"></td>
+                    <td class="none" style="width:70px;"></td>
+                    <td class="none"></td>
+                #end
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    ##最終更新情報
+    <div class="label" align="right" style="float: left;width: 30%;">
+        #upDateInfo($!{resultData.lastUpdateUser},$!{resultData.lastUpdate})
+        <a href="#" onclick="if(linkClick())executeLink()">一覧へ戻る</a>
+    </div>
+    ##メイン情報
+    <div class="label" align="left" style="float: left;width: 100%;">
+        <table style="margin-top:4px; width: 100%;">
+            <tr>
+                #if ($!security.hasAuthEdit("DPS301"))
+                    #if ($!form.bean.existSearchDataFlag)
+                    <td style="width:80px;"><input type="button" value="登録する" style="width:80px;"  onclick="dps301C02F05()" /></td>
+                    #else
+                    <td style="width:80px;"><input type="button" value="登録する" style="width:80px;"  onclick="dps301C02F05()" disabled/></td>
+                    #end
+                #end
+            </tr>
+        </table>
+        #loadingGridDiv2("${GridObjName}", "${CoverId}", "width: 100%; clear: both;")
+        <div class="guide">
+        ※試算時に、フリー項目値の構成比を元にフリー項目の理論値を割り当てます。<br>
+        ※フリー項目は、UH/P別に10桁以下の数字を入力してください。
+        </div>
+    </div>
+    <input type="hidden" id="prodCode" name="prodCode" value="$!{resultData.prodCode}" />
+    <input type="hidden" id="prodName" name="prodName" value="$!{resultData.prodName}" />
+    #token()
+    <input type="hidden" id="sosCd3" name="sosCd3" value="$!form.bean.getSosCd3()" />
+    <input type="hidden" id="sosCd2" name="sosCd2" />
+    <input type="hidden" id="sosCd4" name="sosCd4"  />
+    <input type="hidden" id="jgiNo" name="jgiNo"  />
+    <input type="hidden" id="initSosCodeValue" name="initSosCodeValue"  value="$!security.defaultSosCd"/>
+</form>
+</div>

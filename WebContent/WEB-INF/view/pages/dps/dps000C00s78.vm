@@ -1,0 +1,39 @@
+## ----------------------------------------------
+## (ワ)特約店別計画
+## ----------------------------------------------
+#set($GridObjName = "dps000C00s78Grid")
+#set($CoverId = "dps000C00s78CoverId")
+#set ($rankString = $progress.getProgressIyakuRank().toString())
+<script language="javascript">
+<!--
+var ${GridObjName};
+## 初期表示＋読込処理
+function dps000C00F78() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("組織,特約店別計画")
+    ${GridObjName}.attachHeader("#rspan,スライド状況")
+    ${GridObjName}.setInitWidths("110,200");
+    ${GridObjName}.setColAlign("left,center");
+    ${GridObjName}.setColTypes("ro,ro");
+    ${GridObjName}.enableResizing("false,false");
+    ${GridObjName}.enableTooltips("false,false");
+    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.enableAutoWidth(true);
+    ${GridObjName}.enableAutoHeight(true);
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.objBox.style.overflowY="hidden";
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.load("$link.setAction('dps000C00F78?sFlg=true')", "");
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.attachEvent("onBeforeSelect",function(newId,oldId){return;});
+}
+//-->
+</script>
+#loadingGridDiv("${GridObjName}", "${CoverId}")

@@ -1,0 +1,106 @@
+## -------------------------------
+## チームまで特定した場合
+## -------------------------------
+#set($dataListFileName = "dps302C00x02.vm")
+#set($GridObjName = "dps302C00s02Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps302C00s02CoverId")
+<script language="javascript">
+<!--
+var ${GridObjName};
+## 初期表示＋読込処理
+function dps302C00F00Grid() {
+    doInitGrid();
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+            ## マイナス金額のテキスト色を更新
+            var rowNum = ${GridObjName}.getRowsNum();
+            for (i = 1; i <= rowNum; i++) {
+                for (j = 6; j <= 11; j++) {
+                    var value = ${GridObjName}.cells(i,j).getValue();
+                    minusStyle(${GridObjName}, i, j, value);
+                    if (typeof value === "string" && value.trim() == "") {
+                        ${GridObjName}.cells(i,j).setValue("");
+                    }
+                }
+                sagakuStyle(${GridObjName},i, 8);
+                sagakuStyle(${GridObjName},i, 11);
+            }
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("品目名称,担当者別計画,#cspan,#cspan,#cspan,#cspan,UH,#cspan,#cspan,P,#cspan,#cspan");
+    ${GridObjName}.attachHeader("#rspan,チーム別計画<br>TL公開,チーム別計画<br>所長確定,担当者別計画<br>TL公開,担当者別計画<br>TL修正,担当者別計画<br>所長確定,チーム別計画<br>[１],担当者別計画<br>積上<br>[２],調整金額<br>[１] &#8210 [２],チーム別計画<br>[３],担当者別計画<br>積上<br>[４],調整金額<br>[３] &#8210 [４]");
+    ${GridObjName}.setInitWidths("130,85,85,85,85,85,85,85,85,85,85,85");
+    ${GridObjName}.setColAlign("left,center,center,center,center,center,right,right,right,right,right,right");
+    ${GridObjName}.setColTypes("ro,ro,ro,ro,ro,ro,ron,ron,ron,ron,ron,ron");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableDistributedParsing(true,50,300);
+    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps302C00s02', $!gridHeight));
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.setNumberFormat("0,000",6);
+    ${GridObjName}.setNumberFormat("0,000",7);
+    ${GridObjName}.setNumberFormat("0,000",8);
+    ${GridObjName}.setNumberFormat("0,000",9);
+    ${GridObjName}.setNumberFormat("0,000",10);
+    ${GridObjName}.setNumberFormat("0,000",11);
+    ${GridObjName}.setStyle("","height:45px;","","");
+    ${GridObjName}.splitAt(1);
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.attachEvent("onXLE",function(){
+        #set ($clickRowId = $form.bean.getClickRowId())
+        #if ($clickRowId && $clickRowId != "")
+            ##行ＩＤが上から順番に採番されていることが前提のコード(行追加がないので、成り立つ前提)
+            var rowsNum = ${GridObjName}.getRowsNum();
+            if (rowsNum != 'undefined' && rowsNum != null && rowsNum != "" && rowsNum != 0) {
+                var showRow = $clickRowId + 6;
+                if (showRow >= rowsNum) {
+                    showRow = rowsNum;
+                }
+                ${GridObjName}.showRow(1);
+                ${GridObjName}.showRow(showRow);
+            }
+        #end
+    });
+    ## 試算タイプが営⇒担の場合、2列非表示
+    #if($calcType.equals("2"))
+            ${GridObjName}.setColumnHidden(1, true);
+            ${GridObjName}.setColumnHidden(2, true);
+    #end
+}
+//-->
+</script>
+<div class="floatL">
+<table>
+    <tr>
+        <td style="width:30px;"></td>
+        <td class="statusEnd legendSize">&nbsp;</td>
+        <td style="padding-right:10px;"><label>：作業が完了している状態</label></td>
+        <td class="statusIng legendSize">&nbsp;</td>
+        <td style="padding-right:10px;"><label>：作業を実行することが可能な状態</label></td>
+        <td class="statusNot legendSize">&nbsp;</td>
+        <td style="padding-right:70px;"><label>：作業を実行することができない状態</label></td>
+    </tr>
+</table>
+</div>
+<div class="floatR" style="vertical-align:bottom;align:right"><label>$consts.tableHeaderY</label></div>
+<div class="clear"></div>
+#loadingGridDiv2("${GridObjName}", "${CoverId}", "width: 99.5%; clear: both;")
+<div class="guide">※品目名称をクリックすると、担当者別計画入力画面を表示します。</div>

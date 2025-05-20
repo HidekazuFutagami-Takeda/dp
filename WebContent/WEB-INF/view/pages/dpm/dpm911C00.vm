@@ -1,0 +1,374 @@
+## dpm911C00.vm 施設選択画面
+#set($contentsId = "freeSizeContents")
+#set($layout = "dialogueLayout.vm" )
+#set($pageTitle = $text.get("dpm911C00","title"))
+#set($bodyOnloadMethod = "dpm911C00F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dpm911C00x01.vm")
+## 適用関数名
+#set ($insApplyFuncName = $form.bean.insApplyFuncName)
+## 施設選択パターン区分（01：1件選択、02：複数選択区分）
+#set ($insSelectPtnType = $form.bean.insSelectPtnType)
+## 組織検索パターン区分（01：支店階層、02：特約店部階層）
+#set ($sosSrchPtnType = $form.bean.sosSrchPtnType)
+## 組織検索最小階層取得値（01：支店、02：営業所、03：チーム、04：従業員）
+#set ($sosMinSrchValue = $form.bean.sosMinSrchValue)
+## 組織検索最大階層取得値
+#set ($sosMaxSrchGetValue = $form.bean.sosMaxSrchGetValue)
+## 組織検索無フラグ
+#set ($sosSearchNonFlg = $form.bean.sosSearchNonFlg)
+## 重点先フラグ
+#set ($paramJtnFlg = $form.bean.paramJtnFlg)
+## 一般先フラグ
+#set ($paramIppanFlg = $form.bean.paramIppanFlg)
+## 府県コード
+#set ($paramAddrCodePref = $form.bean.paramAddrCodePref)
+## 市区町村コード
+#set ($paramAddrCodeCity = $form.bean.paramAddrCodeCity)
+## 削除施設選択不可フラグ
+#set ($disableDelInsSelect = $form.bean.disableDelInsSelect)
+## モール施設選択不可フラグ
+#set ($disableMallInsSelect = $form.bean.disableMallInsSelect)
+## 品目コード
+#set ($prodCode = $form.bean.prodCode)
+##ページング用情報
+#if($form.getRequestData("DPM911C00_DATA_R"))
+    #set($allDataList = $form.getRequestData("DPM911C00_DATA_R"))
+    #set($crntPageNo = $form.bean.crntPageNo)
+    #if(!$crntPageNo)
+        #set($crntPageNo = 1)
+    #end
+    #set($pagingBean = $paging.getPagingBean($allDataList, $form.bean.pageCount, $crntPageNo))
+#end
+<script language="javascript">
+<!--
+var dpm911C00Grid;
+var strInsNo;
+## 初期表示＋読込処理
+function dpm911C00F00() {
+    window.name = "self";
+    doInitGrid();
+    if (document.getElementById("dpm911C00x01.vm")) {
+        var loadXMLString = document.getElementById("dpm911C00x01.vm").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            dpm911C00Grid.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("dpm911C00CoverId");
+            document.getElementById("dpm911C00Grid").style.display = 'block';
+        }
+    }
+    ## 組織検索
+    dpm911C00SosApply("$!form.bean.sosInitSosCodeValue", "$!form.bean.jgiNo","$sosMaxSrchGetValue", "$form.bean.etcSosFlg");
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+    dpm911C00Grid = createDhtmlXGridLodingExt2("dpm911C00Grid", "dpm911C00CoverId");
+    dpm911C00Grid.setHeader("選択,施設名,対象,施設分類,担当者");
+    dpm911C00Grid.attachHeader("#rspan,#rspan,#rspan,#rspan,#rspan");
+    dpm911C00Grid.setInitWidths("40,210,80,80,250");
+    dpm911C00Grid.setColAlign("center,left,center,center,left");
+    dpm911C00Grid.setColTypes("ro,ro,ro,ro,ro");
+    dpm911C00Grid.enableResizing("false,false,false,false,false");
+    dpm911C00Grid.enableTooltips("false,false,false,false,false");
+    dpm911C00Grid.enableDistributedParsing(true,50,300);
+    dpm911C00Grid.enableMultiline(true);
+    dpm911C00Grid.enableAutoHeight(true, getGridHeight('dpm911C00', 400));
+    dpm911C00Grid.enableAutoWidth(false);
+    dpm911C00Grid.objBox.style.overflowX="hidden";
+    dpm911C00Grid.objBox.style.overflowY="scroll";
+    dpm911C00Grid.setSizes();
+    dpm911C00Grid.init();
+    dpm911C00Grid.enableBlockSelection();
+    dpm911C00Grid.forceLabelSelection(true);
+    dpm911C00Grid.setCSVDelimiter("\t");
+    dpm911C00Grid.attachEvent("onKeyPress",onKeyPressed);
+    dpm911C00Grid.attachEvent("onMouseOver",function(rowId,cellInd){
+        var title = "";
+        var pre = "";
+        if(cellInd == 1){
+            pre = "施設コード："
+            title = dpm911C00Grid.getUserData(rowId,"selectRowId");
+        }
+        if(title == null){
+            title = "";
+        }
+        dpm911C00Grid.cells(rowId,cellInd).cell.title = pre + title;
+    });
+}
+## 検索処理
+function dpm911C00F05() {
+    if (dpm911C00F05Validation()) {
+        var actionPath = '$link.setAction('dpm911C00F05')';
+        document.dpm911C00Form.action = actionPath;
+        document.dpm911C00Form.target = "self";
+        document.dpm911C00Form.submit();
+        dpm911C00F05 = blockIt;
+        dpm911C00F06 = blockIt;
+
+        document.getElementById('dpm911C00Grid').style.display = 'none';
+        document.getElementById('dpm911C00CoverId').style.display = 'block';
+    }
+}
+## 検索処理(ページング)
+function dpm911C00F06(pageNo) {
+   var actionPath = '$link.setAction('dpm911C00F06')';
+   actionPath = actionPath + "?crntPageNo=" + pageNo;
+   document.dpm911C00Form.action = actionPath;
+   document.dpm911C00Form.target = "self";
+   document.dpm911C00Form.submit();
+   dpm911C00F05 = blockIt;
+   dpm911C00F06 = blockIt;
+
+   document.getElementById('dpm911C00Grid').style.display = 'none';
+   document.getElementById('dpm911C00CoverId').style.display = 'block';
+}
+##呼び出し元に返す(1件選択)
+function dpm911C00F00Return01(insNo, jgiNo, insName) {
+    var check = window.opener.${insApplyFuncName}(insNo, jgiNo, insName);
+    if(!(typeof check == 'string')){
+        window.close();
+    }else{
+        alert(check);
+    }
+    return false;
+}
+##呼び出し元に返す(複数選択)
+##insNoList[0] = (insNo, jgiNo) の形式で格納
+function dpm911C00F00Return02() {
+    var insNoList = new Array();
+    for (i = 0; i < document.dpm911C00Form.elements.length; i++ ) {
+        // エレメントがチェックボックスの時に処理を行う。
+        if (document.dpm911C00Form.elements[i].type == "checkbox" ) {
+            // チェックボックスがONの時はその値を設定する。
+            if (document.dpm911C00Form.elements[i].checked == true) {
+                insNoList.push(document.dpm911C00Form.elements[i].value);
+            }
+        }
+    }
+    if(insNoList.length != 0){
+        var check = window.opener.${insApplyFuncName}(insNoList);
+
+        if(!(typeof check == 'string')){
+            window.close();
+        }else{
+            alert(check);
+        }
+        return false;
+    }else{
+        dpm911C00F00Return02Validation();
+    }
+    return false;
+}
+## 画面入力チェック
+function dpm911C00F05Validation() {
+    ## 入力フォーム
+    form = document.dpm911C00Form;
+
+    ## [必須] 組織・従業員
+    var minSosName = "";
+    var maxSosName = "";
+    ## 最小・最大範囲でチェック対象を特定
+    #if( $sosMinSrchValue == "02")
+        value = form.sosCd3.value;
+        #if( $insSelectPtnType == "01" )
+            minSosName = "エリア";
+        #else
+            minSosName = "エリア特約店G";
+        #end
+    #elseif( $sosMinSrchValue == "03")
+        value = form.sosCd4.value;
+        minSosName = "チーム";
+    #else
+        value = form.jgiNo.value;
+        minSosName = "担当者";
+    #end
+    #if( $sosMaxSrchGetValue == "02")
+        #if( $insSelectPtnType == "01" )
+            maxSosName = "エリア";
+        #else
+            maxSosName = "エリア特約店G";
+        #end
+    #elseif( $sosMaxSrchGetValue == "03")
+        maxSosName = "チーム";
+    #else
+        maxSosName = "担当者";
+    #end
+
+    #if( $sosMinSrchValue.equals($sosMaxSrchGetValue) )
+        errorMsg = '$text.get("DPC1024E",["組織・担当者","' + maxSosName + '"])';
+    #else
+        errorMsg = '$text.get("DPC1025E",["組織・担当者","' + minSosName + '","' + maxSosName + '"])';
+    #end
+
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    ## [全角] 施設名(全角)
+    value = form.insNameZenKana.value;
+    if (value) {
+        errorMsg = '$text.get("DPC1004E",["施設名(全角)","全角"])';
+        isAdded = addErrorInfo(!isZenkakuKana(value), errorMsg);
+        if (!isAdded) {
+            ## [バイト数(120)]
+            limitByte = 120;
+            errorMsg = '$text.get("DPC1022E",["施設名(全角)","' + limitByte + '"])';
+            addErrorInfo(!isByteInRange(value, limitByte), errorMsg);
+        }
+    }
+
+    ## [半角カナ] 施設名(半角カナ)
+    value = form.insNameHanKana.value;
+    if (value) {
+        errorMsg = '$text.get("DPC1004E",["施設名(半角カナ)","半角カナ"])';
+        isAdded = addErrorInfo(!isHankakuKana(value), errorMsg);
+        if (!isAdded) {
+            ## [バイト数(45)]
+            limitByte = 45;
+            errorMsg = '$text.get("DPC1020E",["施設名(半角カナ)","' + limitByte + '"])';
+            addErrorInfo(!isByteInRange(value, limitByte), errorMsg);
+        }
+    }
+
+    return validation();
+}
+## 画面入力チェック
+function dpm911C00F00Return02Validation() {
+    ## 入力フォーム
+
+    ## [必須] 施設（チェックボックス）
+    errorMsg = '$text.get("DPC1012E",["施設"])';
+    addErrorInfo(true, errorMsg);
+
+    return validation();
+}
+## 範囲指定コピー
+function onKeyPressed(code, ctrl, shift) {
+    return copyBlock(dpm911C00Grid, code, ctrl, shift);
+}
+## 当画面用組織反映関数
+function dpm911C00SosApply(sosCd, jgiNo, sosMaxSrchGetValue,sosEtcFlg) {
+    ## 共通の反映関数呼び出し
+    sosApply(sosCd, jgiNo, sosMaxSrchGetValue,sosEtcFlg);
+    var sosCd2 = document.getElementById('sosCd2');
+    if(sosCd2.value == null || sosCd2.value == ""){
+        var labelTxt = document.getElementById("sos");
+        labelTxt.childNodes[0].nodeValue = "　";
+    }
+}
+##モール施設追加エラー
+function mallError() {
+    var msgList = ['$text.get("DPM1007E")'];
+    displayMessage(msgList);
+    return true;
+}
+//-->
+</script>
+<div class="disp">
+<form name="dpm911C00Form" method="post">
+<input type="hidden" name="insApplyFuncName" value="$!insApplyFuncName" />
+<input type="hidden" name="insSelectPtnType" value="$!insSelectPtnType" />
+<input type="hidden" name="sosSrchPtnType" value="$!sosSrchPtnType" />
+<input type="hidden" name="sosMinSrchValue" value="$!sosMinSrchValue" />
+<input type="hidden" name="sosMaxSrchGetValue" value="$!sosMaxSrchGetValue"/>
+<input type="hidden" name="paramJtnFlg" value="$!paramJtnFlg"/>
+<input type="hidden" name="paramIppanFlg" value="$!paramIppanFlg"/>
+<input type="hidden" name="paramAddrCodePref" value="$!paramAddrCodePref"/>
+<input type="hidden" name="paramAddrCodeCity" value="$!paramAddrCodeCity"/>
+<input type="hidden" name="disableDelInsSelect" value="$!disableDelInsSelect"/>
+<input type="hidden" name="disableMallInsSelect" value="$!disableMallInsSelect"/>
+<input type="hidden" name="prodCode" value="$!prodCode"/>
+<table class="gridLine" cellspacing="0" cellpadding="1" width="615">
+    <tr>
+        <td class="gridIndex" style="width:150px;">組織・担当者*</td>
+        <td colspan="3">
+        ## 組織検索無フラグがtrueの場合、sosDialogExtを使用する。
+        #if( $sosSearchNonFlg )
+            #sosDialogExt("$sosSrchPtnType", "$sosMinSrchValue", "$sosMaxSrchGetValue", false)</td>
+        #else
+            #sosDialogExt2("dpm911C00SosApply", "$sosSrchPtnType", "$sosMinSrchValue", "$sosMaxSrchGetValue", "CMN")</td>
+        #end
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width:150px;">施設名(全角)</td>
+        <td colspan="3"><input type="text" name="insNameZenKana" value="$!form.bean.insNameZenKana" size="70" class="ime_on"/></td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width:150px;">施設名(半角カナ)</td>
+        <td><input type="text" name="insNameHanKana" value="$!form.bean.insNameHanKana" size="40"  class="ime_on"/></td>
+        ## 医薬の場合のみ、対象区分を表示する
+        #if( $!security.hasIyaku() )
+        <td class="gridIndex" style="width:100px;">対象</td>
+        <td style="width:150px;">#select ("insType", $form.bean.insTypes, $!form.bean.insType)</td>
+        #else
+         ## ワクチンの場合、対象区分は指定しない
+        <input type="hidden" name="insType" value=""/>
+        <td></td>
+        <td></td>
+        #end
+    </tr>
+</table>
+<table style="margin-top:8px;margin-bottom:8px;">
+    <tr>
+        <td><input type="button" value="表示" style="width:80px;" onclick="dpm911C00F05()" /></td>
+    </tr>
+</table>
+<table border="0" style="padding:1px;margin:1px;width:660px;border-collapse;collapse">
+    <tr>
+    ## add Start 2022/12/15  Y.Taniguchi バックログ追加要望No.8
+        ##<td align="left" style="width:100px;height:10px">
+        ##if($form.bean.existSearchDataFlag && $insSelectPtnType =="02")
+        ##<input type="button" value="選択して閉じる" onclick="dpm911C00F00Return02();" />
+        ##else
+        ##<input type="button" value="選択して閉じる"  disabled/>
+        ##end
+        ##</td>
+        ##<td align="left" style="width:100px">
+        ##<input type="button" value="閉じる" style="width:80px" onclick="window.close();" />
+        ##</td>
+
+        ##if($pagingBean)
+        ##<td align="right" style="width:460px">#dispSearchCount($pagingBean)</td>
+        ##end
+
+        #if($form.bean.existSearchDataFlag && $insSelectPtnType =="02")
+        <td align="left" style="width:100px;height:10px">
+        <input type="button" value="選択して閉じる" onclick="dpm911C00F00Return02();" />
+        </td>
+        <td align="left" style="width:100px">
+        <input type="button" value="閉じる" style="width:80px" onclick="window.close();" />
+        </td>
+          #if($pagingBean)
+          <td align="right" style="width:460px">#dispSearchCount($pagingBean)</td>
+          #end
+        #else
+        <td align="left" style="width:100px;height:10px">
+        <input type="button" value="閉じる" style="width:80px" onclick="window.close();" />
+        </td>
+          #if($pagingBean)
+          <td align="left" style="width:100px">
+          <td align="right" style="width:460px">#dispSearchCount($pagingBean)</td>
+          #end
+        #end
+    ## add End 2022/12/15  Y.Taniguchi バックログ追加要望No.8
+
+    </tr>
+    #if($pagingBean)
+    <tr>
+        <td align="left" style="width:100px">
+        <td align="left" style="width:100px">
+        <td align="right" style="width:460px">#dispSearchPage($pagingBean,"dpm911C00F06")</td>
+    </tr>
+    #else
+    <tr>
+        <td align="left" style="width:100px">
+        <td align="left" style="width:100px">
+        <td align="right" style="width:460px"></td>
+    </tr>
+    #end
+</table>
+#loadingGridDiv3("dpm911C00Grid", "dpm911C00CoverId", "width: 660px;")
+
+<div class="guide">※呼び出し元画面に適用する【施設】を選択してください。</div>
+#token()
+#token()
+</form>
+</div>

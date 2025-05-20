@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_MASTER_C_PLANNED_PROD_SqlMap" >
+  <resultMap id="resultMap" class="jp.co.takeda.model.MasterManagePlannedProd" >
+    <result column="CAL_TERM" property="calTerm" jdbcType="CHAR" />
+    <result column="CAL_YEAR" property="calYear" jdbcType="CHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="GROUP_CODE" property="groupCode" jdbcType="CHAR" />
+    <result column="STAT_PROD_CODE" property="statProdCode" jdbcType="CHAR" />
+    <result column="CATEGORY" property="category" jdbcType="CHAR" />
+    <result column="SALES" property="sales" jdbcType="CHAR" />
+    <result column="PROD_TYPE" property="prodType" jdbcType="VARCHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result column="PROD_ABBR_NAME" property="prodAbbrName" jdbcType="VARCHAR" />
+    <result column="YAKKOU_SIJOU_CODE" property="yakkouSijouCode" jdbcType="CHAR" />
+    <result column="DIST_BASIS_TYPE" property="distBasisType" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_ZENSHA" property="planLevelZensha" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_SITEN" property="planLevelSiten" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_OFFICE" property="planLevelOffice" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_TEAM" property="planLevelTeam" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_MR" property="planLevelMr" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_INS" property="planLevelIns" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_INS_WS" property="planLevelInsWs" jdbcType="CHAR" />
+    <result column="PLAN_LEVEL_WS" property="planLevelWs" jdbcType="CHAR" />
+    <result column="TEMP_PROD_FLG" property="tempProdFlg" jdbcType="CHAR" />
+    <result column="PLAN_TARGET_FLG" property="planTargetFlg" jdbcType="CHAR" />
+    <result column="OTH_SYS_IF_FLG" property="othSysIfFlg" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT CAL_TERM
+          ,CAL_YEAR
+          ,PROD_CODE
+          ,GROUP_CODE
+          ,STAT_PROD_CODE
+          ,CATEGORY
+          ,SALES
+          ,PROD_TYPE
+          ,PROD_NAME
+          ,PROD_ABBR_NAME
+          ,YAKKOU_SIJOU_CODE
+          ,DIST_BASIS_TYPE
+          ,PLAN_LEVEL_ZENSHA
+          ,PLAN_LEVEL_SITEN
+          ,PLAN_LEVEL_OFFICE
+          ,PLAN_LEVEL_TEAM
+          ,PLAN_LEVEL_MR
+          ,PLAN_LEVEL_INS
+          ,PLAN_LEVEL_INS_WS
+          ,PLAN_LEVEL_WS
+          ,TEMP_PROD_FLG
+          ,PLAN_TARGET_FLG
+          ,OTH_SYS_IF_FLG
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPM_C_PLANNED_PROD
+     WHERE CAL_TERM = #calTerm:CHAR#
+       AND CAL_YEAR = #calYear:CHAR#
+       AND PROD_CODE = #prodCode:CHAR#
+  </select>
+  <select id="selectProdList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT PROD.CAL_TERM
+          ,PROD.CAL_YEAR
+          ,PROD.PROD_CODE
+          ,PROD.GROUP_CODE
+          ,PROD.STAT_PROD_CODE
+          ,PROD.CATEGORY
+          ,PROD.SALES
+          ,PROD.PROD_TYPE
+          ,PROD.PROD_NAME
+          ,PROD.PROD_ABBR_NAME
+          ,PROD.YAKKOU_SIJOU_CODE
+          ,PROD.DIST_BASIS_TYPE
+          ,PROD.PLAN_LEVEL_ZENSHA
+          ,PROD.PLAN_LEVEL_SITEN
+          ,PROD.PLAN_LEVEL_OFFICE
+          ,PROD.PLAN_LEVEL_TEAM
+          ,PROD.PLAN_LEVEL_MR
+          ,PROD.PLAN_LEVEL_INS
+          ,PROD.PLAN_LEVEL_INS_WS
+          ,PROD.PLAN_LEVEL_WS
+          ,PROD.TEMP_PROD_FLG
+          ,PROD.PLAN_TARGET_FLG
+          ,PROD.OTH_SYS_IF_FLG
+          ,PROD.IS_JGI_NO
+          ,PROD.IS_JGI_NAME
+          ,PROD.IS_DATE
+          ,PROD.UP_JGI_NO
+          ,PROD.UP_JGI_NAME
+          ,PROD.UP_DATE
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPM_C_PLANNED_PROD PROD
+           LEFT JOIN DPM_C_CD_MST CM
+        ON CM.DATA_KBN = 'sort_prod'
+       AND CM.DATA_CD = PROD.PROD_CODE
+     WHERE PROD.CAL_TERM = #calTerm:CHAR#
+       AND PROD.CAL_YEAR = #calYear:CHAR#
+      <isNotNull prepend="AND" property="category">
+        PROD.CATEGORY = #category:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sales">
+        PROD.SALES = #sales:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelZensha">
+        PROD.PLAN_LEVEL_ZENSHA = #planLevelZensha:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelSiten">
+        PROD.PLAN_LEVEL_SITEN = #planLevelSiten:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelOffice">
+        PROD.PLAN_LEVEL_OFFICE = #planLevelOffice:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelTeam">
+        PROD.PLAN_LEVEL_TEAM = #planLevelTeam:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelMr">
+        PROD.PLAN_LEVEL_MR = #planLevelMr:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelIns">
+        PROD.PLAN_LEVEL_INS = #planLevelIns:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelInsWs">
+        PROD.PLAN_LEVEL_INS_WS = #planLevelInsWs:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelWs">
+        PROD.PLAN_LEVEL_WS = #planLevelWs:CHAR#
+      </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+<!-- add Start 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える -->
+  <select id="selectProdDistributorList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT PROD.CAL_TERM
+          ,PROD.CAL_YEAR
+          ,PROD.PROD_CODE
+          ,PROD.GROUP_CODE
+          ,PROD.STAT_PROD_CODE
+          ,PROD.CATEGORY
+          ,PROD.SALES
+          ,PROD.PROD_TYPE
+          ,PROD.PROD_NAME
+          ,PROD.PROD_ABBR_NAME
+          ,PROD.YAKKOU_SIJOU_CODE
+          ,PROD.DIST_BASIS_TYPE
+          ,PROD.PLAN_LEVEL_ZENSHA
+          ,PROD.PLAN_LEVEL_SITEN
+          ,PROD.PLAN_LEVEL_OFFICE
+          ,PROD.PLAN_LEVEL_TEAM
+          ,PROD.PLAN_LEVEL_MR
+          ,PROD.PLAN_LEVEL_INS
+          ,PROD.PLAN_LEVEL_INS_WS
+          ,PROD.PLAN_LEVEL_WS
+          ,PROD.TEMP_PROD_FLG
+          ,PROD.PLAN_TARGET_FLG
+          ,PROD.OTH_SYS_IF_FLG
+          ,PROD.IS_JGI_NO
+          ,PROD.IS_JGI_NAME
+          ,PROD.IS_DATE
+          ,PROD.UP_JGI_NO
+          ,PROD.UP_JGI_NAME
+          ,PROD.UP_DATE
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPM_C_PLANNED_PROD PROD
+           LEFT JOIN DPM_C_CD_MST CM
+        ON CM.DATA_KBN = 'sort_prod_ws'
+       AND CM.DATA_CD = PROD.PROD_CODE
+     WHERE PROD.CAL_TERM = #calTerm:CHAR#
+       AND PROD.CAL_YEAR = #calYear:CHAR#
+      <isNotNull prepend="AND" property="category">
+<!-- mod Start 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加 -->
+<!--        PROD.CATEGORY = #category:CHAR#  -->
+        (
+          (#category:CHAR# = #categoryIyakuAll:CHAR# AND PROD.CATEGORY != #categoryVxBU:CHAR#)
+           OR
+          (PROD.CATEGORY = #category:CHAR#)
+        )
+<!-- mod End 2025/2/19  H.Futagami 202410要望:カテゴリに全て（医薬）追加 -->
+      </isNotNull>
+      <isNotNull prepend="AND" property="sales">
+        PROD.SALES = #sales:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelZensha">
+        PROD.PLAN_LEVEL_ZENSHA = #planLevelZensha:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelSiten">
+        PROD.PLAN_LEVEL_SITEN = #planLevelSiten:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelOffice">
+        PROD.PLAN_LEVEL_OFFICE = #planLevelOffice:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelTeam">
+        PROD.PLAN_LEVEL_TEAM = #planLevelTeam:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelMr">
+        PROD.PLAN_LEVEL_MR = #planLevelMr:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelIns">
+        PROD.PLAN_LEVEL_INS = #planLevelIns:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelInsWs">
+        PROD.PLAN_LEVEL_INS_WS = #planLevelInsWs:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelWs">
+        PROD.PLAN_LEVEL_WS = #planLevelWs:CHAR#
+      </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+<!-- add End 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える -->
+
+  <select id="selectJrnsProdList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT PROD.CAL_TERM
+          ,PROD.CAL_YEAR
+          ,PROD.PROD_CODE
+          ,PROD.GROUP_CODE
+          ,PROD.STAT_PROD_CODE
+          ,PROD.CATEGORY
+          ,PROD.SALES
+          ,PROD.PROD_TYPE
+          ,PROD.PROD_NAME
+          ,PROD.PROD_ABBR_NAME
+          ,PROD.YAKKOU_SIJOU_CODE
+          ,PROD.DIST_BASIS_TYPE
+          ,PROD.PLAN_LEVEL_ZENSHA
+          ,PROD.PLAN_LEVEL_SITEN
+          ,PROD.PLAN_LEVEL_OFFICE
+          ,PROD.PLAN_LEVEL_TEAM
+          ,PROD.PLAN_LEVEL_MR
+          ,PROD.PLAN_LEVEL_INS
+          ,PROD.PLAN_LEVEL_INS_WS
+          ,PROD.PLAN_LEVEL_WS
+          ,PROD.TEMP_PROD_FLG
+          ,PROD.PLAN_TARGET_FLG
+          ,PROD.OTH_SYS_IF_FLG
+          ,PROD.IS_JGI_NO
+          ,PROD.IS_JGI_NAME
+          ,PROD.IS_DATE
+          ,PROD.UP_JGI_NO
+          ,PROD.UP_JGI_NAME
+          ,PROD.UP_DATE
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPM_C_PLANNED_PROD PROD
+           LEFT JOIN DPM_C_CD_MST CM
+        ON CM.DATA_KBN = 'sort_prod'
+       AND CM.DATA_CD = PROD.PROD_CODE
+     WHERE PROD.CAL_TERM = #calTerm:CHAR#
+       AND PROD.CAL_YEAR = #calYear:CHAR#
+       <isNotNull property="ctgList">
+       <iterate prepend=" AND PROD.CATEGORY IN " open="(" close=")" conjunction=","  property="ctgList">
+           #ctgList[]#
+       </iterate>
+       </isNotNull>
+      <isNotNull prepend="AND" property="planLevelZensha">
+        PROD.PLAN_LEVEL_ZENSHA = #planLevelZensha:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelSiten">
+        PROD.PLAN_LEVEL_SITEN = #planLevelSiten:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelOffice">
+        PROD.PLAN_LEVEL_OFFICE = #planLevelOffice:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelTeam">
+        PROD.PLAN_LEVEL_TEAM = #planLevelTeam:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelMr">
+        PROD.PLAN_LEVEL_MR = #planLevelMr:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelIns">
+        PROD.PLAN_LEVEL_INS = #planLevelIns:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelInsWs">
+        PROD.PLAN_LEVEL_INS_WS = #planLevelInsWs:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="planLevelWs">
+        PROD.PLAN_LEVEL_WS = #planLevelWs:CHAR#
+      </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+</sqlMap>

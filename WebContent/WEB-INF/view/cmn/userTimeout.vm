@@ -1,0 +1,13 @@
+#set( $layout = "errorPageLayout.vm" )
+<center>
+<div id="errorPage">
+<br><center><span class="errorTitle">タイムアウトしました</span></center><br><br>
+<span class="errorText">　・長時間放置による自動切断が起こりました。</span><br><br><br>
+#if (!$!form.bean.isDialogueFlg() && !$request.getAttribute("DpAction.DIALOG_KEY"))
+<a href="$!service.getHomeAndNaviPath()">ホームへ</a>
+#end
+#if ($!form.bean.isDialogueFlg() || $request.getAttribute("DpAction.DIALOG_KEY"))
+<input type="button" name="close" value="閉じる" onclick="window.close();" />
+#end
+</div>
+</center>

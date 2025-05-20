@@ -1,0 +1,184 @@
+#set( $layout = "defaultLayout_JQ.vm" )
+#set($q = '"')
+#set($pageTitle = $text.get("dps600C00","title"))
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dps600C00x01.vm")
+#set($searchResultExist = $form.getRequestData("DPS600C00_DATA_R_SEARCH_RESULT_EXIST"))
+#set($GridObjName = "dps600C00Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps600C00CoverId")
+
+##参照権限
+#set($canEdit = false)
+#if ($!security.hasAuthEdit("DPS600"))
+    #set($canEdit = true)
+#end
+##ステータス最終更新日
+#set( $statusLastUpdate = "")
+#if ( $form.getRequestData("DPS600C00_DATA_R_SEARCH_RESULT").statusLastUpdate)
+    #set( $statusLastUpdate = $form.getRequestData("DPS600C00_DATA_R_SEARCH_RESULT").statusLastUpdate.time)
+#end
+
+## -----------------------------
+## addReadyScript
+## ダブルクオート(")を表示させたい場合は${q}を使用すること
+## -----------------------------
+#set($addReadyScript = "
+
+    ## グリッド生成
+    ${GridObjName} = createDhtmlXGridLodingExt('${GridObjName}', '${CoverId}');
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.setHeader('品目名称,製品区分,配分状況<br>(開始日時-終了日時),本部案/エリア案,配分基準,#cspan,#cspan,#cspan,#cspan,#cspan');
+##    ${GridObjName}.setHeader('品目名称,製品区分,配分状況<br>(開始日時-終了日時),本部案/営業所案,配分基準,#cspan,#cspan,#cspan,#cspan,#cspan');
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.attachHeader('#rspan,#rspan,#rspan,#rspan,UH,#cspan,#cspan,P,#cspan,#cspan');
+    ${GridObjName}.attachHeader('#rspan,#rspan,#rspan,#rspan,比率,実績参照期間,脱落率,比率,実績参照期間,脱落率');
+    ${GridObjName}.setInitWidths('120,60,130,100,60,110,120,60,110,120');
+    ${GridObjName}.setColAlign('left,center,center,center,center,center,center,center,center,center');
+    ${GridObjName}.setColTypes('ro,ro,ro,ro,ro,ro,ro,ro,ro,ro');
+    ${GridObjName}.enableResizing('false,false,false,false,false,false,false,false,false,false');
+    ${GridObjName}.enableTooltips('false,false,false,false,false,false,false,false,false,false');
+    ${GridObjName}.enableDistributedParsing(true,50,260);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps600C00', $!gridHeight));
+    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter('\t');
+    ${GridObjName}.setStyle('','height:35px;','','');
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.splitAt(1);
+    ${GridObjName}.attachEvent('onKeyPress',function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.attachEvent('onRowCreated',function(id){
+        var cell = ${GridObjName}.cells(id,0);
+        if (cell.getAttribute('disabled')) cell.setDisabled(true);
+    });
+
+    ## 検索結果データの読込
+    if (document.getElementById('$dataListFileName')) {
+        var loadXMLString = document.getElementById('$dataListFileName').value;
+        if (loadXMLString != null && loadXMLString != '') {
+            ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete('${CoverId}');
+        }
+    }
+
+    ## 組織設定
+    sosApply('$!security.defaultSosCd', '$!security.defaultJgiNo', '02');
+")
+
+## -----------------------------
+## addHeaderScript
+## ダブルクオート(")を表示させたい場合は${q}を使用すること
+## -----------------------------
+#set($addHeaderScript = "
+	var ${GridObjName};
+
+	## リンク移動
+##	function executeLink(actionPath,sosCd3,prodCode) {
+##	    document.dps600C00Form.sosCd3.value = sosCd3;
+##	    document.dps600C00Form.prodCode.value = prodCode;
+##	    document.dps600C00Form.action = actionPath;
+##	    document.dps600C00Form.submit();
+##	}
+	##検索処理
+	function dps600C00F05() {
+	    ##入力チェック
+	    if (!searchValidation()) {
+	        return;
+	    }
+	    var actionPath = '$link.setAction('dps600C00F05')';
+	    document.dps600C00Form.action = actionPath;
+	    document.dps600C00Form.submit();
+	    execute = blockIt;
+	    dps600C00F05 = blockIt;
+	}
+	## 検索時入力チェック
+	function searchValidation() {
+	    ## [必須] 組織
+	    value = document.dps600C00Form.sosCd3.value;
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+	    errorMsg = ${q}$text.get('DPC1024E',['組織','エリア'])${q};
+##	    errorMsg = ${q}$text.get('DPC1024E',['組織','営業所'])${q};
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+	    addErrorInfo(!isEntered(value), errorMsg);
+
+	    return validation();
+	}
+
+	## 「配分処理を実行」処理
+	function dps600C00F10Execute() {
+	    execute(${q}$text.get('DPS600C00.001','dialogue')${q}, ${q}$link.setAction('dps600C00F10Execute')${q});
+	}
+	## 更新処理
+	function execute(confirmMsg, actionPath) {
+	    ##入力チェック
+	    if (!executeValidation()) {
+	        return;
+	    }
+	    ##確認
+	    if (!confirm(confirmMsg)) {
+	        return;
+	    }
+	    ##送信
+	    document.dps600C00Form.action = actionPath;
+	    document.dps600C00Form.submit();
+	    dps600C00F05 = blockIt;
+	    execute = blockIt;
+	}
+	## 更新時入力チェック
+	function executeValidation() {
+	    ## [必須] 品目選択
+	    var checkedRows = ${GridObjName}.getCheckedRows(0);
+	    errorMsg = ${q}$text.get('DPC1006E',['品目'])${q};
+	    addErrorInfo(!isEntered(checkedRows), errorMsg);
+	    return validation();
+	}
+")
+## -----------------------------
+## HTML
+## -----------------------------
+#tabbar("sienSisetuTokuyaku", "dps600C00F00")
+<div id="tabBox">
+<form name="dps600C00Form" method="post">
+<table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+        <td class="gridIndex" style="width:150px;">組織*</td>
+        <td colspan="2">#sosDialog("01", "02", "02")</td>
+    </tr>
+</table>
+<table style="margin-top:2px;">
+    <tr>
+        <td style="padding-left:5px"><input type="button" value="検索" style="width:80px;" onclick="dps600C00F05()" /></td>
+        <td style="padding-left:20px">
+##            <label for="cb">配分処理と同時にMRに公開</label>
+##            #if ($!form.bean.isMrOpenCheck)
+##            <input type="checkbox" name="isMrOpenCheck" id="cb" checked />
+##            #else
+##            <input type="checkbox" name="isMrOpenCheck" id="cb" />
+##            #end
+            #if ($canEdit)
+                #if ($searchResultExist)
+                    <input type="button" value="配分処理を実行" onclick="dps600C00F10Execute()" />
+                #else
+                    <input type="button" value="配分処理を実行" onclick="dps600C00F10Execute()" disabled />
+                #end
+            #end
+        </td>
+    </tr>
+</table>
+<div class="guide">
+※【配分処理を実行】ボタンをクリックすると、施設医師別計画への配分処理を開始します。<br>
+</div>
+#loadingGridDiv2("${GridObjName}", "${CoverId}", "")
+##<div class="guide">※編集リンクをクリックすると、配分基準編集画面を表示します。</div>
+##<input type="hidden" id="prodCode" name="prodCode" value="" />
+<input type="hidden" id="statusLastUpdate" name="statusLastUpdate" value="$!statusLastUpdate" />
+#token()
+</form>
+</div>

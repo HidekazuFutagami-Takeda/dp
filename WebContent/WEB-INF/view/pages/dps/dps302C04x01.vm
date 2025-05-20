@@ -1,0 +1,134 @@
+#set($layout = "nothingLayout.vm" )
+#if ($form.getRequestData("DPS302C04_DATA_R_SEARCH_RESULT"))
+    #set($dataList = $form.getRequestData("DPS302C04_DATA_R_SEARCH_RESULT"))
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+
+## CSSクラス 背景色の用意
+#set($c1 = "sumTeam")
+#set($c2 = "sumAreaTokuG")
+
+## CSSスタイル高さの用意
+#if($dataList.size() == 1)
+#set($hStyle = "height:100px;")
+#else
+#set($hStyle = "height:25px;")
+#end
+
+## CSSスタイル 枠線の用意
+#set($s1 = $hStyle + "border-width:0px 1px 0px 1px;")
+#set($s2 = $hStyle + "border-width:1px 1px 0px 1px;border-top-color:#808080;")
+#set($s3 = $hStyle + "border-width:1px 0px 0px 1px;border-top-color:#808080;")
+#set($s4 = $hStyle + "border-width:1px 1px 0px 0px;border-top-color:#808080;")
+
+<rows>
+#set($decimalFormat = $form.bean.getDefaultRateFormat())
+#set($dataCnt = $dataList.size())
+#set($sosName = "")
+#set($teamName = "")
+#set($oldSosName = "")
+#set($oldTeamName = "")
+#set($fstTeamFlg = true)
+#set($overSndTeamDispSosNameFlg = false)
+#foreach($resultData in $dataList)
+<row id='$velocityCount'>
+## チーム合計行
+#if($resultData.teamSum)
+    ## 計ラベル
+    <cell class="$c1" style="$s3">計</cell>
+    <cell class="$c1" style="$s4"></cell>
+    ## 各品目情報
+    #if($resultData.prodInfoDtoList)
+    #foreach($prodInfo in $resultData.prodInfoDtoList)
+    <cell class="$c1" style="$s2 #setMinusStyle($prodInfo.plannedValue)">$!prodInfo.plannedValue</cell>
+    <cell class="$c1" style="$s2">$!format.doubleToString($!prodInfo.upRate, $decimalFormat)</cell>
+    #end
+    #end
+## 組織合計行
+#elseif($resultData.sosSum)
+    ## 計ラベル
+    <cell class="$c1" style="$s3">計</cell>
+    <cell class="$c1" style="$s4"></cell>
+    ## 各品目情報
+    #if($resultData.prodInfoDtoList)
+    #foreach($prodInfo in $resultData.prodInfoDtoList)
+    <cell class="$c1" style="$s2 #setMinusStyle($prodInfo.plannedValue)">$!prodInfo.plannedValue</cell>
+    <cell class="$c1" style="$s2">$!format.doubleToString($!prodInfo.upRate, $decimalFormat)</cell>
+    #end
+    #end
+## 全合計行
+#elseif($resultData.allSum)
+    ## 合計ラベル
+        <cell class="$c2" style="$s3">合計</cell>
+        <cell class="$c2" style="$s4"></cell>
+    ## 各品目情報
+    #if($resultData.prodInfoDtoList)
+    #foreach($prodInfo in $resultData.prodInfoDtoList)
+        <cell class="$c2" style="$s2 #setMinusStyle($prodInfo.plannedValue)">$!prodInfo.plannedValue</cell>
+        <cell class="$c2" style="$s2">$!format.doubleToString($!prodInfo.upRate, $decimalFormat)</cell>
+    #end
+    #end
+## 通常行
+#else
+    ## 組織名
+    #set($sosName = "")
+    #if ($resultData.sosName)
+        #set($sosName = $resultData.sosName)
+    #end
+    ##チーム名
+    #set($teamName = "")
+    #if ($resultData.teamName)
+        #set($teamName = $resultData.teamName)
+    #end
+    ##----------------------
+    ##判定
+    ##----------------------
+    ##1件しかない場合(小児科ＭＲの場合)高さが十分なので、改行しても支障なし (J19-0010 対応・コメントのみ修正)
+    #if($dataCnt == 1)
+        <cell style="$s2"><![CDATA[$!sosName<br>$!teamName]]></cell>
+    ##小児科ＭＲ以外の場合 (J19-0010 対応・コメントのみ修正)
+    #else
+        ##組織名、チーム名が変化していない場合
+        #if(($oldSosName == $!sosName) && ($oldTeamName == $!teamName))
+            <cell style="$s1"></cell>
+        ##組織名が変化した場合
+        #elseif (!($oldSosName == $!sosName))
+            <cell style="$s2">$!sosName</cell>
+            #set($oldSosName = $!sosName)
+            #set($oldTeamName = "")
+            #set($fstTeamFlg = true)
+            #set($overSndTeamDispSosNameFlg = false)
+        ##チーム名が変化した場合(最初)
+        #elseif (!($!oldTeamName == $!teamName) && $fstTeamFlg)
+            <cell style="$s1">$!teamName</cell>
+            #set($oldTeamName = $!teamName)
+            #set($fstTeamFlg = false)
+        ##チーム名が変化した場合(2回目以降)
+        #elseif (!($oldTeamName == $!teamName) && !$fstTeamFlg)
+            ##組織名を表示していない場合
+            #if(!$overSndTeamDispSosNameFlg)
+                <cell style="$s2">$!sosName</cell>
+                #set($overSndTeamDispSosNameFlg = true)
+            ##組織名を表示している場合
+            #else
+                <cell style="$s1">$!teamName</cell>
+                #set($oldTeamName = $!teamName)
+                #set($overSndTeamDispSosNameFlg = false)
+            #end
+        #end
+    #end
+    ## 従業員名
+        <cell style="$s2">$!resultData.jgiName</cell>
+    ## 各品目情報
+    #if($resultData.prodInfoDtoList)
+    #foreach($prodInfo in $resultData.prodInfoDtoList)
+        <cell style="$s2 #setMinusStyle($prodInfo.plannedValue)">$!prodInfo.plannedValue</cell>
+        <cell style="$s2">$!format.doubleToString($!prodInfo.upRate, $decimalFormat)</cell>
+    #end
+    #end
+#end
+</row>
+#end
+</rows>
+#end

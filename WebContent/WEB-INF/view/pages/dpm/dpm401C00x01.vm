@@ -1,0 +1,59 @@
+#set( $layout = "nothingLayout.vm" )
+#set( $header = $form.getRequestData("DPM401C00_INPUT_DATA_R"))
+#set( $data = $form.getRequestData("DPM401C00_DATA_R"))
+#set( $dataList = $data.getDetailList())
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#if($form.bean.prodCategory)
+    #set( $formProdCategory = $form.bean.prodCategory )
+#else
+    #set( $formProdCategory = 1 )
+#end
+##RowId用カウンタ
+#set( $idcnt = 1 )
+#foreach($resultData in $dataList)
+     #set( $q = '"' )
+     #set( $inputBgClass = " class='inputB2'" )
+     ## 削除予定施設の背景色
+     #set( $bgColor = "" )
+     #if($resultData.DeletePlan)
+        #set( $bgColor = "class='delIns'" )
+     #end
+     ##
+     #set( $enableEdit = false )
+     #if($resultData.EnableEdit)
+        #set( $enableEdit = true )
+     #end
+     ##明細行
+     <row id='$idcnt'>
+        ##メッセージ見出し用
+        <userdata name="prodName">$!resultData.getProdName()</userdata>
+        ##ツールチップ用
+        <userdata name="toolTip">$!resultData.getUpDateJgiName()&#13;$!format.toString($!resultData.getUpDate(), "yyyy/MM/dd HH:mm:ss")</userdata>
+        ##送信データ
+        <userdata name="rowIdList">$!resultData.getProdCode(),$!data.getInsNo(),$!data.getTmsTytenCd(),$!resultData.getSeqKey(),$!resultData.getUpDate().getTime(),$!resultData.getBeforeBaseT()</userdata>
+        ##計算、追加用インデックス
+        <userdata name="tyChangeRate">$!resultData.getTyChangeRate()</userdata>
+        <userdata name="rowType">input</userdata>
+        <cell $bgColor>$!resultData.getProdName()</cell>
+        <cell $bgColor>$!resultData.getBaseY()</cell>
+        #if($form.bean.isRyutsu())
+        <cell $bgColor>$!resultData.getBeforeBaseT()</cell>
+        #else
+        <cell $bgColor></cell>
+        #end
+        #if($form.bean.isRyutsu())
+        #if($enableEdit)
+            <cell$inputBgClass type='#setColType( $!resultData.getBaseT(), "ed" ,"edn")'>$!resultData.getBaseT()</cell>
+        #else
+            <cell $bgColor type="ron">$!resultData.getBaseT()</cell>
+        #end
+        #else
+            <cell $bgColor type="ron"></cell>
+        #end
+        #set( $idcnt = $idcnt + 1 )
+    </row>
+#end
+</rows>
+#end

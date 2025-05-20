@@ -1,0 +1,29 @@
+#set( $layout = "nothingLayout.vm" )
+#set($DPS000C00F25Data = $form.getRequestData("DPS000C00F25_DATA_R"))
+#set($yakkaLastUpDate = $DPS000C00F25Data.getYakkaLastUpDate())
+#set($ytLastUpDate = $DPS000C00F25Data.getYtLastUpDate())
+#set($sbLastUpDate = $DPS000C00F25Data.getSbLastUpDate())
+#if(!$yakkaLastUpDate)
+    #set($yakkaLastUpDate = "")
+#else
+    #set($yakkaLastUpDate = $!format.toString($yakkaLastUpDate, "yyyy/MM/dd HH:mm"))
+#end
+#if (!$ytLastUpDate)
+    #set($ytLastUpDate = "")
+#else
+    #set($ytLastUpDate = $!format.toString($ytLastUpDate, "yyyy/MM/dd HH:mm"))
+#end
+#if (!$sbLastUpDate)
+    #set($sbLastUpDate = "")
+#else
+    #set($sbLastUpDate = $!format.toString($sbLastUpDate, "yyyy/MM/dd HH:mm"))
+#end
+
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+    <row id="1">
+        <cell>$!ytLastUpDate</cell>
+        <cell>$!sbLastUpDate</cell>
+        <cell>$!yakkaLastUpDate</cell>
+    </row>
+</rows>

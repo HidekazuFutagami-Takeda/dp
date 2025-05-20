@@ -1,0 +1,304 @@
+##dpm912C03.vm 特約店検索(展開)画面
+#set($contentsId = "freeSizeContents")
+#set( $layout = "dialogueLayout.vm" )
+#set($bodyOnloadMethod = "dpm912C03F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($pageTitle = $text.get("dpm912C03","title"))
+## アクションフォーム値取得
+#set($tytenApplyFuncName = $form.bean.tytenApplyFuncName)
+#set($shishaExistFlg = $form.bean.shishaExistFlg)
+#set($tmsSelectMode = $form.bean.tmsSelectMode)
+#if($!form.bean.takedaSosCd2)
+    #set($takedaSosCd2 = $!form.bean.takedaSosCd2)
+#else
+    #set($takedaSosCd2 = "")
+#end
+#if($!form.bean.hontenTmsTytenCd)
+    #set($hontenTmsTytenCd = $!form.bean.hontenTmsTytenCd)
+#else
+    #set($hontenTmsTytenCd = "")
+#end
+#if($!form.bean.shishaTmsTytenCd)
+    #set($shishaTmsTytenCd = $!form.bean.shishaTmsTytenCd)
+#else
+    #set($shishaTmsTytenCd = "")
+#end
+#if($!form.bean.searchTmsTytenCd)
+    #set($searchTmsTytenCd = $form.bean.searchTmsTytenCd)
+#else
+    #set($searchTmsTytenCd = "")
+#end
+#set($crntPageNo = $form.bean.crntPageNo)
+#if ($form.getRequestData("TMS_LIST_KEY_R"))
+    #set($listDto = $form.getRequestData("TMS_LIST_KEY_R"))
+    #set($pagingBean = $paging.getPagingBean($listDto.tmsTytenMstTenkaiList,$consts.pageCount,$crntPageNo))
+    #set($dataList = $pagingBean.getCrntPageData())
+#else
+    #set($dataList = "")
+#end
+
+<script language="javascript">
+<!--
+function dpm912C03F00() {
+}
+## 検索クリック
+function dpm912C03F00Search() {
+    if (dpm912C03F00Validation()) {
+        var actionPath = '$link.setAction('dpm912C03F05')';
+        document.dpm912C03Form.action = actionPath;
+        document.dpm912C03Form.submit();
+        dpm912C03F00Search = blockIt;
+    }
+    return false;
+}
+## 特約店部名クリック
+function dpm912C00F00() {
+    var actionPath = '$link.setAction('dpm912C00F00')';
+    document.dpm912C03Form.action = actionPath;
+    document.dpm912C03Form.submit();
+    return false;
+}
+## 本店名クリック
+function dpm912C01F05() {
+    var actionPath = '$link.setAction('dpm912C01F05')';
+    document.dpm912C03Form.action = actionPath;
+    document.dpm912C03Form.submit();
+    return false;
+}
+## 支社名クリック
+function dpm912C02F00() {
+    var actionPath = '$link.setAction('dpm912C02F00')';
+    document.dpm912C03Form.action = actionPath;
+    document.dpm912C03Form.submit();
+    return false;
+}
+## ページ番号クリック
+function dpm912C03F00Page(crntPageNo) {
+    document.getElementById("crntPageNo").value = crntPageNo;
+    var actionPath = '$link.setAction('dpm912C03F10')';
+    document.dpm912C03Form.action = actionPath;
+    document.dpm912C03Form.submit();
+    return false;
+}
+## 呼び出し画面へ返す
+function dpm912C03F00Return(wsCode,wsName) {
+
+    if(arguments != 'undefined' &&  arguments != null && arguments.length == 3) {
+        var check = window.opener.${tytenApplyFuncName}(wsCode, wsName, arguments[2]);
+    } else {
+        var check = window.opener.${tytenApplyFuncName}(wsCode, wsName);
+    }
+    if(!(typeof check == 'string')){
+        window.close();
+    }else{
+        alert(check);
+    }
+    return false;
+}
+## 画面入力チェック
+function dpm912C03F00Validation() {
+    ## 入力フォーム
+    form = document.dpm912C03Form;
+
+    ## [半角数値] 特約店コード
+    value = form.searchTmsTytenCd.value;
+    if (value) {
+        errorMsg = '$text.get("DPC1004E",["特約店コード","半角数値"])';
+        isAdded = addErrorInfo(!isNumber(value), errorMsg);
+        if (!isAdded) {
+            ## [桁数(13)]
+            limit = 13;
+            errorMsg = '$text.get("DPC1020E",["特約店コード","' + limit + '"])';
+            addErrorInfo(!isByteInRange(value, limit), errorMsg);
+        }
+    }
+
+    return validation();
+}
+
+//-->
+</script>
+<div class="disp">
+<form name="dpm912C03Form" method="post">
+#token()
+<input type="hidden" name="tytenApplyFuncName" value="$tytenApplyFuncName" />
+<input type="hidden" name="crntPageNo" value="$crntPageNo" id="crntPageNo"/>
+<input type="hidden" name="takedaSosCd2" value="$!takedaSosCd2" id="takedaSosCd2"/>
+<input type="hidden" name="hontenTmsTytenCd" value="$!hontenTmsTytenCd" id="hontenTmsTytenCd"/>
+<input type="hidden" name="shishaTmsTytenCd" value="$!shishaTmsTytenCd" id="shishaTmsTytenCd"/>
+<input type="hidden" name="shishaExistFlg" value="$shishaExistFlg" id="shishaExistFlg"/>
+<table cellspacing="1" cellpadding="1" align="left" width="600">
+    <tr valign="top">
+        <td colspan="3">
+        <div align="center"><b>特約店選択</b></div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <table>
+                <tr>
+                    <td class="gridIndex" style="width:150px;">特約店コード</td>
+                    <td><input type="text" name="searchTmsTytenCd" value="$!searchTmsTytenCd" size="20" maxlength="13" class="ime_off"/></td>
+                    <td><input type="button" value="表示" style="width:80px;" onclick="dpm912C03F00Search()" /></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr valign="top">
+        <td class="label">
+                <!-- mod Start 2022/5/16 R.Yoshida 文言変更　「特約店部」→「流通政策部」
+               	var setInitWidthsStr = ["特約店部"];
+				var setInitWidthsStr = ["流通政策部"];
+				mod End 2022/5/16 R.Yoshida 文言変更　「特約店部」→「流通政策部」 -->
+        <div align="left">流通政策部：　<a href="#" onclick="dpm912C00F00()">
+        #if( $!form.bean.tytenBuName )
+            $!form.bean.tytenBuName
+        #else
+            全て
+        #end
+        </a>
+        </div>
+        </td>
+        <td></td><td></td>
+    </tr>
+    <tr valign="top">
+        <td class="label">
+        <div align="left">特約店(本店)：　<a href="#" onclick="dpm912C01F05()">
+        #if( $!form.bean.hontenMeiKj )
+            $!form.bean.hontenMeiKj
+        #else
+            全て
+        #end
+        </a>
+        </div>
+        </td>
+        <td></td><td></td>
+    </tr>
+    ## 支社がある特約店のみ表示
+    #if( $shishaExistFlg )
+    <tr valign="top">
+        <td class="label">
+        <div align="left">特約店(支社)：　<a href="#" onclick="dpm912C02F00()">
+        #if( $!form.bean.shishaMeiKj )
+            $!form.bean.shishaMeiKj
+        #else
+            全て
+        #end
+        </a>
+        </div>
+        </td>
+        <td></td><td></td>
+    </tr>
+    #end
+
+    <tr valign="top" style="font-size:8pt;vertical-align:middle;">
+        <td colspan="3">
+            <table>
+                <tr>
+#if ($tmsSelectMode && $tmsSelectMode == $tmsselect.getGrayAndDisableButtonMode())
+        <td class="tmsNormal legendSize" style="font-size:10pt;" align="center">$tmsselect.getPlanTaiGaiLabel()</td>
+        <td style="padding-right: 10px;"><label>：立案対象外(選択不可)</label></td>
+        <td>&nbsp;</td>
+#elseif ($tmsSelectMode && $tmsSelectMode == $tmsselect.getGrayAndEnableButtonMode())
+        <td class="tmsNormal legendSize" align="center">$tmsselect.getPlanTaiGaiLabel()</td>
+        <td style="padding-right: 10px;"><label>：立案対象外(選択可)</label></td>
+        <td>&nbsp;</td>
+#end
+        <td class="tmsNormal legendSize" >&nbsp;</td>
+        <td style="padding-right: 10px;"><label>：下位レベルがある特約店</label></td>
+        <td>&nbsp;</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    #if( $pagingBean != "" )
+    <tr valign="top" style="vertical-align:bottom;">
+        <td class="label">
+        <div align="left">#dispSearchCount($pagingBean)</div>
+        </td>
+        <td>
+        <div align="right">#dispSearchPage($pagingBean,"dpm912C03F00Page")</div>
+        </td>
+        <td>
+        </td>
+    </tr>
+    #end
+    <tr valign="top">
+        <td width="600" colspan="3">
+        <div>
+        <table width="100%" class="gridLine" style="border-collapse:collapse;">
+            <tr>
+                <td class="gridIndex" width="20">
+                </td>
+                <td nowrap class="gridIndex">
+                <div align="center">本店</div>
+                </td>
+                <td nowrap class="gridIndex">
+                <div align="center">支社</div>
+                </td>
+                <td nowrap class="gridIndex">
+                <div align="center">支店</div>
+                </td>
+                <td nowrap class="gridIndex">
+                <div align="center">課</div>
+                </td>
+                <td nowrap class="gridIndex">
+                <div align="center">ブロック１</div>
+                </td>
+                <td nowrap class="gridIndex">
+                <div align="center">ブロック２</div>
+                </td>
+                <td nowrap class="gridIndex">
+                <div align="center">特約店Ｃ</div>
+                </td>
+                <td nowrap class="gridIndex">
+                <div align="center">更新年月</div>
+                </td>
+            </tr>
+            #if( $dataList != "" )
+            #foreach($tmsMstDto in $dataList)
+                #set($tmsMst = $tmsMstDto.tmsTytenMstUn)
+##モードで分岐
+#if ($tmsSelectMode && $tmsSelectMode == $tmsselect.getGrayAndDisableButtonMode())
+            <tr class="#setTmsColorWithTaiGaiFlgTok($tmsMstDto)">
+                <td class="gridIndex"><input type="button" name="sos" style="WIDTH: 20px;" onClick="dpm912C03F00Return('$tmsMst.tmsTytenCd','$tmsMst.tmsTytenMeiKj','$tmsMst.planTaiGaiFlgTok')" #if($tmsMst.getPlanTaiGaiFlgTok())disabled="disabled"#end></td>
+                <td class="gridLine" nowrap="nowrap"><label>#if($tmsMst.getPlanTaiGaiFlgTok())$tmsselect.getPlanTaiGaiLabel()#end$!tmsMst.hontenMeiKj</label></td>
+#elseif ($tmsSelectMode && $tmsSelectMode == $tmsselect.getGrayAndEnableButtonMode())
+            <tr class="#setTmsColorWithTaiGaiFlgTok($tmsMstDto)">
+                <td class="gridIndex"><input type="button" name="sos" style="WIDTH: 20px;" onClick="dpm912C03F00Return('$tmsMst.tmsTytenCd','$tmsMst.tmsTytenMeiKj','$tmsMst.planTaiGaiFlgTok')"></td>
+                <td class="gridLine" nowrap="nowrap"><label>#if($tmsMst.getPlanTaiGaiFlgTok())$tmsselect.getPlanTaiGaiLabel()#end$!tmsMst.hontenMeiKj</label></td>
+#else
+            <tr class="#setTmsColor($tmsMstDto)">
+                <td class="gridIndex"><input type="button" name="sos" style="WIDTH: 20px;" onClick="dpm912C03F00Return('$tmsMst.tmsTytenCd','$tmsMst.tmsTytenMeiKj')"></td>
+                <td class="gridLine" nowrap="nowrap"><label>$!tmsMst.hontenMeiKj</label></td>
+#end
+                <td class="gridLine" nowrap="nowrap"><label>$!tmsMst.shishaMeiKj</label></td>
+                <td class="gridLine" nowrap="nowrap"><label>$!tmsMst.shitenMeiKj</label></td>
+                <td class="gridLine" nowrap="nowrap"><label>$!tmsMst.kaMeiKj</label></td>
+                <td class="gridLine" nowrap="nowrap"><label>$!tmsMst.blk1MeiKj</label></td>
+                <td class="gridLine" nowrap="nowrap"><label>$!tmsMst.blk2MeiKj</label></td>
+                <td class="gridLine" nowrap="nowrap" align="center"><label>$tmsMst.tmsTytenCd</label></td>
+                <td class="gridLine" nowrap="nowrap" align="center"><label>$format.toString($tmsMst.updTs, "yy/MM")</label></td>
+            </tr>
+            #end
+            #end
+        </table>
+        </div>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" colspan="3">
+        <table width="100%" border="0" cellspacing="0" cellpadding="4" align="left">
+            <tr>
+                <td width="15%">
+                <div align="left"><input type="button" name="add_item2" value="閉じる" onClick="self.window.close()" style="width:80px;"></div>
+                </td>
+                <td></td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+</table>
+</form>
+</div>

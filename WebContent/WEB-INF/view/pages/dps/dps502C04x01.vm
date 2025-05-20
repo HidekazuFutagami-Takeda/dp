@@ -1,0 +1,81 @@
+#set($layout = "nothingLayout.vm" )
+#if($form.getRequestData("DPS502C04_DATA_R_SEARCH_RESULT"))
+    #set($resultDataList = $form.getRequestData("DPS502C04_DATA_R_SEARCH_RESULT").detailList)
+#end
+#set ($editMode = false)
+#set ($inputB = "")
+## add Start 2022/7/20  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+## #if ($!form.bean.wsEndFlg)
+#if( ($form.bean.kaBaseKb.equals("1") && !$!security.sysManage.transTFlg )
+    || ($form.bean.kaBaseKb.equals("2") && $!security.sysManage.transTFlg ) )
+## add End 2022/7/20  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+#set ($editMode = true)
+#set ($inputB = "inputB")
+#end
+#if($resultDataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+    #set($beforeIsSummary = "")
+    #set($sosUserId = 0)
+    #foreach($resultData in $resultDataList)
+         #if($!resultData.wsPlanForVac.getPlanTaiGaiFlgRik())
+            #set($bgNot = "class='statusNot'")
+            #set ($inputB = "statusNot")
+            #set ($sumArea = "statusNot")
+        #else
+            #set($bgNot = "")
+            #set ($inputB = "inputB")
+            #set ($sumArea = "sumAreaTokuG")
+        #end
+        ## 施設積上
+        #set($insStackValue = "")
+        #if($resultData.wsPlanForVac.insStackValue)
+            #set($insStackValue = $resultData.wsPlanForVac.insStackValue)
+        #end
+        ## 修正計画
+        #set($plannedValue = "")
+        #if($resultData.wsPlanForVac.plannedValue)
+            #set($plannedValue = $resultData.wsPlanForVac.plannedValue)
+            #if($editMode)
+                #set($plannedValueType = "edn")
+            #else
+                #set($plannedValueType="ron")
+            #end
+        #else
+            #if($editMode)
+                #set($plannedValueType = "ed")
+            #else
+                #set($plannedValueType = "ro")
+            #end
+        #end
+        ## 全社合計行
+        #if($resultData.allSum)
+			##全社合計行は廃止
+		#else
+	        <row id='$velocityCount'>
+	        ## 組織合計行
+	        #if($resultData.sosSum)
+	            <cell class="sumShitenToku">合計</cell>
+	            <cell class="sumShitenToku" style="#setMinusStyle($insStackValue)">$insStackValue</cell>
+	            <cell class="sumShitenToku" style="#setMinusStyle($plannedValue)">$plannedValue</cell>
+	            ## サブグループ判別用ユーザデータ
+	            <userdata name="rowType">subTotal</userdata>
+	            <userdata name="subTotalId">$sosUserId</userdata>
+	        ## 通常行
+	        #else
+	          <cell $bgNot>$!resultData.wsPlanForVac.tmsTytenMeiKj</cell>
+	          <cell $bgNot style="#setMinusStyle($insStackValue)">$insStackValue</cell>
+	          <cell class="$inputB" style="#setMinusStyle($plannedValue)" type="$plannedValueType">$plannedValue</cell>
+	          ## 入力行判別用ユーザデータ
+	          <userdata name="planTaiGaiFlgRik">#if($!resultData.wsPlanForVac.planTaiGaiFlgRik)1#end</userdata>
+	          <userdata name="rowType">input</userdata>
+	          <userdata name="subTotalId">$sosUserId</userdata>
+	          ## 更新行判別用ユーザデータ
+	          ## シーケンスキー・最終更新日時・組織コード・データ取得時の計画値・登録ボタン押下後に更新後の計画値を追加
+	          <userdata name="updateRowId">$!resultData.wsPlanForVac.seqKey,$!resultData.wsPlanForVac.upDate.Time,$!resultData.wsPlanForVac.sosCd,$plannedValue</userdata>
+	        #end
+	        </row>
+        #end
+    #end
+</rows>
+#end

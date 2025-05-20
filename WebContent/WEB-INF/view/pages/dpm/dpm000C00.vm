@@ -1,0 +1,20 @@
+#set($pageTitle = $text.get("dpm000C00","title"))
+#set($topPageFlg = true)
+## -------------------------------
+##画面左側
+## -------------------------------
+<div id="leftArea" class="floatL">
+#parse("WEB-INF/view/pages/dpm/dpm000C00s02.vm")
+</div>
+
+## -------------------------------
+##画面右側
+## -------------------------------
+<div id="rightArea" class="floatL">
+#parse("WEB-INF/view/pages/dpm/dpm000C00s03.vm")
+</div>
+
+## -------------------------------
+##トップ画面縦横幅調整
+## -------------------------------
+#parse("WEB-INF/view/cmn/topPageScript.vm")

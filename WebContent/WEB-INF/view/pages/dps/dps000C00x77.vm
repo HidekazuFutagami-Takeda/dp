@@ -1,0 +1,101 @@
+#set($layout = "nothingLayout.vm" )
+#set($dps000C00F77Data = $form.getRequestData("DPS000C00F77_DATA_R"))
+#set($sos = $dps000C00F77Data.getSosStatusSummaryForVac())
+#set($jgiList = $dps000C00F77Data.getJgiStatusSummaryForVac())
+$!consts.getDhtmlxGridXmlHeader()
+#set($bgEnd = "class='statusEnd statusSize'")
+#set($bgIng = "class='statusIng statusSize'")
+#set($bgNot = "class='statusNot statusSize'")
+#set($style = $!progress.getStyle())
+<rows>
+#if($sos)
+    #set($insWsPlanStatSum = $sos.insWsPlanStatSum)
+    ##施設特約店別計画配分状況
+    #set($codeAndValueInsWsPlanDist = $progress.progressInsWsPlanDistStatusForVac($!insWsPlanStatSum))
+    #set($insWsPlanDistStatus = $codeAndValueInsWsPlanDist.value)
+    #if($!codeAndValueInsWsPlanDist.code.equals("NOT"))
+        #set($insWsPlanDistClass = $bgNot)
+    #elseif($!codeAndValueInsWsPlanDist.code.equals("ING"))
+        #set($insWsPlanDistClass = $bgIng)
+        #set($insWsPlanDistStatus = $!insWsPlanDistStatus)
+    #elseif($!codeAndValueInsWsPlanDist.code.equals("END"))
+        #set($insWsPlanDistClass = $bgEnd)
+        #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>" + $!format.toString($insWsPlanStatSum.distEndDate, 'MM/dd HH:mm'))
+    #end
+    ##施設特約店別計画ＭＲ公開
+    #set($codeAndValueInsWsPlanMrOpen = $!progress.progressInsWsPlanMrOpenStatusForVac($!insWsPlanStatSum))
+    #set($insWsPlanMrOpenStatus = $!codeAndValueInsWsPlanMrOpen.value)
+    #if($!codeAndValueInsWsPlanMrOpen.code.equals("NOT"))
+        #set($insWsPlanMrOpenClass = $bgNot)
+    #elseif($!codeAndValueInsWsPlanMrOpen.code.equals("ING"))
+        #set($insWsPlanMrOpenClass = $bgIng)
+        #set($insWsPlanMrOpenStatus = $!insWsPlanMrOpenStatus)
+    #elseif($!codeAndValueInsWsPlanMrOpen.code.equals("END"))
+        #set($insWsPlanMrOpenClass = $bgEnd)
+        #set($insWsPlanMrOpenStatus = $!insWsPlanMrOpenStatus + "<br>" + $!format.toString($insWsPlanStatSum.insWsOpenDate, 'MM/dd HH:mm'))
+    #end
+    ##施設特約店別計画所長確定
+    #set($codeAndValueInsWsPlanMrFix = $progress.progressInsWsPlanMrFixStatusForVac($!insWsPlanStatSum))
+    #set($insWsPlanMrFixStatus = $codeAndValueInsWsPlanMrFix.value)
+    #if($!codeAndValueInsWsPlanMrFix.code.equals("NOT"))
+        #set($insWsPlanMrFixClass = $bgNot)
+    #elseif($!codeAndValueInsWsPlanMrFix.code.equals("ING"))
+        #set($insWsPlanMrFixClass = $bgIng)
+        #set($insWsPlanMrFixStatus = $!insWsPlanMrFixStatus)
+    #elseif($!codeAndValueInsWsPlanMrFix.code.equals("END"))
+        #set($insWsPlanMrFixClass = $bgEnd)
+        #set($insWsPlanMrFixStatus = $!insWsPlanMrFixStatus + "<br>" + $!format.toString($insWsPlanStatSum.insWsFixDate, 'MM/dd HH:mm'))
+    #end
+    <row id="1">
+        <cell >全エリア</cell>
+        <cell $!insWsPlanDistClass $!style><![CDATA[$!insWsPlanDistStatus]]></cell>
+        <cell $!insWsPlanMrOpenClass $!style><![CDATA[$!insWsPlanMrOpenStatus]]></cell>
+        <cell $!insWsPlanMrFixClass $!style><![CDATA[$!insWsPlanMrFixStatus]]></cell>
+    </row>
+#elseif($jgiList)
+    #foreach($jgi in $jgiList)
+        #set($insWsPlanStatSum = $jgi.insWsPlanStatSum)
+        ##施設特約店別計画配分状況
+        #set($codeAndValueInsWsPlanDist = $progress.progressInsWsPlanDistStatusForVac($!insWsPlanStatSum))
+        #set($insWsPlanDistStatus = $codeAndValueInsWsPlanDist.value)
+        #if($!codeAndValueInsWsPlanDist.code.equals("NOT"))
+            #set($insWsPlanDistClass = $bgNot)
+        #elseif($!codeAndValueInsWsPlanDist.code.equals("ING"))
+            #set($insWsPlanDistClass = $bgIng)
+            #set($insWsPlanDistStatus = $!insWsPlanDistStatus)
+        #elseif($!codeAndValueInsWsPlanDist.code.equals("END"))
+            #set($insWsPlanDistClass = $bgEnd)
+            #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>" + $!format.toString($insWsPlanStatSum.distEndDate, 'MM/dd HH:mm'))
+        #end
+        ##施設特約店別計画ＭＲ公開
+        #set($codeAndValueInsWsPlanMrOpen = $!progress.progressInsWsPlanMrOpenStatusForVac($!insWsPlanStatSum))
+        #set($insWsPlanMrOpenStatus = $!codeAndValueInsWsPlanMrOpen.value)
+        #if($!codeAndValueInsWsPlanMrOpen.code.equals("NOT"))
+            #set($insWsPlanMrOpenClass = $bgNot)
+        #elseif($!codeAndValueInsWsPlanMrOpen.code.equals("ING"))
+            #set($insWsPlanMrOpenClass = $bgIng)
+            #set($insWsPlanMrOpenStatus = $!insWsPlanMrOpenStatus)
+        #elseif($!codeAndValueInsWsPlanMrOpen.code.equals("END"))
+            #set($insWsPlanMrOpenClass = $bgEnd)
+            #set($insWsPlanMrOpenStatus = $!insWsPlanMrOpenStatus + "<br>" + $!format.toString($insWsPlanStatSum.insWsOpenDate, 'MM/dd HH:mm'))
+        #end
+        ##施設特約店別計画所長確定
+        #set($codeAndValueInsWsPlanMrFix = $progress.progressInsWsPlanMrFixStatusForVac($!insWsPlanStatSum))
+        #set($insWsPlanMrFixStatus = $codeAndValueInsWsPlanMrFix.value)
+        #if($!codeAndValueInsWsPlanMrFix.code.equals("NOT"))
+            #set($insWsPlanMrFixClass = $bgNot)
+        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("ING"))
+            #set($insWsPlanMrFixClass = $bgIng)
+            #set($insWsPlanMrFixStatus = $!insWsPlanMrFixStatus)
+        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("END"))
+            #set($insWsPlanMrFixClass = $bgEnd)
+            #set($insWsPlanMrFixStatus = $!insWsPlanMrFixStatus + "<br>" + $!format.toString($insWsPlanStatSum.insWsFixDate, 'MM/dd HH:mm'))
+        #end
+        <row id="$velocityCount">
+        <cell>$!{jgi.jgiName}</cell>
+        <cell $!insWsPlanMrOpenClass $!style><![CDATA[$!insWsPlanMrOpenStatus]]></cell>
+        <cell $!insWsPlanMrFixClass $!style><![CDATA[$!insWsPlanMrFixStatus]]></cell>
+        </row>
+    #end
+#end
+</rows>

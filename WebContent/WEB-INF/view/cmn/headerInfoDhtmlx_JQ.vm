@@ -1,0 +1,48 @@
+<head>
+## --------------------------
+## CMN HEADER
+## --------------------------
+#parse("WEB-INF/view/cmn/cmnHttpHeader.vm")
+#if($addMetaTag)
+$addMetaTag
+#end
+<base target="_self">
+## --------------------------
+## CSS
+## --------------------------
+<link rel="stylesheet" type="text/css" href="$link.getContextPath()/cmn/dhtmlx/codebase/dhtmlxgrid.css" />
+#if($addCssLink)
+$addCssLink
+#end
+#parse("WEB-INF/view/cmn/cmnCssHeader.vm")
+## --------------------------
+## JS
+## --------------------------
+<script language="javascript" type="text/javascript" src="$link.getContextPath()/cmn/dhtmlx/codebase/dhtmlx.js"></script>
+<script language="javascript" type="text/javascript" src="$link.getContextPath()/cmn/js/lib/jquery-1.9.1.min.js"></script>
+<script language="javascript" type="text/javascript" src="$link.getContextPath()/cmn/js/lib/jquery-migrate-1.1.1.js"></script>
+#if($addJsLink)
+$addJsLink
+#end
+#parse("WEB-INF/view/cmn/cmnJsHeader.vm")
+## --------------------------
+## JS inline
+## --------------------------
+<script type="text/javascript">
+<!--
+var JQ = jQuery;
+#if($addReadyScript)
+JQ(document).ready(function() {
+$addReadyScript
+});
+#end
+#if($addHeaderScript)
+$addHeaderScript
+#end
+// -->
+</script>
+## --------------------------
+## TITLE
+## --------------------------
+<title>#if($!security.hasDps())計画立案支援#elseif($!security.hasDpm())計画立案管理#end</title>
+</head>

@@ -1,0 +1,50 @@
+#set($layout = "nothingLayout.vm" )
+#if($form.getRequestData("DPS502C02_DATA_R"))
+    #set($resultDataList = $form.getRequestData("DPS502C02_DATA_R").tmsTytenPlanAddDetailDtoList)
+#end
+
+<rows>
+#if($resultDataList)
+    #foreach($resultData in $resultDataList)
+    <row id='$velocityCount'>
+        #if($resultData.wsPlan.seqKey)
+            #set($class="noInput")
+            #set($typeUH="ron")
+            #set($typeP="ron")
+            #set($rowType="")
+            #if ($!resultData.wsPlan.plannedValueUh)
+                #set ($Uh = $!format.parseMoneyToThousandUnit($!resultData.wsPlan.plannedValueUh))
+            #else
+                #set ($Uh = "")
+            #end
+            #if ($!resultData.wsPlan.plannedValueP)
+                #set ($P = $!format.parseMoneyToThousandUnit($!resultData.wsPlan.plannedValueP))
+            #else
+                #set ($P = "")
+            #end
+        #else
+            #set($class="inputB")
+            #if($resultData.wsPlan.plannedValueUh)
+                #set($typeUH="edn")
+            #else
+                #set($typeUH="ed")
+                #set ($Uh = "")
+            #end
+            #if($resultData.wsPlan.plannedValueP)
+                #set($typeP="edn")
+            #else
+                #set($typeP="ed")
+            #end
+            #set($rowType="input")
+            #set ($Uh = "")
+            #set ($P = "")
+        #end
+        <userdata name="prodCode">$!resultData.plannedProd.prodCode</userdata>
+        <userdata name="rowType">$!rowType</userdata>
+        <cell>$!resultData.plannedProd.prodName</cell>
+        <cell type="$typeUH" class="$class">$!Uh</cell>
+        <cell type="$typeP" class="$class">$!P</cell>
+    </row>
+    #end
+#end
+</rows>

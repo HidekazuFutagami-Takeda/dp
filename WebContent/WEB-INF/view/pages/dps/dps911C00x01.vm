@@ -1,0 +1,86 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS911C00_DATA_R"))
+    #set( $dataList = $form.getRequestData("DPS911C00_DATA_R"))
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows total_count='$dataList.size()'>
+#foreach($resultObj in $dataList)
+## 削除施設の場合、背景色グレー・選択は可能
+#set($disabled = "")
+#if($resultObj.delFlg)
+    #set($bgClass = "class='delIns'")
+    ## 削除施設選択不可フラグONの場合、選択不可
+    #if($form.bean.disableDelInsSelect)
+        #set($disabled = "disabled")
+    #end
+#else
+    #set($bgClass = "")
+#end
+## 表示色の判定
+#set($cellStyle ="")
+#if($!resultObj.dispFontColCd)
+    #set($cellStyle = "style='color:#$!{resultObj.dispFontColCd};'")
+#end
+<row id='$velocityCount' $!cellStyle>
+    <userdata name="selectRowId">$resultObj.insNo</userdata>
+    #if($!insSelectPtnType == "01")
+    <cell $!bgClass><![CDATA[<input type='button' style='width:20px;' onclick='dps911C00F00Return01("$!{resultObj.insNo}","$!{resultObj.jgiNo}");' $!disabled/>]]></cell>
+    #else
+    <cell $!bgClass><![CDATA[<input type='checkbox' value='$!{resultObj.insNo},$!{resultObj.jgiNo}' $!disabled/>]]></cell>
+    #end
+    <cell $!bgClass>$!resultObj.insName</cell>
+    <cell $!bgClass>$!resultObj.insInfoName</cell>
+    <cell $!bgClass>$!resultObj.insType</cell>
+    <cell $!bgClass>$!resultObj.insClass</cell>
+	<cell $!bgClass>
+	#set($existData = false)
+    ##施設品目情報を表示する場合
+    #if($form.bean.insSelectMode)
+	#if($resultObj.jgiName)
+		$resultObj.jgiName（$resultObj.shokushuName）
+	#end
+    #else
+	## 医薬の場合
+	#if($security.hasIyaku())
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　担当者表示を汎用的に書き換え
+##	#if($resultObj.cvmJgiName)
+##		$resultObj.cvmJgiName（$resultObj.cvmShokushuName）
+##		#set($existData = true)
+##	#end
+##	#if($resultObj.rsJgiName)
+##		#if($existData)
+##		,
+##		#end
+##		$resultObj.rsJgiName（$resultObj.rsShokushuName）
+##		#set($existData = true)
+##	#end
+##	#if($resultObj.oncJgiName)
+##		#if($existData)
+##		,
+##		#end
+##		$resultObj.oncJgiName（$resultObj.oncShokushuName）
+##		#set($existData = true)
+##	#end
+	##SYU0003の担当者を表示
+	#foreach($tanto in $resultObj.getTantoList())
+		#if($existData)
+		,
+		#end
+		$!tanto.jgiName（$!tanto.shokushuName）
+		#set($existData = true)	
+	#end	
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　担当者表示を汎用的に書き換え
+	## ワクチンの場合
+	#elseif($security.hasVaccine())
+	#if($resultObj.vacJgiName)
+		$resultObj.vacJgiName
+		#set($existData = true)
+	#end
+	#end
+	#end
+	</cell>
+</row>
+#end
+</rows>
+#end

@@ -1,0 +1,72 @@
+#set($layout = "nothingLayout.vm" )
+#set($dps000C00F26Data = $form.getRequestData("DPS000C00F26_DATA_R"))
+#set($sosList = $dps000C00F26Data.getSosEachKindInfoList())
+#set($jgiList = $dps000C00F26Data.getJgiEachKindInfoList())
+#set($rankString = $progress.getProgressIyakuRank().toString())
+#set($style = $!progress.getStyle())
+##未獲得市場表示フラグ
+#if ($rankString.equals("SITEN") || $rankString.equals("OFFICE"))
+    #set($mFlg = true)
+#end
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#if($sosList)
+    #foreach($data in $sosList)
+	    #set($sosLink = $progress.createChangeLink("$data.bumonSeiName","dps000C00F00Change","false", "false","$data.sosCd","","dps000C00F00",$!style))
+	    <row id="$velocityCount">
+	    <cell><![CDATA[$!sosLink]]></cell>
+	    ##未獲得市場の処理
+	    #if ($mFlg)
+	        #if ($data.mikakutokuUpDate)
+	            #set ($mSosTimeString = $!format.toString($!{data.mikakutokuUpDate}, "yyyy/MM/dd HH:mm"))
+	        #end
+	        #if (!$mSosTimeString)
+	            #set ($mSosString = "")
+	        #else
+	            #set ($mSosString = $mSosTimeString)
+	        #end
+		    <cell>$!{mSosString}</cell>
+	    #end
+	    ##配分除外の処理
+	    #if ($data.exceptDistInsUpDate)
+	        #set ($hSosTimeString = $!format.toString($!{data.exceptDistInsUpDate}, "yyyy/MM/dd HH:mm"))
+	        #set ($hSosString = $hSosTimeString + "(" + $data.exceptDistInsCnt + "件)")
+	    #else
+	        #set ($hSosString = "")
+	    #end
+	    <cell>$!{hSosString}</cell>
+	    ##特定施設個別計画最終更新日 の処理
+	    #if ($data.specialInsPlanUpDate)
+	        #set ($tSosTimeString = $!format.toString($!{data.specialInsPlanUpDate}, "yyyy/MM/dd HH:mm"))
+	        #set ($tSosString = $tSosTimeString + "(" + $data.specialInsPlanCnt + "件)")
+	    #else
+	        #set ($tSosString = "")
+	    #end
+	    <cell>$!{tSosString}</cell>
+	    ##担当者別計画最終更新日 の処理
+	    #if ($data.mrPlanUpDate)
+	        #set ($mrSosString = $!format.toString($!{data.mrPlanUpDate}, "yyyy/MM/dd HH:mm"))
+	    #else
+	        #set ($mrSosString = "")
+	    #end
+	    <cell>$!{mrSosString}</cell>
+	</row>
+    #end
+
+#end
+#if($jgiList)
+	#foreach($data in $jgiList)
+	    <row id="$velocityCount">
+	    ##配分除外の処理
+	    #if ($data.getExceptDistInsUpDate())
+	        #set ($hJgiTimeString = $!format.toString($!{data.getExceptDistInsUpDate()}, "yyyy/MM/dd HH:mm"))
+	        #set ($hJgiString = $!hJgiTimeString + "(" + $!data.getExceptDistInsCnt() + "件)")
+	    #else
+	        #set ($hJgiString = "")
+	    #end
+	    <cell $!style>$!{data.jgiName}（$!{data.shokushuName}）</cell>
+	    <cell>$!{hJgiString}</cell>
+	    </row>
+	#end
+#end
+</rows>

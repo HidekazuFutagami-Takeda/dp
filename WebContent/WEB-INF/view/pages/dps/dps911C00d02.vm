@@ -1,0 +1,28 @@
+#set( $layout = "nothingLayout.vm" )
+#set( $insMstList = $form.getRequestData("DPS911C00F11_DATA_R"))
+[
+#if($insMstList && $insMstList.size() > 0)
+#foreach($insMst in $insMstList)
+{
+"insNo":"$!insMst.getInsNo()",
+"insName":"$!insMst.getInsName()",
+"insType":"$!insMst.getInsType()",
+"insClass":"$!insMst.getInsClass()",
+"jgiName":"$!insMst.getJgiName()",
+"shikuchosonMeiKj":"$!insMst.getShikuchosonMeiKj()",
+"addrCodePref":"$!insMst.getAddrCodePref()",
+"addrCodeCity":"$!insMst.getAddrCodeCity()",
+"insInfoName":"$!insMst.getInsInfoName()",
+"dispFontColCd":"$!insMst.getDispFontColCd()",
+"errFlg":"$!insMst.getErrFlg()",
+"alertFlg":"$!insMst.getAlertFlg()",
+"delFlg":"$!insMst.getDelFlg()",
+"exceptDistIns":"$!insMst.getExceptDistFlg()",
+"shokushuName":"$!insMst.getShokushuName()"
+}
+#if($velocityCount != $insMstList.size())
+,
+#end
+#end
+#end
+]

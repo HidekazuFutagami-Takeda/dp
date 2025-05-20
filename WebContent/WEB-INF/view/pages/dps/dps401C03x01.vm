@@ -1,0 +1,162 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS401C03_DATA_R"))
+    #set( $resultData = $form.getRequestData("DPS401C03_DATA_R"))
+#end
+#if ( $resultData.teamResultList)
+    #set( $tokuGList = $resultData.teamResultList)
+#end
+#if ($tokuGList)
+#set($q = '"' )
+#set($bgEnd = "class='statusEnd'")
+#set($bgIng = "class='statusIng'")
+#set($bgNot = "class='statusNot'")
+$!consts.getDhtmlxGridXmlHeader()
+#set($decimalFormat = $form.bean.getDefaultRateFormat())
+<rows>
+##
+## 全エリアごとに繰り返し
+##
+#set( $totalCount = 1)
+#foreach($tokuGData in $tokuGList)
+    ##
+    ## チームごとに繰り返し
+    ##
+    #set( $teamList = $tokuGData.teamList)
+    #set( $teamCount = 1)
+    #foreach($teamData in $teamList)
+        ##
+        ## 担当者単位に繰り返し
+        ##
+        #set( $mrCount = 1)
+        #foreach($mrData in $teamData.mrList)
+            ##
+            ##チーム名設定
+            #set( $tokuGName = "")
+            #set( $tokuGNameStyle = "border-bottom:0px")
+            ##最初の行の場合
+            #if($mrCount == 1)
+                #set( $tokuGName = $tokuGData.sosName)
+                #if($!teamData.sosName)
+                    #set( $tokuGName = "<![CDATA[${tokuGName}<br>${teamData.sosName}]]>")
+                #end
+                #set( $tokuGNameStyle = "border-bottom:0px")
+            #end
+            ##最終行の場合
+            #if($mrCount == $teamData.mrList.size())
+                ##1件以上ある最終行
+                #if($teamData.mrList.size() != 1)
+                    #set( $tokuGName = "")
+                    #set( $tokuGNameStyle = "")
+                #else
+                    #set( $tokuGNameStyle = "")
+                #end
+            #end
+            ##
+            ##施設特約店別計ステータス情報
+            #set($insWsPlanStatus = ${mrData.insWsPlanStatus})
+            ##
+            ##施設特約店別計画配分状況
+            #set($codeAndValueInsWsPlanDist = $progress.progressInsWsPlanDistStatus($!{insWsPlanStatus}))
+            #set($insWsPlanDistStatus = $codeAndValueInsWsPlanDist.value)
+            #set( $distStartDate = "")
+            #if($insWsPlanStatus.distStartDate)
+                #set($distStartDate = $!format.toString($!{insWsPlanStatus.distStartDate}, 'MM/dd HH:mm'))
+            #end
+            #set( $distEndDate = "")
+            #if($insWsPlanStatus.distEndDate)
+                #set($distEndDate = $!format.toString($!{insWsPlanStatus.distEndDate}, 'MM/dd HH:mm'))
+            #end
+            #if($!codeAndValueInsWsPlanDist.code.equals("NOT"))
+                #set($insWsPlanDistClass = $bgNot)
+                #if($insWsPlanStatus.distStartDate)
+                    #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>(" + $distStartDate + ")")
+                #end
+            #elseif($!codeAndValueInsWsPlanDist.code.equals("END"))
+                #set($insWsPlanDistClass = $bgEnd)
+                #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>(" + $distStartDate + " - " + $distEndDate + ")")
+            #end
+            ##
+            ##施設特約店別計画ＭＲ公開
+            #set($codeAndValueInsWsPlanMrOpen = $progress.progressInsWsPlanMrOpenStatus($!{insWsPlanStatus}))
+            #set($insWsPlanMrOpenStatus = $codeAndValueInsWsPlanMrOpen.value)
+            #if($!codeAndValueInsWsPlanMrOpen.code.equals("NOT"))
+                #set($insWsPlanMrOpenClass = $bgNot)
+            #elseif($!codeAndValueInsWsPlanMrOpen.code.equals("ING"))
+                #set($insWsPlanMrOpenClass = $bgIng)
+            #elseif($!codeAndValueInsWsPlanMrOpen.code.equals("END"))
+                #set($insWsPlanMrOpenClass = $bgEnd)
+                #set($insWsPlanMrOpenStatus = $!insWsPlanMrOpenStatus + "<br>(" + $!format.toString($insWsPlanStatus.insWsOpenDate, 'MM/dd HH:mm') + ")")
+            #end
+            ##
+            ##施設特約店別計画ＭＲ確定
+            #set($codeAndValueInsWsPlanMrFix = $progress.progressInsWsPlanMrFixStatus($!{insWsPlanStatus}))
+            #set($insWsPlanMrFixStatus = $codeAndValueInsWsPlanMrFix.value)
+            #if($!codeAndValueInsWsPlanMrFix.code.equals("NOT"))
+                #set($insWsPlanMrFixClass = $bgNot)
+            #elseif($!codeAndValueInsWsPlanMrFix.code.equals("ING"))
+                #set($insWsPlanMrFixClass = $bgIng)
+            #elseif($!codeAndValueInsWsPlanMrFix.code.equals("END"))
+                #set($insWsPlanMrFixClass = $bgEnd)
+                #set($insWsPlanMrFixStatus = $!insWsPlanMrFixStatus + "<br>(" + $!format.toString($insWsPlanStatus.insWsFixDate, 'MM/dd HH:mm') + ")")
+            #end
+            ##
+            ## ---- 非表示データ -------
+            ## 従業員
+            #set($jgiNo = "")
+            #if($insWsPlanStatus.jgiNo)
+                #set($jgiNo = $!{insWsPlanStatus.jgiNo})
+            #end
+            ## 施設特約店別計画ステータス最終更新日
+            #set( $lastUpdate = "")
+            #if($insWsPlanStatus.upDate)
+                #set($lastUpdate = $!{insWsPlanStatus.upDate.time})
+            #end
+            ## 計画値表示フラグ(設定ユーザが本部・本部ワクチンG、または、公開以降の場合は、計画値表示)
+            #set( $isOpen = false)
+            #if($form.bean.rank == "1" || $codeAndValueInsWsPlanMrOpen.code.equals("END"))
+                #set( $isOpen = true)
+            #end
+            <row id='$totalCount'>
+                #if($form.bean.rank != "2")
+                    <cell style="height:45;">1</cell>
+                #end
+                <cell style="height:45;">$!{insWsPlanStatus.jgiName}</cell>
+                <cell style="height:45;$tokuGNameStyle">$tokuGName</cell>
+                #if($isOpen)
+                    <cell style="height:45;"><![CDATA[<a href='#' onclick='cs_openEditDialog($!{q}$link.setAction("dps401C05F00").addQueryData('sosCd3',$!{tokuGData.sosCd}).addQueryData('jgiNo',$!{jgiNo}).addQueryData('prodCode',$!form.bean.prodCodeTran)${q},dps401C0XF05);'>編集</a>]]></cell>
+                #else
+                    <cell style="height:45;"></cell>
+                #end
+                ## 設定ユーザが本部・本部ワクチンGの場合は、「配分状況」表示
+                #if($form.bean.rank == "1")
+                    <cell style="height:45;" $insWsPlanDistClass><![CDATA[$!insWsPlanDistStatus]]></cell>
+                #end
+                <cell style="height:45;" $insWsPlanMrOpenClass><![CDATA[$!insWsPlanMrOpenStatus]]></cell>
+                <cell style="height:45;" $insWsPlanMrFixClass><![CDATA[$!insWsPlanMrFixStatus]]></cell>
+                <cell style="height:45;#setMinusStyle($!{mrData.resultSummary.currentPlanValue})">$!{mrData.resultSummary.currentPlanValue}</cell>
+                <cell style="height:45;#setMinusStyle($!{mrData.resultSummary.currentPeriod})">$!{mrData.resultSummary.currentPeriod}</cell>
+                <cell style="height:45;#setMinusStyle($!{mrData.resultSummary.currentRate})">$!format.doubleToString($!{mrData.resultSummary.currentRate}, $decimalFormat)</cell>
+                #if($isOpen)
+                    <cell style="height:45;#setMinusStyle($!{mrData.plannedSummary.mrPlanPlannedValue})">$!{mrData.plannedSummary.mrPlanPlannedValue}</cell>
+                    <cell style="height:45;#setMinusStyle($!{mrData.plannedSummary.insWsPlanPlannedValue})">$!{mrData.plannedSummary.insWsPlanPlannedValue}</cell>
+                    <cell style="height:45;#setSagakuStyle($!{mrData.plannedSummary.sagaku})">$!{mrData.plannedSummary.sagaku}</cell>
+                    <userdata name="p">$!{mrData.plannedSummary.insWsPlanPlannedValue}</userdata>
+                    <userdata name="s">$!{mrData.plannedSummary.sagaku}</userdata>
+                #else
+                    <cell style="height:45;"></cell>
+                    <cell style="height:45;"></cell>
+                    <cell style="height:45;"></cell>
+                    <userdata name="p"></userdata>
+                    <userdata name="s"></userdata>
+                #end
+                ##送信情報
+                <userdata name="rowIdList">$jgiNo,$insWsPlanStatus.jgiName,$lastUpdate</userdata>
+            </row>
+            #set( $mrCount = $mrCount + 1)
+            #set( $totalCount = $totalCount + 1)
+        #end
+        #set( $teamCount = $teamCount + 1)
+    #end
+#end
+</rows>
+#end

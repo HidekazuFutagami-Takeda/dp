@@ -1,0 +1,18 @@
+## 「④No.6 一括確定のエラー表示対応」対応前のdps940C00x01.vmの内容をコピーして作成
+#set($layout = "nothingLayout.vm" )
+#set($dps940C00F01Data = $form.getRequestData("DPS940C00F01_DATA_R"))
+#set($list = $dps940C00F01Data.getExceptPlans())
+#set($sosMst = $dps940C00F01Data.getSosMst())
+
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#if($list)
+	#foreach($data in $list)
+	    <row id="$velocityCount">
+	        <cell><![CDATA[$data.jgiName]]></cell>
+	        <cell><![CDATA[$data.insOrTytenName]]></cell>
+	        <cell><![CDATA[$data.wrappedMessage]]></cell>
+	    </row>
+	#end
+#end
+</rows>

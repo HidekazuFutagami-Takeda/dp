@@ -1,0 +1,131 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPM911C00_DATA_R"))
+    #set( $allDataList = $form.getRequestData("DPM911C00_DATA_R"))
+    #set( $dataList = $allDataList)
+#end
+#if($allDataList)
+    #set($crntPageNo = $form.bean.crntPageNo)
+    #if(!$crntPageNo)
+        #set($crntPageNo = 1)
+    #end
+    #set($pagingBean = $paging.getPagingBean($allDataList, $form.bean.pageCount, $crntPageNo))
+    #set($dataList = $pagingBean.getCrntPageData())
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows total_count='$dataList.size()'>
+#foreach($resultObj in $dataList)
+## 削除施設の場合、背景色グレー・選択は可能
+#set($disabled = "")
+#if($resultObj.delFlg)
+    #set($bgClass = "class='delIns'")
+    ## 削除施設選択不可フラグONの場合、選択不可
+    #if($form.bean.disableDelInsSelect)
+        #set($disabled = "disabled")
+    #end
+#else
+    #set($bgClass = "")
+#end
+<row id='$velocityCount'>
+<userdata name="selectRowId">$resultObj.insNo</userdata>
+##モール制御フラグがON、かつ、対象施設がモールの場合(１つ選択パターンのみ対応)
+#if($form.bean.disableMallInsSelect && $resultObj.mallFlg)
+<cell $!bgClass><![CDATA[<input type='button' style='width:20px;' onclick='mallError()' $!disabled/>]]></cell>
+#else
+#if($!insSelectPtnType == "01")
+<cell $!bgClass><![CDATA[<input type='button' style='width:20px;' onclick='dpm911C00F00Return01("${resultObj.insNo}","$!{resultObj.jgiNo}","${resultObj.insName}");' $!disabled/>]]></cell>
+#else
+<cell $!bgClass><![CDATA[<input type='checkbox' value='${resultObj.insNo},${resultObj.jgiNo}' $!disabled/>]]></cell>
+#end
+#end
+<cell $!bgClass>$resultObj.insName</cell>
+<cell $!bgClass>$resultObj.insType</cell>
+<cell $!bgClass>$resultObj.insClass</cell>
+<cell $!bgClass>
+#set($existData = false)
+## 医薬の場合
+#if($security.hasIyaku())
+	#if($resultObj.comJgiName)
+		$resultObj.comJgiName
+		#set($existData = true)
+	#end
+## add Start 2025/04/07 H.Futagami 施設検索の担当者表示の変更
+ 	#if($resultObj.bu2csMrJgiName)
+ 		#if($existData)
+ 		,
+ 		#end
+ 		$resultObj.bu2csMrJgiName
+ 		#set($existData = true)
+ 	#end
+ 	#if($resultObj.johlcMrJgiName)
+ 		#if($existData)
+ 		,
+ 		#end
+ 		$resultObj.johlcMrJgiName
+ 		#set($existData = true)
+ 	#end
+ 	#if($resultObj.bu2bloMrJgiName)
+ 		#if($existData)
+ 		,
+ 		#end
+ 		$resultObj.bu2bloMrJgiName
+ 		#set($existData = true)
+ 	#end
+ 	#if($resultObj.bu2herMrJgiName)
+ 		#if($existData)
+ 		,
+ 		#end
+ 		$resultObj.bu2herMrJgiName
+ 		#set($existData = true)
+ 	#end
+ 	#if($resultObj.joguhMrJgiName)
+ 		#if($existData)
+ 		,
+ 		#end
+ 		$resultObj.joguhMrJgiName
+ 		#set($existData = true)
+ 	#end
+ 	#if($resultObj.bu1lamMrJgiName)
+ 		#if($existData)
+ 		,
+ 		#end
+ 		$resultObj.bu1lamMrJgiName
+ 		#set($existData = true)
+ 	#end
+## add End 2025/04/07 H.Futagami 施設検索の担当者表示の変更
+## del Start 2025/04/07 H.Futagami 施設検索の担当者表示の変更
+## 	#if($resultObj.spJgiName)
+## 		#if($existData)
+## 		,
+## 		#end
+## 		$resultObj.spJgiName
+## 		#set($existData = true)
+## 	#end
+## 	#if($resultObj.oncJgiName)
+## 		#if($existData)
+## 		,
+## 		#end
+## 		$resultObj.oncJgiName
+## 		#set($existData = true)
+## 	#end
+## 	#if($resultObj.kokeiJgiName)
+## 		#if($existData)
+## 		,
+## 		#end
+## 		$resultObj.kokeiJgiName
+## 		#set($existData = true)
+## 	#end
+## del End 2025/04/07 H.Futagami 施設検索の担当者表示の変更
+
+## ワクチンの場合
+#elseif($security.hasVaccine())
+	#if($resultObj.vacJgiName)
+		$resultObj.vacJgiName
+		#set($existData = true)
+	#end
+#end
+</cell>
+</row>
+#end
+</rows>
+#end

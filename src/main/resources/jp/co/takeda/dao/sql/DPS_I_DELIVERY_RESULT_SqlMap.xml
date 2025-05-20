@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_DELIVERY_RESULT_SqlMap" >
+
+  <resultMap id="monNnu" class="jp.co.takeda.model.MonNnu" >
+    <result column="DELIVERY_RECORD_01" property="deliveryRecord01" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_02" property="deliveryRecord02" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_03" property="deliveryRecord03" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_04" property="deliveryRecord04" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_05" property="deliveryRecord05" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_06" property="deliveryRecord06" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_07" property="deliveryRecord07" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_08" property="deliveryRecord08" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_09" property="deliveryRecord09" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_10" property="deliveryRecord10" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_11" property="deliveryRecord11" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_12" property="deliveryRecord12" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_13" property="deliveryRecord13" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_14" property="deliveryRecord14" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_15" property="deliveryRecord15" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_16" property="deliveryRecord16" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_17" property="deliveryRecord17" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_18" property="deliveryRecord18" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_19" property="deliveryRecord19" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_20" property="deliveryRecord20" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_21" property="deliveryRecord21" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_22" property="deliveryRecord22" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_23" property="deliveryRecord23" jdbcType="BIGINT" />
+    <result column="DELIVERY_RECORD_24" property="deliveryRecord24" jdbcType="BIGINT" />
+    <result column="PRE_FAR_ADVANCE_PERIOD" property="preFarAdvancePeriod" jdbcType="BIGINT" />
+    <result column="FAR_ADVANCE_PERIOD" property="farAdvancePeriod" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD" property="advancePeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PERIOD" property="currentPeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PLAN_VALUE" property="currentPlanValue" jdbcType="BIGINT" />
+  </resultMap>
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.DeliveryResult" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result column="PROD_TYPE" property="prodType" jdbcType="VARCHAR" />
+    <result column="INS_NO" property="insNo" jdbcType="VARCHAR" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="INS_TYPE" property="insType" jdbcType="CHAR" />
+    <result column="SLOPPY_CHARGE_FLG" property="sloppyChargeFlg" jdbcType="CHAR" />
+    <result property="monNnu" resultMap="DPS_I_DELIVERY_RESULT_SqlMap.monNnu" />
+    <result column="INS_ABBR_NAME" property="insAbbrName" jdbcType="VARCHAR" />
+    <result column="REQ_FLG" property="reqFlg" jdbcType="INTEGER" />
+    <result column="DEL_FLG" property="delFlg" jdbcType="INTEGER" />
+    <result column="TMS_TYTEN_MEI_KJ" property="tmsTytenMeiKj" jdbcType="VARCHAR" />
+    <result column="PLAN_TAI_GAI_FLG_TOK" property="planTaiGaiFlgTok" jdbcType="CHAR" />
+    <result column="PLAN_TAI_GAI_FLG_RIK" property="planTaiGaiFlgRik" jdbcType="CHAR" />
+
+    <result column="INS_INFO_NAME" property="prodIns.insInfoName" jdbcType="VARCHAR" />
+    <result column="DISP_FONT_COL_CD" property="prodIns.dispFontColCd" jdbcType="CHAR" />
+    <result column="ERR_KB" property="prodIns.prodInsInfoErrKbn" jdbcType="CHAR" />
+    <result column="SCRN_DISP_KB" property="prodIns.prodInsInfoScanDispKbn" jdbcType="CHAR" />
+    <result column="DIST_KB" property="prodIns.prodInsInfoDistKbn" jdbcType="CHAR" />
+    <result column="IMP_INS_KB" property="prodIns.prodInsInfoImpInsKbn" jdbcType="CHAR" />
+    <result column="EXEC_PG_ID" property="prodIns.execPgId" jdbcType="VARCHAR" />
+    <result column="REMARKS" property="prodIns.remarks" jdbcType="VARCHAR" />
+    <result column="EXCEPT_FLG" property="exceptFlg" jdbcType="CHAR" />
+  </resultMap>
+
+  <sql id="columnList">
+       DELI.SEQ_KEY,DELI.JGI_NO, PROD.PROD_CODE, PROD.PROD_NAME, PROD.PROD_TYPE, DELI.INS_NO, DELI.TMS_TYTEN_CD, DELI.INS_TYPE, DELI.SLOPPY_CHARGE_FLG
+      ,DELI.DELIVERY_RECORD_01, DELI.DELIVERY_RECORD_02, DELI.DELIVERY_RECORD_03
+      ,DELI.DELIVERY_RECORD_04, DELI.DELIVERY_RECORD_05, DELI.DELIVERY_RECORD_06, DELI.DELIVERY_RECORD_07
+      ,DELI.DELIVERY_RECORD_08, DELI.DELIVERY_RECORD_09, DELI.DELIVERY_RECORD_10, DELI.DELIVERY_RECORD_11
+      ,DELI.DELIVERY_RECORD_12, DELI.DELIVERY_RECORD_13, DELI.DELIVERY_RECORD_14, DELI.DELIVERY_RECORD_15
+      ,DELI.DELIVERY_RECORD_16, DELI.DELIVERY_RECORD_17, DELI.DELIVERY_RECORD_18, DELI.DELIVERY_RECORD_19
+      ,DELI.DELIVERY_RECORD_20, DELI.DELIVERY_RECORD_21, DELI.DELIVERY_RECORD_22, DELI.DELIVERY_RECORD_23
+      ,DELI.DELIVERY_RECORD_24, DELI.PRE_FAR_ADVANCE_PERIOD, DELI.FAR_ADVANCE_PERIOD, DELI.ADVANCE_PERIOD
+      ,DELI.CURRENT_PERIOD, DELI.CURRENT_PLAN_VALUE, INS.RELN_INS_NO, INS.RELN_INS_CODE, INS.INS_ABBR_NAME, INS.REQ_FLG, INS.DEL_FLG, TMS.TMS_TYTEN_MEI_KJ, TMS.PLAN_TAI_GAI_FLG_TOK, TMS.PLAN_TAI_GAI_FLG_RIK
+  </sql>
+
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT <include refid="columnList" />
+          ,NULL AS INS_INFO_NAME
+          ,NULL AS DISP_FONT_COL_CD
+          ,NULL AS ERR_KB
+          ,NULL AS SCRN_DISP_KB
+          ,NULL AS DIST_KB
+          ,NULL AS IMP_INS_KB
+          ,NULL AS EXEC_PG_ID
+          ,NULL AS REMARKS
+          ,NULL AS EXCEPT_FLG
+      FROM DPS_I_DELIVERY_RESULT DELI
+           INNER JOIN DPS_C_INS_MST INS
+        ON DELI.INS_NO = INS.INS_NO
+           INNER JOIN (<include refid="COMMON_SqlMap.refProd"/>) PROD
+        ON DELI.PROD_CODE = PROD.PROD_CODE
+           INNER JOIN (<include refid="COMMON_SqlMap.tms" />) TMS
+        ON DELI.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+     WHERE PROD.PROD_CODE = #prodCode:CHAR#
+       AND DELI.INS_NO = #insNo:VARCHAR#
+       AND DELI.TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+  </select>
+
+  <select id="selectByProd" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH PROD_INS AS (
+        SELECT PIM.INS_INFO_NAME
+              ,PIM.DISP_FONT_COL_CD
+              ,PIM.ERR_KB
+              ,PIM.SCRN_DISP_KB
+              ,PIM.DIST_KB
+              ,PIM.IMP_INS_KB
+              ,PIM.INS_NO
+          FROM DPS_C_MR_INS_PROD_ALL PIM
+         WHERE PIM.PROD_CODE = #prodCode:CHAR#
+           AND PIM.MR_NO = #jgiNo:INTEGER#
+           AND PIM.MAIN_MR = '0'
+           <isNotNull prepend="AND" property="insNo">
+           PIM.INS_NO = #insNo:VARCHAR#
+           </isNotNull>
+        )
+    SELECT <include refid="columnList" />
+          ,PRI.INS_INFO_NAME
+          ,PRI.DISP_FONT_COL_CD
+          ,PRI.ERR_KB
+          ,PRI.SCRN_DISP_KB
+          ,PRI.DIST_KB
+          ,PRI.IMP_INS_KB
+          ,NULL AS EXEC_PG_ID
+          ,NULL AS REMARKS
+          ,CASE
+              WHEN EDI_PRD.EXCEPT_FLG = '1' THEN '1'
+              WHEN EDI_INS.EXCEPT_FLG = '1' THEN '1'
+              ELSE '0'
+           END EXCEPT_FLG
+      FROM DPS_I_DELIVERY_RESULT DELI
+           INNER JOIN DPS_C_JGI_MST JM
+        ON DELI.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_INS_MST INS
+        ON DELI.INS_NO = INS.INS_NO
+           INNER JOIN (<include refid="COMMON_SqlMap.refProd"/>) PROD
+        ON DELI.PROD_CODE = PROD.PROD_CODE
+           INNER JOIN (<include refid="COMMON_SqlMap.tms" />) TMS
+        ON DELI.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+           LEFT OUTER JOIN PROD_INS PRI
+        ON DELI.INS_NO = PRI.INS_NO
+           LEFT OUTER JOIN (SELECT * FROM oradpx01.DPS_I_EXCEPT_DIST_INS
+                            WHERE PROD_CODE IS NULL) EDI_INS
+	    ON DELI.INS_NO = EDI_INS.INS_NO
+           LEFT OUTER JOIN DPS_I_EXCEPT_DIST_INS EDI_PRD
+        ON DELI.INS_NO = EDI_PRD.INS_NO
+	    AND DELI.PROD_CODE = EDI_PRD.PROD_CODE
+     WHERE PROD.PROD_CODE = #prodCode:CHAR#
+       AND JM.JGI_NO = #jgiNo:INTEGER#
+       <isNotNull prepend="AND" property="insNo">
+           DELI.INS_NO = #insNo:VARCHAR#
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <select id="selectByProdOyako" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH PROD_INS AS (
+        SELECT PIM.INS_INFO_NAME
+              ,PIM.DISP_FONT_COL_CD
+              ,PIM.ERR_KB
+              ,PIM.SCRN_DISP_KB
+              ,PIM.DIST_KB
+              ,PIM.IMP_INS_KB
+              ,PIM.INS_NO
+          FROM DPS_C_MR_INS_PROD_ALL PIM
+         WHERE PIM.PROD_CODE = #prodCode:CHAR#
+           AND PIM.MR_NO = #jgiNo:INTEGER#
+           AND PIM.MAIN_MR = '0'
+           <isNotNull prepend="AND" property="insNo">
+           PIM.INS_NO = #insNo:VARCHAR#
+           </isNotNull>
+        )
+    SELECT <include refid="columnList" />
+          ,PRI.INS_INFO_NAME
+          ,PRI.DISP_FONT_COL_CD
+          ,PRI.ERR_KB
+          ,PRI.SCRN_DISP_KB
+          ,PRI.DIST_KB
+          ,PRI.IMP_INS_KB
+          ,NULL AS EXEC_PG_ID
+          ,NULL AS REMARKS
+          ,NULL AS EXCEPT_FLG
+          ,OINS.HO_INS_TYPE AS OINS_HO_INS_TYPE
+          ,OINS.RELN_INS_NO AS OINS_RELN_INS_NO
+          ,NVL(OYK.MAIN_INS_NO,'0') AS MAIN_INS_NO
+          ,INS.HO_INS_TYPE AS INS_HO_INS_TYPE
+          ,INS.RELN_INS_NO
+          ,INS.RELN_INS_CODE
+      FROM DPS_I_DELIVERY_RESULT DELI
+           INNER JOIN DPS_C_JGI_MST JM
+        ON DELI.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_INS_MST INS
+        ON DELI.INS_NO = INS.INS_NO
+           LEFT JOIN DPS_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO
+       AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+           LEFT JOIN DPS_C_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+       AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+           INNER JOIN (<include refid="COMMON_SqlMap.refProd"/>) PROD
+        ON DELI.PROD_CODE = PROD.PROD_CODE
+           INNER JOIN (<include refid="COMMON_SqlMap.tms" />) TMS
+        ON DELI.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+           LEFT OUTER JOIN PROD_INS PRI
+        ON DELI.INS_NO = PRI.INS_NO
+     WHERE PROD.PROD_CODE = #prodCode:CHAR#
+       AND JM.JGI_NO = #jgiNo:INTEGER#
+       <isNotNull prepend="AND" property="insNo">
+           DELI.INS_NO = #insNo:VARCHAR#
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <select id="selectByInsNo" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH INCLUDE_A AS (
+            SELECT INS_NO
+              FROM DPS_C_INS_MST
+             WHERE INS_NO = #insNo:VARCHAR#
+                OR (RELN_INS_NO = (SELECT RELN_INS_NO
+                                     FROM DPS_C_INS_MST
+                                    WHERE INS_NO = #insNo:VARCHAR#)
+                    AND INS_CLASS = #insClass:VARCHAR#
+                    AND OLD_INSR_FLG = #oldInsrFlg:VARCHAR#))
+    SELECT <include refid="columnList" />
+          ,NULL AS INS_INFO_NAME
+          ,NULL AS DISP_FONT_COL_CD
+          ,NULL AS ERR_KB
+          ,NULL AS SCRN_DISP_KB
+          ,NULL AS DIST_KB
+          ,NULL AS IMP_INS_KB
+          ,NULL AS EXEC_PG_ID
+          ,NULL AS REMARKS
+          ,NULL AS EXCEPT_FLG
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPS_I_DELIVERY_RESULT DELI
+           INNER JOIN DPS_C_INS_MST INS
+        ON DELI.INS_NO = INS.INS_NO
+       AND DELI.INS_NO IN (SELECT INS_NO FROM INCLUDE_A)
+           INNER JOIN DPS_C_PLANNED_PROD PROD
+        ON DELI.PROD_CODE = PROD.PROD_CODE
+           INNER JOIN (<include refid="COMMON_SqlMap.tms" />)  TMS
+        ON DELI.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+           LEFT JOIN DPS_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PROD.PROD_CODE = CM.DATA_CD
+     WHERE PROD.SALES = #sales:CHAR#
+       <isNotNull prepend="AND" property="planTargetFlg">
+           PROD.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="category">
+           PROD.CATEGORY = #category:CHAR#
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+</sqlMap>

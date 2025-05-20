@@ -1,0 +1,139 @@
+#set($pageTitle = $text.get("dps302C04","title"))
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($bodyOnloadMethod = "dps302C04F00()")
+#set($dataListFileName = "dps302C04x01.vm")
+#if ($form.getRequestData("DPS302C04_DATA_R_SEARCH_RESULT"))
+    #set($dataList = $form.getRequestData("DPS302C04_DATA_R_SEARCH_RESULT"))
+#end
+## ワクチン品目リスト
+#set($vacProdList = $service.getWakutinProdList(false))
+
+<script language="javascript">
+<!--
+#set($GridObjName = "dps302C04Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps302C04CoverId")
+var ${GridObjName};
+
+## 初期表示＋読込処理
+function dps302C04F00() {
+    ## グリッド生成
+    doInitGrid();
+    ## 検索結果データの読込
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+}
+
+## DHTMLXGrid生成
+function doInitGrid() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("全エリア,担当者," + createVariableGridHeaderString() + ",合計,#cspan");
+    ${GridObjName}.attachHeader("#rspan,#rspan," + createVariableGridAttachHeaderString() + ",計画,UP率");
+    ${GridObjName}.setInitWidths("140,120," + createVariableGridInitWidthsString() + ",100,50");
+    ${GridObjName}.setColAlign("left,left," + createVariableGridColAlignString() + ",right,right");
+    ${GridObjName}.setColTypes("ro,ro," + createVariableGridColTypesString() + ",ron,ron");
+    ${GridObjName}.enableResizing("false,false," + createVariableGridFalseString + ",false,false");
+    ${GridObjName}.enableTooltips("false,false," + createVariableGridFalseString + ",false,false");
+    ${GridObjName}.enableDistributedParsing(true,50,260);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps302C04', $!gridHeight));
+    #if($dataList && $dataList.size() == 1)
+    ${GridObjName}.objBox.style.overflowY="hidden";
+    #end
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    createVariableGridNumberFormat();
+    ${GridObjName}.init();
+    ${GridObjName}.splitAt(2);
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+}
+## 初期表示(再検索)
+function dps302C04F00Init() {
+    var actionPath = '$link.setAction('dps302C04F00')';
+    document.dps302C04Form.action = actionPath;
+    document.dps302C04Form.submit();
+    dps302C04F00Init = blockIt;
+}
+## GRID設定可変文字列の生成
+function createVariableGridString(setString) {
+    var gridString = "";
+    #foreach($codeAndValue in $vacProdList)
+        if (gridString != "") {
+            gridString += ",";
+        }
+        gridString += setString;
+    #end
+    return gridString;
+}
+## GRID設定可変文字列[ヘッダ]の生成
+function createVariableGridHeaderString() {
+    var gridString = "";
+    #foreach($codeAndValue in $vacProdList)
+        if (gridString != "") {
+            gridString += ",";
+        }
+        var url ="$link.setAction('dps302C05F00')";
+        url = url.concat("?prodCode=").concat("$codeAndValue.code");
+        url = url.concat("&searchFuncName=").concat("dps302C04F00Init");
+        gridString += "<a href='#' onClick='openModalWindow(\"" + url + "\");dps302C04F00Init();'>$codeAndValue.value</a>";
+        gridString += ",#cspan";
+    #end
+    return gridString;
+}
+## GRID設定可変文字列[追加ヘッダ]の生成
+function createVariableGridAttachHeaderString() {
+    return createVariableGridString("計画,UP率");
+}
+## GRID設定可変文字列[横幅]の生成
+function createVariableGridInitWidthsString() {
+    return createVariableGridString("100,50");
+}
+## GRID設定可変文字列[文字寄せ]の生成
+function createVariableGridColAlignString() {
+    return createVariableGridString("right,right");
+}
+## GRID設定可変文字列[列タイプ]の生成
+function createVariableGridColTypesString() {
+    return createVariableGridString("ron,ron");
+}
+## GRID設定可変文字列[Bool値False]の生成
+function createVariableGridFalseString() {
+    return createVariableGridString("false,false");
+}
+## GRID設定可変文字列[数値フォーマット]の生成
+function createVariableGridNumberFormat() {
+    var colIdx = 2;
+    #foreach($codeAndValue in $vacProdList)
+    ${GridObjName}.setNumberFormat("0,000",colIdx);
+    colIdx++;
+    ${GridObjName}.setNumberFormat("00.0",colIdx);
+    colIdx++;
+    #end
+    ## 合計列の設定
+    ${GridObjName}.setNumberFormat("0,000",colIdx);
+    colIdx++;
+    ${GridObjName}.setNumberFormat("00.0",colIdx);
+}
+//-->
+</script>
+#tabbar("sienSosiki", "dps302C04F00")
+<div id="tabBox">
+<form name="dps302C04Form" method="post">
+<table style="margin-top: 0px; margin-bottom: 0px; width: 100%;">
+    <tr>
+        <td class="label" style="text-align: right; vertical-align: bottom;">$consts.tableHeaderB</td>
+    </tr>
+</table>
+#loadingGridDiv2("${GridObjName}", "${CoverId}", "width: 100%; clear: both;")
+</form>
+</div>

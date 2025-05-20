@@ -1,0 +1,71 @@
+## -------------------------------
+## 担当者まで特定した場合
+## -------------------------------
+#set($dataListFileName = "dps302C00x03.vm")
+#set($GridObjName = "dps302C00s03Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps302C00s03CoverId")
+<script language="javascript">
+<!--
+var ${GridObjName};
+## 初期表示＋読込処理
+function dps302C00F00Grid() {
+    doInitGrid();
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+            ## マイナス金額のテキスト色を更新
+            var rowNum = ${GridObjName}.getRowsNum();
+            for (i = 1; i <= rowNum; i++) {
+                for (j = 2; j <= 3; j++) {
+                    var value = ${GridObjName}.cells(i,j).getValue();
+                    minusStyle(${GridObjName}, i, j, value);
+                    if (typeof value === "string" && value.trim() == "") {
+                        ${GridObjName}.cells(i,j).setValue("");
+                    }
+                }
+            }
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("品目名称,担当者別計画,担当者別計画,#cspan");
+    ##${GridObjName}.attachHeader("#rspan,担当者別計画所長確定,UH,P");
+    ${GridObjName}.attachHeader("$attachHeaderMr");
+    ${GridObjName}.setInitWidths("180,300,150,150");
+    ${GridObjName}.setColAlign("left,center,right,right");
+    ${GridObjName}.setColTypes("ro,ro,ron,ron");
+    ${GridObjName}.enableResizing("false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false");
+    ${GridObjName}.enableDistributedParsing(true,50,300);
+    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps302C00s03', $!gridHeight));
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.setNumberFormat("0,000",2);
+    ${GridObjName}.setNumberFormat("0,000",3);
+    ${GridObjName}.setStyle("","height:35px;","","");
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+}
+//-->
+</script>
+#if($form.bean.category == "$vaccineCode")
+    <div class="floatR" style="vertical-align:bottom;align:right"><label>$consts.tableHeaderB</label></div>
+#else
+    <div class="floatR" style="vertical-align:bottom;align:right"><label>$consts.tableHeaderY</label></div>
+#end
+<div class="clear"></div>
+#loadingGridDiv2("${GridObjName}", "${CoverId}", "width: 99.5%; clear: both;")

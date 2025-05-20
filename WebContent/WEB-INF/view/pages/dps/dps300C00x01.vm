@@ -1,0 +1,181 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS300C00_DATA_R"))
+    #set( $dto = $form.getRequestData("DPS300C00_DATA_R"))
+    #set( $dataList = $dto.resultList)
+    #set( $enableEdit = $dto.vacEditFlg)
+#end
+
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+#set( $totalCount = 1)
+<rows>
+#foreach($resultPlanData in $dataList)
+    ##営業所計画データ変数
+    #set( $prodName = "")
+    #if($resultPlanData.prodName)
+        #set($prodName = $resultPlanData.prodName)
+    #end
+    #set( $isPriority = false)
+    #if($resultPlanData.planLevelInsDoc)
+        #set($isPriority = $resultPlanData.planLevelInsDoc)
+    #end
+    #set( $plannedValueUhY = "")
+    #set( $plannedValueUhYType = "ed")
+    #if($resultPlanData.plannedValueUhY)
+        #set($plannedValueUhYType = "edn" )
+        #set($plannedValueUhY = $resultPlanData.plannedValueUhY)
+    #end
+    #set( $plannedValuePY = "")
+    #set( $plannedValuePYType = "ed")
+    #if($resultPlanData.plannedValuePY)
+        #set($plannedValuePYType = "edn" )
+        #set($plannedValuePY = $resultPlanData.plannedValuePY)
+    #end
+    #set( $seqKey = "")
+    #if($resultPlanData.seqKey)
+        #set($seqKey = $resultPlanData.seqKey)
+    #end
+    #set( $prodCode = "")
+    #if($resultPlanData.prodCode)
+        #set($prodCode = $resultPlanData.prodCode)
+    #end
+    #set( $upDate = "")
+    #if($resultPlanData.upDate)
+        #set($upDate = $!{resultPlanData.upDate.time})
+    #end
+    #set( $officeMrChoseiUhY = "")
+    #if($resultPlanData.officeMrChoseiUhY)
+        #set($officeMrChoseiUhY = $resultPlanData.officeMrChoseiUhY)
+    #end
+    #set( $officeMrChoseiPY = "")
+    #if($resultPlanData.officeMrChoseiPY)
+        #set($officeMrChoseiPY = $resultPlanData.officeMrChoseiPY)
+    #end
+    #set( $officeMrChoseiUHPY = "")
+    #if($resultPlanData.officeMrChoseiUHPY)
+        #set($officeMrChoseiUHPY = $resultPlanData.officeMrChoseiUHPY)
+    #end
+    #set( $officeInswsChoseiUhY = "")
+    #if($resultPlanData.officeInswsChoseiUhY)
+        #set($officeInswsChoseiUhY = $resultPlanData.officeInswsChoseiUhY)
+    #end
+    #set( $officeInswsChoseiPY = "")
+    #if($resultPlanData.officeInswsChoseiPY)
+        #set($officeInswsChoseiPY = $resultPlanData.officeInswsChoseiPY)
+    #end
+    #set( $officeInswsChoseiUHPY = "")
+    #if($resultPlanData.officeInswsChoseiUHPY)
+        #set($officeInswsChoseiUHPY = $resultPlanData.officeInswsChoseiUHPY)
+    #end
+    #set( $mrDrChoseiUhFlg = "なし")
+    #set($mrDrChoseiUhClass = "chosei_nasi")
+    #if($resultPlanData.mrDrChoseiUhFlg)
+        #set($mrDrChoseiUhFlg = "あり")
+        #set($mrDrChoseiUhClass = "chosei_ari")
+    #end
+    #set( $mrDrChoseiPFlg = "なし")
+    #set($mrDrChoseiPClass = "chosei_nasi")
+    #if($resultPlanData.mrDrChoseiPFlg)
+        #set($mrDrChoseiPFlg = "あり")
+        #set($mrDrChoseiPClass = "chosei_ari")
+    #end
+    #set( $mrDrChoseiUHPFlg = "なし")
+    #set($mrDrChoseiUHPClass = "chosei_nasi")
+    #if($resultPlanData.mrDrChoseiUHPFlg)
+        #set($mrDrChoseiUHPFlg = "あり")
+        #set($mrDrChoseiUHPClass = "chosei_ari")
+    #end
+    #set( $mrInswsChoseiUhFlg = "なし")
+    #set($c_f_s_UH = "chosei_nasi")
+    #if($resultPlanData.mrInswsChoseiUhFlg)
+        #set($mrInswsChoseiUhFlg = "あり")
+        #set($c_f_s_UH = "chosei_ari")
+    #end
+    #set( $mrInswsChoseiPFlg = "なし")
+    #set($c_f_s_P = "chosei_nasi")
+    #if($resultPlanData.mrInswsChoseiPFlg)
+        #set($mrInswsChoseiPFlg = "あり")
+        #set($c_f_s_P = "chosei_ari")
+    #end
+    #set( $mrInswsChoseiUHPFlg = "なし")
+    #set($c_f_s_UHP = "chosei_nasi")
+    #if($resultPlanData.mrInswsChoseiUHPFlg)
+        #set($mrInswsChoseiUHPFlg = "あり")
+        #set($c_f_s_UHP = "chosei_ari")
+    #end
+
+    #set( $enableEdit = false )
+    #if($!security.hasAuthEdit("DPS300") && $dto.vacEditFlg)
+        #set( $enableEdit = true )
+    #end
+
+    <row id='$totalCount'>
+        <userdata name="rowType">input</userdata>
+        <userdata name="subTotalId">1</userdata>
+        <cell style="white-space:normal">$prodName</cell>
+        ##営業所計画
+        #if($enableEdit)
+            <cell class="inputB" type="$plannedValueUhYType">$plannedValueUhY</cell>
+        #else
+            <cell type="ron">$plannedValueUhY</cell>
+        #end
+        #if($enableEdit)
+            <cell class="inputB" type="$plannedValuePYType">$plannedValuePY</cell>
+        #else
+            <cell type="ron">$plannedValuePY</cell>
+        #end
+        <cell></cell>
+        ##営業所計画 - 担当者別計画
+        #if($resultPlanData.getStatusForMrPlan() && $resultPlanData.getStatusForMrPlan().dbValue != "1")
+            <cell><![CDATA[<a href="#" onclick="O_T_UH('$prodCode','$!velocityCount','$resultPlanData.getStatusForMrPlan().dbValue')">修正</a>]]></cell>
+        #else
+            <cell><![CDATA[修正]]></cell>
+        #end
+        <cell>$officeMrChoseiUhY</cell>
+        #if($resultPlanData.getStatusForMrPlan() && $resultPlanData.getStatusForMrPlan().dbValue != "1")
+            <cell><![CDATA[<a href="#" onclick="O_T_P('$prodCode','$!velocityCount','$resultPlanData.getStatusForMrPlan().dbValue')">修正</a>]]></cell>
+        #else
+            <cell><![CDATA[修正]]></cell>
+        #end
+        <cell>$officeMrChoseiPY</cell>
+        <cell>$officeMrChoseiUHPY</cell>
+        ##担当者別計画 - 施設特約店別計画
+        <cell><![CDATA[<a href="#" onclick="T_I('$prodCode')">修正</a>]]></cell>
+        <cell class="$c_f_s_UH">$mrInswsChoseiUhFlg</cell>
+        <cell class="$c_f_s_P">$mrInswsChoseiPFlg</cell>
+        <cell class="$c_f_s_UHP">$mrInswsChoseiUHPFlg</cell>
+        ##営業所計画 - 施設特約店別計画
+        <cell><![CDATA[<a href="#" onclick="O_I('$prodCode')">修正</a>]]></cell>
+        <cell>$officeInswsChoseiUhY</cell>
+        <cell>$officeInswsChoseiPY</cell>
+        <cell>$officeInswsChoseiUHPY</cell>
+        ##シーケンスキー・品目固定コード・入力計画値UH・入力計画値P・最終更新日時
+        <userdata name="updateRowId">$seqKey,$prodCode,$upDate</userdata>
+    </row>
+    #set( $totalCount = $totalCount + 1)
+#end
+#合計行
+    #set( $categoryTotalList = $service.getCategoryTotalList(false,false))
+    <row id='$totalCount'>
+        <userdata name="rowType">total</userdata>
+        <userdata name="subTotalId">none</userdata>
+        <cell class="asumB">#getValueFromCode($categoryTotalList,$!dto.category.dbValue)</cell>
+        <cell class="asumB" type="ron"></cell>
+        <cell class="asumB" type="ron"></cell>
+        <cell class="asumB"></cell>
+        <cell class="asumB"></cell>
+        <cell class="asumB"></cell>
+        <cell class="asumB"></cell>
+        <cell class="asumB"></cell>
+        <cell class="asumB"></cell>
+        <cell class="asumB"></cell>
+        <cell class="asumB"></cell>
+        <cell class="asumB"></cell>
+        <cell class="asumB"></cell>
+        <cell class="asumB"></cell>
+        <cell class="asumB"></cell>
+        <cell class="asumB"></cell>
+        <cell class="asumB"></cell>
+    </row>
+</rows>
+#end

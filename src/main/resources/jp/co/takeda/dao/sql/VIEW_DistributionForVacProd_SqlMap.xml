@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_DistributionForVacProd_SqlMap" >
+
+  <resultMap id="resultMapList" class="jp.co.takeda.model.view.DistributionForVacProd">
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result column="STATUS" property="insWsPlanStatus" jdbcType="CHAR" />
+    <result column="DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+    <result column="DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+    <result column="STATUS_LAST_UP_DATE" property="statusLastUpdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <!-- 組織、対象区分集約検索一覧 -->
+  <select id="selectList" resultMap="resultMapList" parameterClass="java.util.Map" >
+    SELECT #sosCd:VARCHAR# AS SOS_CD
+          ,PR.PROD_CODE
+          ,PR.PROD_NAME
+          ,PR.PROD_TYPE
+          ,TMP_IWPS.AHEAD_STATUS AS STATUS
+          ,TMP_IWPS.LAST_DIST_START_DATE AS DIST_START_DATE
+          ,TMP_IWPS.LAST_DIST_END_DATE AS DIST_END_DATE
+          ,TMP_IWPS.STATUS_LAST_UP_DATE AS STATUS_LAST_UP_DATE
+      FROM DPS_C_PLANNED_PROD PR
+      LEFT OUTER JOIN (
+		       SELECT PROD_CODE
+		             ,MAX(IWPS.STATUS) AHEAD_STATUS
+                     ,MAX(IWPS.DIST_START_DATE) LAST_DIST_START_DATE
+                     ,MAX(IWPS.DIST_END_DATE) LAST_DIST_END_DATE
+                     ,MAX(IWPS.UP_DATE) STATUS_LAST_UP_DATE
+		         FROM (DPS_V_INS_WS_PLAN_STATUS IWPS
+		              INNER JOIN DPS_C_JGI_MST JM
+		           ON IWPS.JGI_NO = JM.JGI_NO)
+             GROUP BY PROD_CODE
+           ) TMP_IWPS ON PR.PROD_CODE = TMP_IWPS.PROD_CODE
+     WHERE SALES = #sales:CHAR#
+       AND PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+     ORDER BY PR.GROUP_CODE
+          ,PR.STAT_PROD_CODE
+          ,PR.PROD_CODE
+  </select>
+
+</sqlMap>

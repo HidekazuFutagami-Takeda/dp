@@ -1,0 +1,129 @@
+## del 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　未使用となるため全コメントアウト。カテゴリ別に別れていたvmは全カテゴリ共通のdps000C00s20.vmに統一。（仕入品用のvmは例外）
+#### ------------------------------------
+#### (医)営業所計画-担当者別計画(ＭＭＰ)
+#### ------------------------------------
+###set($GridObjName = "dps000C00s27Grid")
+###set($CoverId = "dps000C00s27CoverId")
+###set ($rankString = $progress.getProgressIyakuRank().toString())
+##<script language="javascript">
+##<!--
+####出力ファイル選択画面遷移
+##function dps998C00F00(sosCd) {
+##    if(miniWindow && !win_closed(miniWindow)) {
+##        miniWindow.close();
+##    }
+##    var actionPath = '$link.setAction('dps998C00F00')';
+##    actionPath = actionPath.concat('?outputSosCd=').concat(sosCd);
+##    miniWindow = window.open(actionPath, "download", "width=500,height=250");
+##    miniWindow.focus();
+##    return miniWindow;
+##}
+##var ${GridObjName};
+#### 初期表示＋読込処理
+##function dps000C00F27() {
+##    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+###if ($rankString.equals("SITEN"))
+#### add start 2018/5/1 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援） JPBU→GMBU、TL→所長・AL、チーム別計画の列を削除、施設医師別計画の列を削除
+##	${GridObjName}.setHeader("GMBU(STARS),#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan")
+##    ${GridObjName}.attachHeader("支店,担当者別計画,#cspan,#cspan,#cspan,#cspan,施設特約店別計画,#cspan")
+####    ${GridObjName}.attachHeader("#rspan,営業所<br>計画,試算状況,チーム別<br>計画<br>所長・AL公開,チーム別<br>計画<br>所長確定,担当者別<br>計画<br>所長・AL公開,担当者別<br>計画<br>所長・AL修正,担当者別<br>計画<br>所長確定,配分状況,ＭＲ確定");
+##    ${GridObjName}.attachHeader("#rspan,営業所<br>計画,試算状況,担当者別<br>計画<br>所長・AL公開,担当者別<br>計画<br>所長・AL修正,担当者別<br>計画<br>所長確定,配分状況,ＭＲ確定");
+##    ${GridObjName}.setInitWidths("110,65,65,80,80,65,65,65");
+##    ${GridObjName}.setColAlign("left,center,center,center,center,center,center,center");
+##    ${GridObjName}.setColTypes("ro,ro,ro,ro,ro,ro,ro,ro,ro");
+##    ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false");
+##    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false");
+###elseif ($rankString.equals("OFFICE"))
+##    ${GridObjName}.setHeader("　,GMBU(STARS),#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan")
+##    ${GridObjName}.attachHeader("営業所,担当者別計画,#cspan,#cspan,#cspan,#cspan,#cspan,施設特約店別計画,#cspan,営業－ＭＲ,ＭＲ－施設特約,営業－施設特約")
+####    ${GridObjName}.attachHeader("#rspan,営業所<br>計画,試算状況,チーム別<br>計画<br>ＴＬ公開,チーム別<br>計画<br>所長確定,担当者別<br>計画<br>所長・AL公開,担当者別<br>計画<br>所長・AL修正,担当者別<br>計画<br>所長確定,帳票,配分状況,ＭＲ確定,調整金額<br>(UHP合計),調整金額<br>(UHP合計),調整金額<br>(UHP合計)");
+##    ${GridObjName}.attachHeader("#rspan,営業所<br>計画,試算状況,担当者別<br>計画<br>所長・AL公開,担当者別<br>計画<br>所長・AL修正,担当者別<br>計画<br>所長確定,帳票,配分状況,ＭＲ確定,調整金額<br>(UHP合計),調整金額<br>(UHP合計),調整金額<br>(UHP合計)");
+##    ${GridObjName}.setInitWidths("110,65,65,80,80,65,35,65,65,95,95,95");
+##    ${GridObjName}.setColAlign("left,center,center,center,center,center,center,center,center,center,center,center");
+##    ${GridObjName}.setColTypes("ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
+##    ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false");
+##    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false,false");
+###elseif ($rankString.equals("TEAM"))
+##    ${GridObjName}.setHeader("GMBU(STARS),#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan")
+##    ${GridObjName}.attachHeader("チーム,担当者別計画,#cspan,#cspan,#cspan,#cspan,施設特約店別計画,#cspan,ＭＲ－施設特約")
+##    ${GridObjName}.attachHeader("#rspan,チーム別<br>計画<br>ＴＬ公開,チーム別<br>計画<br>所長確定,担当者別<br>計画<br>ＴＬ公開,担当者別<br>計画<br>ＴＬ修正,担当者別<br>計画<br>所長確定,配分状況,ＭＲ確定,調整金額<br>(UHP合計)");
+##    ${GridObjName}.setInitWidths("110,70,70,70,70,70,70,70,100");
+##    ${GridObjName}.setColAlign("left,center,center,center,center,center,center,center,center");
+##    ${GridObjName}.setColTypes("ro,ro,ro,ro,ro,ro,ro,ro,ro");
+##    ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false");
+##    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false");
+###elseif ($rankString.equals("TANTOU"))
+##    ${GridObjName}.setHeader("GMBU(STARS),#cspan,#cspan,#cspan,#cspan")
+##    ${GridObjName}.attachHeader("担当者,担当者別計画,施設特約店別計画,#cspan,ＭＲ－施設特約")
+##    ${GridObjName}.attachHeader("#rspan,所長確定,配分状況,ＭＲ確定,調整金額<br>(UHP合計)");
+##    ${GridObjName}.setInitWidths("110,140,140,140,100");
+##    ${GridObjName}.setColAlign("left,center,center,center,center");
+##    ${GridObjName}.setColTypes("ro,ro,ro,ro,ro");
+##    ${GridObjName}.enableResizing("false,false,false,false,false");
+##    ${GridObjName}.enableTooltips("false,false,false,false,false");
+#### add end 2018/5/1 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+###end
+###if ($rankString.equals("OFFICE"))
+##    ${GridObjName}.enableMultiline(true);
+##    ${GridObjName}.enableAutoWidth(false);
+##    ${GridObjName}.enableAutoHeight(true);
+##    ${GridObjName}.objBox.style.overflowX="scroll";
+##    ${GridObjName}.objBox.style.overflowY="hidden";
+##    ${GridObjName}.setSizes();
+##    ${GridObjName}.splitAt(1);
+###else
+##    ${GridObjName}.setStyle("","height:35px;","","");
+##    ${GridObjName}.enableMultiline(true);
+##    ${GridObjName}.enableAutoWidth(true);
+##    ${GridObjName}.enableAutoHeight(true);
+##    ${GridObjName}.objBox.style.overflowX="hidden";
+##    ${GridObjName}.objBox.style.overflowY="hidden";
+##    ${GridObjName}.setSizes();
+###end
+##    ${GridObjName}.init();
+##    ${GridObjName}.enableBlockSelection();
+##    ${GridObjName}.forceLabelSelection(true);
+##    ${GridObjName}.setCSVDelimiter("\t");
+#### add start 2018/5/1 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+#### 業務進捗表(医)[SPBU品]
+##    #if ($progress.isSPBUTableDispFlg())
+##    ${GridObjName}.load("$link.setAction('dps000C00F27?sFlg=true')", dps000C00F31);
+#### 業務進捗表(医)[ONC品]
+##    #elseif ($progress.isONCTableDispFlg())
+##    ${GridObjName}.load("$link.setAction('dps000C00F27?sFlg=true')", dps000C00F30);
+#### 業務進捗表(医)[仕入品]
+##    #elseif ($progress.isShireTableDispFlg())
+##    ${GridObjName}.load("$link.setAction('dps000C00F27?sFlg=true')", dps000C00F28);
+#### add end 2018/5/1 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+#### 業務進捗表(医)[特約店別計画]
+##    #elseif ($progress.isWsPlanDispFlg())
+##    ${GridObjName}.load("$link.setAction('dps000C00F27?sFlg=true')", dps000C00F29);
+##    #else
+##    ${GridObjName}.load("$link.setAction('dps000C00F27?sFlg=true')", "");
+##    #end
+##    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+##        copyBlock(${GridObjName}, keycode, ctrl, shift);
+##        return true;
+##    });
+##    ${GridObjName}.attachEvent("onBeforeSelect",function(newId,oldId){return;});
+##
+###if(($rankString.equals("OFFICE") && $!progress.isOfficeAuth())|| $rankString.equals("TEAM"))
+##    ## 試算タイプが営⇒担の場合、2列非表示
+##    #set($calcType = $!service.getCalcType())
+##    #if($!calcType && $calcType.getDbValue().equals("2"))
+##        #if($rankString.equals("OFFICE"))
+##            ${GridObjName}.setColumnHidden(3, true);
+##            ${GridObjName}.setColumnHidden(4, true);
+##        #else
+##            ${GridObjName}.setColumnHidden(1, true);
+##            ${GridObjName}.setColumnHidden(2, true);
+##        #end
+##    #end
+###end
+##}
+##//-->
+##</script>
+###loadingGridDiv("${GridObjName}", "${CoverId}")
+##<form name="dps000C00F03Form" id="dps000C00F03Form" method="post">
+##<input type="hidden" name="tanOutputSosCd" id="tanOutputSosCd" value="" />
+##</form>

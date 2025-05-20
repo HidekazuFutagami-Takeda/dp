@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_ProdSummary_SqlMap" >
+
+    <resultMap id="resultMap" class="jp.co.takeda.model.view.ProdSummary">
+        <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+        <result column="STAT_PROD_CODE" property="statProdCode" jdbcType="CHAR" />
+        <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <!-- 検索 -->
+    <select id="select" resultMap="resultMap" parameterClass="java.util.Map">
+     SELECT DISTINCT
+        PROD_CODE
+        ,GROUP_CODE
+        ,STAT_PROD_CODE
+        ,PROD_NAME
+     FROM
+        DPS_C_PLANNED_PROD
+     WHERE
+        PROD_CODE = #prodCode:CHAR#
+     UNION
+     SELECT
+        PROD_CODE
+        ,GROUP_CODE
+        ,STAT_PROD_CODE
+        ,PROD_NAME
+     FROM
+        DPS_C_REF_TOTAL_PROD
+     WHERE
+        PROD_CODE = #prodCode:CHAR#
+    </select>
+
+    <!-- リスト検索 -->
+    <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map">
+     SELECT
+        PP.PROD_CODE
+        ,PP.GROUP_CODE
+        ,PP.STAT_PROD_CODE
+        ,PP.PROD_NAME
+        ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+     FROM
+        DPS_C_PLANNED_PROD PP
+     LEFT JOIN DPS_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD
+     WHERE
+        PP.PLAN_TARGET_FLG = '1' AND
+        PP.SALES = #sales:CHAR#
+        <isNotNull  prepend="AND" property="category" >
+        PP.CATEGORY = #category:CHAR#
+        </isNotNull>
+        <isNotNull prepend="AND" property="planLevelInsDoc">
+        PP.PLAN_LEVEL_INS_DOC = #planLevelInsDoc:CHAR#
+        </isNotNull>
+        <isNotNull property="sortString" >
+        $sortString$
+        </isNotNull>
+    </select>
+
+    <select id="selectRefList" resultMap="resultMap" parameterClass="java.util.Map">
+     SELECT
+         TEMP.PROD_CODE
+        ,TEMP.GROUP_CODE
+        ,TEMP.STAT_PROD_CODE
+        ,TEMP.PROD_NAME
+        ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+     FROM (
+     SELECT
+        PROD_CODE
+        ,GROUP_CODE
+        ,STAT_PROD_CODE
+        ,PROD_NAME
+     FROM
+        DPS_C_PLANNED_PROD
+     WHERE
+        PLAN_TARGET_FLG = '1' AND
+        SALES = #sales:CHAR#
+        <isNotNull prepend="AND" property="category" >
+        CATEGORY = #category:CHAR#
+        </isNotNull>
+     UNION
+     SELECT
+        PROD_CODE
+        ,GROUP_CODE
+        ,STAT_PROD_CODE
+        ,PROD_NAME
+     FROM
+        DPS_C_REF_TOTAL_PROD
+     WHERE
+        SALES = #sales:CHAR#
+        <isNotNull prepend="AND" property="category" >
+        CATEGORY = #category:CHAR#
+        </isNotNull>
+    ) TEMP
+    LEFT JOIN DPS_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND TEMP.PROD_CODE = CM.DATA_CD
+    <isNotNull property="sortString" >
+    $sortString$
+    </isNotNull>
+    </select>
+
+</sqlMap>

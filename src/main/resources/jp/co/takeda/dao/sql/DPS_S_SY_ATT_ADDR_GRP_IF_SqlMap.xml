@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_S_SY_ATT_ADDR_GRP_IF_SqlMap" >
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.AttAddrGrpIf" >
+    INSERT INTO DPS_S_SY_ATT_ADDR_GRP_IF
+           (IF_P_KEY
+            ,IF_SYS_KEY
+            ,IF_GROP_SEQ
+            ,IF_VERSION_NO
+            ,PROC_KB
+            ,DONE_FLG
+            ,ADDR_JGI_NO
+            ,UP_JGI_NO
+            ,IS_DATE
+            ,UP_DATE
+            ,UP_SCRN_ID
+            ,UP_FUNC_ID
+           )
+    VALUES (#ifPKey:INTEGER#
+          ,#ifSysKey:INTEGER#
+          ,#ifGropSeq:INTEGER#
+          ,#IF_VERSION_NO:INTEGER#
+          ,#PROC_KB:VARCHAR#
+          ,#DONE_FLG:VARCHAR#
+          ,#addrJgiNo:INTEGER#
+          ,#upJgiNo:INTEGER#
+          ,SYSTIMESTAMP
+          ,SYSTIMESTAMP
+          ,#upScrnId:VARCHAR#
+          ,#upFuncId:VARCHAR#
+          )
+  </insert>
+
+</sqlMap>

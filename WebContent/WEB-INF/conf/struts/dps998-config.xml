@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+ "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+
+    <form-beans>
+        <form-bean name="Dps998C00Form" type="jp.co.takeda.web.in.dps.Dps998C00Form" />
+    </form-beans>
+
+<action-mappings type="jp.co.takeda.web.cmn.action.DpActionMapping">
+
+<!-- ***********************************************************************
+
+	出力ファイル選択画面
+
+ ***********************************************************************  -->
+<!-- 初期表示 -->
+<action path="/dps998C00F00"
+ type="jjp.co.takeda.web.ctrl.dps.Dps998C00Action" name="Dps998C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps998C00F00" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps998C00.vm" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+</action-mappings>
+</struts-config>

@@ -1,0 +1,104 @@
+## ------------------------------------
+## (医)営業所計画-施設特約店別計画(仕入)
+## ------------------------------------
+#set($GridObjName = "dps000C00s28Grid")
+#set($CoverId = "dps000C00s28CoverId")
+#set($rankString = $progress.getProgressIyakuRank().toString())
+<script language="javascript">
+<!--
+var miniWindow;
+##帳票出力
+function dps999C00F00Output(sosCd) {
+    if(win_closed(miniWindow)){
+        var actionPath = '$link.setAction('dps999C00F00')';
+        actionPath = actionPath.concat('?insWsOutputSosCd=').concat(sosCd);
+        miniWindow = window.open(actionPath, "download", "width=500,height=250");
+    }
+    miniWindow.focus();
+    return miniWindow;
+}
+var ${GridObjName};
+## 初期表示＋読込処理
+function dps000C00Fc${categoryCode}() {
+	dps000C00F28();
+}
+## 一括確定ボタンクリック時
+function dps000C00F03Execute() {
+
+    dps000C00F03Execute = blockIt;
+}
+
+function dps000C00F28() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+###if ($rankString.equals("SITEN"))
+##    ${GridObjName}.setHeader("${categoryName},#cspan,#cspan,#cspan,#cspan");
+##    ${GridObjName}.attachHeader("支店,施設特約店別計画,#cspan,#cspan,#cspan")
+##    ${GridObjName}.attachHeader("#rspan,営業所計画,配分状況,確定,帳票");
+##    ${GridObjName}.setInitWidths("110,100,100,100,40");
+##    ${GridObjName}.setColAlign("left,center,center,center,center");
+##    ${GridObjName}.setColTypes("ro,ro,ro,ro,ro");
+##    ${GridObjName}.enableResizing("false,false,false,false,false");
+##    ${GridObjName}.enableTooltips("false,false,false,false,false");
+#if ($rankString.equals("SITEN"))
+    ${GridObjName}.setHeader("${categoryName},#cspan,#cspan,#cspan,#cspan,#cspan");
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.attachHeader("リージョン,施設特約店別計画,#cspan,#cspan,#cspan,#cspan")
+    ${GridObjName}.attachHeader("#rspan,エリア計画,配分状況,確定,計画立案<br>対象外,帳票");
+##    ${GridObjName}.attachHeader("支店,施設特約店別計画,#cspan,#cspan,#cspan,#cspan")
+##    ${GridObjName}.attachHeader("#rspan,営業所計画,配分状況,確定,計画立案<br>対象外,帳票");
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.setInitWidths("110,100,100,100,65,40");
+    ${GridObjName}.setColAlign("left,center,center,center,center,center");
+    ${GridObjName}.setColTypes("ro,ro,ro,ro,ro,ro");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false,false");
+###elseif ($rankString.equals("OFFICE"))
+##    ${GridObjName}.setHeader("${categoryName},#cspan,#cspan,#cspan,#cspan,#cspan");
+##    ${GridObjName}.attachHeader("営業所,施設特約店別計画,#cspan,#cspan,#cspan,営業－施設特約")
+##    ${GridObjName}.attachHeader("#rspan,営業所計画,配分状況,確定<br><a href='dps000C00F03Execute' tabindex='-1'>一括確定</a> ,帳票,調整金額<br>(UHP合計)");
+##    ${GridObjName}.setInitWidths("110,100,100,100,40,100");
+##    ${GridObjName}.setColAlign("left,center,center,center,center,center");
+##    ${GridObjName}.setColTypes("ro,ro,ro,ro,ro,ro");
+##    ${GridObjName}.enableResizing("false,false,false,false,false,false");
+##    ${GridObjName}.enableTooltips("false,false,false,false,false,false");
+#elseif ($rankString.equals("OFFICE"))
+    ${GridObjName}.setHeader("${categoryName},#cspan,#cspan,#cspan,#cspan,#cspan,#cspan");
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.attachHeader("エリア,施設特約店別計画,#cspan,#cspan,#cspan,#cspan,エリア－施設特約")
+    ${GridObjName}.attachHeader("#rspan,エリア計画,配分状況,確定<br><a href='dps000C00F03Execute' tabindex='-1'>一括確定</a> ,計画立案<br>対象外,帳票,調整金額<br>(UHP合計)");
+##    ${GridObjName}.attachHeader("営業所,施設特約店別計画,#cspan,#cspan,#cspan,#cspan,営業－施設特約")
+##    ${GridObjName}.attachHeader("#rspan,営業所計画,配分状況,確定<br><a href='dps000C00F03Execute' tabindex='-1'>一括確定</a> ,計画立案<br>対象外,帳票,調整金額<br>(UHP合計)");
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.setInitWidths("110,100,100,100,65,40,100");
+    ${GridObjName}.setColAlign("left,center,center,center,center,center,center");
+    ${GridObjName}.setColTypes("ro,ro,ro,ro,ro,ro,ro");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false");
+#end
+    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.enableAutoWidth(true);
+    ${GridObjName}.enableAutoHeight(true);
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.objBox.style.overflowY="hidden";
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+
+    ##第2引数（nextLoadFunction）は、この表のロードが終わった後に呼び出す次の表のロードスクリプトを指定している
+##	${GridObjName}.load("$link.setAction('dps000C00F28?sFlg=true')", $nextLoadFunction);
+    ## DPS000C00Actionで使用するので、カテゴリを渡す
+	${GridObjName}.load("$link.setAction("dps000C00F28?sFlg=true&category=${categoryCode}")", $nextLoadFunction);
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.attachEvent("onBeforeSelect",function(newId,oldId){return;});
+}
+//-->
+</script>
+#loadingGridDiv("${GridObjName}", "${CoverId}")
+<form name="dps000C00F04Form" id="dps000C00F04Form" method="post">
+<input type="hidden" name="insWsOutputSosCd" id="insWsOutputSosCd" value="" />
+</form>

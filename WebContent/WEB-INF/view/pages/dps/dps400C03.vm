@@ -1,0 +1,128 @@
+#set($pageTitle = $text.get("dps400C03","title"))
+#set($bodyOnloadMethod = "dps400C03F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dps400C03x01.vm")
+
+##編集権限
+#set($canEdit = false)
+#if ($!security.hasAuthEdit("DPS400"))
+    #set($canEdit = true)
+#end
+<script language="javascript">
+<!--
+#set($GridObjName = "dps400C03Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps400C03CoverId")
+var ${GridObjName};
+
+## 初期表示＋読込処理
+function dps400C03F00() {
+    ## グリッド生成
+    doInitGrid();
+    ## 検索結果データの読込
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+        }
+    }
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("選択,品目名称,配分状況<br>(開始日時-終了日時),配分基準,#cspan,#cspan,#cspan,#cspan,#cspan");
+    ${GridObjName}.attachHeader("#rspan,#rspan,#rspan,最終更新日時,配分品目,実績参照期間,参照品目1,参照品目2,参照品目3");
+    ${GridObjName}.setInitWidths("30,120,125,105,120,105,120,120,120");
+    ${GridObjName}.setColAlign("center,left,center,center,left,center,left,left,left");
+    ${GridObjName}.setColTypes("ch,ro,ro,ro,ro,ro,ro,ro,ro");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableDistributedParsing(true,50,260);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps400C03', $!gridHeight));
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.setStyle("","height:35px;","","");
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.attachEvent("onRowCreated",function(id){
+        var cell = ${GridObjName}.cells(id,0);
+        if (cell.getAttribute("disabled")) cell.setDisabled(true);
+    });
+}
+
+## 「配分処理を実行」処理
+function dps400C03F05Execute() {
+    execute('$text.get("DPS400C03.001","dialogue")', '$link.setAction("dps400C03F05Execute")');
+}
+
+## 更新処理
+function execute(confirmMsg, actionPath) {
+    ##入力チェック
+    if (!executeValidation()) {
+        return;
+    }
+    ##確認
+    if (!confirm(confirmMsg)) {
+        return;
+    }
+    ##送信データ作成
+    addCheckRowIdList(document.dps400C03Form, ${GridObjName}, 'rowIdList', 'updateRowId', 0);
+    ##送信
+    document.dps400C03Form.action = actionPath;
+    document.dps400C03Form.submit();
+    execute = blockIt;
+}
+
+## 更新時入力チェック
+function executeValidation() {
+    ## [必須] 品目選択
+    var checkedRows = ${GridObjName}.getCheckedRows(0);
+    errorMsg = '$text.get("DPC1006E",["品目"])';
+    addErrorInfo(!isEntered(checkedRows), errorMsg);
+    return validation();
+}
+//-->
+</script>
+
+#tabbar("sienSisetuTokuyaku", "dps400C03F00")
+<div id="tabBox">
+<form name="dps400C03Form" method="post">
+<div align="left" style="float: left;width: 100%;">
+<table style="margin-top:2px;">
+    <tr>
+        <td>
+            <fieldset style="padding:2px 15px 2px 15px;">
+                <legend><label>配分処理業務状況</label></legend>
+                <label for="cb">配分処理と同時にMRに公開</label>
+                #if (!($form.bean.isMrOpenCheck))
+                <input type="checkbox" name="isMrOpenCheck" id="cb" checked />
+                #else
+                <input type="checkbox" name="isMrOpenCheck" id="cb" />
+                #end
+                #if ($canEdit)
+                    #if ($form.getRequestData("DPS400C03_DATA_R_SEARCH_RESULT"))
+                        <input type="button" value="配分処理を実行" onclick="dps400C03F05Execute()" />
+                    #else
+                        <input type="button" value="配分処理を実行" onclick="dps400C03F05Execute()" disabled />
+                    #end
+                #end
+            </fieldset>
+        </td>
+    </tr>
+</table>
+<div class="guide">※配分処理を実行をクリックすると、選択した品目の配分処理を開始します。</div>
+<a href='#' onClick='allCheckboxChange(${GridObjName},0,true)' class="allCheckboxChange">すべての品目を選択</a>
+<a href='#' onClick='allCheckboxChange(${GridObjName},0,false)' class="allCheckboxChange">すべての品目を解除</a>
+</div>
+#loadingGridDiv4("${GridObjName}", "${CoverId}", "width:99.5%; margin-top:4px; clear:both;")
+#token()
+</form>
+</div>

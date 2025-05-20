@@ -1,0 +1,85 @@
+## ------------------------------------
+## ファイル選択画面
+## ------------------------------------
+#set($layout = "nothingLayout.vm" )
+#set($category = $form.bean.category)
+#parse("WEB-INF/view/cmn/xhtml.vm")
+<html>
+#parse("WEB-INF/view/cmn/headerInfo.vm")
+<body>
+<script language="javascript">
+<!--
+function dps999C00F01Output(sosCd, outputDivision,category) {
+    var actionPath = '$link.setAction('dps999C00F01')';
+    actionPath = actionPath.concat('?mrPlanMMPListOutputCd=').concat(sosCd).concat('&mrPlanOutputDivision=').concat(outputDivision).concat('&category=').concat(category);
+    document.dps999C00Form.action = actionPath;
+    document.dps999C00Form.submit();
+    return false;
+}
+function dps999C00F02Output(sosCd,category) {
+    var actionPath = '$link.setAction('dps999C00F02')';
+    actionPath = actionPath.concat('?reviewProdMrOutputCd=').concat(sosCd).concat('&category=').concat(category);
+    document.dps999C00Form.action = actionPath;
+    document.dps999C00Form.submit();
+    return false;
+}
+function dps999C00F03Output(sosCd,category) {
+    var actionPath = '$link.setAction('dps999C00F03')';
+    actionPath = actionPath.concat('?reviewMrProdOutputCd=').concat(sosCd).concat('&category=').concat(category);
+    document.dps999C00Form.action = actionPath;
+    document.dps999C00Form.submit();
+    return false;
+}
+function dps999C00F04Output(sosCd,category) {
+    var actionPath = '$link.setAction('dps999C00F04')';
+    actionPath = actionPath.concat('?teamMrOutputSosCd=').concat(sosCd).concat('&category=').concat(category);
+    document.dps999C00Form.action = actionPath;
+    document.dps999C00Form.submit();
+    return false;
+}
+//-->
+</script>
+<div class="clear"></div>
+<div id="messageArea">
+#allMessage()
+</div>
+#set($sosCd = $form.bean.outputSosCd)
+<div class="label">
+<form name="dps998C00Form" id="dps998C00Form" method="post"><br>
+<table align="center" width="100%" height="200px" border="0" cellpadding="5" style="text-align: center;">
+    <tr><td>出力するファイルを選択してください。</td></tr>
+## mod Start 2018/05/11 H.Shiota  J18-0002_【DPX】2018年4月組織変更対応（計画支援）(「営業所エリア・担当者」に文言変更)
+##    <tr><td>・<a href="#" onclick="dps999C00F04Output('$!sosCd')">営業所エリア担当者計画検討表</a></td></tr>
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    <tr><td>・<a href="#" onclick="dps999C00F04Output('$!sosCd', '$!category')">エリア担当者計画検討表</a></td></tr>
+##    <tr><td>・<a href="#" onclick="dps999C00F04Output('$!sosCd', '$!category')">営業所エリア担当者計画検討表</a></td></tr>
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+## mod End   2018/05/11 H.Shiota  J18-0002_【DPX】2018年4月組織変更対応（計画支援）(「営業所エリア・担当者」に文言変更)
+    <tr><td>・担当者別品目別計画一覧</td></tr>
+    <tr>
+        <td>（<a href="#" onclick="dps999C00F01Output('$!sosCd', 'RIRON_1', '$!category')">理論計画①</a>、
+            <a href="#" onclick="dps999C00F01Output('$!sosCd', 'RIRON_2', '$!category')">理論計画②</a>、
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            <a href="#" onclick="dps999C00F01Output('$!sosCd', 'OFFICE', '$!category')">エリア案</a>、
+##            <a href="#" onclick="dps999C00F01Output('$!sosCd', 'OFFICE', '$!category')">営業所案</a>、
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            <a href="#" onclick="dps999C00F01Output('$!sosCd', 'KETTEI', '$!category')">決定計画</a>）
+        </td>
+    </tr>
+    <tr><td>・<a href="#" onclick="dps999C00F02Output('$!sosCd', '$!category')">品目別担当者別計画検討表</a></td></tr>
+    <tr><td>・<a href="#" onclick="dps999C00F03Output('$!sosCd', '$!category')">担当者別品目別計画検討表</a></td></tr>
+    <tr><td><br></td></tr>
+    <tr><td><input type="button" name="close" value="閉じる" onClick="self.window.close()" /></td></tr>
+</table>
+## del Start 2018/05/11 H.Shiota  J18-0002_【DPX】2018年4月組織変更対応（計画支援）(注意文言削除)
+##<table align="center" width="280px" height="50px" border="0" cellpadding="5" style="text-align: left;">
+##<tr><td><br>※「チーム担当者計画検討表」は<br>　ONCの「エリア担当者計画検討表」に相当します</td></tr>
+##</table>
+## del End   2018/05/11 H.Shiota  J18-0002_【DPX】2018年4月組織変更対応（計画支援）(注意文言削除)
+</form>
+<form name="dps999C00Form" id="dps999C00Form" method="post">
+<input type="hidden" name="category" id="category" value="$!form.bean.category" />
+</form>
+</div>
+</body>
+</html>

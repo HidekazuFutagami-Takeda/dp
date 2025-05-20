@@ -1,0 +1,316 @@
+#set($pageTitle = $text.get("dps203C00","title"))
+#set($bodyOnloadMethod = "dps203C00F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dps203C00x01.vm")
+#set($GridObjName = "dps203C00Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps203C00CoverId")
+<script language="javascript">
+<!--
+var ${GridObjName};
+
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　YakkoArrayを汎用的な持ち方に変更
+##var mmpYakkoArray   = [
+##                  {}
+##                  #foreach($codeAndValue in $service.getYakkouSijouList(true, '1'))
+##                  , { text: '$codeAndValue.value', value: '$codeAndValue.code' }
+##                  #end
+##                 ];
+##var oncYakkoArray   = [
+##                  {}
+##                  #foreach($codeAndValue in $service.getYakkouSijouList(true, '3'))
+##                  , { text: '$codeAndValue.value', value: '$codeAndValue.code' }
+##                  #end
+##                 ];
+
+##「key:カテゴリーコード、value:対象の薬効市場リスト」のハッシュを作成
+var yakkoArrayObj = {};
+#foreach($categoryCAV in $service.getCategoryList2("1"))
+    yakkoArrayObj['$categoryCAV.code'] =
+##    [{}
+    [{}
+  #foreach($yakkouCAV in $service.getYakkouSijouList(true, $categoryCAV.code))
+    , { text: '$yakkouCAV.value', value: '$yakkouCAV.code' }
+  #end
+    ];
+#end
+
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　YakkoArrayを汎用的な持ち方に変更
+
+## 初期表示＋読込処理
+function dps203C00F00() {
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　dps203C00SosApply()を先頭に移動(初期選択組織のunderSosCntをdoInitGrid()で利用するため)、underSosCntの取得・利用を追加
+    dps203C00SosApply("$!security.defaultSosCd", "$!security.defaultJgiNo", "02");
+
+    ## 表示時の組織が設定されていない場合は品目リストなし
+	#if(!$form.bean.SosCd3)
+		form.yakkouSijouCode.length = 1;
+		form.yakkouSijouCode.options[0].text  = '　　　　　　　　　';
+		form.yakkouSijouCode.options[0].value = '';
+		form.yakkouSijouCode.options[0].selected = true;
+	#end
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　dps203C00SosApplyを先頭に移動(初期選択組織のunderSosCntをdoInitGrid()で利用するため)、underSosCntの取得・利用を追加
+
+    doInitGrid();
+    if (document.getElementById("dps203C00x01.vm")) {
+        var loadXMLString = document.getElementById("dps203C00x01.vm").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+            ## マイナス金額のテキスト色を更新
+            var rowNum = ${GridObjName}.getRowsNum();
+            for (i = 1; i <= rowNum; i++) {
+                for (j = 3; j <= 9; j++) {
+                    var value = ${GridObjName}.cells(i,j).getValue();
+                    minusStyle(${GridObjName}, i, j, value);
+                }
+            }
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+## add start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによってヘッダーの文言変更「チーム」⇔「エリア」
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    var headerSosTitle = "エリア";
+##    var headerSosTitle = "営業所・エリア";
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ## 表示時の営業所が設定されており下位組織が存在する場合は、「チーム」とする
+	#if($form.bean.SosCd3)
+		if(document.getElementById('underSosCnt').value != "0"){
+        	headerSosTitle = "チーム";
+		}
+	#end
+## add end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによってヘッダーの文言変更「チーム」⇔「営業所・エリア」
+
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによってヘッダーの文言変更「チーム」⇔「営業所・エリア」
+##  ${GridObjName}.setHeader("チーム,担当者,対象,薬効市場,#cspan,#cspan,#cspan,増減金額,営業所案,#cspan");
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.setHeader(headerSosTitle + ",担当者,対象,薬効市場,#cspan,#cspan,#cspan,増減金額,エリア案,#cspan");
+##    ${GridObjName}.setHeader(headerSosTitle + ",担当者,対象,薬効市場,#cspan,#cspan,#cspan,増減金額,営業所案,#cspan");
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによってヘッダーの文言変更「チーム」⇔「営業所・エリア」
+    ${GridObjName}.attachHeader("#rspan,#rspan,#rspan,市場計,タケダ品,未獲得市場,構成(%),#rspan,未獲得市場,構成(%)");
+## mod start 2020/07/01 趙 2020年4月組織変更対応（各種アプリ）
+##    ${GridObjName}.setInitWidths("125,120,55,95,95,95,80,95,95,80");
+    ${GridObjName}.setInitWidths("125,140,55,95,95,95,80,95,95,80");
+## mod end   2020/07/01 趙 2020年4月組織変更対応（各種アプリ）
+    ${GridObjName}.setColAlign("center,center,center,right,right,right,right,right,right,right");
+    ${GridObjName}.setColTypes("ro,ro,ro,ron,ron,ron,ro,ron,ron,ro");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false");
+    ${GridObjName}.enableDistributedParsing(true,50,300);
+    ${GridObjName}.enableMultiline(false);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps203C00', $!gridHeight));
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.objBox.style.overflowY="scroll";
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.setNumberFormat("0,000",3);
+    ${GridObjName}.setNumberFormat("0,000",4);
+    ${GridObjName}.setNumberFormat("0,000",5);
+    ${GridObjName}.setNumberFormat("0,000",7);
+    ${GridObjName}.setNumberFormat("0,000",8);
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+}
+## 組織反映
+function dps203C00SosApply(sosCd, jgiNo, sosMaxSrchGetValue) {
+    ## 共通の反映関数呼び出し
+    sosApply(sosCd, jgiNo, sosMaxSrchGetValue);
+
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+## 	## 選択した組織のONC組織フラグ
+##  var oncSosFlg = false;
+##  if(document.getElementById('oncSosFlg')){
+##    	oncSosFlg = document.getElementById('oncSosFlg').value;
+##  }
+    var sosCategory = "0";
+    if(document.getElementById('sosCategory')){
+    	sosCategory = document.getElementById('sosCategory').value;
+    }
+
+## 選択した組織のカテゴリ
+    var sosCategoryAry = sosCategory.split(',');
+
+	form = document.dps203C00Form;
+    ## 組織コードの取得
+    var sosCd;
+    if(isEntered(form.sosCd3.value)){
+      sosCd = form.sosCd3.value;
+    } else {
+      sosCd = null;
+    }
+
+    #### 計画対象カテゴリ領域より、立案レベルを条件にカテゴリを取得
+    ##var planLvCtgList = [];
+    ##if (isEntered(form.sosCd3.value)) {
+    ##  planLvCtgList = [
+    ##                  #foreach($val in $service.getDpsCategoryByPlanLevel($form.getField("DPS203C00_PLANLEVEL_OFFICE")))
+    ##                  , '$val'
+    ##                  #end
+    ##                  ];
+    ##}
+
+    ## 選択した組織のカテゴリは、このタイミングでvelocityで取得できないので、カテゴリを一旦全て取得
+    var categoryList = [
+                      #foreach($codeAndValue in $service.getDpsCategoryPlanList(null, '1', false))
+                      , { text: '$codeAndValue.value', value: '$codeAndValue.code' }
+                      #end
+                     ];
+
+	let cateList = [];
+	## 選択した組織のカテゴリのみ残す
+    for (var i = 1; i < categoryList.length; i++){
+    	for(var j = 0; j < sosCategoryAry.length; j++) {
+    		if (categoryList[i].value == sosCategoryAry[j] ){
+    			##for(let k = 1;k< planLvCtgList.length;k++){
+    				##if(categoryList[i].value == planLvCtgList[k]){
+    					cateList.push(categoryList[i].value);
+    				##}
+    			##}
+    		}
+		}
+    }
+##  var yakkoArray;
+##	if (oncSosFlg == 'true') {
+##	    yakkoArray = oncYakkoArray;
+##	} else {
+##	    yakkoArray = mmpYakkoArray;
+##	}
+
+    ## 薬効市場のselectbox
+	var prodCategory = document.getElementsByName('yakkouSijouCode')[0];
+	## 一旦selectboxのoptionを削除
+	while(yakkouSijouCode.lastChild)
+	{
+		yakkouSijouCode.removeChild(yakkouSijouCode.lastChild);
+	}
+
+	## optionを作成
+	var option;
+	document.createElement('option');
+
+	option = document.createElement('option');
+	option.setAttribute('value', '');
+	option.innerHTML = '　　　　　　　　　';
+    prodCategory.appendChild(option);
+
+	var isSelected = false;
+	for(var j = 0; j < cateList.length; j++) {
+    	var yakkoArray = yakkoArrayObj[cateList[j]];
+		for (let i = 2; i < Object.keys(yakkoArray).length; i++){
+			option = document.createElement('option');
+			option.setAttribute('value', yakkoArray[i].value);
+			option.innerHTML = yakkoArray[i].text;
+			if(yakkoArray[i].value == '$!form.bean.yakkouSijouCode'){
+				option.selected = true;
+				isSelected = true;
+			}
+    		prodCategory.appendChild(option);
+		}
+	}
+	if(!isSelected){
+		form.yakkouSijouCode.options[0].selected = true;
+	}
+}
+## 検索処理
+function dps203C00F05() {
+    if (dps203C00F05Validation()) {
+        var actionPath = '$link.setAction('dps203C00F05')';
+        document.dps203C00Form.action = actionPath;
+        document.dps203C00Form.submit();
+        dps203C00F05 = blockIt;
+    }
+}
+## 画面入力チェック
+function dps203C00F05Validation() {
+    ## 入力フォーム
+    form = document.dps203C00Form;
+
+    ## [必須] 組織
+    value = form.sosCd3.value;
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    errorMsg = '$text.get("DPC1024E",["組織", "エリア"])';
+##    errorMsg = '$text.get("DPC1024E",["組織", "営業所"])';
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    ## [必須] 薬効市場
+    value = form.yakkouSijouCode.value;
+    errorMsg = '$text.get("DPC1003E",["薬効市場"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    return validation();
+}
+## 範囲指定コピー
+function onKeyPressed(code, ctrl, shift) {
+    return copyBlock(${GridObjName}, code, ctrl, shift);
+}
+## 編集画面オープン
+function dps203C01F00() {
+    if (dps203C00F05Validation()) {
+        var form = document.dps203C00Form;
+        var sosCd3 = form.sosCd3.value;
+        var yakkouSijouCode = form.yakkouSijouCode.value;
+        var url ="$link.setAction('dps203C01F00')";
+        url = url.concat("?sosCd3=").concat(sosCd3);
+        url = url.concat("&yakkouSijouCode=").concat(yakkouSijouCode);
+        url = url.concat("&searchFuncName=").concat('dps203C00F05');
+        var childWindow = openWindow(url);
+        ## 子画面が閉じるまで待機
+        var interval = setInterval(function(){
+            if(childWindow.closed){
+                clearInterval(interval);
+                dps203C00F05();
+            }
+        }, 200);
+    }
+}
+//-->
+</script>
+#tabbar("sienSosiki", "dps203C00F00")
+<div id="tabBox">
+<form name="dps203C00Form" method="post">
+<table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+        <td class="gridIndex" style="width:150px;">組織*</td>
+        <td>#sosDialogExt2("dps203C00SosApply","01", "02", "02", "DPS203")</td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width:150px;">薬効市場*</td>
+        <td>
+            <table cellspacing="0" cellpadding="0">
+                <tr>
+                    <td>#select ("yakkouSijouCode",$!form.bean.yakkouSijouCodeList,$!form.bean.yakkouSijouCode)</td>
+                    <td style="padding-left:5px;"><input type="button" value="検索" style="width:80px;" onclick="dps203C00F05()" /></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<table cellspacing="0" cellpadding="1" width="100%">
+    <tr>
+        #if ($!security.hasAuthEdit("DPS203"))
+            #if ($!form.bean.existSearchDataFlag)
+            <td style="padding:6px 0px 6px 5px;"><input type="button" value="編集する" style="width:80px;" onclick="dps203C01F00()" /></td>
+            #else
+            <td style="padding:6px 0px 6px 5px;"><input type="button" value="編集する" style="width:80px;" onclick="dps203C01F00()" disabled /></td>
+            #end
+        #end
+        <td class="label" align="right" style="text-align:right;vertical-align:bottom;">$consts.tableHeaderY</td>
+    </tr>
+</table>
+##loadingGridDiv2("${GridObjName}", "${CoverId}", "")
+#loadingGridDiv4("${GridObjName}", "${CoverId}", "width: 99.5%; clear: both;")
+#token()
+</form>
+</div

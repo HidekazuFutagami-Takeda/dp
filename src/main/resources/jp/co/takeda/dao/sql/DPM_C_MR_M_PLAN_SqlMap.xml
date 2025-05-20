@@ -1,0 +1,1213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_C_MR_M_PLAN_SqlMap" >
+  <resultMap id="resultMap" class="jp.co.takeda.model.ManageMrMonthPlan" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="CAL_YEAR" property="calYear" jdbcType="CHAR" />
+    <result column="CAL_TERM" property="calTerm" jdbcType="CHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PLANNED_TERM_VALUE" property="plannedTermValue" jdbcType="BIGINT" />
+    <result column="PLANNED_1_VALUE_YB" property="implMonthPlan.planned1ValueYb" jdbcType="BIGINT" />
+    <result column="PLANNED_2_VALUE_YB" property="implMonthPlan.planned2ValueYb" jdbcType="BIGINT" />
+    <result column="PLANNED_3_VALUE_YB" property="implMonthPlan.planned3ValueYb" jdbcType="BIGINT" />
+    <result column="PLANNED_4_VALUE_YB" property="implMonthPlan.planned4ValueYb" jdbcType="BIGINT" />
+    <result column="PLANNED_5_VALUE_YB" property="implMonthPlan.planned5ValueYb" jdbcType="BIGINT" />
+    <result column="PLANNED_6_VALUE_YB" property="implMonthPlan.planned6ValueYb" jdbcType="BIGINT" />
+    <result column="EXPECTED_1_VALUE_YB" property="implMonthPlan.expected1ValueYb" jdbcType="BIGINT" />
+    <result column="EXPECTED_2_VALUE_YB" property="implMonthPlan.expected2ValueYb" jdbcType="BIGINT" />
+    <result column="EXPECTED_3_VALUE_YB" property="implMonthPlan.expected3ValueYb" jdbcType="BIGINT" />
+    <result column="EXPECTED_4_VALUE_YB" property="implMonthPlan.expected4ValueYb" jdbcType="BIGINT" />
+    <result column="EXPECTED_5_VALUE_YB" property="implMonthPlan.expected5ValueYb" jdbcType="BIGINT" />
+    <result column="EXPECTED_6_VALUE_YB" property="implMonthPlan.expected6ValueYb" jdbcType="BIGINT" />
+<!-- add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+    <result column="TOKI_1MON_Y_KIN" property="implMonthPlan.record1ValueY" jdbcType="BIGINT" />
+    <result column="TOKI_1MON_B_KIN" property="implMonthPlan.record1ValueB" jdbcType="BIGINT" />
+    <result column="TOKI_2MON_Y_KIN" property="implMonthPlan.record2ValueY" jdbcType="BIGINT" />
+    <result column="TOKI_2MON_B_KIN" property="implMonthPlan.record2ValueB" jdbcType="BIGINT" />
+    <result column="TOKI_3MON_Y_KIN" property="implMonthPlan.record3ValueY" jdbcType="BIGINT" />
+    <result column="TOKI_3MON_B_KIN" property="implMonthPlan.record3ValueB" jdbcType="BIGINT" />
+    <result column="TOKI_4MON_Y_KIN" property="implMonthPlan.record4ValueY" jdbcType="BIGINT" />
+    <result column="TOKI_4MON_B_KIN" property="implMonthPlan.record4ValueB" jdbcType="BIGINT" />
+    <result column="TOKI_5MON_Y_KIN" property="implMonthPlan.record5ValueY" jdbcType="BIGINT" />
+    <result column="TOKI_5MON_B_KIN" property="implMonthPlan.record5ValueB" jdbcType="BIGINT" />
+    <result column="TOKI_6MON_Y_KIN" property="implMonthPlan.record6ValueY" jdbcType="BIGINT" />
+    <result column="TOKI_6MON_B_KIN" property="implMonthPlan.record6ValueB" jdbcType="BIGINT" />
+    <result column="TOKI_TOTAL_Y_KIN" property="implMonthPlan.recordTotalValueY" jdbcType="BIGINT" />
+    <result column="TOKI_TOTAL_B_KIN" property="implMonthPlan.recordTotalValueB" jdbcType="BIGINT" />
+<!-- add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+    <result column="DEL_FLG" property="delFlg" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="IS_PG_ID" property="isPgId" jdbcType="VARCHAR" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="UP_PG_ID" property="upPgId" jdbcType="VARCHAR" />
+    <result column="PLANNED_STACKED_1_VALUE" property="plannedStacked1Value" jdbcType="BIGINT" />
+    <result column="PLANNED_STACKED_2_VALUE" property="plannedStacked2Value" jdbcType="BIGINT" />
+    <result column="PLANNED_STACKED_3_VALUE" property="plannedStacked3Value" jdbcType="BIGINT" />
+    <result column="PLANNED_STACKED_4_VALUE" property="plannedStacked4Value" jdbcType="BIGINT" />
+    <result column="PLANNED_STACKED_5_VALUE" property="plannedStacked5Value" jdbcType="BIGINT" />
+    <result column="PLANNED_STACKED_6_VALUE" property="plannedStacked6Value" jdbcType="BIGINT" />
+    <result column="EXPECTED_STACKED_1_VALUE" property="expectedStacked1Value" jdbcType="BIGINT" />
+    <result column="EXPECTED_STACKED_2_VALUE" property="expectedStacked2Value" jdbcType="BIGINT" />
+    <result column="EXPECTED_STACKED_3_VALUE" property="expectedStacked3Value" jdbcType="BIGINT" />
+    <result column="EXPECTED_STACKED_4_VALUE" property="expectedStacked4Value" jdbcType="BIGINT" />
+    <result column="EXPECTED_STACKED_5_VALUE" property="expectedStacked5Value" jdbcType="BIGINT" />
+    <result column="EXPECTED_STACKED_6_VALUE" property="expectedStacked6Value" jdbcType="BIGINT" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="TARGET_SUMMARY" property="targetSummary" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="mrTermPlan">
+            SELECT MP.CAL_YEAR
+                  ,MP.CAL_TERM
+                  ,MP.PROD_CODE
+                  ,MP.JGI_NO
+                  ,SUM(MP.PLANNED_2_VALUE_Y) AS PLANNED_TERM_VALUE
+              FROM DPM_I_MR_PLAN MP
+                   INNER JOIN DPM_C_VI_JGI_MST JM
+                ON MP.JGI_NO = JM.JGI_NO
+             WHERE MP.DEL_FLG = 0
+               AND MP.CAL_YEAR = #calYear:CHAR#
+               AND MP.CAL_TERM = #calTerm:CHAR#
+             GROUP BY MP.CAL_YEAR, MP.CAL_TERM, MP.PROD_CODE, MP.JGI_NO
+  </sql>
+
+  <sql id="mrTermPlanIns">
+            SELECT MP.CAL_YEAR
+                  ,MP.CAL_TERM
+                  ,MP.PROD_CODE
+                  ,MP.JGI_NO
+                  ,JM.SOS_CD3 AS SOS_CD
+                  ,SUM(MP.PLANNED_2_VALUE_Y) AS PLANNED_TERM_VALUE
+              FROM DPM_C_VI_JGI_MST JM
+                   LEFT JOIN DPM_I_MR_PLAN MP
+                ON MP.JGI_NO = JM.JGI_NO
+             WHERE MP.DEL_FLG = 0
+               AND MP.CAL_YEAR = #calYear:CHAR#
+               AND MP.CAL_TERM = #calTerm:CHAR#
+               AND MP.PROD_CODE = #prodCode:CHAR#
+               AND MP.JGI_NO = #jgiNo:INTEGER#
+             GROUP BY MP.CAL_YEAR, MP.CAL_TERM, MP.PROD_CODE,MP.JGI_NO, JM.SOS_CD3
+  </sql>
+
+  <sql id="targetSummary">
+            SELECT CTG.CAL_YEAR
+                  ,CTG.CAL_TERM
+                  ,CPR.PROD_CODE
+              FROM DPM_S_SY_COM_PCAT_PROD CPR
+        INNER JOIN DPM_C_PLANNED_CTG CTG
+               <isNotEmpty property="jrnsPcatCd">
+                ON CPR.PCAT_CODE = #jrnsPcatCd:VARCHAR#
+               </isNotEmpty>
+               <isEmpty property="jrnsPcatCd">
+                ON CPR.PCAT_CODE = CTG.PCAT_CODE
+               </isEmpty>
+        INNER JOIN DPM_S_SY_COM_PCAT CP
+                ON CP.PCAT_CODE = CPR.PCAT_CODE
+             WHERE CTG.CAL_YEAR = #calYear:CHAR#
+               AND CTG.CAL_TERM = #calTerm:CHAR#
+       <isNull property="jrnsCtgList">
+       <isNotNull prepend="AND" property="category">
+           CTG.CATEGORY = #category:CHAR#
+       </isNotNull>
+       </isNull>
+       <isNotNull property="jrnsCtgList">
+       <iterate prepend=" AND CTG.CATEGORY IN " open="(" close=")" conjunction=","  property="jrnsCtgList">
+           #jrnsCtgList[]#
+       </iterate>
+       </isNotNull>
+       GROUP BY CTG.CAL_YEAR,CTG.CAL_TERM,CPR.PROD_CODE
+  </sql>
+
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT  MP.SEQ_KEY
+          , MP.CAL_YEAR
+          , MP.CAL_TERM
+          , MP.PROD_CODE
+          , MP.JGI_NO
+          , MP.PLANNED_1_VALUE_YB
+          , MP.PLANNED_2_VALUE_YB
+          , MP.PLANNED_3_VALUE_YB
+          , MP.PLANNED_4_VALUE_YB
+          , MP.PLANNED_5_VALUE_YB
+          , MP.PLANNED_6_VALUE_YB
+          , MP.EXPECTED_1_VALUE_YB
+          , MP.EXPECTED_2_VALUE_YB
+          , MP.EXPECTED_3_VALUE_YB
+          , MP.EXPECTED_4_VALUE_YB
+          , MP.EXPECTED_5_VALUE_YB
+          , MP.EXPECTED_6_VALUE_YB
+<!-- add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+          , NULL AS RECD.TOKI_1MON_Y_KIN
+          , NULL AS RECD.TOKI_1MON_B_KIN
+          , NULL AS RECD.TOKI_2MON_Y_KIN
+          , NULL AS RECD.TOKI_2MON_B_KIN
+          , NULL AS RECD.TOKI_3MON_Y_KIN
+          , NULL AS RECD.TOKI_3MON_B_KIN
+          , NULL AS RECD.TOKI_4MON_Y_KIN
+          , NULL AS RECD.TOKI_4MON_B_KIN
+          , NULL AS RECD.TOKI_5MON_Y_KIN
+          , NULL AS RECD.TOKI_5MON_B_KIN
+          , NULL AS RECD.TOKI_6MON_Y_KIN
+          , NULL AS RECD.TOKI_6MON_B_KIN
+          , NULL AS RECD.TOKI_TOTAL_Y_KIN
+          , NULL AS RECD.TOKI_TOTAL_B_KIN
+<!-- add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+          , MP.DEL_FLG
+          , MP.IS_JGI_NO
+          , MP.IS_JGI_NAME
+          , MP.IS_DATE
+          , MP.IS_PG_ID
+          , MP.UP_JGI_NO
+          , MP.UP_JGI_NAME
+          , MP.UP_DATE
+          , MP.UP_PG_ID
+          , SUM.PLANNED_STACKED_1_VALUE
+          , SUM.PLANNED_STACKED_2_VALUE
+          , SUM.PLANNED_STACKED_3_VALUE
+          , SUM.PLANNED_STACKED_4_VALUE
+          , SUM.PLANNED_STACKED_5_VALUE
+          , SUM.PLANNED_STACKED_6_VALUE
+          , SUM.EXPECTED_STACKED_1_VALUE
+          , SUM.EXPECTED_STACKED_2_VALUE
+          , SUM.EXPECTED_STACKED_3_VALUE
+          , SUM.EXPECTED_STACKED_4_VALUE
+          , SUM.EXPECTED_STACKED_5_VALUE
+          , SUM.EXPECTED_STACKED_6_VALUE
+          , TERM_PLAN.PLANNED_TERM_VALUE
+          , NULL AS PROD_NAME
+          , NULL AS JGI_NAME
+          , NULL AS TARGET_SUMMARY
+      FROM DPM_C_MR_M_PLAN MP
+     WHERE MP.SEQ_KEY = #seqKey:BIGINT#
+       AND MP.CAL_YEAR = '$calYear$'
+       AND MP.CAL_TERM = '$calTerm.dbValue$'
+  </select>
+
+ <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.ManageMrMonthPlan" >
+    SELECT  MP.SEQ_KEY
+          , MP.CAL_YEAR
+          , MP.CAL_TERM
+          , MP.PROD_CODE
+          , MP.JGI_NO
+          , TERM_PLAN.PLANNED_TERM_VALUE
+          , MP.PLANNED_1_VALUE_YB
+          , MP.PLANNED_2_VALUE_YB
+          , MP.PLANNED_3_VALUE_YB
+          , MP.PLANNED_4_VALUE_YB
+          , MP.PLANNED_5_VALUE_YB
+          , MP.PLANNED_6_VALUE_YB
+          , MP.EXPECTED_1_VALUE_YB
+          , MP.EXPECTED_2_VALUE_YB
+          , MP.EXPECTED_3_VALUE_YB
+          , MP.EXPECTED_4_VALUE_YB
+          , MP.EXPECTED_5_VALUE_YB
+          , MP.EXPECTED_6_VALUE_YB
+<!-- add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+          , NULL AS TOKI_1MON_Y_KIN
+          , NULL AS TOKI_1MON_B_KIN
+          , NULL AS TOKI_2MON_Y_KIN
+          , NULL AS TOKI_2MON_B_KIN
+          , NULL AS TOKI_3MON_Y_KIN
+          , NULL AS TOKI_3MON_B_KIN
+          , NULL AS TOKI_4MON_Y_KIN
+          , NULL AS TOKI_4MON_B_KIN
+          , NULL AS TOKI_5MON_Y_KIN
+          , NULL AS TOKI_5MON_B_KIN
+          , NULL AS TOKI_6MON_Y_KIN
+          , NULL AS TOKI_6MON_B_KIN
+          , NULL AS TOKI_TOTAL_Y_KIN
+          , NULL AS TOKI_TOTAL_B_KIN
+<!-- add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+          , MP.DEL_FLG
+          , MP.IS_JGI_NO
+          , MP.IS_JGI_NAME
+          , MP.IS_DATE
+          , MP.IS_PG_ID
+          , MP.UP_JGI_NO
+          , MP.UP_JGI_NAME
+          , MP.UP_DATE
+          , MP.UP_PG_ID
+          , NULL AS PLANNED_STACKED_1_VALUE
+          , NULL AS PLANNED_STACKED_2_VALUE
+          , NULL AS PLANNED_STACKED_3_VALUE
+          , NULL AS PLANNED_STACKED_4_VALUE
+          , NULL AS PLANNED_STACKED_5_VALUE
+          , NULL AS PLANNED_STACKED_6_VALUE
+          , NULL AS EXPECTED_STACKED_1_VALUE
+          , NULL AS EXPECTED_STACKED_2_VALUE
+          , NULL AS EXPECTED_STACKED_3_VALUE
+          , NULL AS EXPECTED_STACKED_4_VALUE
+          , NULL AS EXPECTED_STACKED_5_VALUE
+          , NULL AS EXPECTED_STACKED_6_VALUE
+          , NULL AS PROD_NAME
+          , NULL AS JGI_NAME
+          , NULL AS TARGET_SUMMARY
+     FROM DPM_C_MR_M_PLAN MP
+     LEFT JOIN (<include refid="mrTermPlanIns"/>) TERM_PLAN
+          ON MP.CAL_YEAR = TERM_PLAN.CAL_YEAR
+          AND MP.CAL_TERM = TERM_PLAN.CAL_TERM
+          AND MP.PROD_CODE = TERM_PLAN.PROD_CODE
+     WHERE MP.CAL_YEAR = '$calYear$'
+       AND MP.CAL_TERM = '$calTerm.dbValue$'
+       AND MP.PROD_CODE = #prodCode:CHAR#
+       AND MP.JGI_NO = #jgiNo:INTEGER#
+  </select>
+
+ <select id="selectTotalLine" resultMap="resultMap" parameterClass="java.util.Map" >
+<!-- add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+  WITH INS_PROD_RECORD AS (
+    SELECT MIP.MR_NO JGI_NO
+          ,SUM(RCD.TOKI_1MON_Y_KIN) AS TOKI_1MON_Y_KIN
+          ,SUM(RCD.TOKI_1MON_B_KIN) AS TOKI_1MON_B_KIN
+          ,SUM(RCD.TOKI_2MON_Y_KIN) AS TOKI_2MON_Y_KIN
+          ,SUM(RCD.TOKI_2MON_B_KIN) AS TOKI_2MON_B_KIN
+          ,SUM(RCD.TOKI_3MON_Y_KIN) AS TOKI_3MON_Y_KIN
+          ,SUM(RCD.TOKI_3MON_B_KIN) AS TOKI_3MON_B_KIN
+          ,SUM(RCD.TOKI_4MON_Y_KIN) AS TOKI_4MON_Y_KIN
+          ,SUM(RCD.TOKI_4MON_B_KIN) AS TOKI_4MON_B_KIN
+          ,SUM(RCD.TOKI_5MON_Y_KIN) AS TOKI_5MON_Y_KIN
+          ,SUM(RCD.TOKI_5MON_B_KIN) AS TOKI_5MON_B_KIN
+          ,SUM(RCD.TOKI_6MON_Y_KIN) AS TOKI_6MON_Y_KIN
+          ,SUM(RCD.TOKI_6MON_B_KIN) AS TOKI_6MON_B_KIN
+          ,SUM(RCD.TOKI_TOTAL_Y_KIN) AS TOKI_TOTAL_Y_KIN
+          ,SUM(RCD.TOKI_TOTAL_B_KIN) AS TOKI_TOTAL_B_KIN
+      FROM
+          DPS_S_SY_V_S_TK05_SST_TKY_Z6K RCD
+      <!-- 4月、5月第3営業日まで、10月、11月第3営業日までは実績取得しない -->
+      INNER JOIN
+      (SELECT *
+       FROM DPS_S_SY_COM_CAL T1
+       WHERE T1.TODAY = '1'
+       AND (
+         T1.CAL_MONTH IN('01','02','03','06','07','08','09','12')
+         OR (T1.CAL_MONTH IN('05','11') AND T1.CAL_DAY
+             > (SELECT CAL_DAY FROM ORADPX01.DPS_S_SY_COM_CAL
+                WHERE CAL_YEAR = T1.CAL_YEAR AND CAL_MONTH = T1.CAL_MONTH AND BIZ_DAYS='3')
+            )
+       )
+      )CAL
+      ON 1= 1
+      INNER JOIN
+      <!-- DPM_C_PLANNED_PROD、DPM_C_CPRODを参照する -->
+      (
+        SELECT
+          PROD_CODE,
+          STAT_PROD_CODE
+        FROM DPM_C_PLANNED_PROD
+        WHERE CAL_YEAR = #calYear:CHAR#
+        AND   CAL_TERM = #calTerm:CHAR#
+        UNION
+        SELECT
+          PROD_CODE,
+          ORG_STAT_PROD_CODE AS STAT_PROD_CODE
+        FROM DPM_C_CPROD CCP
+        WHERE CAL_YEAR = #calYear:CHAR#
+        AND   CAL_TERM = #calTerm:CHAR#
+      )CPR
+      ON CPR.STAT_PROD_CODE = RCD.TTL_TKYHM_K_5_CD
+      INNER JOIN DPM_C_MR_INS_PROD MIP
+         ON CPR.PROD_CODE = MIP.PROD_CODE
+        AND RCD.INS_NO = MIP.INS_NO
+      WHERE RCD.IYK_WKT_KBN = #iykWktKbn:VARCHAR#
+      AND CPR.PROD_CODE = #prodCode:CHAR#
+        <isNotNull property="nnuJhoSbt">
+           <iterate prepend="AND RCD.NNU_JHO_SBT IN" open="(" close=")" conjunction=","  property="nnuJhoSbt">
+               #nnuJhoSbt[]#
+           </iterate>
+        </isNotNull>
+      GROUP BY
+          MIP.MR_NO
+  )
+<!-- add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+    SELECT
+          NULL AS SEQ_KEY
+          , TERM_PLAN.CAL_YEAR
+          , TERM_PLAN.CAL_TERM
+          , TERM_PLAN.PROD_CODE
+          , TERM_PLAN.JGI_NO
+          , TERM_PLAN.PLANNED_TERM_VALUE
+          , MP.PLANNED_1_VALUE_YB
+          , MP.PLANNED_2_VALUE_YB
+          , MP.PLANNED_3_VALUE_YB
+          , MP.PLANNED_4_VALUE_YB
+          , MP.PLANNED_5_VALUE_YB
+          , MP.PLANNED_6_VALUE_YB
+          , MP.EXPECTED_1_VALUE_YB
+          , MP.EXPECTED_2_VALUE_YB
+          , MP.EXPECTED_3_VALUE_YB
+          , MP.EXPECTED_4_VALUE_YB
+          , MP.EXPECTED_5_VALUE_YB
+          , MP.EXPECTED_6_VALUE_YB
+<!-- add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+          , RECD.TOKI_1MON_Y_KIN
+          , RECD.TOKI_1MON_B_KIN
+          , RECD.TOKI_2MON_Y_KIN
+          , RECD.TOKI_2MON_B_KIN
+          , RECD.TOKI_3MON_Y_KIN
+          , RECD.TOKI_3MON_B_KIN
+          , RECD.TOKI_4MON_Y_KIN
+          , RECD.TOKI_4MON_B_KIN
+          , RECD.TOKI_5MON_Y_KIN
+          , RECD.TOKI_5MON_B_KIN
+          , RECD.TOKI_6MON_Y_KIN
+          , RECD.TOKI_6MON_B_KIN
+          , RECD.TOKI_TOTAL_Y_KIN
+          , RECD.TOKI_TOTAL_B_KIN
+<!-- add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+          , NULL AS DEL_FLG
+          , NULL AS IS_JGI_NO
+          , NULL AS IS_JGI_NAME
+          , NULL AS IS_DATE
+          , NULL AS IS_PG_ID
+          , NULL AS UP_JGI_NO
+          , NULL AS UP_JGI_NAME
+          , NULL AS UP_DATE
+          , NULL AS UP_PG_ID
+          , NULL AS PLANNED_STACKED_1_VALUE
+          , NULL AS PLANNED_STACKED_2_VALUE
+          , NULL AS PLANNED_STACKED_3_VALUE
+          , NULL AS PLANNED_STACKED_4_VALUE
+          , NULL AS PLANNED_STACKED_5_VALUE
+          , NULL AS PLANNED_STACKED_6_VALUE
+          , NULL AS EXPECTED_STACKED_1_VALUE
+          , NULL AS EXPECTED_STACKED_2_VALUE
+          , NULL AS EXPECTED_STACKED_3_VALUE
+          , NULL AS EXPECTED_STACKED_4_VALUE
+          , NULL AS EXPECTED_STACKED_5_VALUE
+          , NULL AS EXPECTED_STACKED_6_VALUE
+          , NULL AS PROD_NAME
+          , NULL AS JGI_NAME
+          , NULL AS TARGET_SUMMARY
+<!-- mod Start 2022/08/25 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示 -->
+<!--     FROM (<include refid="mrTermPlanIns"/>) TERM_PLAN  -->
+      FROM DPM_C_PLANNED_PROD CPP
+      LEFT JOIN (<include refid="mrTermPlanIns"/>) TERM_PLAN
+       ON  CPP.CAL_YEAR  = TERM_PLAN.CAL_YEAR
+       AND CPP.CAL_TERM  = TERM_PLAN.CAL_TERM
+       AND CPP.PROD_CODE = TERM_PLAN.PROD_CODE
+       AND #jgiNo:INTEGER# = TERM_PLAN.JGI_NO
+<!-- mod End 2022/08/25 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示 -->
+<!--      LEFT JOIN DPM_C_MR_M_PLAN MP -->
+LEFT JOIN
+( select
+           M_PLAN_SUM.CAL_YEAR
+          , M_PLAN_SUM.CAL_TERM
+          , M_PLAN_SUM.PROD_CODE
+          , M_PLAN_SUM.JGI_NO
+          , JM.SOS_CD3
+          , SUM(M_PLAN_SUM.PLANNED_1_VALUE_YB)  AS PLANNED_1_VALUE_YB
+          , SUM(M_PLAN_SUM.PLANNED_2_VALUE_YB)  AS PLANNED_2_VALUE_YB
+          , SUM(M_PLAN_SUM.PLANNED_3_VALUE_YB)  AS PLANNED_3_VALUE_YB
+          , SUM(M_PLAN_SUM.PLANNED_4_VALUE_YB)  AS PLANNED_4_VALUE_YB
+          , SUM(M_PLAN_SUM.PLANNED_5_VALUE_YB)  AS PLANNED_5_VALUE_YB
+          , SUM(M_PLAN_SUM.PLANNED_6_VALUE_YB)  AS PLANNED_6_VALUE_YB
+          , SUM(M_PLAN_SUM.EXPECTED_1_VALUE_YB) AS EXPECTED_1_VALUE_YB
+          , SUM(M_PLAN_SUM.EXPECTED_2_VALUE_YB) AS EXPECTED_2_VALUE_YB
+          , SUM(M_PLAN_SUM.EXPECTED_3_VALUE_YB) AS EXPECTED_3_VALUE_YB
+          , SUM(M_PLAN_SUM.EXPECTED_4_VALUE_YB) AS EXPECTED_4_VALUE_YB
+          , SUM(M_PLAN_SUM.EXPECTED_5_VALUE_YB) AS EXPECTED_5_VALUE_YB
+          , SUM(M_PLAN_SUM.EXPECTED_6_VALUE_YB) AS EXPECTED_6_VALUE_YB
+
+from DPM_C_MR_M_PLAN M_PLAN_SUM
+                INNER JOIN DPM_C_VI_JGI_MST JM
+                ON M_PLAN_SUM.JGI_NO = JM.JGI_NO
+             WHERE M_PLAN_SUM.DEL_FLG = 0
+               AND M_PLAN_SUM.CAL_YEAR = #calYear:CHAR#
+               AND M_PLAN_SUM.CAL_TERM = #calTerm:CHAR#
+               AND M_PLAN_SUM.PROD_CODE = #prodCode:CHAR#
+               AND M_PLAN_SUM.JGI_NO =  #jgiNo:INTEGER#
+             GROUP BY M_PLAN_SUM.CAL_YEAR, M_PLAN_SUM.CAL_TERM, M_PLAN_SUM.PROD_CODE,M_PLAN_SUM.JGI_NO, JM.SOS_CD3
+) MP
+<!-- mod Start 2022/08/25 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示 -->
+<!--
+       ON  TERM_PLAN.CAL_YEAR  =  MP.CAL_YEAR
+       AND TERM_PLAN.CAL_TERM  =  MP.CAL_TERM
+       AND TERM_PLAN.PROD_CODE =  MP.PROD_CODE
+-->
+       ON  CPP.CAL_YEAR  =  MP.CAL_YEAR
+       AND CPP.CAL_TERM  =  MP.CAL_TERM
+       AND CPP.PROD_CODE =  MP.PROD_CODE
+<!-- mod End 2022/08/25 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示 -->
+<!-- add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+     LEFT JOIN INS_PROD_RECORD RECD
+            ON #jgiNo:INTEGER# = RECD.JGI_NO
+<!-- add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+<!-- mod Start 2022/08/25 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示 -->
+<!--
+     WHERE TERM_PLAN.CAL_YEAR = '$calYear$'
+       AND TERM_PLAN.CAL_TERM = '$calTerm.dbValue$'
+       AND TERM_PLAN.PROD_CODE = #prodCode:CHAR#
+       AND TERM_PLAN.JGI_NO = #jgiNo:INTEGER#
+-->
+     WHERE CPP.CAL_YEAR = '$calYear$'
+       AND CPP.CAL_TERM = '$calTerm.dbValue$'
+       AND CPP.PROD_CODE = #prodCode:CHAR#
+<!-- mod End 2022/08/25 H.Futagami No.8　計画管理の月別計画に納入実績の値を表示 -->
+  </select>
+
+  <select id="selectListByProd" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH
+<!-- add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+     INS_PROD_RECORD AS (
+    SELECT MRIP.MR_NO JGI_NO
+          ,SUM(RCD.TOKI_1MON_Y_KIN) TOKI_1MON_Y_KIN
+          ,SUM(RCD.TOKI_1MON_B_KIN) TOKI_1MON_B_KIN
+          ,SUM(RCD.TOKI_2MON_Y_KIN) TOKI_2MON_Y_KIN
+          ,SUM(RCD.TOKI_2MON_B_KIN) TOKI_2MON_B_KIN
+          ,SUM(RCD.TOKI_3MON_Y_KIN) TOKI_3MON_Y_KIN
+          ,SUM(RCD.TOKI_3MON_B_KIN) TOKI_3MON_B_KIN
+          ,SUM(RCD.TOKI_4MON_Y_KIN) TOKI_4MON_Y_KIN
+          ,SUM(RCD.TOKI_4MON_B_KIN) TOKI_4MON_B_KIN
+          ,SUM(RCD.TOKI_5MON_Y_KIN) TOKI_5MON_Y_KIN
+          ,SUM(RCD.TOKI_5MON_B_KIN) TOKI_5MON_B_KIN
+          ,SUM(RCD.TOKI_6MON_Y_KIN) TOKI_6MON_Y_KIN
+          ,SUM(RCD.TOKI_6MON_B_KIN) TOKI_6MON_B_KIN
+          ,SUM(RCD.TOKI_TOTAL_Y_KIN) TOKI_TOTAL_Y_KIN
+          ,SUM(RCD.TOKI_TOTAL_B_KIN) TOKI_TOTAL_B_KIN
+      FROM
+          DPS_S_SY_V_S_TK05_SST_TKY_Z6K RCD
+      <!-- 4月、5月第3営業日まで、10月、11月第3営業日までは実績取得しない -->
+      INNER JOIN
+      (SELECT *
+       FROM DPS_S_SY_COM_CAL T1
+       WHERE T1.TODAY = '1'
+       AND (
+         T1.CAL_MONTH IN('01','02','03','06','07','08','09','12')
+         OR (T1.CAL_MONTH IN('05','11') AND T1.CAL_DAY
+             > (SELECT CAL_DAY FROM ORADPX01.DPS_S_SY_COM_CAL
+                WHERE CAL_YEAR = T1.CAL_YEAR AND CAL_MONTH = T1.CAL_MONTH AND BIZ_DAYS='3')
+            )
+       )
+      )CAL
+      ON 1= 1
+      INNER JOIN
+      <!-- DPM_C_PLANNED_PROD、DPM_C_CPRODを参照する -->
+      (
+        SELECT
+          PROD_CODE,
+          STAT_PROD_CODE
+        FROM DPM_C_PLANNED_PROD
+        WHERE CAL_YEAR = #calYear:CHAR#
+        AND   CAL_TERM = #calTerm:CHAR#
+        UNION
+        SELECT
+          PROD_CODE,
+          ORG_STAT_PROD_CODE AS STAT_PROD_CODE
+        FROM DPM_C_CPROD CCP
+        WHERE CAL_YEAR = #calYear:CHAR#
+        AND   CAL_TERM = #calTerm:CHAR#
+      )CPR
+      ON CPR.STAT_PROD_CODE = RCD.TTL_TKYHM_K_5_CD
+      INNER JOIN DPM_C_MR_INS_PROD MRIP
+         ON MRIP.INS_NO  = RCD.INS_NO
+        AND MRIP.PROD_CODE  = CPR.PROD_CODE
+      WHERE CPR.PROD_CODE = #prodCode:CHAR#
+        <isNotNull property="nnuJhoSbt">
+           <iterate prepend="AND RCD.NNU_JHO_SBT IN" open="(" close=")" conjunction=","  property="nnuJhoSbt">
+               #nnuJhoSbt[]#
+           </iterate>
+        </isNotNull>
+        <isNotNull property="iykWktKbnList">
+           <iterate prepend="AND RCD.IYK_WKT_KBN IN" open="(" close=")" conjunction=","  property="iykWktKbnList">
+               #iykWktKbnList[]#
+           </iterate>
+        </isNotNull>
+      GROUP BY
+           MRIP.MR_NO
+  )
+<!-- add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+     ,MR_PLAN AS (
+        SELECT MP.SEQ_KEY
+              ,MP.CAL_YEAR
+              ,MP.CAL_TERM
+              ,#prodCode:CHAR# AS PROD_CODE
+              ,JM.JGI_NO
+              ,MP.PLANNED_1_VALUE_YB
+              ,MP.PLANNED_2_VALUE_YB
+              ,MP.PLANNED_3_VALUE_YB
+              ,MP.PLANNED_4_VALUE_YB
+              ,MP.PLANNED_5_VALUE_YB
+              ,MP.PLANNED_6_VALUE_YB
+              ,MP.EXPECTED_1_VALUE_YB
+              ,MP.EXPECTED_2_VALUE_YB
+              ,MP.EXPECTED_3_VALUE_YB
+              ,MP.EXPECTED_4_VALUE_YB
+              ,MP.EXPECTED_5_VALUE_YB
+              ,MP.EXPECTED_6_VALUE_YB
+<!-- add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+              ,RECD.TOKI_1MON_Y_KIN
+              ,RECD.TOKI_1MON_B_KIN
+              ,RECD.TOKI_2MON_Y_KIN
+              ,RECD.TOKI_2MON_B_KIN
+              ,RECD.TOKI_3MON_Y_KIN
+              ,RECD.TOKI_3MON_B_KIN
+              ,RECD.TOKI_4MON_Y_KIN
+              ,RECD.TOKI_4MON_B_KIN
+              ,RECD.TOKI_5MON_Y_KIN
+              ,RECD.TOKI_5MON_B_KIN
+              ,RECD.TOKI_6MON_Y_KIN
+              ,RECD.TOKI_6MON_B_KIN
+              ,RECD.TOKI_TOTAL_Y_KIN
+              ,RECD.TOKI_TOTAL_B_KIN
+<!-- add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+              ,MP.DEL_FLG
+              ,MP.IS_JGI_NO
+              ,MP.IS_JGI_NAME
+              ,MP.IS_DATE
+              ,MP.IS_PG_ID
+              ,MP.UP_JGI_NO
+              ,MP.UP_JGI_NAME
+              ,MP.UP_DATE
+              ,MP.UP_PG_ID
+              ,SUM.PLANNED_STACKED_1_VALUE
+              ,SUM.PLANNED_STACKED_2_VALUE
+              ,SUM.PLANNED_STACKED_3_VALUE
+              ,SUM.PLANNED_STACKED_4_VALUE
+              ,SUM.PLANNED_STACKED_5_VALUE
+              ,SUM.PLANNED_STACKED_6_VALUE
+              ,SUM.EXPECTED_STACKED_1_VALUE
+              ,SUM.EXPECTED_STACKED_2_VALUE
+              ,SUM.EXPECTED_STACKED_3_VALUE
+              ,SUM.EXPECTED_STACKED_4_VALUE
+              ,SUM.EXPECTED_STACKED_5_VALUE
+              ,SUM.EXPECTED_STACKED_6_VALUE
+              ,TERM_PLAN.PLANNED_TERM_VALUE
+              ,NULL AS PROD_NAME
+              ,JM.JGI_NAME
+              ,JM.SHOKUSEI_CD
+              ,JM.SHOKUSHU_CD
+              ,JM.JGI_KB
+              ,NULL AS TARGET_SUMMARY
+          FROM
+              DPM_C_VI_JGI_MST JM
+                  LEFT JOIN DPM_C_MR_M_PLAN MP
+                      ON MP.JGI_NO = JM.JGI_NO
+                       AND MP.CAL_YEAR = '$calYear$'
+                       AND MP.CAL_TERM = '$calTerm.dbValue$'
+                       AND MP.PROD_CODE = #prodCode:CHAR#
+                  LEFT JOIN (
+                        SELECT
+                            MIP.MR_NO AS JGI_NO
+                           ,SUM(IP.PLANNED_1_VALUE_YB) AS PLANNED_STACKED_1_VALUE
+                           ,SUM(IP.PLANNED_2_VALUE_YB) AS PLANNED_STACKED_2_VALUE
+                           ,SUM(IP.PLANNED_3_VALUE_YB) AS PLANNED_STACKED_3_VALUE
+                           ,SUM(IP.PLANNED_4_VALUE_YB) AS PLANNED_STACKED_4_VALUE
+                           ,SUM(IP.PLANNED_5_VALUE_YB) AS PLANNED_STACKED_5_VALUE
+                           ,SUM(IP.PLANNED_6_VALUE_YB) AS PLANNED_STACKED_6_VALUE
+                           ,SUM(IP.EXPECTED_1_VALUE_YB) AS EXPECTED_STACKED_1_VALUE
+                           ,SUM(IP.EXPECTED_2_VALUE_YB) AS EXPECTED_STACKED_2_VALUE
+                           ,SUM(IP.EXPECTED_3_VALUE_YB) AS EXPECTED_STACKED_3_VALUE
+                           ,SUM(IP.EXPECTED_4_VALUE_YB) AS EXPECTED_STACKED_4_VALUE
+                           ,SUM(IP.EXPECTED_5_VALUE_YB) AS EXPECTED_STACKED_5_VALUE
+                           ,SUM(IP.EXPECTED_6_VALUE_YB) AS EXPECTED_STACKED_6_VALUE
+                        FROM
+                            DPM_C_INS_M_PLAN IP
+                            INNER JOIN DPM_C_VI_INS_MST INS ON IP.INS_NO = INS.INS_NO
+                            <!--シノニムはNSG親子紐づけが反映されない INNER JOIN DPS_S_SY_COM_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE -->
+                            INNER JOIN DPM_C_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE
+                            INNER JOIN DPM_C_VI_JGI_MST JM ON MIP.MR_NO = JM.JGI_NO
+                            LEFT JOIN DPM_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+							LEFT JOIN DPM_C_VI_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+                                           AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+                        WHERE
+                                IP.DEL_FLG = '0'
+                            AND IP.CAL_YEAR = '$calYear$'
+                            AND IP.CAL_TERM = '$calTerm.dbValue$'
+                            <isNotNull prepend="AND" property="sosCd3">
+                            JM.SOS_CD3 = #sosCd3:VARCHAR#
+                            </isNotNull>
+                            AND IP.PROD_CODE = #prodCode:CHAR#
+                            <!-- add Start 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+                            <isNotNull prepend="AND" property="category">
+                                EXISTS
+                                (SELECT 'X'
+                                <!-- mod Start 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                                <!--
+                                FROM DPS_C_PLANNED_CTG CTG
+                                    ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                                WHERE CTG.CATEGORY = #category:CHAR#
+                                AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                                AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                                AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                                -->
+                                FROM DPM_C_PLANNED_CTG CTG
+                                    ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                                WHERE CTG.CATEGORY = #category:CHAR#
+                                AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                                AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                                AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                                AND CTG.CAL_YEAR = #calYear:CHAR#
+                                AND CTG.CAL_TERM = #calTerm:CHAR#
+                                <!-- mod End 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                                )
+                            </isNotNull>
+	                        <!-- add End 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+                        GROUP BY
+                            MIP.MR_NO
+                  ) SUM
+                        ON SUM.JGI_NO = JM.JGI_NO
+                  LEFT JOIN (<include refid="mrTermPlan"/>) TERM_PLAN
+                        ON TERM_PLAN.PROD_CODE = #prodCode:CHAR#
+                        AND JM.JGI_NO = TERM_PLAN.JGI_NO
+<!-- add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+          LEFT JOIN INS_PROD_RECORD RECD
+              ON RECD.JGI_NO = JM.JGI_NO
+<!-- add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+         WHERE
+            <iterate prepend="JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               '$jgiKbList[].dbValue$'
+            </iterate>
+           <isNotNull prepend="AND" property="jokenSetList">
+               EXISTS (SELECT JO.JGI_NO
+                         FROM DPS_S_SY_M_JGI_JOKEN JO
+                         WHERE JO.JGI_NO = JM.JGI_NO
+                       <isNotNull property="jokenSetList">
+                           <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                               #jokenSetList[].dbValue#
+                           </iterate>
+                       </isNotNull>
+                      )
+           </isNotNull>
+            <isNotNull prepend="AND" property="sosCd3">
+            JM.SOS_CD3 = #sosCd3:VARCHAR#
+             <!-- add Start 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+             <isNotNull prepend="AND" property="category">
+                 EXISTS
+                 (SELECT 'X'
+                 <!-- mod Start 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                 <!--
+                 FROM DPS_C_PLANNED_CTG CTG
+                     ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                 WHERE CTG.CATEGORY = #category:CHAR#
+                 AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                 AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                 AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                 -->
+                 FROM DPM_C_PLANNED_CTG CTG
+                     ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+                 WHERE CTG.CATEGORY = #category:CHAR#
+                 AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+                 AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+                 AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+                 AND CTG.CAL_YEAR = #calYear:CHAR#
+                 AND CTG.CAL_TERM = #calTerm:CHAR#
+                 <!-- mod End 2025/4/3 H.Futagami DPS_C_PLANNED_CTGをDPM_C_PLANNED_CTGに修正 -->
+                 )
+             </isNotNull>
+	         <!-- add End 2022/10/05 H.Futagami 2022年4月組織変更対応  担当者をカテゴリのMRで絞る  -->
+            </isNotNull>
+            <isNotNull prepend="AND" property="jgiNo">
+            JM.JGI_NO = #jgiNo:INTEGER#
+            </isNotNull>
+    )
+    SELECT * FROM MR_PLAN ORDER BY SHOKUSEI_CD, SHOKUSHU_CD, DECODE(JGI_KB, '1','0', JGI_KB), JGI_NO
+  </select>
+
+  <select id="selectListByJgi" resultMap="resultMap" parameterClass="java.util.Map" >
+<!-- add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+  WITH INS_PROD_RECORD AS (
+    SELECT CPR.PROD_CODE
+          ,SUM(RCD.TOKI_1MON_Y_KIN) AS TOKI_1MON_Y_KIN
+          ,SUM(RCD.TOKI_1MON_B_KIN) AS TOKI_1MON_B_KIN
+          ,SUM(RCD.TOKI_2MON_Y_KIN) AS TOKI_2MON_Y_KIN
+          ,SUM(RCD.TOKI_2MON_B_KIN) AS TOKI_2MON_B_KIN
+          ,SUM(RCD.TOKI_3MON_Y_KIN) AS TOKI_3MON_Y_KIN
+          ,SUM(RCD.TOKI_3MON_B_KIN) AS TOKI_3MON_B_KIN
+          ,SUM(RCD.TOKI_4MON_Y_KIN) AS TOKI_4MON_Y_KIN
+          ,SUM(RCD.TOKI_4MON_B_KIN) AS TOKI_4MON_B_KIN
+          ,SUM(RCD.TOKI_5MON_Y_KIN) AS TOKI_5MON_Y_KIN
+          ,SUM(RCD.TOKI_5MON_B_KIN) AS TOKI_5MON_B_KIN
+          ,SUM(RCD.TOKI_6MON_Y_KIN) AS TOKI_6MON_Y_KIN
+          ,SUM(RCD.TOKI_6MON_B_KIN) AS TOKI_6MON_B_KIN
+          ,SUM(RCD.TOKI_TOTAL_Y_KIN) AS TOKI_TOTAL_Y_KIN
+          ,SUM(RCD.TOKI_TOTAL_B_KIN) AS TOKI_TOTAL_B_KIN
+      FROM
+          DPS_S_SY_V_S_TK05_SST_TKY_Z6K RCD
+      <!-- 4月、5月第3営業日まで、10月、11月第3営業日までは実績取得しない -->
+      INNER JOIN
+      (SELECT *
+       FROM DPS_S_SY_COM_CAL T1
+       WHERE T1.TODAY = '1'
+       AND (
+         T1.CAL_MONTH IN('01','02','03','06','07','08','09','12')
+         OR (T1.CAL_MONTH IN('05','11') AND T1.CAL_DAY
+             > (SELECT CAL_DAY FROM ORADPX01.DPS_S_SY_COM_CAL
+                WHERE CAL_YEAR = T1.CAL_YEAR AND CAL_MONTH = T1.CAL_MONTH AND BIZ_DAYS='3')
+            )
+       )
+      )CAL
+      ON 1= 1
+      INNER JOIN
+      <!-- DPM_C_PLANNED_PROD、DPM_C_CPRODを参照する -->
+      (
+        SELECT
+          PROD_CODE,
+          STAT_PROD_CODE
+        FROM DPM_C_PLANNED_PROD
+        WHERE CAL_YEAR = #calYear:CHAR#
+        AND   CAL_TERM = #calTerm:CHAR#
+        UNION
+        SELECT
+          PROD_CODE,
+          ORG_STAT_PROD_CODE AS STAT_PROD_CODE
+        FROM DPM_C_CPROD CCP
+        WHERE CAL_YEAR = #calYear:CHAR#
+        AND   CAL_TERM = #calTerm:CHAR#
+      )CPR
+      ON CPR.STAT_PROD_CODE = RCD.TTL_TKYHM_K_5_CD
+      INNER JOIN DPM_C_MR_INS_PROD MIP
+              ON MIP.INS_NO = RCD.INS_NO
+             AND MIP.PROD_CODE = CPR.PROD_CODE
+             AND MIP.MR_NO = #jgiNo:INTEGER#
+      WHERE
+        <isNotNull property="nnuJhoSbt">
+           <iterate prepend="RCD.NNU_JHO_SBT IN" open="(" close=")" conjunction=","  property="nnuJhoSbt">
+               #nnuJhoSbt[]#
+           </iterate>
+        </isNotNull>
+        <isNotNull property="iykWktKbnList">
+           <iterate prepend="AND RCD.IYK_WKT_KBN IN" open="(" close=")" conjunction=","  property="iykWktKbnList">
+               #iykWktKbnList[]#
+           </iterate>
+        </isNotNull>
+      GROUP BY
+          CPR.PROD_CODE
+  )
+<!-- add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+    SELECT MP.SEQ_KEY
+          ,MP.CAL_YEAR
+          ,MP.CAL_TERM
+          ,PP.PROD_CODE
+          ,#jgiNo:INTEGER# AS JGI_NO
+          ,MP.PLANNED_1_VALUE_YB
+          ,MP.PLANNED_2_VALUE_YB
+          ,MP.PLANNED_3_VALUE_YB
+          ,MP.PLANNED_4_VALUE_YB
+          ,MP.PLANNED_5_VALUE_YB
+          ,MP.PLANNED_6_VALUE_YB
+          ,MP.EXPECTED_1_VALUE_YB
+          ,MP.EXPECTED_2_VALUE_YB
+          ,MP.EXPECTED_3_VALUE_YB
+          ,MP.EXPECTED_4_VALUE_YB
+          ,MP.EXPECTED_5_VALUE_YB
+          ,MP.EXPECTED_6_VALUE_YB
+<!-- add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+          ,RECD.RECD.TOKI_1MON_Y_KIN
+          ,RECD.RECD.TOKI_1MON_B_KIN
+          ,RECD.RECD.TOKI_2MON_Y_KIN
+          ,RECD.RECD.TOKI_2MON_B_KIN
+          ,RECD.RECD.TOKI_3MON_Y_KIN
+          ,RECD.RECD.TOKI_3MON_B_KIN
+          ,RECD.RECD.TOKI_4MON_Y_KIN
+          ,RECD.RECD.TOKI_4MON_B_KIN
+          ,RECD.RECD.TOKI_5MON_Y_KIN
+          ,RECD.RECD.TOKI_5MON_B_KIN
+          ,RECD.RECD.TOKI_6MON_Y_KIN
+          ,RECD.RECD.TOKI_6MON_B_KIN
+          ,RECD.RECD.TOKI_TOTAL_Y_KIN
+          ,RECD.RECD.TOKI_TOTAL_B_KIN
+<!-- add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+          ,MP.DEL_FLG
+          ,MP.IS_JGI_NO
+          ,MP.IS_JGI_NAME
+          ,MP.IS_DATE
+          ,MP.IS_PG_ID
+          ,MP.UP_JGI_NO
+          ,MP.UP_JGI_NAME
+          ,MP.UP_DATE
+          ,MP.UP_PG_ID
+          ,SUM.PLANNED_STACKED_1_VALUE
+          ,SUM.PLANNED_STACKED_2_VALUE
+          ,SUM.PLANNED_STACKED_3_VALUE
+          ,SUM.PLANNED_STACKED_4_VALUE
+          ,SUM.PLANNED_STACKED_5_VALUE
+          ,SUM.PLANNED_STACKED_6_VALUE
+          ,SUM.EXPECTED_STACKED_1_VALUE
+          ,SUM.EXPECTED_STACKED_2_VALUE
+          ,SUM.EXPECTED_STACKED_3_VALUE
+          ,SUM.EXPECTED_STACKED_4_VALUE
+          ,SUM.EXPECTED_STACKED_5_VALUE
+          ,SUM.EXPECTED_STACKED_6_VALUE
+          ,TERM_PLAN.PLANNED_TERM_VALUE
+          ,PP.PROD_NAME
+          ,NULL AS JGI_NAME
+          ,PP.GROUP_CODE
+          ,PP.STAT_PROD_CODE
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+          <!-- mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+          <!-- ,NVL2(TARGET_SUMMARY.PROD_CODE, '1', '0') AS TARGET_SUMMARY -->
+          ,'1' AS TARGET_SUMMARY
+          <!-- mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+     FROM DPM_C_PLANNED_PROD PP
+     	  LEFT JOIN DPM_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD
+          LEFT JOIN DPM_C_MR_M_PLAN MP
+		        ON MP.PROD_CODE = PP.PROD_CODE
+		       AND MP.CAL_YEAR = PP.CAL_YEAR
+		       AND MP.CAL_TERM = PP.CAL_TERM
+		       AND MP.JGI_NO = #jgiNo:INTEGER#
+          LEFT JOIN (
+               SELECT
+                     MIP.MR_NO AS JGI_NO
+                    ,IP.PROD_CODE
+                    ,SUM(IP.PLANNED_1_VALUE_YB) AS PLANNED_STACKED_1_VALUE
+                    ,SUM(IP.PLANNED_2_VALUE_YB) AS PLANNED_STACKED_2_VALUE
+                    ,SUM(IP.PLANNED_3_VALUE_YB) AS PLANNED_STACKED_3_VALUE
+                    ,SUM(IP.PLANNED_4_VALUE_YB) AS PLANNED_STACKED_4_VALUE
+                    ,SUM(IP.PLANNED_5_VALUE_YB) AS PLANNED_STACKED_5_VALUE
+                    ,SUM(IP.PLANNED_6_VALUE_YB) AS PLANNED_STACKED_6_VALUE
+                    ,SUM(IP.EXPECTED_1_VALUE_YB) AS EXPECTED_STACKED_1_VALUE
+                    ,SUM(IP.EXPECTED_2_VALUE_YB) AS EXPECTED_STACKED_2_VALUE
+                    ,SUM(IP.EXPECTED_3_VALUE_YB) AS EXPECTED_STACKED_3_VALUE
+                    ,SUM(IP.EXPECTED_4_VALUE_YB) AS EXPECTED_STACKED_4_VALUE
+                    ,SUM(IP.EXPECTED_5_VALUE_YB) AS EXPECTED_STACKED_5_VALUE
+                    ,SUM(IP.EXPECTED_6_VALUE_YB) AS EXPECTED_STACKED_6_VALUE
+               FROM
+                     DPM_C_INS_M_PLAN IP
+                     INNER JOIN DPM_C_VI_INS_MST  INS ON IP.INS_NO = INS.INS_NO
+                     <!--シノニムはNSG親子紐づけが反映されない INNER JOIN DPS_S_SY_COM_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE -->
+                     INNER JOIN DPM_C_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE
+                     INNER JOIN DPM_C_VI_PLANNED_PROD PR ON IP.PROD_CODE = PR.PROD_CODE AND IP.CAL_YEAR = PR.CAL_YEAR AND IP.CAL_TERM = PR.CAL_TERM
+               WHERE
+                     IP.DEL_FLG = '0'
+                 AND IP.CAL_YEAR = '$calYear$'
+                 AND IP.CAL_TERM = '$calTerm.dbValue$'
+                 AND MIP.MR_NO = #jgiNo:INTEGER#
+                 <isEqual prepend="AND" property="zatsuAriFlg" compareValue="false">
+                     INS.INS_TYPE = '1'
+                 </isEqual>
+                 <isEqual prepend="AND" property="zatsuAriFlg" compareValue="true">
+                     INS.INS_TYPE_Z = '1'
+                 </isEqual>
+                 <isNull property="jrnsCtgList">
+                 <isNotNull prepend="AND" property="category">
+                     PR.CATEGORY = #category:CHAR#
+                 </isNotNull>
+                 </isNull>
+                 <isNotNull property="jrnsCtgList">
+                 <iterate prepend=" AND PR.CATEGORY IN " open="(" close=")" conjunction=","  property="jrnsCtgList">
+                     #jrnsCtgList[]#
+                 </iterate>
+                 </isNotNull>
+               GROUP BY
+                 MIP.MR_NO, IP.PROD_CODE
+           ) SUM ON SUM.PROD_CODE = PP.PROD_CODE
+          LEFT JOIN (<include refid="mrTermPlan"/>) TERM_PLAN
+              ON TERM_PLAN.CAL_YEAR = PP.CAL_YEAR
+             AND TERM_PLAN.CAL_TERM = PP.CAL_TERM
+             AND TERM_PLAN.PROD_CODE = PP.PROD_CODE
+             AND TERM_PLAN.JGI_NO = #jgiNo:INTEGER#
+         LEFT JOIN (<include refid="targetSummary"/>) TARGET_SUMMARY
+             ON TARGET_SUMMARY.CAL_YEAR = PP.CAL_YEAR
+            AND TARGET_SUMMARY.CAL_TERM = PP.CAL_TERM
+            AND TARGET_SUMMARY.PROD_CODE = PP.PROD_CODE
+<!-- add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+         LEFT JOIN INS_PROD_RECORD RECD
+             ON RECD.PROD_CODE = PP.PROD_CODE
+<!-- add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+     WHERE PP.PLAN_LEVEL_MR = '1'
+       AND PP.CAL_YEAR = '$calYear$'
+       AND PP.CAL_TERM = '$calTerm.dbValue$'
+       <isNull property="jrnsCtgList">
+       <isNotNull prepend="AND" property="category">
+           PP.CATEGORY = #category:CHAR#
+       </isNotNull>
+       </isNull>
+       <isNotNull property="jrnsCtgList">
+       <iterate prepend=" AND PP.CATEGORY IN " open="(" close=")" conjunction=","  property="jrnsCtgList">
+           #jrnsCtgList[]#
+       </iterate>
+       </isNotNull>
+	 ORDER BY
+       DATA_SEQ,
+       PROD_CODE
+  </select>
+
+
+  <select id="selectPlanSum" resultMap="resultMap" parameterClass="java.util.Map" >
+<!-- add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+  WITH INS_PROD_RECORD AS (
+    SELECT CPR.PROD_CODE
+          ,SUM(RCD.TOKI_1MON_Y_KIN) AS TOKI_1MON_Y_KIN
+          ,SUM(RCD.TOKI_1MON_B_KIN) AS TOKI_1MON_B_KIN
+          ,SUM(RCD.TOKI_2MON_Y_KIN) AS TOKI_2MON_Y_KIN
+          ,SUM(RCD.TOKI_2MON_B_KIN) AS TOKI_2MON_B_KIN
+          ,SUM(RCD.TOKI_3MON_Y_KIN) AS TOKI_3MON_Y_KIN
+          ,SUM(RCD.TOKI_3MON_B_KIN) AS TOKI_3MON_B_KIN
+          ,SUM(RCD.TOKI_4MON_Y_KIN) AS TOKI_4MON_Y_KIN
+          ,SUM(RCD.TOKI_4MON_B_KIN) AS TOKI_4MON_B_KIN
+          ,SUM(RCD.TOKI_5MON_Y_KIN) AS TOKI_5MON_Y_KIN
+          ,SUM(RCD.TOKI_5MON_B_KIN) AS TOKI_5MON_B_KIN
+          ,SUM(RCD.TOKI_6MON_Y_KIN) AS TOKI_6MON_Y_KIN
+          ,SUM(RCD.TOKI_6MON_B_KIN) AS TOKI_6MON_B_KIN
+          ,SUM(RCD.TOKI_TOTAL_Y_KIN) AS TOKI_TOTAL_Y_KIN
+          ,SUM(RCD.TOKI_TOTAL_B_KIN) AS TOKI_TOTAL_B_KIN
+      FROM
+          DPS_S_SY_V_S_TK05_SST_TKY_Z6K RCD
+      <!-- 4月、5月第3営業日まで、10月、11月第3営業日までは実績取得しない -->
+      INNER JOIN
+      (SELECT *
+       FROM DPS_S_SY_COM_CAL T1
+       WHERE T1.TODAY = '1'
+       AND (
+         T1.CAL_MONTH IN('01','02','03','06','07','08','09','12')
+         OR (T1.CAL_MONTH IN('05','11') AND T1.CAL_DAY
+             > (SELECT CAL_DAY FROM ORADPX01.DPS_S_SY_COM_CAL
+                WHERE CAL_YEAR = T1.CAL_YEAR AND CAL_MONTH = T1.CAL_MONTH AND BIZ_DAYS='3')
+            )
+       )
+      )CAL
+      ON 1= 1
+      INNER JOIN
+      <!-- DPM_C_PLANNED_PROD、DPM_C_CPRODを参照する -->
+      (
+        SELECT
+          PROD_CODE,
+          STAT_PROD_CODE
+        FROM DPM_C_PLANNED_PROD
+        WHERE CAL_YEAR = #calYear:CHAR#
+        AND   CAL_TERM = #calTerm:CHAR#
+        UNION
+        SELECT
+          PROD_CODE,
+          ORG_STAT_PROD_CODE AS STAT_PROD_CODE
+        FROM DPM_C_CPROD CCP
+        WHERE CAL_YEAR = #calYear:CHAR#
+        AND   CAL_TERM = #calTerm:CHAR#
+      )CPR
+      ON CPR.STAT_PROD_CODE = RCD.TTL_TKYHM_K_5_CD
+      INNER JOIN DPM_C_MR_INS_PROD MRIP
+         ON MRIP.INS_NO  = RCD.INS_NO
+        AND MRIP.PROD_CODE  = CPR.PROD_CODE
+      INNER JOIN DPM_C_VI_JGI_MST JM
+         ON MRIP.MR_NO = JM.JGI_NO
+       WHERE MRIP.MR_NO = #jgiNo:INTEGER#
+        <isNotNull property="nnuJhoSbt">
+           <iterate prepend="AND RCD.NNU_JHO_SBT IN" open="(" close=")" conjunction=","  property="nnuJhoSbt">
+               #nnuJhoSbt[]#
+           </iterate>
+        </isNotNull>
+        <isNotNull property="iykWktKbnList">
+           <iterate prepend="AND RCD.IYK_WKT_KBN IN" open="(" close=")" conjunction=","  property="iykWktKbnList">
+               #iykWktKbnList[]#
+           </iterate>
+        </isNotNull>
+      GROUP BY
+          CPR.PROD_CODE
+  )
+<!-- add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+    SELECT NULL AS SEQ_KEY
+          ,MP.CAL_YEAR
+          ,MP.CAL_TERM
+          ,NULL AS PROD_CODE
+          ,#jgiNo:INTEGER# AS JGI_NO
+          ,SUM(MP.PLANNED_1_VALUE_YB) AS PLANNED_1_VALUE_YB
+          ,SUM(MP.PLANNED_2_VALUE_YB) AS PLANNED_2_VALUE_YB
+          ,SUM(MP.PLANNED_3_VALUE_YB) AS PLANNED_3_VALUE_YB
+          ,SUM(MP.PLANNED_4_VALUE_YB) AS PLANNED_4_VALUE_YB
+          ,SUM(MP.PLANNED_5_VALUE_YB) AS PLANNED_5_VALUE_YB
+          ,SUM(MP.PLANNED_6_VALUE_YB) AS PLANNED_6_VALUE_YB
+          ,SUM(MP.EXPECTED_1_VALUE_YB) AS EXPECTED_1_VALUE_YB
+          ,SUM(MP.EXPECTED_2_VALUE_YB) AS EXPECTED_2_VALUE_YB
+          ,SUM(MP.EXPECTED_3_VALUE_YB) AS EXPECTED_3_VALUE_YB
+          ,SUM(MP.EXPECTED_4_VALUE_YB) AS EXPECTED_4_VALUE_YB
+          ,SUM(MP.EXPECTED_5_VALUE_YB) AS EXPECTED_5_VALUE_YB
+          ,SUM(MP.EXPECTED_6_VALUE_YB) AS EXPECTED_6_VALUE_YB
+<!-- add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+          ,SUM(RECD.TOKI_1MON_Y_KIN) AS TOKI_1MON_Y_KIN
+          ,SUM(RECD.TOKI_1MON_B_KIN) AS TOKI_1MON_B_KIN
+          ,SUM(RECD.TOKI_2MON_Y_KIN) AS TOKI_2MON_Y_KIN
+          ,SUM(RECD.TOKI_2MON_B_KIN) AS TOKI_2MON_B_KIN
+          ,SUM(RECD.TOKI_3MON_Y_KIN) AS TOKI_3MON_Y_KIN
+          ,SUM(RECD.TOKI_3MON_B_KIN) AS TOKI_3MON_B_KIN
+          ,SUM(RECD.TOKI_4MON_Y_KIN) AS TOKI_4MON_Y_KIN
+          ,SUM(RECD.TOKI_4MON_B_KIN) AS TOKI_4MON_B_KIN
+          ,SUM(RECD.TOKI_5MON_Y_KIN) AS TOKI_5MON_Y_KIN
+          ,SUM(RECD.TOKI_5MON_B_KIN) AS TOKI_5MON_B_KIN
+          ,SUM(RECD.TOKI_6MON_Y_KIN) AS TOKI_6MON_Y_KIN
+          ,SUM(RECD.TOKI_6MON_B_KIN) AS TOKI_6MON_B_KIN
+          ,SUM(RECD.TOKI_TOTAL_Y_KIN) AS TOKI_TOTAL_Y_KIN
+          ,SUM(RECD.TOKI_TOTAL_B_KIN) AS TOKI_TOTAL_B_KIN
+<!-- add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+          ,NULL AS DEL_FLG
+          ,NULL AS IS_JGI_NO
+          ,NULL AS IS_JGI_NAME
+          ,NULL AS IS_DATE
+          ,NULL AS IS_PG_ID
+          ,NULL AS UP_JGI_NO
+          ,NULL AS UP_JGI_NAME
+          ,NULL AS UP_DATE
+          ,NULL AS UP_PG_ID
+          ,SUM(SUM.PLANNED_STACKED_1_VALUE) AS PLANNED_STACKED_1_VALUE
+          ,SUM(SUM.PLANNED_STACKED_2_VALUE) AS PLANNED_STACKED_2_VALUE
+          ,SUM(SUM.PLANNED_STACKED_3_VALUE) AS PLANNED_STACKED_3_VALUE
+          ,SUM(SUM.PLANNED_STACKED_4_VALUE) AS PLANNED_STACKED_4_VALUE
+          ,SUM(SUM.PLANNED_STACKED_5_VALUE) AS PLANNED_STACKED_5_VALUE
+          ,SUM(SUM.PLANNED_STACKED_6_VALUE) AS PLANNED_STACKED_6_VALUE
+          ,SUM(SUM.EXPECTED_STACKED_1_VALUE) AS EXPECTED_STACKED_1_VALUE
+          ,SUM(SUM.EXPECTED_STACKED_2_VALUE) AS EXPECTED_STACKED_2_VALUE
+          ,SUM(SUM.EXPECTED_STACKED_3_VALUE) AS EXPECTED_STACKED_3_VALUE
+          ,SUM(SUM.EXPECTED_STACKED_4_VALUE) AS EXPECTED_STACKED_4_VALUE
+          ,SUM(SUM.EXPECTED_STACKED_5_VALUE) AS EXPECTED_STACKED_5_VALUE
+          ,SUM(SUM.EXPECTED_STACKED_6_VALUE) AS EXPECTED_STACKED_6_VALUE
+          ,SUM(TERM_PLAN.PLANNED_TERM_VALUE) AS PLANNED_TERM_VALUE
+          ,NULL AS PROD_NAME
+          ,NULL AS JGI_NAME
+          ,NULL AS GROUP_CODE
+          ,NULL AS STAT_PROD_CODE
+          ,NULL AS DATA_SEQ
+          ,NULL AS TARGET_SUMMARY
+     FROM DPM_C_PLANNED_PROD PP
+     	  LEFT JOIN DPM_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD
+          LEFT JOIN DPM_C_MR_M_PLAN MP
+		        ON MP.PROD_CODE = PP.PROD_CODE
+		       AND MP.CAL_YEAR = PP.CAL_YEAR
+		       AND MP.CAL_TERM = PP.CAL_TERM
+		       AND MP.JGI_NO = #jgiNo:INTEGER#
+          LEFT JOIN (
+               SELECT
+                     MIP.MR_NO AS JGI_NO
+                    ,IP.PROD_CODE
+                    ,SUM(IP.PLANNED_1_VALUE_YB) AS PLANNED_STACKED_1_VALUE
+                    ,SUM(IP.PLANNED_2_VALUE_YB) AS PLANNED_STACKED_2_VALUE
+                    ,SUM(IP.PLANNED_3_VALUE_YB) AS PLANNED_STACKED_3_VALUE
+                    ,SUM(IP.PLANNED_4_VALUE_YB) AS PLANNED_STACKED_4_VALUE
+                    ,SUM(IP.PLANNED_5_VALUE_YB) AS PLANNED_STACKED_5_VALUE
+                    ,SUM(IP.PLANNED_6_VALUE_YB) AS PLANNED_STACKED_6_VALUE
+                    ,SUM(IP.EXPECTED_1_VALUE_YB) AS EXPECTED_STACKED_1_VALUE
+                    ,SUM(IP.EXPECTED_2_VALUE_YB) AS EXPECTED_STACKED_2_VALUE
+                    ,SUM(IP.EXPECTED_3_VALUE_YB) AS EXPECTED_STACKED_3_VALUE
+                    ,SUM(IP.EXPECTED_4_VALUE_YB) AS EXPECTED_STACKED_4_VALUE
+                    ,SUM(IP.EXPECTED_5_VALUE_YB) AS EXPECTED_STACKED_5_VALUE
+                    ,SUM(IP.EXPECTED_6_VALUE_YB) AS EXPECTED_STACKED_6_VALUE
+               FROM
+                     DPM_C_INS_M_PLAN IP
+                     INNER JOIN DPM_C_VI_INS_MST  INS ON IP.INS_NO = INS.INS_NO
+                     <!--シノニムはNSG親子紐づけが反映されない INNER JOIN DPS_S_SY_COM_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE -->
+                     INNER JOIN DPM_C_MR_INS_PROD MIP ON IP.INS_NO = MIP.INS_NO AND IP.PROD_CODE = MIP.PROD_CODE
+                     INNER JOIN DPM_C_VI_PLANNED_PROD PR ON IP.PROD_CODE = PR.PROD_CODE AND IP.CAL_YEAR = PR.CAL_YEAR AND IP.CAL_TERM = PR.CAL_TERM
+               WHERE
+                     IP.DEL_FLG = '0'
+                 AND IP.CAL_YEAR = '$calYear$'
+                 AND IP.CAL_TERM = '$calTerm.dbValue$'
+                 AND MIP.MR_NO = #jgiNo:INTEGER#
+                 <isEqual prepend="AND" property="zatsuAriFlg" compareValue="false">
+                     INS.INS_TYPE = '1'
+                 </isEqual>
+                 <isEqual prepend="AND" property="zatsuAriFlg" compareValue="true">
+                     INS.INS_TYPE_Z = '1'
+                 </isEqual>
+                 <isNotNull prepend="AND" property="category">
+                     PR.CATEGORY = #category:CHAR#
+                 </isNotNull>
+               GROUP BY
+                 MIP.MR_NO, IP.PROD_CODE
+           ) SUM ON SUM.PROD_CODE = PP.PROD_CODE
+          LEFT JOIN (<include refid="mrTermPlan"/>) TERM_PLAN
+              ON TERM_PLAN.CAL_YEAR = PP.CAL_YEAR
+             AND TERM_PLAN.CAL_TERM = PP.CAL_TERM
+             AND TERM_PLAN.PROD_CODE = PP.PROD_CODE
+             AND TERM_PLAN.JGI_NO = #jgiNo:INTEGER#
+          INNER JOIN (<include refid="targetSummary"/>) TARGET_SUMMARY
+              ON TARGET_SUMMARY.CAL_YEAR = MP.CAL_YEAR
+             AND TARGET_SUMMARY.CAL_TERM = MP.CAL_TERM
+             AND TARGET_SUMMARY.PROD_CODE = PP.PROD_CODE
+<!-- add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+         LEFT JOIN INS_PROD_RECORD RECD
+             ON RECD.PROD_CODE = PP.PROD_CODE
+<!-- add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示 -->
+     WHERE PP.PLAN_LEVEL_MR = '1'
+       AND PP.CAL_YEAR = '$calYear$'
+       AND PP.CAL_TERM = '$calTerm.dbValue$'
+       <isNotNull prepend="AND" property="category">
+           PP.CATEGORY = #category:CHAR#
+       </isNotNull>
+     GROUP BY MP.CAL_YEAR, MP.CAL_TERM
+  </select>
+
+  <insert id="insert" parameterClass="jp.co.takeda.model.ManageMrMonthPlan" >
+    INSERT INTO DPM_C_MR_M_PLAN
+          (SEQ_KEY
+          , CAL_YEAR
+          , CAL_TERM
+          , PROD_CODE
+          , JGI_NO
+          , PLANNED_1_VALUE_YB
+          , PLANNED_2_VALUE_YB
+          , PLANNED_3_VALUE_YB
+          , PLANNED_4_VALUE_YB
+          , PLANNED_5_VALUE_YB
+          , PLANNED_6_VALUE_YB
+          , EXPECTED_1_VALUE_YB
+          , EXPECTED_2_VALUE_YB
+          , EXPECTED_3_VALUE_YB
+          , EXPECTED_4_VALUE_YB
+          , EXPECTED_5_VALUE_YB
+          , EXPECTED_6_VALUE_YB
+          , DEL_FLG
+          , IS_JGI_NO
+          , IS_JGI_NAME
+          , IS_DATE
+          , IS_PG_ID
+          , UP_JGI_NO
+          , UP_JGI_NAME
+          , UP_DATE
+          , UP_PG_ID)
+    VALUES (ORADPX01.SEQ_DPM_C_MR_M_PLAN.NEXTVAL
+          , #calYear:CHAR#
+          , #calTerm:CHAR#
+          , #prodCode:CHAR#
+          , #jgiNo:INTEGER#
+          , #implMonthPlan.planned1ValueYb:BIGINT#
+          , #implMonthPlan.planned2ValueYb:BIGINT#
+          , #implMonthPlan.planned3ValueYb:BIGINT#
+          , #implMonthPlan.planned4ValueYb:BIGINT#
+          , #implMonthPlan.planned5ValueYb:BIGINT#
+          , #implMonthPlan.planned6ValueYb:BIGINT#
+          , #implMonthPlan.expected1ValueYb:BIGINT#
+          , #implMonthPlan.expected2ValueYb:BIGINT#
+          , #implMonthPlan.expected3ValueYb:BIGINT#
+          , #implMonthPlan.expected4ValueYb:BIGINT#
+          , #implMonthPlan.expected5ValueYb:BIGINT#
+          , #implMonthPlan.expected6ValueYb:BIGINT#
+          , #delFlg:CHAR#
+          , #isJgiNo:INTEGER#
+          , #isJgiName:VARCHAR#
+          , SYSTIMESTAMP
+          , #isPgId:VARCHAR#
+          , #upJgiNo:INTEGER#
+          , #upJgiName:VARCHAR#
+          , SYSTIMESTAMP
+          , #upPgId:VARCHAR#)
+  </insert>
+
+  <update id="update" parameterClass="jp.co.takeda.model.ManageMrMonthPlan" >
+    UPDATE DPM_C_MR_M_PLAN
+       SET DEL_FLG = #delFlg:CHAR#
+          ,PLANNED_1_VALUE_YB = #implMonthPlan.planned1ValueYb:BIGINT#
+          ,PLANNED_2_VALUE_YB = #implMonthPlan.planned2ValueYb:BIGINT#
+          ,PLANNED_3_VALUE_YB = #implMonthPlan.planned3ValueYb:BIGINT#
+          ,PLANNED_4_VALUE_YB = #implMonthPlan.planned4ValueYb:BIGINT#
+          ,PLANNED_5_VALUE_YB = #implMonthPlan.planned5ValueYb:BIGINT#
+          ,PLANNED_6_VALUE_YB = #implMonthPlan.planned6ValueYb:BIGINT#
+          ,EXPECTED_1_VALUE_YB = #implMonthPlan.expected1ValueYb:BIGINT#
+          ,EXPECTED_2_VALUE_YB = #implMonthPlan.expected2ValueYb:BIGINT#
+          ,EXPECTED_3_VALUE_YB = #implMonthPlan.expected3ValueYb:BIGINT#
+          ,EXPECTED_4_VALUE_YB = #implMonthPlan.expected4ValueYb:BIGINT#
+          ,EXPECTED_5_VALUE_YB = #implMonthPlan.expected5ValueYb:BIGINT#
+          ,EXPECTED_6_VALUE_YB = #implMonthPlan.expected6ValueYb:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+          ,UP_PG_ID = #upPgId:VARCHAR#
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+</sqlMap>

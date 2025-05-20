@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+ "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+<!-- ***********************************************************************
+
+                Struts Basic Setting
+
+ ***********************************************************************  -->
+
+    <!-- ActionForm -->
+    <form-beans></form-beans>
+
+    <!-- Global Exceptions -->
+    <global-exceptions></global-exceptions>
+
+    <!-- Global Forwards -->
+    <global-forwards>
+        <forward name="failure" path="/WEB-INF/view/cmn/error.vm" />
+        <forward name="input" path="/WEB-INF/view/cmn/error.vm" />
+        <forward name="timeout" path="/WEB-INF/view/cmn/error.vm" />
+        <forward name="tokenInvalid" path="/WEB-INF/view/cmn/error.vm" />
+        <forward name="notCertificated" path="/WEB-INF/view/cmn/authError.vm" />
+        <forward name="authorityError" path="/WEB-INF/view/cmn/authError.vm" />
+        <forward name="accessDenied" path="/WEB-INF/view/cmn/serviceStop.vm" />
+        <forward name="userTimeout" path="/WEB-INF/view/cmn/userTimeout.vm" />
+        <forward name="error" path="/WEB-INF/view/cmn/error.vm" />
+        <forward name="fatal" path="/WEB-INF/view/cmn/error.vm" />
+    </global-forwards>
+
+    <!-- Action Mappings -->
+    <action-mappings type="jp.co.takeda.web.cmn.action.DpActionMapping">
+        <action path="/unknown" forward="/index.html" unknown="true" />
+        <action path="/index" forward="/index.html" />
+    </action-mappings>
+
+    <!-- Controller -->
+    <controller bufferSize="8M" contentType="text/html;" maxFileSize="100M" nocache="true" />
+
+    <!-- Message Resources -->
+    <message-resources parameter="message" />
+    <message-resources parameter="dialogue" key="dialogue" />
+    <message-resources parameter="title" key="title" />
+    <message-resources parameter="grid" key="grid" />
+
+</struts-config>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_MR_PLAN_STATUS_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.MrPlanStatus" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="STATUS" property="statusForMrPlan" jdbcType="CHAR" />
+    <result column="ASYNC_BEF_STATUS" property="asyncBefStatus" jdbcType="CHAR" />
+    <result column="ASYNC_SERVER_KBN" property="appServerKbn" jdbcType="VARCHAR" />
+    <result column="ASYNC_BEF_EST_START_DATE" property="asyncBefEstStartDate" jdbcType="TIMESTAMP" />
+    <result column="ESTIMATION_BASE_PLAN" property="estimationBasePlan" jdbcType="CHAR" />
+    <result column="EST_START_DATE" property="estStartDate" jdbcType="TIMESTAMP" />
+    <result column="EST_END_DATE" property="estEndDate" jdbcType="TIMESTAMP" />
+    <result column="TEAM_PLAN_OPEN_DATE" property="teamPlanOpenDate" jdbcType="TIMESTAMP" />
+    <result column="TEAM_PLAN_FIX_DATE" property="teamPlanFixDate" jdbcType="TIMESTAMP" />
+    <result column="MR_PLAN_OPEN_DATE" property="mrPlanOpenDate" jdbcType="TIMESTAMP" />
+    <result column="MR_PLAN_INPUT_DATE" property="mrPlanInputDate" jdbcType="TIMESTAMP" />
+    <result column="MR_PLAN_FIX_DATE" property="mrPlanFixDate" jdbcType="TIMESTAMP" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,SOS_CD
+          ,PROD_CODE
+          ,STATUS
+          ,ASYNC_BEF_STATUS
+          ,ASYNC_SERVER_KBN
+          ,ASYNC_BEF_EST_START_DATE
+          ,ESTIMATION_BASE_PLAN
+          ,EST_START_DATE
+          ,EST_END_DATE
+          ,TEAM_PLAN_OPEN_DATE
+          ,TEAM_PLAN_FIX_DATE
+          ,MR_PLAN_OPEN_DATE
+          ,MR_PLAN_INPUT_DATE
+          ,MR_PLAN_FIX_DATE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_MR_PLAN_STATUS
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.MrPlanStatus" >
+    SELECT SEQ_KEY
+          ,SOS_CD
+          ,PROD_CODE
+          ,STATUS
+          ,ASYNC_BEF_STATUS
+          ,ASYNC_SERVER_KBN
+          ,ASYNC_BEF_EST_START_DATE
+          ,ESTIMATION_BASE_PLAN
+          ,EST_START_DATE
+          ,EST_END_DATE
+          ,TEAM_PLAN_OPEN_DATE
+          ,TEAM_PLAN_FIX_DATE
+          ,MR_PLAN_OPEN_DATE
+          ,MR_PLAN_INPUT_DATE
+          ,MR_PLAN_FIX_DATE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_MR_PLAN_STATUS
+     WHERE PROD_CODE = #prodCode:CHAR#
+      <isNotNull prepend="AND" property="sosCd">
+        SOS_CD = #sosCd:VARCHAR#
+      </isNotNull>
+  </select>
+
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT MRS.SEQ_KEY
+          ,MRS.SOS_CD
+          ,MRS.PROD_CODE
+          ,MRS.STATUS
+          ,MRS.ASYNC_BEF_STATUS
+          ,MRS.ASYNC_SERVER_KBN
+          ,MRS.ASYNC_BEF_EST_START_DATE
+          ,MRS.ESTIMATION_BASE_PLAN
+          ,MRS.EST_START_DATE
+          ,MRS.EST_END_DATE
+          ,MRS.TEAM_PLAN_OPEN_DATE
+          ,MRS.TEAM_PLAN_FIX_DATE
+          ,MRS.MR_PLAN_OPEN_DATE
+          ,MRS.MR_PLAN_INPUT_DATE
+          ,MRS.MR_PLAN_FIX_DATE
+          ,MRS.IS_JGI_NO
+          ,MRS.IS_JGI_NAME
+          ,MRS.IS_DATE
+          ,MRS.UP_JGI_NO
+          ,MRS.UP_JGI_NAME
+          ,MRS.UP_DATE
+      FROM DPS_I_MR_PLAN_STATUS MRS
+           INNER JOIN DPS_C_PLANNED_PROD PP
+        ON MRS.PROD_CODE = PP.PROD_CODE
+     WHERE MRS.SOS_CD = #sosCd:VARCHAR#
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <select id="selectEstimatingListByServerKbn" resultMap="resultMap" parameterClass="java.util.Map" >
+  SELECT MRS.SEQ_KEY
+        ,MRS.SOS_CD
+        ,MRS.PROD_CODE
+        ,MRS.STATUS
+        ,MRS.ASYNC_BEF_STATUS
+        ,MRS.ASYNC_SERVER_KBN
+        ,MRS.ASYNC_BEF_EST_START_DATE
+        ,MRS.ESTIMATION_BASE_PLAN
+        ,MRS.EST_START_DATE
+        ,MRS.EST_END_DATE
+        ,MRS.TEAM_PLAN_OPEN_DATE
+        ,MRS.TEAM_PLAN_FIX_DATE
+        ,MRS.MR_PLAN_OPEN_DATE
+        ,MRS.MR_PLAN_INPUT_DATE
+        ,MRS.MR_PLAN_FIX_DATE
+        ,MRS.IS_JGI_NO
+        ,MRS.IS_JGI_NAME
+        ,MRS.IS_DATE
+        ,MRS.UP_JGI_NO
+        ,MRS.UP_JGI_NAME
+        ,MRS.UP_DATE
+    FROM DPS_I_MR_PLAN_STATUS MRS
+         INNER JOIN DPS_C_PLANNED_PROD PP
+      ON MRS.PROD_CODE = PP.PROD_CODE
+     WHERE MRS.ASYNC_SERVER_KBN = #appServerKbn:VARCHAR#
+       AND MRS.STATUS = '1'
+     <isPropertyAvailable property="sortString">
+         $sortString$
+     </isPropertyAvailable>
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectSosCdProdList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,SOS_CD
+          ,PROD_CODE
+          ,STATUS
+          ,ASYNC_BEF_STATUS
+          ,ASYNC_SERVER_KBN
+          ,ASYNC_BEF_EST_START_DATE
+          ,ESTIMATION_BASE_PLAN
+          ,EST_START_DATE
+          ,EST_END_DATE
+          ,TEAM_PLAN_OPEN_DATE
+          ,TEAM_PLAN_FIX_DATE
+          ,MR_PLAN_OPEN_DATE
+          ,MR_PLAN_INPUT_DATE
+          ,MR_PLAN_FIX_DATE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_MR_PLAN_STATUS
+     WHERE SOS_CD = #sosCd:VARCHAR#
+      <isNotNull property="prodList">
+          <iterate prepend="AND PROD_CODE IN" open="(" close=")" conjunction=","  property="prodList">
+              #prodList[]#
+          </iterate>
+      </isNotNull>
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.MrPlanStatus" >
+    INSERT INTO DPS_I_MR_PLAN_STATUS
+          (SEQ_KEY
+          ,SOS_CD
+          ,PROD_CODE
+          ,STATUS
+          ,ASYNC_BEF_STATUS
+          ,ASYNC_SERVER_KBN
+          ,ASYNC_BEF_EST_START_DATE
+          ,ESTIMATION_BASE_PLAN
+          ,EST_START_DATE
+          ,EST_END_DATE
+          ,TEAM_PLAN_OPEN_DATE
+          ,TEAM_PLAN_FIX_DATE
+          ,MR_PLAN_OPEN_DATE
+          ,MR_PLAN_INPUT_DATE
+          ,MR_PLAN_FIX_DATE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (ORADPX01.SEQ_DPS_I_MR_PLAN_STATUS.NEXTVAL
+          ,#sosCd:VARCHAR#
+          ,#prodCode:CHAR#
+          ,#statusForMrPlan:CHAR#
+          ,#asyncBefStatus:CHAR#
+          ,#appServerKbn:CHAR#
+          ,#asyncBefEstStartDate:TIMESTAMP#
+          ,#estimationBasePlan:CHAR#
+          ,#estStartDate:TIMESTAMP#
+          ,#estEndDate:TIMESTAMP#
+          ,#teamPlanOpenDate:TIMESTAMP#
+          ,#teamPlanFixDate:TIMESTAMP#
+          ,#mrPlanOpenDate:TIMESTAMP#
+          ,#mrPlanInputDate:TIMESTAMP#
+          ,#mrPlanFixDate:TIMESTAMP#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.MrPlanStatus" >
+    UPDATE DPS_I_MR_PLAN_STATUS
+       SET STATUS = #statusForMrPlan:CHAR#
+          ,ASYNC_BEF_STATUS = #asyncBefStatus:CHAR#
+          ,ASYNC_SERVER_KBN = #appServerKbn:VARCHAR#
+          ,ASYNC_BEF_EST_START_DATE = #asyncBefEstStartDate:TIMESTAMP#
+          ,ESTIMATION_BASE_PLAN = #estimationBasePlan:CHAR#
+          ,EST_START_DATE = #estStartDate:TIMESTAMP#
+          ,EST_END_DATE = #estEndDate:TIMESTAMP#
+          ,TEAM_PLAN_OPEN_DATE = #teamPlanOpenDate:TIMESTAMP#
+          ,TEAM_PLAN_FIX_DATE = #teamPlanFixDate:TIMESTAMP#
+          ,MR_PLAN_OPEN_DATE = #mrPlanOpenDate:TIMESTAMP#
+          ,MR_PLAN_INPUT_DATE = #mrPlanInputDate:TIMESTAMP#
+          ,MR_PLAN_FIX_DATE = #mrPlanFixDate:TIMESTAMP#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_MR_PLAN_STATUS
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </delete>
+
+</sqlMap>

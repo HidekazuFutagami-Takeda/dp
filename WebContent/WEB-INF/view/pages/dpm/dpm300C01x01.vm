@@ -1,0 +1,92 @@
+#set( $layout = "nothingLayout.vm" )
+#set( $data = $form.getRequestData("DPM300C01_DATA_R"))
+#set( $dataList = $data.getDetailList())
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+##RowId用カウンタ
+#set( $idcnt = 1 )
+##追加ボタンId
+#set( $bid = 1 )
+#foreach($resultData in $dataList)
+     #set( $q = '"' )
+     #set( $inputBgClass = " class='inputB2'" )
+     #if($resultData.getTmsTytenCd())
+        #set( $sumRowFlg = "false" )
+     #else
+        #set( $type = "ro" )
+        #set( $inputBgClass = "" )
+        #set( $sumRowFlg = "true" )
+     #end
+     #if(!$resultData.isTytenSumRowFlg())
+     <row id='$idcnt'>
+        ##メッセージ見出し用
+        <userdata name="tmsTytenName">$!resultData.getTmsTytemName()</userdata>
+        ##ツールチップ用
+        <userdata name="toolTip">
+        #if($!resultData.getUpDateJgiName())
+            $!resultData.getUpDateJgiName()&#13;$!format.toString($!resultData.getUpDate(), "yyyy/MM/dd HH:mm:ss")
+        #end
+        </userdata>
+        ##送信データ
+        <userdata name="rowIdList">$!form.bean.prodCode,$!resultData.getTmsTytenCd(),$!resultData.getSeqKey(),$!resultData.getUpDate().getTime(),$!resultData.getBaseT()</userdata>
+        ##計算、追加用インデックス
+        <userdata name="tbChangeRate">$!resultData.getTbChangeRate()</userdata>
+        <userdata name="bid">$bid</userdata>
+        <userdata name="rowType">input</userdata>
+        <userdata name="subTotalId">$bid</userdata>
+        <userdata name="planTaiGaiFlgTok">$!resultData.getPlanTaiGaiFlgTok()</userdata>
+        <cell>　　#if($!resultData.getPlanTaiGaiFlgTok())${tmsselect.planTaiGaiLabel}#end$!resultData.getTmsTytemName()</cell>
+        <cell>$!resultData.getTmsTytenCd()</cell>
+        <cell><![CDATA[<a href="#" onclick="if(linkClick())dpm301C00F05('$!resultData.getTmsTytenCd()');">品目別</a>]]></cell>
+        <cell type="ron">$!resultData.getBaseB()</cell>
+        ##流通政策部のみデータを表示
+        #if($form.bean.isRyutsu())
+	        <cell type="ron">$!resultData.getBaseT()</cell>
+	        #if($!security.hasAuthEdit("DPM30"))
+	        	<cell$inputBgClass type='#setColType( $!resultData.getBaseT(), "ed" ,"edn")'>$!resultData.getBaseT()</cell>
+	        #else
+	        	<cell type="ron">$!resultData.getBaseT()</cell>
+	        #end
+        #else
+	        <cell type="ron"></cell>
+	        <cell type="ron"></cell>
+        #end
+        #set( $idcnt = $idcnt + 1 )
+    </row>
+    #end
+    ##特約店中計
+    #if($resultData.isTytenSumRowFlg())
+    <row id='$idcnt'>
+    #set($subTotalId = $bid + 1)
+    <userdata name="sumRowFlg">true</userdata>
+    <userdata name="rowType">subTotal</userdata>
+    <userdata name="subTotalId">$subTotalId</userdata>
+        <cell class="sumOfficeTokuG">　$!resultData.getTmsTytemName()　計</cell>
+        <cell class="sumOfficeTokuG">$!resultData.getTmsTytenCd()</cell>
+        <cell class="sumOfficeTokuG"></cell>
+        <cell class="sumOfficeTokuG" >$!resultData.getBaseB()</cell>
+        ##流通政策部のみデータを表示
+        #if($form.bean.isRyutsu())
+        	<cell class="sumOfficeTokuG" >$!resultData.getBaseT()</cell>
+        	<cell class="sumOfficeTokuG" >$!resultData.getBaseT()</cell>
+        #else
+	        <cell class="sumOfficeTokuG"></cell>
+	        <cell class="sumOfficeTokuG"></cell>
+        #end
+        	<cell class="sumOfficeTokuG"></cell>
+        	<cell class="sumOfficeTokuG"></cell>
+        	<cell class="sumOfficeTokuG"></cell>
+        	<cell class="sumOfficeTokuG"></cell>
+        	<cell class="sumOfficeTokuG"></cell>
+        	<cell class="sumOfficeTokuG"></cell>
+        	<cell class="sumOfficeTokuG"></cell>
+        	<cell class="sumOfficeTokuG"></cell>
+        	<cell class="sumOfficeTokuG"></cell>
+        #set( $bid = $bid + 1 )
+        #set( $idcnt = $idcnt + 1 )
+     </row>
+     #end
+#end
+</rows>
+#end

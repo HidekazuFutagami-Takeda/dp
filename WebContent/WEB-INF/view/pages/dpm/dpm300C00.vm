@@ -1,0 +1,496 @@
+#set($pageTitle = $text.get("dpm300C00","title"))
+#set($bodyOnloadMethod = "dpm300C00F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dpm300C00x01.vm")
+#set($GridObjName = "dpm300C00Grid")
+#set($GridObjName2 = "dpm300C00Grid2")
+#set($CoverId = "dpm300C00CoverId")
+## （医・ワ）検索結果
+#set( $dataList = $form.getRequestData("DPM300C00_DATA_R"))
+#set( $headerData = $form.getRequestData("DPM300C00_INPUT_DATA_R"))
+## （ワ）検索結果
+#set( $dataListVaccine = $form.getRequestData("DPM300C01_DATA_R"))
+#set( $headerDataVaccine = $form.getRequestData("DPM300C01_INPUT_DATA_R"))
+
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+
+## カテゴリリスト
+#set($categoryList = $service.getManageCategoryList(false,false))
+## カテゴリ名
+#set($prodCategory = "")
+#if($form.bean.prodCategory)
+	#foreach($codeAndValue in $categoryList)
+	    #if($codeAndValue.code == $form.bean.prodCategory)
+	        #set($prodCategory = "$codeAndValue.value")
+	        #set($prodCategoryCode = "$codeAndValue.code")
+	    #end
+	#end
+#end
+
+## 品目リスト
+#set($vaccineCode = $service.getVaccineCode())
+#if($form.bean.prodCategory == "$vaccineCode")
+##mod Start 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+  ##set($prodList = $service.getManageVaccineProdList($!form.bean.prodCategory, $form.getField("DPM300C00_PLANLEVEL_WS"),false))
+  #set($prodList = $service.getManageVaccineProdDistributorList($!form.bean.prodCategory, $form.getField("DPM300C00_PLANLEVEL_WS"),false))
+##else
+#else
+  ##set($prodList = $service.getManageIyakuProdList($!form.bean.prodCategory, $form.getField("DPM300C00_PLANLEVEL_WS"),false))
+  #set($prodList = $service.getManageIyakuProdDistributorList($!form.bean.prodCategory, $form.getField("DPM300C00_PLANLEVEL_WS"),false))
+##mod End 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+#end
+
+## 品目名
+#set($prodName = "")
+#if($form.bean.prodCode)
+#foreach($codeAndValue in $prodList)
+    #if($codeAndValue.code == $form.bean.prodCode)
+        #set($prodName = "$codeAndValue.value")
+    #end
+#end
+#end
+
+<script language="javascript">
+<!--
+document.getElementById("closeWindow").value = "true";
+var startTime = new Date();
+var ${GridObjName};
+var ${GridObjName2};
+var editFlg = false;
+var inspos = 0;
+var tmsWidth = 100;
+
+##初期表示＋読込処理
+function dpm300C00F00() {
+    window.name = "self";
+}
+
+## 特約店選択ダイアログを開く
+function openTytenDialog(){
+    var url = '${link.setAction("dpm912C00F00")}?tmsSelectMode=$tmsselect.getGrayAndEnableButtonMode()&tytenApplyFuncName=dpm300C00TytenApply';
+    openModalWindowW(url);
+}
+
+## 特約店選択ダイアログ コールバック
+function dpm300C00TytenApply(tytenCd, tytenName){
+	document.dpm300C00F05Form.tmsTytenCd.value = tytenCd;
+	document.dpm300C00F05Form.tmsTytenCdPart.value = removeZeroBlankFromEnd(tytenCd);
+	document.dpm300C00F05Form.tmsTytenName.value = tytenName;
+	document.getElementById("tmsTytenNameLabel").innerHTML = "<label>" + tytenName + "</label>";
+}
+
+## 特約店選択ダイアログ 初期化
+function dpm300C00TytenClear(){
+	document.dpm300C00F05Form.tmsTytenCd.value = "";
+	document.dpm300C00F05Form.tmsTytenName.value = "";
+	document.getElementById("tmsTytenNameLabel").innerHTML = "<label>　</label>";
+}
+
+## 品目カテゴリ選択処理
+function changeProd() {
+	changeProdCategoryList(document.dpm300C00F05Form);
+}
+## prodLevelを指定する必要がある場合、VMマクロでJSコードを生成する
+## 引数はFormで指定したフィールド名
+##mod Start 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+##changeProdList("DPM300C00_PLANLEVEL_WS")
+#changeProdDistributorList("DPM300C00_PLANLEVEL_WS")
+##mod End 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+
+## 検索処理
+function dpm300C00F05() {
+    if (searchValidation()) {
+    	if(linkClick()){
+    		var category = document.getElementById("prodCategory").value;
+    	    ##ワクチンの場合
+    	    if(category == "$vaccineCode"){
+		        var actionPath = "$link.setAction('dpm300C00F25')";
+		        document.dpm300C00F05Form.action = actionPath;
+		        document.dpm300C00F05Form.submit();
+		        dpm300C00F05 = blockIt;
+		        dpm300C00F10 = blockIt;
+		        dpm301C00F05 = blockIt;
+	        ##ワクチン以外の場合
+    	    }else{
+		        var actionPath = "$link.setAction('dpm300C00F05')";
+		        document.dpm300C00F05Form.action = actionPath;
+		        document.dpm300C00F05Form.submit();
+		        dpm300C00F05 = blockIt;
+		        dpm300C00F10 = blockIt;
+		        dpm301C00F05 = blockIt;
+    	    }
+    	}
+    }
+}
+
+## 検索時入力チェック
+function searchValidation() {
+    ## 入力フォーム
+    var form = document.dpm300C00F05Form;
+    var value = "";
+    var existError = false;
+    ## [必須] 特約店コード
+    value = form.tmsTytenCdPart.value;
+    errorMsg = '$text.get("DPC1003E",["特約店コード"])';
+    existError = addErrorInfo(!isEntered(value), errorMsg);
+    ## [数値] 特約店コード
+    if(!existError){
+        value = form.tmsTytenCd.value;
+        value2 = form.tmsTytenCdPart.value;
+        errorMsg = '$text.get("DPC1004E",["特約店コード","半角数字"])';
+        existError = addErrorInfo(!(isNumber(value) || isNumber(value2)), errorMsg);
+    }
+    ## [桁数] 入力特約店コード
+    if(!existError){
+        value = form.tmsTytenCdPart.value;
+        errorMsg = '$text.get("DPC1027E",["特約店コード","3,5,7,9,11,13"])';
+        existError = addErrorInfo(!isTmsTytenCdLength(value), errorMsg);
+    }
+    ## [必須] カテゴリ
+    value = form.prodCategory.value;
+    errorMsg = '$text.get("DPC1003E",["カテゴリ"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+    ## [必須] 品目
+    value = form.prodCode.value;
+    errorMsg = '$text.get("DPC1003E",["品目"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+    ## [必須] 計画
+    value = form.planData.value;
+    errorMsg = '$text.get("DPC1003E",["計画"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    return validation();
+}
+
+##更新処理
+function dpm300C00update() {
+    ## --- 編集中セル値の登録時チェック ---
+	if(window.editValueChecker.isValid() == false){
+		return;
+	}
+	var category = document.getElementById("prodCategory").value;
+    ##ワクチンの場合
+    if(category == "$vaccineCode"){
+		dpm300C00F20();
+    ##ワクチン以外の場合
+    }else{
+		dpm300C00F10();
+    }
+}
+
+##更新処理（医薬）
+function dpm300C00F10() {
+    ##入力チェック
+    if (!executeValidation()) {
+        return;
+    }
+    ##確認
+    if (!confirm('$text.get("DPM300C00.001","dialogue")')) {
+        return;
+    }
+    form = document.dpm300C00F10Form;
+    rowNum = ${GridObjName}.getRowsNum();
+    try{
+    for ( var i = 0; i < rowNum; i++) {
+        ##//i番目の列のrowIdを取得
+        var rowId = ${GridObjName}.getRowId(i);
+        ##//指定項目のみ取得し、hiddenをformに追加
+        ##//集計行じゃない場合
+        if(${GridObjName}.getUserData(rowId, "rowType") == "input"){
+            ## [UH T価ベース]
+            var valueUh = ${GridObjName}.cells(rowId, 5).getValue();
+            ## [P T価ベース]
+            var valueP = ${GridObjName}.cells(rowId, 8).getValue();
+            ## [Z T価ベース]
+            var valueZ = ${GridObjName}.cells(rowId, 11).getValue();
+            var planTaiGaiFlgTok = ${GridObjName}.getUserData(rowId, "planTaiGaiFlgTok");
+            if (planTaiGaiFlgTok != 'undefined' && planTaiGaiFlgTok != null && planTaiGaiFlgTok != '' && planTaiGaiFlgTok == 'true') {
+                if (valueUh != 'undefined' && valueUh != null && valueUh != '') {
+                    alert('$text.get("DPM999C00.001","dialogue")');
+                    return;
+                } else if (valueP != 'undefined' && valueP != null && valueP != '') {
+                    alert('$text.get("DPM999C00.001","dialogue")');
+                    return;
+                }
+            }
+            var rowIdList = ${GridObjName}.getUserData(rowId, "rowIdList");
+            var sendvalue = rowIdList + "," + valueUh + "," + valueP + "," + valueZ;
+            var element = document.createElement('input');
+            element.type = "hidden";
+            element.name = "rowIdList";
+            element.value = sendvalue;
+            form.appendChild(element);
+        }
+    }
+    }catch(e){
+        alert(rowId);
+    }
+    form.target = "self";
+    form.submit();
+    dpm300C00F05 = blockIt;
+    dpm300C00F10 = blockIt;
+    dpm301C00F05 = blockIt;
+}
+
+
+## 更新時入力チェック（医薬）
+function executeValidation() {
+    var rowNum = ${GridObjName}.getRowsNum();
+    for (i = 0; i < rowNum; i++) {
+        var id = ${GridObjName}.getRowId(i);
+        ## メッセージ準備
+        var rowInfo = "";
+        rowInfo = ${GridObjName}.getUserData(id, "tmsTytenName");
+        ## エラーチェック
+        if(${GridObjName}.getUserData(id,"rowType") == "input"){
+        	## [UH T価ベース]
+            var checkValueUH = ${GridObjName}.cells(id, 5).getValue().toString();
+            amountValidationNotTailCheck("$titleUH", checkValueUH, 10, true, rowInfo);
+        	## [UH Y価ベース]
+            var tyChangeRateUH = ${GridObjName}.getUserData(id, "tyChangeRateUH");
+            var checkValueYUH = getYBaseValue(checkValueUH, tyChangeRateUH);
+            amountValidationNotTailCheckNotInputNotDisp(rowInfo + "$titleUH", checkValueYUH, 10, true, "");
+            ## [P T価ベース]
+            var checkValueP  = ${GridObjName}.cells(id, 8).getValue().toString();
+            amountValidationNotTailCheck("$titleP", checkValueP, 10, true, rowInfo);
+        	## [P Y価ベース]
+            var tyChangeRateP = ${GridObjName}.getUserData(id, "tyChangeRateP");
+            var checkValueYP = getYBaseValue(checkValueP, tyChangeRateP);
+            amountValidationNotTailCheckNotInputNotDisp(rowInfo + "$titleP", checkValueYP, 10, true, "");
+            ## [Z T価ベース]
+            var checkValueP  = ${GridObjName}.cells(id, 11).getValue().toString();
+            amountValidationNotTailCheck("$titleZ", checkValueP, 10, true, rowInfo);
+        	## [Z Y価ベース]
+            var tyChangeRateP = ${GridObjName}.getUserData(id, "tyChangeRateP");
+            var checkValueYP = getYBaseValue(checkValueP, tyChangeRateP);
+            amountValidationNotTailCheckNotInputNotDisp(rowInfo + "$titleZ", checkValueYP, 10, true, "");
+        }
+    }
+    return validation();
+}
+
+##更新処理（ワクチン）
+function dpm300C00F20() {
+    ##入力チェック
+    if (!executeValidationVac()) {
+        return;
+    }
+    ##確認
+    if (!confirm('$text.get("DPM300C00.001","dialogue")')) {
+        return;
+    }
+    form = document.dpm300C00F20Form;
+    rowNum = ${GridObjName}.getRowsNum();
+    try{
+    for ( var i = 0; i < rowNum; i++) {
+        ##//i番目の列のrowIdを取得
+        var rowId = ${GridObjName}.getRowId(i);
+        ##//指定項目のみ取得し、hiddenをformに追加
+        ##//集計行じゃない場合
+        if(${GridObjName}.getUserData(rowId, "rowType") == "input"){
+            var value = ${GridObjName}.cells(rowId, 5).getValue();
+            var planTaiGaiFlgTok = ${GridObjName}.getUserData(rowId, "planTaiGaiFlgTok");
+            if (planTaiGaiFlgTok != 'undefined' && planTaiGaiFlgTok != null && planTaiGaiFlgTok != '' && planTaiGaiFlgTok == 'true') {
+                if (value != 'undefined' && value != null && value != '') {
+                    alert('$text.get("DPM999C00.001","dialogue")');
+                    return;
+                }
+            }
+            var rowIdList = ${GridObjName}.getUserData(rowId, "rowIdList");
+            var sendvalue = rowIdList + "," + value;
+            var element = document.createElement('input');
+            element.type = "hidden";
+            element.name = "rowIdList";
+            element.value = sendvalue;
+            form.appendChild(element);
+        }
+    }
+    }catch(e){
+        alert(rowId);
+    }
+    form.target = "self";
+    form.submit();
+    dpm300C00F05 = blockIt;
+    dpm300C00F10 = blockIt;
+    dpm301C00F05 = blockIt;
+}
+## 更新時入力チェック（ワクチン）
+function executeValidationVac() {
+    var rowNum = ${GridObjName}.getRowsNum();
+    for (i = 0; i < rowNum; i++) {
+        var id = ${GridObjName}.getRowId(i);
+        ## メッセージ準備
+        var rowInfo = "";
+        rowInfo = ${GridObjName}.getUserData(id, "tmsTytenName");
+        ## エラーチェック
+        if(${GridObjName}.getUserData(id,"rowType") == "input"){
+        	## [T価ベース]
+            var checkValue = ${GridObjName}.cells(id, 5).getValue().toString();
+            amountValidationNotTailCheck("", checkValue, 10, true, rowInfo);
+        	## [B価ベース]
+            var tbChangeRate = ${GridObjName}.getUserData(id, "tbChangeRate");
+            var checkValueB = getYBaseValue(checkValue, tbChangeRate);
+            amountValidationNotTailCheckNotInputNotDisp(rowInfo, checkValueB, 10, true, "B価");
+        }
+    }
+    return validation();
+}
+
+## 出力処理
+function dpm300C00F14(){
+    if (!searchValidation()) {
+        return;
+    }
+
+    ##確認
+    if (!confirm('$text.get("DPM300C00.005","dialogue")')) {
+        return;
+    }
+
+    var category = document.getElementById("prodCategory").value;
+    var actionPath = '';
+    ##ワクチンの場合
+    if(category == "$vaccineCode"){
+      actionPath = '$link.setAction('dpm300C00F24Output')';
+    } else {
+      actionPath = '$link.setAction('dpm300C00F14Output')';
+    }
+
+    ##送信
+    document.dpm300C00F05Form.action = actionPath;
+    document.dpm300C00F05Form.submit();
+
+    return false;
+}
+
+##リンク移動確認
+function linkClick(){
+    if(editFlg){
+        var answer = window.confirm('$text.get("DPC999C99.001","dialogue")');
+        if(!answer){
+            return false;
+        }
+    }
+    return true;
+}
+
+## 品目別計画編集画面を開く
+function dpm301C00F05(tmsTytenCd) {
+    var form = document.dpm301C00F05Form;
+    var url ="$link.setAction('dpm301C00F05')";
+    form.action = url;
+    form.tmsTytenCdPart.value = jQuery.trim(tmsTytenCd);
+    form.tmsTytenCd.value = jQuery.trim(tmsTytenCd);
+    form.prodCode.value = "$!form.bean.prodCode";
+    form.prodCategory.value = "$!form.bean.prodCategory";
+    form.planData.value = "$!{form.bean.planData}";
+    form.submit();
+    dpm300C00F05 = blockIt;
+    dpm300C00F10 = blockIt;
+    dpm301C00F05 = blockIt;
+}
+//-->
+</script>
+<div id="noTabBox">
+<form name="dpm300C00F05Form" method="post" style="padding: 0px; margin-bottom: 5px;">
+## テキストボックスが１つの場合、Enterキーでsubmitされるため、非表示を１項目追加する。
+<div style="display: none;">
+<input type="text" style="visibility:hidden;"/>
+</div>
+##
+<table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+        <td class="gridIndex" style="width: 150px;">特約店</td>
+        <td>
+        <table cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
+            <tr>
+                <td>
+                <table class="gridLine" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 270px;">
+                            <nobr><label id="tmsTytenNameLabel">$!form.bean.tmsTytenName　</label></nobr>
+                            <input type="hidden" name="tmsTytenName" id="tmsTytenName" value="$!form.bean.tmsTytenName" />
+                            <input type="hidden" name="tmsTytenCd" id="tmsTytenCd" value="$!form.bean.tmsTytenCd" />
+                        </td>
+                    </tr>
+                </table>
+                </td>
+                <td class="gridTdLine" style="border-width: 0px 0px 1px 0px;">
+                    <input type="button" value="選択" style="width: 80px;" onclick="openTytenDialog();">
+                </td>
+                <td class="gridIndex" style="width: 150px;">特約店コード*</td>
+                <td>
+                    <input type="text" name="tmsTytenCdPart" id="tmsTytenCdPart" value="$!form.bean.tmsTytenCdPart" size="20" maxlength="13" style="ime-mode: disabled" onkeyup="dpm300C00TytenClear()" />
+                </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width: 150px;">カテゴリ*</td>
+        <td style="padding-right: 21px">#selectWithFunc ("prodCategory", $!form.bean.prodCategoryList, $!form.bean.prodCategory, "changeProd()")</td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width: 150px;">品目*</td>
+        <td>
+        	#select( "prodCode", $prodList, $form.bean.prodCode )
+        </td>
+    </tr>
+    <tr>
+        <td class="gridIndex" style="width: 150px;">計画*</td>
+        <td>
+            #if((!$form.bean.planData) || $form.bean.planData == "0")
+            <label><input type="radio" name="planData" value="0" checked />計画あり</label>
+            <label><input type="radio" name="planData" value="1" />全特約店</label>
+            #else
+            <label><input type="radio" name="planData" value="0" />計画あり</label>
+            <label><input type="radio" name="planData" value="1" checked />全特約店</label>
+            #end
+        </td>
+    </tr>
+</table>
+<table style="margin-top: 2px; margin-bottom: 2px; float: left; width: 100%;">
+    <tr>
+        <td>
+            <input type="button" value="表示" style="width: 80px;" onclick="if(linkClick())dpm300C00F05()" />
+            #if($!security.hasAuthEdit("DPM30"))
+	            #if ($dataList || $dataListVaccine)
+	            	<input type="button" value="登録" style="width: 80px;" onclick="dpm300C00update()" />
+	            #else
+	            	<input type="button" value="登録" style="width: 80px;" onclick="dpm300C00update()" disabled />
+	            #end
+            #end
+	        ## データが存在する場合、ボタンを活性化する。
+	        #if ($dataList || $dataListVaccine)
+	            <input type="button" value="ダウンロード" style="width: 120px;" onclick="dpm300C00F14()" />
+	        #else
+	            <input type="button" value="ダウンロード" style="width: 120px;" disabled />
+	        #end
+        </td>
+        <td style="text-align: right; vertical-align: bottom;"><label>$consts.tableHeader</label></td>
+    </tr>
+</table>
+	#if($form.bean.prodCategory == "$vaccineCode")
+		#parse("WEB-INF/view/pages/dpm/dpm300C00_2.vm")
+	#else
+	    #parse("WEB-INF/view/pages/dpm/dpm300C00_1.vm")
+	#end
+</form>
+</div>
+<div style="display: none;">
+<form name="dpm300C00F10Form" action="$!{link.setAction('dpm300C00F10Excecute')}" method="post">
+#token()
+</form>
+<form name="dpm300C00F20Form" action="$!{link.setAction('dpm300C00F20Excecute')}" method="post">
+#token()
+</form>
+</div>
+<div style="display: none;">
+<form name="dpm301C00F05Form" method="post">
+    <input type="hidden" name="tmsTytenCdPart" />
+    <input type="hidden" name="tmsTytenCd" />
+    <input type="hidden" name="prodCode" />
+    <input type="hidden" name="prodCategory" />
+    <input type="hidden" name="planData" />
+</form>
+</div>

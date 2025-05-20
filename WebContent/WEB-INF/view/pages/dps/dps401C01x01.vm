@@ -1,0 +1,279 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS401C01_DATA_R"))
+    #set( $dataList = $form.getRequestData("DPS401C01_DATA_R"))
+#end
+#if ($dataList)
+#set($q = '"' )
+#set($bgEnd = "class='statusEnd'")
+#set($bgIng = "class='statusIng'")
+#set($bgNot = "class='statusNot'")
+$!consts.getDhtmlxGridXmlHeader()
+#set($decimalFormat = $form.bean.getDefaultRateFormat())
+<rows>
+##
+##カテゴリ
+##set( $category = "1")
+#set($category = $!form.bean.category)
+##if($form.bean.categoryTran)
+	##set( $category = $form.bean.categoryTran)
+##end
+#foreach($resultData in $dataList)
+	##
+	##担当者別計画
+	#set( $mrPlanStatus = 0)
+	#if($resultData.mrPlanStatus)
+		#set( $mrPlanStatus = $format.parseInteger($resultData.mrPlanStatus.statusForMrPlan.dbValue))
+	#end
+    ##
+    ##施設特約店別計ステータスサマリ
+    #set($insWsPlanStatSum = ${resultData.insWsPlanStatSum})
+    ##
+    #### ワクチンの場合
+    ###if ($form.bean.category == $vaccineCode)
+    ##    #set($codeAndValueInsWsPlanDist = $progress.progressInsWsPlanDistStatus($!{insWsPlanStatSum}))
+    ##    #set($insWsPlanDistStatus = $codeAndValueInsWsPlanDist.value)
+    ##    #set( $distStartDate = "")
+    ##    #if($insWsPlanStatSum.distStartDate)
+    ##        #set($distStartDate = $!format.toString($!{insWsPlanStatSum.distStartDate}, 'MM/dd HH:mm'))
+    ##    #end
+    ##    #set( $distEndDate = "")
+    ##    #if($insWsPlanStatSum.distEndDate)
+    ##        #set($distEndDate = $!format.toString($!{insWsPlanStatSum.distEndDate}, 'MM/dd HH:mm'))
+    ##    #end
+    ##    #if($!codeAndValueInsWsPlanDist.code.equals("NOT"))
+    ##        #set($insWsPlanDistClass = $bgNot)
+    ##        #if($insWsPlanStatSum.distStartDate)
+    ##            #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>(" + $distStartDate + ")")
+    ##        #end
+    ##    #elseif($!codeAndValueInsWsPlanDist.code.equals("PARTLY_END"))
+    ##        #set($insWsPlanDistClass = $bgNot)
+    ##        #if($insWsPlanStatSum.distEndDate)
+    ##            #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>(" + $distEndDate + ")")
+    ##        #end
+    ##    #elseif($!codeAndValueInsWsPlanDist.code.equals("END"))
+    ##        #set($insWsPlanDistClass = $bgEnd)
+    ##        #if($form.bean.jgiNoTran && $form.bean.jgiNoTran !="")
+    ##            #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>(" + $distStartDate + " - " + $distEndDate + ")")
+    ##        #else
+    ##            #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>(" + $distEndDate + ")")
+    ##        #end
+    ##    #end
+    #### ワクチン以外の場合
+    ###else
+        ##施設特約店別計画配分状況
+        #set($codeAndValueInsWsPlanDist = $progress.progressInsWsPlanDistStatus($!{insWsPlanStatSum}))
+        #set($insWsPlanDistStatus = $codeAndValueInsWsPlanDist.value)
+        #set( $distStartDate = "")
+        #if($insWsPlanStatSum.distStartDate)
+            #set($distStartDate = $!format.toString($!{insWsPlanStatSum.distStartDate}, 'MM/dd HH:mm'))
+        #end
+        #set( $distEndDate = "")
+        #if($insWsPlanStatSum.distEndDate)
+            #set($distEndDate = $!format.toString($!{insWsPlanStatSum.distEndDate}, 'MM/dd HH:mm'))
+        #end
+        #if($!codeAndValueInsWsPlanDist.code.equals("NOT"))
+            #if($resultData.enableRehaibun)
+                #set($insWsPlanDistClass = $bgIng)
+            #else
+                #set($insWsPlanDistClass = $bgNot)
+            #end
+            #if($insWsPlanStatSum.distStartDate)
+                #set($insWsPlanDistStatus = $!insWsPlanDistStatus)
+            #end
+        #elseif($!codeAndValueInsWsPlanDist.code.equals("PARTLY_END"))
+            #set($insWsPlanDistClass = $bgNot)
+            #if($insWsPlanStatSum.distEndDate)
+                #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>" + $distEndDate)
+            #end
+        #elseif($!codeAndValueInsWsPlanDist.code.equals("END"))
+            #set($insWsPlanDistClass = $bgEnd)
+            #if($form.bean.jgiNoTran && $form.bean.jgiNoTran !="")
+                #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>" + $distEndDate)
+            #else
+                #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>" + $distEndDate)
+            #end
+        #end
+    ###end
+    ##
+    ##施設特約店別計画ＭＲ公開
+    #set($codeAndValueInsWsPlanMrOpen = $progress.progressInsWsPlanMrOpenStatus($!{insWsPlanStatSum}))
+    #set($insWsPlanMrOpenStatus = $codeAndValueInsWsPlanMrOpen.value)
+    #if($!codeAndValueInsWsPlanMrOpen.code.equals("NOT"))
+        #set($insWsPlanMrOpenClass = $bgNot)
+    #elseif($!codeAndValueInsWsPlanMrOpen.code.equals("ING"))
+        #set($insWsPlanMrOpenClass = $bgIng)
+    #elseif($!codeAndValueInsWsPlanMrOpen.code.equals("PARTLY_END"))
+        #set($insWsPlanMrOpenClass = $bgNot)
+        #set($insWsPlanMrOpenStatus = $!insWsPlanMrOpenStatus + "<br>(" + $!format.toString($insWsPlanStatSum.insWsOpenDate, 'MM/dd HH:mm') + ")")
+    #elseif($!codeAndValueInsWsPlanMrOpen.code.equals("END"))
+        #set($insWsPlanMrOpenClass = $bgEnd)
+        #set($insWsPlanMrOpenStatus = $!insWsPlanMrOpenStatus + "<br>(" + $!format.toString($insWsPlanStatSum.insWsOpenDate, 'MM/dd HH:mm') + ")")
+    #end
+
+    ## ワクチンの場合
+    #if ($form.bean.category == $vaccineCode)
+        ##施設特約店別計画ＭＲ確定
+        #set($codeAndValueInsWsPlanMrFix = $progress.progressInsWsPlanMrFixStatus($!{insWsPlanStatSum}))
+        #set($insWsPlanMrFixStatus = $codeAndValueInsWsPlanMrFix.value)
+        #if($!codeAndValueInsWsPlanMrFix.code.equals("NOT"))
+            #set($insWsPlanMrFixClass = $bgNot)
+        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("ING"))
+            #set($insWsPlanMrFixClass = $bgIng)
+        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("PARTLY_END"))
+            #set($insWsPlanMrFixClass = $bgNot)
+            #set($insWsPlanMrFixStatus = $!insWsPlanMrFixStatus + "<br>(" + $!format.toString($insWsPlanStatSum.insWsFixDate, 'MM/dd HH:mm') + ")")
+        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("END"))
+            #set($insWsPlanMrFixClass = $bgEnd)
+            #set($insWsPlanMrFixStatus = $!insWsPlanMrFixStatus + "<br>(" + $!format.toString($insWsPlanStatSum.insWsFixDate, 'MM/dd HH:mm') + ")")
+        #end
+    ## ワクチン以外の場合
+    #else
+        ##施設特約店別計画ＭＲ確定
+        #set($codeAndValueInsWsPlanMrFix = $progress.progressInsWsPlanMrFixStatus($!{insWsPlanStatSum}))
+        #set($insWsPlanMrFixStatus = $codeAndValueInsWsPlanMrFix.value)
+        #if($!codeAndValueInsWsPlanMrFix.code.equals("NOT"))
+            #set($insWsPlanMrFixClass = $bgNot)
+        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("ING"))
+            #if($security.hasAuthEdit("DPS401") && ( $form.bean.category == $siireCode))
+                #set($insWsPlanMrFixClass = $bgIng)
+            #elseif($security.hasAuthEdit("DPS401") && ($category))
+                #set($insWsPlanMrFixClass = $bgIng)
+            #else
+                #set($insWsPlanMrFixClass = $bgNot)
+            #end
+        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("PARTLY_END"))
+            #set($insWsPlanMrFixClass = $bgNot)
+            #set($insWsPlanMrFixStatus = $!insWsPlanMrFixStatus + "<br>" + $!format.toString($insWsPlanStatSum.insWsFixDate, 'MM/dd HH:mm'))
+        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("END"))
+            #set($insWsPlanMrFixClass = $bgEnd)
+            #set($insWsPlanMrFixStatus = $!insWsPlanMrFixStatus + "<br>" + $!format.toString($insWsPlanStatSum.insWsFixDate, 'MM/dd HH:mm'))
+        #end
+    #end
+
+    ##
+    ## ---- 非表示データ -------
+    ## 品目固定コード
+    #set($prodCode = "")
+    #if($resultData.prodCode)
+        #set($prodCode = $!{resultData.prodCode})
+    #end
+    ## 施設特約店別計画ステータス最終更新日
+    #set( $lastUpdate = "")
+    #if($resultData.lastUpdate)
+        #set($lastUpdate = $!{resultData.lastUpdate.time})
+    #end
+    ## 計画値表示フラグ
+    #set( $dispPlan = false)
+    #if($resultData.dispPlan)
+        #set( $dispPlan = $resultData.dispPlan)
+    #end
+    ## 編集リンク表示フラグ
+    #set( $dispEditLink = false)
+    #if($resultData.dispEditLink)
+        #set( $dispEditLink = $resultData.dispEditLink)
+    #end
+    ## 重点品目フラグ
+    #set( $planLevelInsDoc = false)
+    #if($resultData.planLevelInsDoc)
+        #set( $planLevelInsDoc = $resultData.planLevelInsDoc)
+    #end
+    ## 施設調整（UH）
+    #set( $insChoseiUh = "-")
+    #set( $insChoseiColorUh = "#FFF")
+    #if($resultData.insChoseiResult)
+        #if($resultData.insChoseiResult.existDiffUh)
+		    #set( $insChoseiUh = "あり")
+##		    #set( $insChoseiColorUh = "#F4A460")
+        #else
+		    #set( $insChoseiUh = "なし")
+##		    #set( $insChoseiColorUh = "#FFF")
+        #end
+        #set( $insChoseiColorUh = "#FFF")
+    #end
+    ## 施設調整（P）
+    #set( $insChoseiP = "-")
+    #set( $insChoseiColorP = "#FFF")
+    #if($resultData.insChoseiResult)
+        #if($resultData.insChoseiResult.existDiffP)
+		    #set( $insChoseiP = "あり")
+##		    #set( $insChoseiColorP = "#F4A460")
+        #else
+		    #set( $insChoseiP = "なし")
+##		    #set( $insChoseiColorP = "#FFF")
+        #end
+        #set( $insChoseiColorP = "#FFF")
+    #end
+    <row id='$velocityCount'>
+        <cell></cell>
+        <cell style="height:45;">1</cell>
+        <cell style="height:45;">$!{resultData.prodName}</cell>
+        ## 担当者まで特定している場合は、「編集リンク」表示
+        #if($form.bean.jgiNoTran && $form.bean.jgiNoTran !="")
+            #if($dispEditLink)
+            	#if($planLevelInsDoc)
+	                #set($oWinUrl = $link.setAction("dps401C02F02").addQueryData('sosCd3',$form.bean.sosCd3Tran).addQueryData('sosCd4',$form.bean.sosCd4Tran).addQueryData('jgiNo',$form.bean.jgiNoTran).addQueryData('prodCode',$prodCode).addQueryData('category',$!form.bean.category).addQueryData('clickRowId', $!velocityCount))
+            	#else
+	                #set($oWinUrl = $link.setAction("dps401C02F00").addQueryData('sosCd3',$form.bean.sosCd3Tran).addQueryData('sosCd4',$form.bean.sosCd4Tran).addQueryData('jgiNo',$form.bean.jgiNoTran).addQueryData('prodCode',$prodCode).addQueryData('category',$!form.bean.category).addQueryData('clickRowId', $!velocityCount))
+            	#end
+                <cell style="height:45;"><![CDATA[<a href='#' onclick='cs_openEditDialog($!{q}$!{oWinUrl}$!{q},dps401C0XF05);'>編集</a>]]></cell>
+            #else
+                <cell style="height:45;"></cell>
+            #end
+        #end
+        ###if (($form.bean.category == $vaccineCode && $form.bean.honbuUser == true) || $form.bean.category != $vaccineCode)
+            <cell style="height:45;" $insWsPlanDistClass><![CDATA[$!insWsPlanDistStatus]]></cell>
+        ###end
+        <cell style="height:45;" $insWsPlanMrOpenClass><![CDATA[$!insWsPlanMrOpenStatus]]></cell>
+        <cell style="height:45;" $insWsPlanMrFixClass><![CDATA[$!insWsPlanMrFixStatus]]></cell>
+        <cell style="height:45;#setMinusStyle($!{resultData.resultSummaryUh.currentPlanValue})">$!{resultData.resultSummaryUh.currentPlanValue}</cell>
+        <cell style="height:45;#setMinusStyle($!{resultData.resultSummaryUh.currentPeriod})">$!{resultData.resultSummaryUh.currentPeriod}</cell>
+        <cell style="height:45;#setMinusStyle($!{resultData.resultSummaryUh.currentRate})">$!format.doubleToString($!{resultData.resultSummaryUh.currentRate}, $decimalFormat)</cell>
+        #if($dispPlan)
+            <cell style="height:45;#setMinusStyle($!{resultData.plannedSummary.mrPlanPlannedValueUh})">$!{resultData.plannedSummary.mrPlanPlannedValueUh}</cell>
+            <cell style="height:45;#setMinusStyle($!{resultData.plannedSummary.insWsPlanPlannedValueUh})">$!{resultData.plannedSummary.insWsPlanPlannedValueUh}</cell>
+            <cell style="height:45;#setSagakuStyle($!{resultData.plannedSummary.sagakuUh})">$!{resultData.plannedSummary.sagakuUh}</cell>
+            <cell style="height:45;background-color:$insChoseiColorUh;">$insChoseiUh</cell>
+            <userdata name="pUH">$!{resultData.plannedSummary.insWsPlanPlannedValueUh}</userdata>
+            <userdata name="sUH">$!{resultData.plannedSummary.sagakuUh}</userdata>
+            <userdata name="insUH">$!resultData.insChoseiResult.existDiffUh</userdata>
+        #else
+            <cell style="height:45;"></cell>
+            <cell style="height:45;"></cell>
+            <cell style="height:45;"></cell>
+            <cell style="height:45;"></cell>
+            <userdata name="pUH"></userdata>
+            <userdata name="sUH"></userdata>
+            <userdata name="insUH"></userdata>
+        #end
+        <cell style="height:45;#setMinusStyle($!{resultData.resultSummaryP.currentPlanValue})">$!{resultData.resultSummaryP.currentPlanValue}</cell>
+        <cell style="height:45;#setMinusStyle($!{resultData.resultSummaryP.currentPeriod})">$!{resultData.resultSummaryP.currentPeriod}</cell>
+        <cell style="height:45;#setMinusStyle($!{resultData.resultSummaryP.currentRate})">$!format.doubleToString($!{resultData.resultSummaryP.currentRate}, $decimalFormat)</cell>
+        #if($dispPlan)
+            <cell style="height:45;#setMinusStyle($!{resultData.plannedSummary.mrPlanPlannedValueP})">$!{resultData.plannedSummary.mrPlanPlannedValueP}</cell>
+            <cell style="height:45;#setMinusStyle($!{resultData.plannedSummary.insWsPlanPlannedValueP})">$!{resultData.plannedSummary.insWsPlanPlannedValueP}</cell>
+            <cell style="height:45;#setSagakuStyle($!{resultData.plannedSummary.sagakuP})">$!{resultData.plannedSummary.sagakuP}</cell>
+            <cell style="height:45;background-color:$insChoseiColorP;">$insChoseiP</cell>
+            <userdata name="pP">$!{resultData.plannedSummary.insWsPlanPlannedValueP}</userdata>
+            <userdata name="sP">$!{resultData.plannedSummary.sagakuP}</userdata>
+            <userdata name="insP">$!resultData.insChoseiResult.existDiffP</userdata>
+        #else
+            <cell style="height:45;"></cell>
+            <cell style="height:45;"></cell>
+            <cell style="height:45;"></cell>
+            <cell style="height:45;"></cell>
+            <userdata name="pP"></userdata>
+            <userdata name="sP"></userdata>
+            <userdata name="insP"></userdata>
+        #end
+        ##送信情報
+        <userdata name="rowIdList">$prodCode,$resultData.prodName,$lastUpdate</userdata>
+        ## 削除施設数
+        <userdata name="delInsCount">$!{resultData.delInsCount}</userdata>
+        ## 計画対象外特約店数
+        <userdata name="taigaiTytenCount">$!{resultData.taigaiTytenCount}</userdata>
+        ## 配分除外施設数
+        <userdata name="exceptDistInsCount">$!{resultData.exceptDistInsCount}</userdata>
+    </row>
+  #end
+</rows>
+#end

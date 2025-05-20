@@ -1,0 +1,636 @@
+## (医)特約店別計画参照画面
+#set($pageTitle = $text.get("dps502C00","title"))
+#set($bodyOnloadMethod = "dps502Onload()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+
+## ヘッダデータ（医薬）
+#if($form.getRequestData("DPS502C00_DATA_HEADER"))
+    #set($resultHeaderData = $form.getRequestData("DPS502C00_DATA_HEADER"))
+#end
+## 一覧データ（医薬）
+#if($form.getRequestData("DPS502C00_DATA_R"))
+    #set($resultData = $form.getRequestData("DPS502C00_DATA_R"))
+#end
+
+## ヘッダデータ（ワクチン）
+#if($form.getRequestData("DPS502C03_DATA_R_RESULT_HEADER"))
+    #set($resultHeader = $form.getRequestData("DPS502C03_DATA_R_RESULT_HEADER"))
+#end
+
+## 一覧データ（ワクチン）
+#if($form.getRequestData("DPS502C03_DATA_R_RESULT_DETAIL"))
+    #set($resultDetail = $form.getRequestData("DPS502C03_DATA_R_RESULT_DETAIL"))
+#end
+
+#set($vaccineCode = $service.getShienVaccineCode())
+#if($form.bean.category == "$vaccineCode")
+    ## ワクチンの場合
+    #set($GridObjName = "dps502C03Grid")
+    #set($CoverId = "dps502C03CoverId")
+
+    #set ($editMode = false)
+## add Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+##   #if($form.bean.wsEndFlg)
+    #if($!security.sysManage.transTFlg)
+    	#if($form.bean.kaBaseKb == "2")
+    		#set ($editMode = true)
+    	#end
+    #elseif($form.bean.kaBaseKb == "1")
+    	#set ($editMode = true)
+    #end
+## mod End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+
+#else
+    ## 医薬の場合
+    #set($GridObjName = "dps502C00Grid")
+    #set($CoverId = "dps502C00CoverId")
+
+    #set ($editMode = false)
+## add Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+    #if($!security.sysManage.transTFlg)
+    	#if($form.bean.kaBaseKb == "2")
+    		#set ($editMode = true)
+    	#end
+    #elseif($form.bean.kaBaseKb == "1")
+    	#set ($editMode = true)
+    #end
+## mod End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+
+#end
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+
+<script language="javascript">
+var category = "$!form.bean.category";
+
+function dps502Onload(){
+
+    category = document.getElementById("category").value;
+
+    ## ワクチンの場合
+    if(category == "$vaccineCode"){
+        dps502C03F00();
+    }
+    ## 医薬の場合
+    else
+    {
+        dps502C00F00();
+    }
+
+## add Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+	##前画面の価ベースを保持
+	var karikaBaseKb = "$!form.bean.kaBaseKb";
+
+	##初期表示の場合はフラグによる選択値をセット
+	if(karikaBaseKb == ""){
+	  if($security.sysManage.transTFlg){
+      karikaBaseKb = "2";
+      }else{
+      karikaBaseKb = "1";
+      }
+     }
+
+    changeProd();
+
+	##前画面の価ベースを設定
+	document.dps502C00Form.kaBaseKb.value = karikaBaseKb;
+## mod End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+}
+## 検索処理
+function dps502C00F05(){
+
+
+    ## ワクチンの場合
+    if(category == "$vaccineCode"){
+        ##入力チェック
+        if (!dps502C00Validation()) {
+            return;
+        }
+        ##送信
+        var actionPath = '$link.setAction('dps502C03F05')';
+        document.dps502C00Form.action = actionPath;
+        document.dps502C00Form.submit();
+        dps502C03F05 = blockIt;
+        dps502C03F10Output = blockIt;
+
+    }
+    ## 医薬の場合
+    else
+    {
+        ##入力チェック
+        if (!dps502C00Validation()) {
+            return;
+        }
+        ##送信
+        var actionPath = '$link.setAction('dps502C00F05')';
+        document.dps502C00Form.action = actionPath;
+        document.dps502C00Form.submit();
+        dps502C00F05 = blockIt;
+        dps502C00F10 = blockIt;
+
+    }
+
+}
+## 出力処理
+function dps502C00F10(){
+    if (!dps502C00Validation()) {
+        return;
+    }
+
+    ## ワクチンの場合
+    if(category == "$vaccineCode"){
+        ##確認
+        if (!confirm('$text.get("DPS502C03.001","dialogue")')) {
+            return;
+        }
+        ##送信
+        var actionPath = '$link.setAction('dps502C03F10Output')';
+        document.dps502C00Form.action = actionPath;
+        document.dps502C00Form.submit();
+    }
+    ## 医薬の場合
+    else
+    {
+        ##確認
+        if (!confirm('$text.get("DPS502C00.001","dialogue")')) {
+            return;
+        }
+
+        ##送信
+        var actionPath = '$link.setAction('dps502C00F10Output')';
+        document.dps502C00Form.action = actionPath;
+        document.dps502C00Form.submit();
+    }
+
+
+    return false;
+}
+## 特約店編集ダイアログを開く
+function openEditDialog(tmsTytenCd,prodCode,tytenKisLevel,kaBaseKb){
+console.log("openEditDialog149");
+    var url;
+
+    ## ワクチンの場合
+    if(category == "$vaccineCode"){
+    console.log("openEditDialog154");
+        url = "$link.setAction('dps502C04F00')";
+        url = url.concat("?tmsTytenCd=").concat(tmsTytenCd);
+        url = url.concat("&prodCode=").concat(prodCode);
+        url = url.concat("&tytenKisLevel=").concat(tytenKisLevel);
+## add Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+        url = url.concat("&kaBaseKb=").concat(kaBaseKb);
+## mod End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+        var childWindow = openWindow(url);
+        #if($resultDetail)
+            interval = setInterval(function(){
+                if(childWindow.closed){
+                    clearInterval(interval);
+                    ## 検索処理を走らせる
+## add Start 2022/7/22  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+                    ## 検索時の価ベースを保持
+                    document.dps502C00Form.kaBaseKb.value = $form.bean.kaBaseKb;
+## add End 2022/7/22  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+                    dps502C00F05();
+                }
+            }, 200);
+        #end
+    }
+    ## 医薬の場合
+    else
+    {
+    console.log("openEditDialog154");
+        url = '$link.setAction("dps502C01F00")' + "?tmsTytenCd=" + tmsTytenCd + "&prodCode=" + prodCode + "&tytenKisLevel=" + tytenKisLevel + "&kaBaseKb=" + kaBaseKb;
+        var childWindow = openWindow(url);
+        #if($resultData)
+            interval = setInterval(function(){
+                if(childWindow.closed){
+                    clearInterval(interval);
+                    ## 検索処理を走らせる
+## add Start 2022/7/22  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+                    ## 検索時の価ベースを保持
+                    document.dps502C00Form.kaBaseKb.value = $form.bean.kaBaseKb;
+## add End 2022/7/22  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+                    dps502C00F05();
+                }
+            }, 200);
+        #end
+    }
+
+}
+## 特約店追加ダイアログを開く
+function openAddDialog(){
+    var url;
+    var childWindow;
+    var interval;
+
+    ## ワクチンの場合
+    if(category == "$vaccineCode"){
+        ## ダイアログを開く
+## add Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+        if("$!form.bean.kaBaseKb" != ""){
+        ## 検索時の価ベースを保持
+        document.dps502C00Form.kaBaseKb.value = $form.bean.kaBaseKb;
+        }
+        url = '$link.setAction("dps502C05F00")' + "?kaBaseKb=" + document.dps502C00Form.kaBaseKb.value + "&category=" + document.dps502C00Form.category.value;
+## mod End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+        childWindow = openWindow(url);
+        #if($resultDetail)
+            interval = setInterval(function(){
+                if(childWindow.closed){
+                    clearInterval(interval);
+                    ## 検索処理を走らせる
+                    dps502C00F05();
+                }
+            }, 200);
+        #end
+    }
+    ## 医薬の場合
+    else
+    {
+        ## ダイアログを開く
+## add Start 2022/7/22  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+        ## 検索時の価ベースを保持
+        if("$!form.bean.kaBaseKb" != ""){
+        document.dps502C00Form.kaBaseKb.value = $form.bean.kaBaseKb;
+        }
+## add End 2022/7/22  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+        url = '$link.setAction("dps502C02F00")' + "?kaBaseKb=" + document.dps502C00Form.kaBaseKb.value;
+        childWindow = openWindow(url);
+        #if($resultData)
+            interval = setInterval(function(){
+                if(childWindow.closed){
+                    clearInterval(interval);
+                    ## 検索処理を走らせる
+                    dps502C00F05();
+                }
+            }, 200);
+        #end
+    }
+
+}
+##バリデーション
+function dps502C00Validation() {
+    ## [必須] 集約方法
+    tytenKisLevel = getCheckedRadioValue(document.dps502C00Form.tytenKisLevel);
+    errorMsg = '$text.get("DPC1003E",["集約方法"])';
+    addErrorInfo(!isEntered(tytenKisLevel), errorMsg);
+
+    ## [必須] 特約店コード（集約方法が支店、課、ブロック１、ブロック２の場合）
+    if(tytenKisLevel){
+        ## [必須] 特約店コード
+        tmsTytenCdPart = document.dps502C00Form.tmsTytenCdPart.value;
+        if(tytenKisLevel == "03" || tytenKisLevel == "04" || tytenKisLevel == "05" || tytenKisLevel == "06") {
+            errorMsg = '$text.get("DPS1029E")';
+            addErrorInfo(!isEntered(tmsTytenCdPart), errorMsg);
+        }
+    }
+
+    ## [半角数値] 特約店コード
+    if (tmsTytenCdPart) {
+        errorMsg = '$text.get("DPC1004E",["特約店コード","半角数値"])';
+        isAdded = addErrorInfo(!isNumber(tmsTytenCdPart), errorMsg);
+        if (!isAdded) {
+            ## [桁数] 入力特約店コード
+            errorMsg = '$text.get("DPC1027E",["特約店コード","3,5,7,9,11,13"])';
+            isAdded = addErrorInfo(!isTmsTytenCdLength(tmsTytenCdPart), errorMsg);
+            if (!isAdded) {
+                ##[集約方法]と[特約店コード]の関係性検証
+                errorMsg = '$text.get("DPS3323E")';
+                addErrorInfo(!checkTmsTytenCdAndKisLevel(tmsTytenCdPart, tytenKisLevel), errorMsg);
+            }
+        }
+    }
+    return validation();
+}
+## 【検索】品目カテゴリ選択処理
+function changeProd() {
+
+    category = document.getElementById("category").value;
+	##const ytLabel = document.getElementById("ytLabel");
+	##const ytSelect = document.getElementById("ytSelect");
+	const chgRateRegSts = document.getElementById("chgRateRegSts");
+	const iyakuRegSts = document.getElementById("iyakuRegSts");
+	const vacRegSts = document.getElementById("vacRegSts");
+	const regButton = document.getElementById("regButton");
+
+## add Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+	## 一旦selectboxのoptionを削除
+	while(kaBaseKb.lastChild)
+    {
+        kaBaseKb.removeChild(kaBaseKb.lastChild);
+    }
+
+    ## 価ベースのselectbox
+	var selectKaBaseKb = document.getElementsByName('kaBaseKb')[0];
+
+	## optionを作成
+	var option;
+	document.createElement('option');
+## mod End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+
+	## ワクチンの場合
+    if(category == "$vaccineCode"){
+        ##ytLabel.style.display ="none";
+        ##ytSelect.style.display ="none";
+        chgRateRegSts.innerHTML = "S/B変換指定率登録状況";
+## add Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+        chgYorB.innerHTML = "B価/S価";
+        option = document.createElement('option');
+        option.setAttribute('value', '1');
+        option.innerHTML = 'B価';
+        selectKaBaseKb.appendChild(option);
+        option = document.createElement('option');
+        option.setAttribute('value', '2');
+        option.innerHTML = 'S価';
+        selectKaBaseKb.appendChild(option);
+## mod End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+        iyakuRegSts.style.display ="none";
+        vacRegSts.style.display ="block";
+    }
+    ## 医薬の場合
+    else
+    {
+        ##ytLabel.style.display ="block";
+        ##ytSelect.style.display ="block";
+        chgRateRegSts.innerHTML = "S/Y変換指定率登録状況";
+## add Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+        chgYorB.innerHTML = "Y価/S価";
+        option = document.createElement('option');
+        option.setAttribute('value', '1');
+        option.innerHTML = 'Y価';
+        selectKaBaseKb.appendChild(option);
+        option = document.createElement('option');
+        option.setAttribute('value', '2');
+        option.innerHTML = 'S価';
+        selectKaBaseKb.appendChild(option);
+## mod End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+        vacRegSts.style.display ="none";
+        iyakuRegSts.style.display ="block";
+
+    }
+    ## add Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+    if($security.sysManage.transTFlg){
+    document.dps502C00Form.kaBaseKb.value = "2";
+    }else{
+    document.dps502C00Form.kaBaseKb.value = "1";
+    }
+    ## add Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+}
+## 登録処理
+function dps502C00F05Execute(){
+
+    ## --- 編集中セル値の登録時チェック ---
+	if(window.editValueChecker.isValid() == false){
+		return;
+	}
+
+    ##入力チェック
+    if (!dps502C00F05Validation()) {
+        return;
+    }
+
+	##計画立案対象外特約店のチェック
+    if(doesIncludeExceptTytPlan()){
+	    if(!window.confirm('$text.get("DPS502C01.002","dialogue")')){
+	        return false;
+	    }
+    }
+
+    ## 確認
+    if(!window.confirm('$text.get("DPS502C01.001","dialogue")')){
+        return false;
+    }
+
+	## ワクチンの場合
+    if(category == "$vaccineCode"){
+        vacRegist();
+    }
+    ## 医薬の場合
+    else
+    {
+        iyakuRegist();
+    }
+}
+
+## 計画立案対象外特約店への計画有無チェック
+function doesIncludeExceptTytPlan(){
+
+    #if($resultData) ## 医薬の場合
+		if( cs_planTaiGaiFlgRikCheck(${GridObjName},5) ||
+		    cs_planTaiGaiFlgRikCheck(${GridObjName},8) ){
+		    return true;
+		}
+		return false;
+    #elseif($resultDetail) ## ワクチンの場合
+    	return cs_planTaiGaiFlgRikCheck(${GridObjName},4);
+    #end
+}
+
+## 医薬の登録
+function iyakuRegist(){
+    ##送信データ作成
+    for (i = 1; i <= ${GridObjName}.getRowsNum(); i++) {
+
+
+        if(${GridObjName}.getUserData(i, "rowType") != "input"){
+            continue;
+        }
+
+        var userData = ${GridObjName}.getUserData(i, 'updateRowId');
+        if(userData == null || userData == ""){continue;}
+        userData += "," + ${GridObjName}.cells(i,5).getValue();
+        userData += "," + ${GridObjName}.cells(i,8).getValue();
+console.log(userData);
+        ${GridObjName}.setUserData(i, 'updateRowId', userData);
+    }
+    addRowIdList(document.dps502C00Form, ${GridObjName}, 'rowIdList', 'updateRowId');
+    ##送信
+    var actionPath = '$link.setAction('dps502C00F05Execute')';
+    document.dps502C00Form.action = actionPath;
+    document.dps502C00Form.submit();
+    dps502C00F05Execute = blockIt;
+}
+## ワクチンの登録
+function vacRegist(){
+    ##送信データ作成
+    for (i = 1; i <= ${GridObjName}.getRowsNum(); i++) {
+
+
+        if(${GridObjName}.getUserData(i, "rowType") != "input"){
+            continue;
+        }
+
+        var userData = ${GridObjName}.getUserData(i, 'updateRowId');
+        if(userData == null || userData == ""){continue;}
+        userData += "," + ${GridObjName}.cells(i,4).getValue();
+console.log(userData);
+        ${GridObjName}.setUserData(i, 'updateRowId', userData);
+    }
+    addRowIdList(document.dps502C00Form, ${GridObjName}, 'rowIdList', 'updateRowId');
+    ##送信
+    var actionPath = '$link.setAction('dps502C03F05Execute')';
+    document.dps502C00Form.action = actionPath;
+    document.dps502C00Form.submit();
+    dps502C03F05Execute = blockIt;
+}
+
+
+
+## 登録処理時入力チェック
+function dps502C00F05Validation(){
+    return validation();
+}
+</script>
+
+#tabbar("sienTokuyaku", "dps502C00F00")
+<div id="tabBox">
+<form name="dps502C00Form" method="post">
+##価ベース区分のセット
+## mod 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+##<input type="hidden" name="kaBaseKb" id="kaBaseKb" value="$!form.bean.kaBaseKb" />
+## 検索条件
+<div align="left" style="float: left;width: 100%;">
+    <table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+        <td id="chgRateRegSts" class="gridIndex" style="width:150px;">
+            S/Y変換指定率登録状況
+        </td>
+        <td>
+            <label id="iyakuRegSts" style="display:none">
+            #if($resultHeaderData.changeParamYTUpDate)
+                登録済み(最終更新日：$format.toString($resultHeaderData.changeParamYTUpDate, "yyyy/MM/dd HH:mm"))
+            #else
+                未登録
+            #end
+            </label>
+            <label id="vacRegSts" style="display:none">
+            #if($resultHeader.changeParamBTUpDate)
+                登録済み(最終更新日：$format.toString($resultHeader.changeParamBTUpDate, "yyyy/MM/dd HH:mm"))
+            #else
+                未登録
+            #end
+            </label>
+
+        </td>
+## add Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+        </td>
+             <td id="chgYorB" class="gridIndex">Y価/S価</td>
+             <td>#select ("kaBaseKb", $!form.bean.kaBaseKbList, $!form.bean.kaBaseKb)</td>
+        <td>
+## add End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+    </tr>
+    <tr>
+        <td class="gridIndex">特約店</td>
+        <td>
+            <table>
+            <tr>
+                <td>
+                    <table class="gridLine" cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+                    <tr>
+                        <td style="width:270px;">
+                            <nobr><label id="tmsTytenNameLabel">$!form.bean.tmsTytenName　</label></nobr>
+                            <input type="hidden" name="tmsTytenName" id="tmsTytenName" value="$!form.bean.tmsTytenName" />
+                        </td>
+                    </tr>
+                    </table>
+                </td>
+                <td>
+                    <input type="button"  value="選択" onClick="openTytenDialog()"  style="width:80px;" />
+                </td>
+            </tr>
+            </table>
+        </td>
+        <td class="gridIndex" nowrap="nowrap">特約店コード</td>
+        <td><input type="text" name="tmsTytenCdPart" id="tmsTytenCdPart" value="$!form.bean.tmsTytenCdPart" size="20" maxlength="13" style="ime-mode:disabled" /></td>
+    </tr>
+    <tr>
+        <td class="gridIndex">集約方法*</td>
+        <td nowrap="nowrap">
+            #foreach($tytenKisLevel in $form.bean.tytenKisLevels)
+                #if($tytenKisLevel.code == $form.bean.tytenKisLevel)
+                    #set($checked = "checked")
+                #else
+                    #set($checked = "")
+                #end
+                <label><input type="radio" name="tytenKisLevel" value="$tytenKisLevel.code"  $checked />$tytenKisLevel.value</label>
+            #end
+        </td>
+        <td class="gridIndex">カテゴリ</td>
+        <td>
+    		## 本画面はカテゴリを独自設定
+## add start 2018/6/19 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+##     		#set($categoryList = $service.createCodeAndValue([["1","JPBU品"],["2","仕入品(一般・麻薬)"],["3","ONC品"],["9","全て"]]))
+##    		#set($categoryList = $service.getCategoryNoStarsList(false,true))
+## add end 2018/6/19 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+##          #select ("category", $categoryList, $!form.bean.category)
+##          #select ("category",  $!form.bean.categoryList, $!form.bean.category)
+            #selectWithFunc ("category", $!form.bean.categoryList, $!form.bean.category, "changeProd();")
+        </td>
+    </tr>
+    </table>
+</div>
+## 注意書き
+<div align="left" style="float: left;width: 100%;">
+## mod Start 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+##<div class="guide">
+<div class="guide" style="padding-top: 0px;">
+## mod End 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+    ※【特約店コード】は半角数値(3桁～13桁)で入力してください。<br/>
+    ※【集約方法】がブロック2(13桁)の場合に編集が可能です。支店(7桁)、課(9桁)、ブロック1(11桁)、ブロック2(13桁)の場合、本店まで特定してください。<br/>
+</div>
+</div>
+## ボタン
+<div align="left" style="float: left;width: 100%;">
+<table style="margin-top:4px; width: 100%;">
+    <tr>
+       <td style="width:80px;"><input type="button" value="検索" style="width:100px;" onclick="dps502C00F05()" /></td>
+       <td style="width:80px;"><input type="button" value="出力" style="width:100px;" onclick="dps502C00F10()" /></td>
+       #if ($!security.hasAuthEdit("DPS502"))
+           <td style="width:100px;"><input type="button" align="right" value="特約店別計画追加" onClick="openAddDialog()" id="addButton"/></td>
+           #if($resultData || $resultDetail)
+        	   #if($form.bean.tytenKisLevel == "06")
+		           #if ($editMode)
+			           <td style="width:100px;"><input type="button" align="right" value="登録する" onClick="dps502C00F05Execute()" id="regButton"/></td>
+			       #else
+			           <td style="width:100px;"><input type="button" align="right" value="登録する" onClick="dps502C00F05Execute()" id="regButton" disabled/></td>
+			       #end
+		       #end
+	       #end
+       #end
+
+        #if($resultData || $resultDetail)
+            <td style="width:10px;"></td>
+            <td class="statusNot legendSize">&nbsp;</td>
+      		<td style="padding-right:10px;"><label>：計画立案対象外特約店</label></td>
+## add Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+      		#if($form.bean.kaBaseKb == "1")
+      		    #if($form.bean.category == "$vaccineCode")
+                <td class="label" style="text-align:right;vertical-align:bottom;">$consts.tableHeaderB</td>
+                #else
+                <td class="label" style="text-align:right;vertical-align:bottom;">$consts.tableHeaderY</td>
+                #end
+            #else
+            <td class="label" style="text-align:right;vertical-align:bottom;">$consts.tableHeaderS</td>
+            #end
+## add End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+        #else
+        	<td class="label" style="text-align:right;vertical-align:bottom;">&nbsp;&nbsp;&nbsp;</td>
+        #end
+    </tr>
+</table>
+</div>
+##検索結果
+#if($resultData || $resultDetail)
+<div align="left" style="float: left;width: 100%;">
+    #loadingGridDiv2("${GridObjName}", "${CoverId}", "width:99.5%; clear:both;")
+</div>
+#end
+#if($form.bean.category == "$vaccineCode")
+    #parse("WEB-INF/view/pages/dps/dps502C00_2.vm")
+#else
+    #parse("WEB-INF/view/pages/dps/dps502C00_1.vm")
+#end
+## hidden項目
+#token()
+</form>
+</div>
+

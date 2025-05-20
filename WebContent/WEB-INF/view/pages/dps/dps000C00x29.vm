@@ -1,0 +1,128 @@
+#set($layout = "nothingLayout.vm" )
+#set($dps000C00F29Data = $form.getRequestData("DPS000C00F29_DATA_R"))
+#set($rank = $progress.getProgressIyakuRank())
+#set($rankString = $rank.toString())
+#set($style = $!progress.getStyle())
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#set($bgEnd = "class='statusEnd statusSize'")
+#set($bgIng = "class='statusIng statusSize'")
+#set($bgNot = "class='statusNot statusSize'")
+#if($rankString.equals("SITEN"))
+
+## del Start 2021/7/19 H.Kaneko Step4UAT課題 特約店別計画を支店ごとに表示
+###set($record = $dps000C00F29Data.getWsPlanStatusSummaryMap())
+##	##カテゴリでループ
+##	#foreach($curCategory in $progress.getProdCategoryList())
+##   <row id="$velocityCount">
+##		#set($data = $record.get($curCategory.getDbValue()))
+##
+##	    ##配分状況
+##	    #set($wsPlanDistStatusCAV = $progress.progressWsPlanDistStatus($!data, $!rank, $curCategory.dbValue))
+
+##	    #if($!wsPlanDistStatusCAV.code.equals("NOT"))
+##	        #set($wsPlanDistClass = $bgNot)
+##	    	#set($wsPlanDistStatus = $wsPlanDistStatusCAV.value)
+##	    #elseif($!wsPlanDistStatusCAV.code.equals("ING"))
+##	        #set($wsPlanDistClass = $bgIng)
+##	        #set($wsPlanDistStatus = $wsPlanDistStatusCAV.value)
+##	    #elseif($!wsPlanDistStatusCAV.code.equals("END"))
+##	        #set($wsPlanDistClass = $bgEnd)
+##	        #set($wsPlanDistStatus =$wsPlanDistStatusCAV.value + "<br>" + $!format.toString($!data.distEndDate, 'MM/dd HH:mm'))
+##	    #end
+
+	    ##スライド状況
+##	    #set($wsPlanSlideStatusCAV = $progress.progressWsPlanSlideStatus($!data, $!rank, $curCategory.dbValue))
+##	    #if($!wsPlanSlideStatusCAV.code.equals("NOT"))
+##	        #set($wsPlanSlideClass = $bgNot)
+##		    #set($wsPlanSlideStatus = $wsPlanSlideStatusCAV.value)
+##	    #elseif($!wsPlanSlideStatusCAV.code.equals("ING"))
+##	        #set($wsPlanSlideClass = $bgIng)
+##	        #set($wsPlanSlideStatus = $wsPlanSlideStatusCAV.value)
+##	    #elseif($!wsPlanSlideStatusCAV.code.equals("END"))
+##	        #set($wsPlanSlideClass = $bgEnd)
+##	        #set($wsPlanSlideStatus = $wsPlanSlideStatusCAV.value + "<br>" + $!format.toString($!data.slideEndDate, 'MM/dd HH:mm'))
+##	    #end
+
+##		##カテゴリ名
+##		<cell $!style><![CDATA[$curCategory.getProdCategoryName()]]></cell>
+
+##		##配分状況
+##        <cell $!wsPlanDistClass $!style><![CDATA[$!wsPlanDistStatus]]></cell>
+
+##	    ##スライド状況
+##        <cell $!wsPlanSlideClass $!style><![CDATA[$!wsPlanSlideStatus]]></cell>
+##    </row>
+
+##    #end
+
+###end
+##</rows>
+## del End 2021/7/19 H.Kaneko Step4UAT課題 特約店別計画を支店ごとに表示
+
+
+## add Start 2021/7/19 H.Kaneko Step4UAT課題 特約店別計画を支店ごとに表示
+## カテゴリDATA_VALUE順
+###set($categoryList = $progress.getProdCategoryList())
+## カテゴリDATA_SEQ順
+#set($categoryList = $progress.getProdCategoryListByDataSeq())
+
+	##支店ごと
+	#foreach($statusMap in $dps000C00F29Data.getWsPlanStatusSummaryMapList())
+		<row id="$velocityCount">
+		##カテゴリごと
+		#foreach($curCategory in $categoryList)
+			#set($data = $statusMap.get($curCategory.getDbValue()))
+
+
+	    ##配分状況
+	    #set($wsPlanDistStatusCAV = $progress.progressWsPlanDistStatus($!data, $!rank, $curCategory.dbValue))
+
+	    #if($!wsPlanDistStatusCAV.code.equals("NOT"))
+	        #set($wsPlanDistClass = $bgNot)
+	    	#set($wsPlanDistStatus = $wsPlanDistStatusCAV.value)
+	    #elseif($!wsPlanDistStatusCAV.code.equals("ING"))
+	        #set($wsPlanDistClass = $bgIng)
+	        #set($wsPlanDistStatus = $wsPlanDistStatusCAV.value)
+	    #elseif($!wsPlanDistStatusCAV.code.equals("END"))
+	        #set($wsPlanDistClass = $bgEnd)
+	     	#if($data.distEndDate)
+	     		#set($wsPlanDistStatus =$wsPlanDistStatusCAV.value + "<br>" + $!format.toString($!data.distEndDate, 'MM/dd HH:mm'))
+	     	#else
+	        	#set($wsPlanDistStatus =$wsPlanDistStatusCAV.value)
+	        #end
+	    #end
+
+	    ##スライド状況
+	    #set($wsPlanSlideStatusCAV = $progress.progressWsPlanSlideStatus($!data, $!rank, $curCategory.dbValue))
+	    #if($!wsPlanSlideStatusCAV.code.equals("NOT"))
+	        #set($wsPlanSlideClass = $bgNot)
+		    #set($wsPlanSlideStatus = $wsPlanSlideStatusCAV.value)
+	    #elseif($!wsPlanSlideStatusCAV.code.equals("ING"))
+	        #set($wsPlanSlideClass = $bgIng)
+	        #set($wsPlanSlideStatus = $wsPlanSlideStatusCAV.value)
+	    #elseif($!wsPlanSlideStatusCAV.code.equals("END"))
+	        #set($wsPlanSlideClass = $bgEnd)
+	        #if($data.slideEndDate)
+	        	#set($wsPlanSlideStatus = $wsPlanSlideStatusCAV.value + "<br>" + $!format.toString($!data.slideEndDate, 'MM/dd HH:mm'))
+	        #else
+	        	#set($wsPlanSlideStatus = $wsPlanSlideStatusCAV.value)
+	        #end
+	    #end
+
+
+			##組織名　※１ループ目のみ
+			#if($velocityCount == 1)
+				<cell $!style><![CDATA[$data.bumonSeiName]]></cell>
+			#end
+
+			##配分状況
+	        <cell $!wsPlanDistClass $!style><![CDATA[$!wsPlanDistStatus]]></cell>
+		    ##スライド状況
+	        <cell $!wsPlanSlideClass $!style><![CDATA[$wsPlanSlideStatus]]></cell>
+		#end
+	    </row>
+	#end
+#end
+</rows>
+## add End 2021/7/19 H.Kaneko Step4UAT課題 特約店別計画を支店ごとに表示

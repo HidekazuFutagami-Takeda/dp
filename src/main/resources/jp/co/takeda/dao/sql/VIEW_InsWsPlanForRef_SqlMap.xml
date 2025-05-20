@@ -1,0 +1,1209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_InsWsPlanForRef_SqlMap" >
+  <resultMap id="resultMap2" class="jp.co.takeda.model.view.InsWsPlanForRef" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INS_NO" property="insNo" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="DIST_VALUE_Y" property="distValueY" jdbcType="BIGINT" />
+    <result column="MODIFY_VALUE_Y" property="modifyValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_Y" property="plannedValueY" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_VALUE_Y" property="befPlannedValueY" jdbcType="BIGINT" />
+    <result column="SPECIAL_INS_PLAN_FLG" property="specialInsPlanFlg" jdbcType="CHAR" />
+    <result column="EXCEPT_DIST_INS_FLG" property="exceptDistInsFlg" jdbcType="CHAR" />
+    <result column="DEL_INS_FLG" property="delInsFlg" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="INS_ABBR_NAME" property="insAbbrName" jdbcType="VARCHAR" />
+    <result column="INS_CLASS" property="insClass" jdbcType="VARCHAR" />
+    <result column="OLD_INSR_FLG" property="oldInsrFlg" jdbcType="VARCHAR" />
+    <result column="HO_INS_TYPE" property="hoInsType" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_MEI_KJ" property="tmsTytenName" jdbcType="VARCHAR" />
+    <result column="PRE_FAR_ADVANCE_PERIOD" property="monNnuSummary.preFarAdvancePeriod" jdbcType="BIGINT" />
+    <result column="FAR_ADVANCE_PERIOD" property="monNnuSummary.farAdvancePeriod" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD" property="monNnuSummary.advancePeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PERIOD" property="monNnuSummary.currentPeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PLAN_VALUE" property="monNnuSummary.currentPlanValue" jdbcType="BIGINT" />
+
+    <result column="PRE_FAR_ADVANCE_PERIOD1" property="monNnuSummary1.preFarAdvancePeriod" jdbcType="BIGINT" />
+    <result column="FAR_ADVANCE_PERIOD1" property="monNnuSummary1.farAdvancePeriod" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD1" property="monNnuSummary1.advancePeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PERIOD1" property="monNnuSummary1.currentPeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PLAN_VALUE1" property="monNnuSummary1.currentPlanValue" jdbcType="BIGINT" />
+
+    <result column="PRE_FAR_ADVANCE_PERIOD2" property="monNnuSummary2.preFarAdvancePeriod" jdbcType="BIGINT" />
+    <result column="FAR_ADVANCE_PERIOD2" property="monNnuSummary2.farAdvancePeriod" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD2" property="monNnuSummary2.advancePeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PERIOD2" property="monNnuSummary2.currentPeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PLAN_VALUE2" property="monNnuSummary2.currentPlanValue" jdbcType="BIGINT" />
+
+    <result column="PRE_FAR_ADVANCE_PERIOD3" property="monNnuSummary3.preFarAdvancePeriod" jdbcType="BIGINT" />
+    <result column="FAR_ADVANCE_PERIOD3" property="monNnuSummary3.farAdvancePeriod" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD3" property="monNnuSummary3.advancePeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PERIOD3" property="monNnuSummary3.currentPeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PLAN_VALUE3" property="monNnuSummary3.currentPlanValue" jdbcType="BIGINT" />
+
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="TEAM_CODE" property="teamCode" jdbcType="CHAR" />
+    <result column="BUMON_RYAKU_NAME" property="teamName" jdbcType="VARCHAR" />
+
+    <result column="PLAN_TAI_GAI_FLG_TOK" property="planTaiGaiFlgTok" jdbcType="CHAR" />
+    <result column="PLAN_TAI_GAI_FLG_RIK" property="planTaiGaiFlgRik" jdbcType="CHAR" />
+  </resultMap>
+  <resultMap id="resultMap" class="jp.co.takeda.model.view.InsWsPlanForRef" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INS_NO" property="insNo" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="DIST_VALUE_Y" property="distValueY" jdbcType="BIGINT" />
+    <result column="MODIFY_VALUE_Y" property="modifyValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_Y" property="plannedValueY" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_VALUE_Y" property="befPlannedValueY" jdbcType="BIGINT" />
+    <result column="SPECIAL_INS_PLAN_FLG" property="specialInsPlanFlg" jdbcType="CHAR" />
+    <result column="EXCEPT_DIST_INS_FLG" property="exceptDistInsFlg" jdbcType="CHAR" />
+    <result column="DEL_INS_FLG" property="delInsFlg" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="INS_ABBR_NAME" property="insAbbrName" jdbcType="VARCHAR" />
+    <result column="RELN_INS_NO" property="relnInsNo" jdbcType="VARCHAR" />
+    <result column="INS_CLASS" property="insClass" jdbcType="VARCHAR" />
+    <result column="OLD_INSR_FLG" property="oldInsrFlg" jdbcType="VARCHAR" />
+    <result column="HO_INS_TYPE" property="hoInsType" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_MEI_KJ" property="tmsTytenName" jdbcType="VARCHAR" />
+    <result column="PRE_FAR_ADVANCE_PERIOD" property="monNnuSummary.preFarAdvancePeriod" jdbcType="BIGINT" />
+    <result column="FAR_ADVANCE_PERIOD" property="monNnuSummary.farAdvancePeriod" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD" property="monNnuSummary.advancePeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PERIOD" property="monNnuSummary.currentPeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PLAN_VALUE" property="monNnuSummary.currentPlanValue" jdbcType="BIGINT" />
+
+    <result column="PRE_FAR_ADVANCE_PERIOD1" property="monNnuSummary1.preFarAdvancePeriod" jdbcType="BIGINT" />
+    <result column="FAR_ADVANCE_PERIOD1" property="monNnuSummary1.farAdvancePeriod" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD1" property="monNnuSummary1.advancePeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PERIOD1" property="monNnuSummary1.currentPeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PLAN_VALUE1" property="monNnuSummary1.currentPlanValue" jdbcType="BIGINT" />
+
+    <result column="PRE_FAR_ADVANCE_PERIOD2" property="monNnuSummary2.preFarAdvancePeriod" jdbcType="BIGINT" />
+    <result column="FAR_ADVANCE_PERIOD2" property="monNnuSummary2.farAdvancePeriod" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD2" property="monNnuSummary2.advancePeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PERIOD2" property="monNnuSummary2.currentPeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PLAN_VALUE2" property="monNnuSummary2.currentPlanValue" jdbcType="BIGINT" />
+
+    <result column="PRE_FAR_ADVANCE_PERIOD3" property="monNnuSummary3.preFarAdvancePeriod" jdbcType="BIGINT" />
+    <result column="FAR_ADVANCE_PERIOD3" property="monNnuSummary3.farAdvancePeriod" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD3" property="monNnuSummary3.advancePeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PERIOD3" property="monNnuSummary3.currentPeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PLAN_VALUE3" property="monNnuSummary3.currentPlanValue" jdbcType="BIGINT" />
+
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="TEAM_CODE" property="teamCode" jdbcType="CHAR" />
+    <result column="BUMON_RYAKU_NAME" property="teamName" jdbcType="VARCHAR" />
+
+    <result column="PLAN_TAI_GAI_FLG_TOK" property="planTaiGaiFlgTok" jdbcType="CHAR" />
+    <result column="PLAN_TAI_GAI_FLG_RIK" property="planTaiGaiFlgRik" jdbcType="CHAR" />
+
+    <result column="INS_INFO_NAME" property="prodIns.insInfoName" jdbcType="VARCHAR" />
+    <result column="DISP_FONT_COL_CD" property="prodIns.dispFontColCd" jdbcType="CHAR" />
+    <result column="ERR_KB" property="prodIns.prodInsInfoErrKbn" jdbcType="CHAR" />
+    <result column="SCRN_DISP_KB" property="prodIns.prodInsInfoScanDispKbn" jdbcType="CHAR" />
+    <result column="DIST_KB" property="prodIns.prodInsInfoDistKbn" jdbcType="CHAR" />
+    <result column="IMP_INS_KB" property="prodIns.prodInsInfoImpInsKbn" jdbcType="CHAR" />
+  </resultMap>
+
+  <!-- 検索リスト -->
+  <select id="selectList" resultMap="resultMap2" parameterClass="java.util.Map" >
+    SELECT IWP.SEQ_KEY
+          ,IWP.JGI_NO
+          ,IWP.PROD_CODE
+          ,IWP.INS_NO
+          ,IWP.TMS_TYTEN_CD
+          ,IWP.DIST_VALUE_Y
+          ,IWP.MODIFY_VALUE_Y
+          ,IWP.PLANNED_VALUE_Y
+          ,IWP.BEF_PLANNED_VALUE_Y
+          ,IWP.SPECIAL_INS_PLAN_FLG
+          ,IWP.EXCEPT_DIST_INS_FLG
+          ,IWP.DEL_INS_FLG
+          ,IWP.IS_JGI_NO
+          ,IWP.IS_JGI_NAME
+          ,IWP.IS_DATE
+          ,IWP.UP_JGI_NO
+          ,IWP.UP_JGI_NAME
+          ,IWP.UP_DATE
+          ,INS.INS_ABBR_NAME
+          ,INS.INS_CLASS
+          ,INS.OLD_INSR_FLG
+          ,INS.HO_INS_TYPE
+          ,TMS.TMS_TYTEN_MEI_KJ
+          ,DELI.PRE_FAR_ADVANCE_PERIOD
+          ,DELI.FAR_ADVANCE_PERIOD
+          ,DELI.ADVANCE_PERIOD
+          ,DELI.CURRENT_PERIOD
+          ,DELI.CURRENT_PLAN_VALUE
+          <isNotNull property="resultRefProdCode1">
+          ,DELI1.PRE_FAR_ADVANCE_PERIOD AS PRE_FAR_ADVANCE_PERIOD1
+          ,DELI1.FAR_ADVANCE_PERIOD AS FAR_ADVANCE_PERIOD1
+          ,DELI1.ADVANCE_PERIOD AS ADVANCE_PERIOD1
+          ,DELI1.CURRENT_PERIOD AS CURRENT_PERIOD1
+          ,DELI1.CURRENT_PLAN_VALUE AS CURRENT_PLAN_VALUE1
+          </isNotNull>
+          <isNull property="resultRefProdCode1">
+          ,NULL AS PRE_FAR_ADVANCE_PERIOD1
+          ,NULL AS FAR_ADVANCE_PERIOD1
+          ,NULL AS ADVANCE_PERIOD1
+          ,NULL AS CURRENT_PERIOD1
+          ,NULL AS CURRENT_PLAN_VALUE1
+          </isNull>
+          <isNotNull property="resultRefProdCode2">
+          ,DELI2.PRE_FAR_ADVANCE_PERIOD AS PRE_FAR_ADVANCE_PERIOD2
+          ,DELI2.FAR_ADVANCE_PERIOD AS FAR_ADVANCE_PERIOD2
+          ,DELI2.ADVANCE_PERIOD AS ADVANCE_PERIOD2
+          ,DELI2.CURRENT_PERIOD AS CURRENT_PERIOD2
+          ,DELI2.CURRENT_PLAN_VALUE AS CURRENT_PLAN_VALUE2
+          </isNotNull>
+          <isNull property="resultRefProdCode2">
+          ,NULL AS PRE_FAR_ADVANCE_PERIOD2
+          ,NULL AS FAR_ADVANCE_PERIOD2
+          ,NULL AS ADVANCE_PERIOD2
+          ,NULL AS CURRENT_PERIOD2
+          ,NULL AS CURRENT_PLAN_VALUE2
+          </isNull>
+          <isNotNull property="resultRefProdCode3">
+          ,DELI3.PRE_FAR_ADVANCE_PERIOD AS PRE_FAR_ADVANCE_PERIOD3
+          ,DELI3.FAR_ADVANCE_PERIOD AS FAR_ADVANCE_PERIOD3
+          ,DELI3.ADVANCE_PERIOD AS ADVANCE_PERIOD3
+          ,DELI3.CURRENT_PERIOD AS CURRENT_PERIOD3
+          ,DELI3.CURRENT_PLAN_VALUE AS CURRENT_PLAN_VALUE3
+          </isNotNull>
+          <isNull property="resultRefProdCode3">
+          ,NULL AS PRE_FAR_ADVANCE_PERIOD3
+          ,NULL AS FAR_ADVANCE_PERIOD3
+          ,NULL AS ADVANCE_PERIOD3
+          ,NULL AS CURRENT_PERIOD3
+          ,NULL AS CURRENT_PLAN_VALUE3
+          </isNull>
+          <!-- 組織コードで検索の場合のみ、組織・従業員名を取得 -->
+          <isNotNull property="sosCd3">
+          ,NVL2(
+              JJ.JGI_NO,
+              JM.JGI_NAME || '（TL）',
+              JM.JGI_NAME || '（' || JM.SHOKUSHU_NAME || '）'
+           ) AS JGI_NAME
+          ,SM.TEAM_CODE
+<!-- mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援） -->
+<!--      ,SM.BUMON_RYAKU_NAME -->
+          ,CASE WHEN SM.BUMON_RANK = 4 THEN SM.BUMON_RYAKU_NAME ELSE '' END AS BUMON_RYAKU_NAME
+<!-- mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援） -->
+          </isNotNull>
+          <isNull property="sosCd3">
+          ,NULL AS JGI_NAME
+          ,NULL AS TEAM_CODE
+          ,NULL AS BUMON_RYAKU_NAME
+          </isNull>
+          ,TMS.PLAN_TAI_GAI_FLG_TOK AS PLAN_TAI_GAI_FLG_TOK
+          ,TMS.PLAN_TAI_GAI_FLG_RIK AS PLAN_TAI_GAI_FLG_RIK
+      FROM DPS_I_INS_WS_PLAN IWP
+           INNER JOIN DPS_C_INS_MST INS
+        ON IWP.INS_NO = INS.INS_NO
+           INNER JOIN (<include refid="COMMON_SqlMap.tms" />) TMS
+        ON IWP.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+           LEFT JOIN DPS_I_DELIVERY_RESULT DELI
+        ON IWP.INS_NO = DELI.INS_NO
+       AND IWP.PROD_CODE = DELI.PROD_CODE
+       AND IWP.TMS_TYTEN_CD = DELI.TMS_TYTEN_CD
+       <isNotNull property="resultRefProdCode1">
+           LEFT JOIN DPS_I_DELIVERY_RESULT DELI1
+        ON IWP.INS_NO = DELI1.INS_NO
+       AND DELI1.PROD_CODE = #resultRefProdCode1:CHAR#
+       AND IWP.TMS_TYTEN_CD = DELI1.TMS_TYTEN_CD
+       </isNotNull>
+       <isNotNull property="resultRefProdCode2">
+           LEFT JOIN DPS_I_DELIVERY_RESULT DELI2
+        ON IWP.INS_NO = DELI2.INS_NO
+       AND DELI2.PROD_CODE = #resultRefProdCode2:CHAR#
+       AND IWP.TMS_TYTEN_CD = DELI2.TMS_TYTEN_CD
+       </isNotNull>
+       <isNotNull property="resultRefProdCode3">
+           LEFT JOIN DPS_I_DELIVERY_RESULT DELI3
+        ON IWP.INS_NO = DELI3.INS_NO
+       AND DELI3.PROD_CODE = #resultRefProdCode3:CHAR#
+       AND IWP.TMS_TYTEN_CD = DELI3.TMS_TYTEN_CD
+       </isNotNull>
+       <!-- 組織コードで検索の場合のみ、組織・従業員をJOIN -->
+       <isNotNull property="sosCd3">
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IWP.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ
+        ON JJ.JGI_NO = JM.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+       </isNotNull>
+     WHERE IWP.PROD_CODE = #prodCode:CHAR#
+       <isNotNull prepend="AND" property="sosCd3">
+           JM.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="jgiNo">
+           IWP.JGI_NO = #jgiNo:INTEGER#
+       </isNotNull>
+       <isNotNull property="hoInsTypeList">
+           <iterate prepend="AND INS.HO_INS_TYPE IN" open="(" close=")" conjunction=","  property="hoInsTypeList">
+               #hoInsTypeList[].dbValue#
+           </iterate>
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 検索リスト -->
+  <select id="selectListOyako" resultMap="resultMap2" parameterClass="java.util.Map" >
+    SELECT IWP.SEQ_KEY
+          ,IWP.JGI_NO
+          ,IWP.PROD_CODE
+          ,IWP.INS_NO
+          ,IWP.TMS_TYTEN_CD
+          ,IWP.DIST_VALUE_Y
+          ,IWP.MODIFY_VALUE_Y
+          ,IWP.PLANNED_VALUE_Y
+          ,IWP.BEF_PLANNED_VALUE_Y
+          ,IWP.SPECIAL_INS_PLAN_FLG
+          ,IWP.EXCEPT_DIST_INS_FLG
+          ,IWP.DEL_INS_FLG
+          ,IWP.IS_JGI_NO
+          ,IWP.IS_JGI_NAME
+          ,IWP.IS_DATE
+          ,IWP.UP_JGI_NO
+          ,IWP.UP_JGI_NAME
+          ,IWP.UP_DATE
+          ,INS.INS_ABBR_NAME
+          ,INS.INS_CLASS
+          ,INS.OLD_INSR_FLG
+<!-- mod start 2021/8/17 h.Kaneko 親子紐づけ対応 -->
+          <!-- ,INS.HO_INS_TYPE-->
+          ,NVL(OINS.HO_INS_TYPE,INS.HO_INS_TYPE) AS HO_INS_TYPE
+<!-- mod end 2021/8/17 -->
+          ,TMS.TMS_TYTEN_MEI_KJ
+          ,DELI.PRE_FAR_ADVANCE_PERIOD
+          ,DELI.FAR_ADVANCE_PERIOD
+          ,DELI.ADVANCE_PERIOD
+          ,DELI.CURRENT_PERIOD
+          ,DELI.CURRENT_PLAN_VALUE
+          <isNotNull property="resultRefProdCode1">
+          ,DELI1.PRE_FAR_ADVANCE_PERIOD AS PRE_FAR_ADVANCE_PERIOD1
+          ,DELI1.FAR_ADVANCE_PERIOD AS FAR_ADVANCE_PERIOD1
+          ,DELI1.ADVANCE_PERIOD AS ADVANCE_PERIOD1
+          ,DELI1.CURRENT_PERIOD AS CURRENT_PERIOD1
+          ,DELI1.CURRENT_PLAN_VALUE AS CURRENT_PLAN_VALUE1
+          </isNotNull>
+          <isNull property="resultRefProdCode1">
+          ,NULL AS PRE_FAR_ADVANCE_PERIOD1
+          ,NULL AS FAR_ADVANCE_PERIOD1
+          ,NULL AS ADVANCE_PERIOD1
+          ,NULL AS CURRENT_PERIOD1
+          ,NULL AS CURRENT_PLAN_VALUE1
+          </isNull>
+          <isNotNull property="resultRefProdCode2">
+          ,DELI2.PRE_FAR_ADVANCE_PERIOD AS PRE_FAR_ADVANCE_PERIOD2
+          ,DELI2.FAR_ADVANCE_PERIOD AS FAR_ADVANCE_PERIOD2
+          ,DELI2.ADVANCE_PERIOD AS ADVANCE_PERIOD2
+          ,DELI2.CURRENT_PERIOD AS CURRENT_PERIOD2
+          ,DELI2.CURRENT_PLAN_VALUE AS CURRENT_PLAN_VALUE2
+          </isNotNull>
+          <isNull property="resultRefProdCode2">
+          ,NULL AS PRE_FAR_ADVANCE_PERIOD2
+          ,NULL AS FAR_ADVANCE_PERIOD2
+          ,NULL AS ADVANCE_PERIOD2
+          ,NULL AS CURRENT_PERIOD2
+          ,NULL AS CURRENT_PLAN_VALUE2
+          </isNull>
+          <isNotNull property="resultRefProdCode3">
+          ,DELI3.PRE_FAR_ADVANCE_PERIOD AS PRE_FAR_ADVANCE_PERIOD3
+          ,DELI3.FAR_ADVANCE_PERIOD AS FAR_ADVANCE_PERIOD3
+          ,DELI3.ADVANCE_PERIOD AS ADVANCE_PERIOD3
+          ,DELI3.CURRENT_PERIOD AS CURRENT_PERIOD3
+          ,DELI3.CURRENT_PLAN_VALUE AS CURRENT_PLAN_VALUE3
+          </isNotNull>
+          <isNull property="resultRefProdCode3">
+          ,NULL AS PRE_FAR_ADVANCE_PERIOD3
+          ,NULL AS FAR_ADVANCE_PERIOD3
+          ,NULL AS ADVANCE_PERIOD3
+          ,NULL AS CURRENT_PERIOD3
+          ,NULL AS CURRENT_PLAN_VALUE3
+          </isNull>
+          <!-- 組織コードで検索の場合のみ、組織・従業員名を取得 -->
+          <isNotNull property="sosCd3">
+          ,NVL2(
+              JJ.JGI_NO,
+              JM.JGI_NAME || '（TL）',
+              JM.JGI_NAME || '（' || JM.SHOKUSHU_NAME || '）'
+           ) AS JGI_NAME
+          ,SM.TEAM_CODE
+<!-- mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援） -->
+<!--      ,SM.BUMON_RYAKU_NAME -->
+          ,CASE WHEN SM.BUMON_RANK = 4 THEN SM.BUMON_RYAKU_NAME ELSE '' END AS BUMON_RYAKU_NAME
+<!-- mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援） -->
+          </isNotNull>
+          <isNull property="sosCd3">
+          ,NULL AS JGI_NAME
+          ,NULL AS TEAM_CODE
+          ,NULL AS BUMON_RYAKU_NAME
+          </isNull>
+          ,TMS.PLAN_TAI_GAI_FLG_TOK AS PLAN_TAI_GAI_FLG_TOK
+          ,TMS.PLAN_TAI_GAI_FLG_RIK AS PLAN_TAI_GAI_FLG_RIK
+          ,OINS.HO_INS_TYPE AS OINS_HO_INS_TYPE
+          ,OINS.RELN_INS_NO AS OINS_RELN_INS_NO
+          ,NVL(OYK.MAIN_INS_NO,'0') AS MAIN_INS_NO
+          ,INS.HO_INS_TYPE AS INS_HO_INS_TYPE
+          ,INS.RELN_INS_NO
+          ,INS.RELN_INS_CODE
+      FROM DPS_I_INS_WS_PLAN IWP
+           INNER JOIN DPS_C_INS_MST INS
+        ON IWP.INS_NO = INS.INS_NO
+           LEFT JOIN DPS_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO
+       AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+           LEFT JOIN DPS_C_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+       AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+           INNER JOIN (<include refid="COMMON_SqlMap.tms" />) TMS
+        ON IWP.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+           LEFT JOIN DPS_I_DELIVERY_RESULT DELI
+        ON IWP.INS_NO = DELI.INS_NO
+       AND IWP.PROD_CODE = DELI.PROD_CODE
+       AND IWP.TMS_TYTEN_CD = DELI.TMS_TYTEN_CD
+       <isNotNull property="resultRefProdCode1">
+           LEFT JOIN DPS_I_DELIVERY_RESULT DELI1
+        ON IWP.INS_NO = DELI1.INS_NO
+       AND DELI1.PROD_CODE = #resultRefProdCode1:CHAR#
+       AND IWP.TMS_TYTEN_CD = DELI1.TMS_TYTEN_CD
+       </isNotNull>
+       <isNotNull property="resultRefProdCode2">
+           LEFT JOIN DPS_I_DELIVERY_RESULT DELI2
+        ON IWP.INS_NO = DELI2.INS_NO
+       AND DELI2.PROD_CODE = #resultRefProdCode2:CHAR#
+       AND IWP.TMS_TYTEN_CD = DELI2.TMS_TYTEN_CD
+       </isNotNull>
+       <isNotNull property="resultRefProdCode3">
+           LEFT JOIN DPS_I_DELIVERY_RESULT DELI3
+        ON IWP.INS_NO = DELI3.INS_NO
+       AND DELI3.PROD_CODE = #resultRefProdCode3:CHAR#
+       AND IWP.TMS_TYTEN_CD = DELI3.TMS_TYTEN_CD
+       </isNotNull>
+       <!-- 組織コードで検索の場合のみ、組織・従業員をJOIN -->
+       <isNotNull property="sosCd3">
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IWP.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ
+        ON JJ.JGI_NO = JM.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+       </isNotNull>
+     WHERE IWP.PROD_CODE = #prodCode:CHAR#
+       <isNotNull prepend="AND" property="sosCd3">
+           JM.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="jgiNo">
+           IWP.JGI_NO = #jgiNo:INTEGER#
+       </isNotNull>
+       <isNotNull property="hoInsTypeList">
+<!-- mod -->
+           <!-- <iterate prepend="AND INS.HO_INS_TYPE IN" open="(" close=")" conjunction=","  property="hoInsTypeList">-->
+           <iterate prepend="AND NVL(OINS.HO_INS_TYPE,INS.HO_INS_TYPE) IN" open="(" close=")" conjunction=","  property="hoInsTypeList">
+<!-- mod -->
+               #hoInsTypeList[].dbValue#
+           </iterate>
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 検索リスト（MMP品非重点品、仕入品） -->
+  <select id="selectListDeli" resultMap="resultMap" parameterClass="java.util.Map" >
+      WITH IWP AS (
+        SELECT * FROM DPS_I_INS_WS_PLAN
+         WHERE JGI_NO = #jgiNo:INTEGER#
+           AND PROD_CODE = #prodCode:CHAR#
+        )
+        ,DELI AS (
+        SELECT * FROM DPS_I_DELIVERY_RESULT
+         WHERE JGI_NO = #jgiNo:INTEGER#
+           AND PROD_CODE = #prodCode:CHAR#
+        )
+        <isNotNull property="resultRefProdCode1">
+        ,DELI1 AS (
+        SELECT T0.*
+          FROM DPS_I_DELIVERY_RESULT T0
+         INNER JOIN DPS_C_MR_INS_PROD_ALL T1 ON T0.INS_NO = T1.INS_NO AND T0.JGI_NO = T1.MR_NO AND  T1.PROD_CODE = #prodCode:CHAR# AND T1.MAIN_MR = '0'
+         WHERE T0.JGI_NO = #jgiNo:INTEGER#
+           AND T0.PROD_CODE = #resultRefProdCode1:CHAR#
+        )
+        </isNotNull>
+        <isNotNull property="resultRefProdCode2">
+        ,DELI2 AS (
+        SELECT T0.*
+          FROM DPS_I_DELIVERY_RESULT T0
+         INNER JOIN DPS_C_MR_INS_PROD_ALL T1 ON T0.INS_NO = T1.INS_NO AND T0.JGI_NO = T1.MR_NO AND  T1.PROD_CODE = #prodCode:CHAR# AND T1.MAIN_MR = '0'
+         WHERE T0.JGI_NO = #jgiNo:INTEGER#
+           AND T0.PROD_CODE = #resultRefProdCode2:CHAR#
+        )
+        </isNotNull>
+        <isNotNull property="resultRefProdCode3">
+        ,DELI3 AS (
+        SELECT T0.*
+          FROM DPS_I_DELIVERY_RESULT T0
+         INNER JOIN DPS_C_MR_INS_PROD_ALL T1 ON T0.INS_NO = T1.INS_NO AND T0.JGI_NO = T1.MR_NO AND  T1.PROD_CODE = #prodCode:CHAR# AND T1.MAIN_MR = '0'
+         WHERE T0.JGI_NO = #jgiNo:INTEGER#
+           AND T0.PROD_CODE = #resultRefProdCode3:CHAR#
+        )
+        </isNotNull>
+        ,IWP_DELI AS (
+        SELECT IWP.SEQ_KEY
+              ,COALESCE(IWP.JGI_NO,DELI.JGI_NO) AS JGI_NO
+              ,COALESCE(IWP.INS_NO,DELI.INS_NO) AS INS_NO
+              ,COALESCE(IWP.TMS_TYTEN_CD,DELI.TMS_TYTEN_CD) AS TMS_TYTEN_CD
+              ,IWP.DIST_VALUE_Y
+              ,IWP.MODIFY_VALUE_Y
+              ,IWP.PLANNED_VALUE_Y
+              ,IWP.BEF_PLANNED_VALUE_Y
+              ,IWP.SPECIAL_INS_PLAN_FLG
+              ,IWP.EXCEPT_DIST_INS_FLG
+              ,IWP.DEL_INS_FLG
+              ,IWP.IS_JGI_NO
+              ,IWP.IS_JGI_NAME
+              ,IWP.IS_DATE
+              ,IWP.UP_JGI_NO
+              ,IWP.UP_JGI_NAME
+              ,IWP.UP_DATE
+              ,DELI.PRE_FAR_ADVANCE_PERIOD
+              ,DELI.FAR_ADVANCE_PERIOD
+              ,DELI.ADVANCE_PERIOD
+              ,DELI.CURRENT_PERIOD
+              ,DELI.CURRENT_PLAN_VALUE
+          FROM IWP
+               FULL OUTER JOIN DELI
+            ON IWP.JGI_NO = DELI.JGI_NO
+           AND IWP.INS_NO = DELI.INS_NO
+           AND IWP.TMS_TYTEN_CD = DELI.TMS_TYTEN_CD
+        )
+        ,IWP_DELI1 AS (
+        SELECT IWP.SEQ_KEY
+              <isNotNull property="resultRefProdCode1">
+              ,COALESCE(IWP.JGI_NO,DELI1.JGI_NO) AS JGI_NO
+              ,COALESCE(IWP.INS_NO,DELI1.INS_NO) AS INS_NO
+              ,COALESCE(IWP.TMS_TYTEN_CD,DELI1.TMS_TYTEN_CD) AS TMS_TYTEN_CD
+              </isNotNull>
+              <isNull property="resultRefProdCode1">
+              ,IWP.JGI_NO
+              ,IWP.INS_NO
+              ,IWP.TMS_TYTEN_CD
+              </isNull>
+              ,IWP.DIST_VALUE_Y
+              ,IWP.MODIFY_VALUE_Y
+              ,IWP.PLANNED_VALUE_Y
+              ,IWP.BEF_PLANNED_VALUE_Y
+              ,IWP.SPECIAL_INS_PLAN_FLG
+              ,IWP.EXCEPT_DIST_INS_FLG
+              ,IWP.DEL_INS_FLG
+              ,IWP.IS_JGI_NO
+              ,IWP.IS_JGI_NAME
+              ,IWP.IS_DATE
+              ,IWP.UP_JGI_NO
+              ,IWP.UP_JGI_NAME
+              ,IWP.UP_DATE
+              ,IWP.PRE_FAR_ADVANCE_PERIOD
+              ,IWP.FAR_ADVANCE_PERIOD
+              ,IWP.ADVANCE_PERIOD
+              ,IWP.CURRENT_PERIOD
+              ,IWP.CURRENT_PLAN_VALUE
+              <isNotNull property="resultRefProdCode1">
+              ,DELI1.PRE_FAR_ADVANCE_PERIOD AS PRE_FAR_ADVANCE_PERIOD1
+              ,DELI1.FAR_ADVANCE_PERIOD AS FAR_ADVANCE_PERIOD1
+              ,DELI1.ADVANCE_PERIOD AS ADVANCE_PERIOD1
+              ,DELI1.CURRENT_PERIOD AS CURRENT_PERIOD1
+              ,DELI1.CURRENT_PLAN_VALUE AS CURRENT_PLAN_VALUE1
+              </isNotNull>
+              <isNull property="resultRefProdCode1">
+              ,NULL AS PRE_FAR_ADVANCE_PERIOD1
+              ,NULL AS FAR_ADVANCE_PERIOD1
+              ,NULL AS ADVANCE_PERIOD1
+              ,NULL AS CURRENT_PERIOD1
+              ,NULL AS CURRENT_PLAN_VALUE1
+              </isNull>
+          FROM IWP_DELI IWP
+              <isNotNull property="resultRefProdCode1">
+               FULL OUTER JOIN DELI1
+            ON IWP.JGI_NO = DELI1.JGI_NO
+           AND IWP.INS_NO = DELI1.INS_NO
+           AND IWP.TMS_TYTEN_CD = DELI1.TMS_TYTEN_CD
+              </isNotNull>
+        )
+        ,IWP_DELI2 AS (
+        SELECT IWP.SEQ_KEY
+              <isNotNull property="resultRefProdCode2">
+              ,COALESCE(IWP.JGI_NO,DELI2.JGI_NO) AS JGI_NO
+              ,COALESCE(IWP.INS_NO,DELI2.INS_NO) AS INS_NO
+              ,COALESCE(IWP.TMS_TYTEN_CD,DELI2.TMS_TYTEN_CD) AS TMS_TYTEN_CD
+              </isNotNull>
+              <isNull property="resultRefProdCode2">
+              ,IWP.JGI_NO
+              ,IWP.INS_NO
+              ,IWP.TMS_TYTEN_CD
+              </isNull>
+              ,IWP.DIST_VALUE_Y
+              ,IWP.MODIFY_VALUE_Y
+              ,IWP.PLANNED_VALUE_Y
+              ,IWP.BEF_PLANNED_VALUE_Y
+              ,IWP.SPECIAL_INS_PLAN_FLG
+              ,IWP.EXCEPT_DIST_INS_FLG
+              ,IWP.DEL_INS_FLG
+              ,IWP.IS_JGI_NO
+              ,IWP.IS_JGI_NAME
+              ,IWP.IS_DATE
+              ,IWP.UP_JGI_NO
+              ,IWP.UP_JGI_NAME
+              ,IWP.UP_DATE
+              ,IWP.PRE_FAR_ADVANCE_PERIOD
+              ,IWP.FAR_ADVANCE_PERIOD
+              ,IWP.ADVANCE_PERIOD
+              ,IWP.CURRENT_PERIOD
+              ,IWP.CURRENT_PLAN_VALUE
+              ,IWP.PRE_FAR_ADVANCE_PERIOD1
+              ,IWP.FAR_ADVANCE_PERIOD1
+              ,IWP.ADVANCE_PERIOD1
+              ,IWP.CURRENT_PERIOD1
+              ,IWP.CURRENT_PLAN_VALUE1
+              <isNotNull property="resultRefProdCode2">
+              ,DELI2.PRE_FAR_ADVANCE_PERIOD AS PRE_FAR_ADVANCE_PERIOD2
+              ,DELI2.FAR_ADVANCE_PERIOD AS FAR_ADVANCE_PERIOD2
+              ,DELI2.ADVANCE_PERIOD AS ADVANCE_PERIOD2
+              ,DELI2.CURRENT_PERIOD AS CURRENT_PERIOD2
+              ,DELI2.CURRENT_PLAN_VALUE AS CURRENT_PLAN_VALUE2
+              </isNotNull>
+              <isNull property="resultRefProdCode2">
+              ,NULL AS PRE_FAR_ADVANCE_PERIOD2
+              ,NULL AS FAR_ADVANCE_PERIOD2
+              ,NULL AS ADVANCE_PERIOD2
+              ,NULL AS CURRENT_PERIOD2
+              ,NULL AS CURRENT_PLAN_VALUE2
+              </isNull>
+          FROM IWP_DELI1 IWP
+              <isNotNull property="resultRefProdCode2">
+               FULL OUTER JOIN DELI2
+            ON IWP.JGI_NO = DELI2.JGI_NO
+           AND IWP.INS_NO = DELI2.INS_NO
+           AND IWP.TMS_TYTEN_CD = DELI2.TMS_TYTEN_CD
+              </isNotNull>
+        )
+        ,IWP_DELI3 AS (
+        SELECT IWP.SEQ_KEY
+              <isNotNull property="resultRefProdCode3">
+              ,COALESCE(IWP.JGI_NO,DELI3.JGI_NO) AS JGI_NO
+              ,COALESCE(IWP.INS_NO,DELI3.INS_NO) AS INS_NO
+              ,COALESCE(IWP.TMS_TYTEN_CD,DELI3.TMS_TYTEN_CD) AS TMS_TYTEN_CD
+              </isNotNull>
+              <isNull property="resultRefProdCode3">
+              ,IWP.JGI_NO
+              ,IWP.INS_NO
+              ,IWP.TMS_TYTEN_CD
+              </isNull>
+              ,IWP.DIST_VALUE_Y
+              ,IWP.MODIFY_VALUE_Y
+              ,IWP.PLANNED_VALUE_Y
+              ,IWP.BEF_PLANNED_VALUE_Y
+              ,IWP.SPECIAL_INS_PLAN_FLG
+              ,IWP.EXCEPT_DIST_INS_FLG
+              ,IWP.DEL_INS_FLG
+              ,IWP.IS_JGI_NO
+              ,IWP.IS_JGI_NAME
+              ,IWP.IS_DATE
+              ,IWP.UP_JGI_NO
+              ,IWP.UP_JGI_NAME
+              ,IWP.UP_DATE
+              ,IWP.PRE_FAR_ADVANCE_PERIOD
+              ,IWP.FAR_ADVANCE_PERIOD
+              ,IWP.ADVANCE_PERIOD
+              ,IWP.CURRENT_PERIOD
+              ,IWP.CURRENT_PLAN_VALUE
+              ,IWP.PRE_FAR_ADVANCE_PERIOD1
+              ,IWP.FAR_ADVANCE_PERIOD1
+              ,IWP.ADVANCE_PERIOD1
+              ,IWP.CURRENT_PERIOD1
+              ,IWP.CURRENT_PLAN_VALUE1
+              ,IWP.PRE_FAR_ADVANCE_PERIOD2
+              ,IWP.FAR_ADVANCE_PERIOD2
+              ,IWP.ADVANCE_PERIOD2
+              ,IWP.CURRENT_PERIOD2
+              ,IWP.CURRENT_PLAN_VALUE2
+              <isNotNull property="resultRefProdCode3">
+              ,DELI3.PRE_FAR_ADVANCE_PERIOD AS PRE_FAR_ADVANCE_PERIOD3
+              ,DELI3.FAR_ADVANCE_PERIOD AS FAR_ADVANCE_PERIOD3
+              ,DELI3.ADVANCE_PERIOD AS ADVANCE_PERIOD3
+              ,DELI3.CURRENT_PERIOD AS CURRENT_PERIOD3
+              ,DELI3.CURRENT_PLAN_VALUE AS CURRENT_PLAN_VALUE3
+              </isNotNull>
+              <isNull property="resultRefProdCode3">
+              ,NULL AS PRE_FAR_ADVANCE_PERIOD3
+              ,NULL AS FAR_ADVANCE_PERIOD3
+              ,NULL AS ADVANCE_PERIOD3
+              ,NULL AS CURRENT_PERIOD3
+              ,NULL AS CURRENT_PLAN_VALUE3
+              </isNull>
+          FROM IWP_DELI2 IWP
+              <isNotNull property="resultRefProdCode3">
+               FULL OUTER JOIN DELI3
+            ON IWP.JGI_NO = DELI3.JGI_NO
+           AND IWP.INS_NO = DELI3.INS_NO
+           AND IWP.TMS_TYTEN_CD = DELI3.TMS_TYTEN_CD
+              </isNotNull>
+        )
+        ,PROD_INS AS (
+        SELECT PIM.INS_INFO_NAME
+              ,PIM.DISP_FONT_COL_CD
+              ,PIM.ERR_KB
+              ,PIM.SCRN_DISP_KB
+              ,PIM.DIST_KB
+              ,PIM.IMP_INS_KB
+              ,PIM.INS_NO
+          FROM DPS_C_MR_INS_PROD_ALL PIM
+         WHERE PIM.PROD_CODE = #prodCode:CHAR#
+           AND PIM.MR_NO = #jgiNo:INTEGER#
+           AND PIM.MAIN_MR = '0'
+        )
+    SELECT IWP.SEQ_KEY
+          ,IWP.JGI_NO
+          ,#prodCode:CHAR# AS PROD_CODE
+          ,IWP.INS_NO
+          ,IWP.TMS_TYTEN_CD
+          ,IWP.DIST_VALUE_Y
+          ,IWP.MODIFY_VALUE_Y
+          ,IWP.PLANNED_VALUE_Y
+          ,IWP.BEF_PLANNED_VALUE_Y
+          ,IWP.SPECIAL_INS_PLAN_FLG
+          ,CASE WHEN EXC_INS.INS_NO IS NULL THEN '0' ELSE EXC_INS.EXCEPT_FLG END AS EXCEPT_DIST_INS_FLG
+          ,CASE
+            WHEN INS.DEL_FLG ='1' THEN '1'
+            WHEN INS.REQ_FLG ='1' THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '●', 1, 1)=1  THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '〇', 1, 1)=1  THEN '1'
+            ELSE '0'
+           END AS DEL_INS_FLG
+          ,IWP.IS_JGI_NO
+          ,IWP.IS_JGI_NAME
+          ,IWP.IS_DATE
+          ,IWP.UP_JGI_NO
+          ,IWP.UP_JGI_NAME
+          ,IWP.UP_DATE
+          ,INS.INS_ABBR_NAME
+          ,INS.RELN_INS_NO
+          ,INS.RELN_INS_CODE
+          ,INS.INS_CLASS
+          ,INS.OLD_INSR_FLG
+<!-- mod start 2021/8/17 h.Kaneko 親子紐づけ対応 -->
+          <!-- ,INS.HO_INS_TYPE-->
+          ,NVL(OINS.HO_INS_TYPE,INS.HO_INS_TYPE) AS HO_INS_TYPE
+<!-- mod end 2021/8/17 -->
+          ,TMS.TMS_TYTEN_MEI_KJ
+          ,IWP.PRE_FAR_ADVANCE_PERIOD
+          ,IWP.FAR_ADVANCE_PERIOD
+          ,IWP.ADVANCE_PERIOD
+          ,IWP.CURRENT_PERIOD
+          ,IWP.CURRENT_PLAN_VALUE
+          ,IWP.PRE_FAR_ADVANCE_PERIOD1
+          ,IWP.FAR_ADVANCE_PERIOD1
+          ,IWP.ADVANCE_PERIOD1
+          ,IWP.CURRENT_PERIOD1
+          ,IWP.CURRENT_PLAN_VALUE1
+          ,IWP.PRE_FAR_ADVANCE_PERIOD2
+          ,IWP.FAR_ADVANCE_PERIOD2
+          ,IWP.ADVANCE_PERIOD2
+          ,IWP.CURRENT_PERIOD2
+          ,IWP.CURRENT_PLAN_VALUE2
+          ,IWP.PRE_FAR_ADVANCE_PERIOD3
+          ,IWP.FAR_ADVANCE_PERIOD3
+          ,IWP.ADVANCE_PERIOD3
+          ,IWP.CURRENT_PERIOD3
+          ,IWP.CURRENT_PLAN_VALUE3
+          ,NULL AS JGI_NAME
+          ,NULL AS TEAM_CODE
+          ,NULL AS BUMON_RYAKU_NAME
+          ,TMS.PLAN_TAI_GAI_FLG_TOK AS PLAN_TAI_GAI_FLG_TOK
+          ,TMS.PLAN_TAI_GAI_FLG_RIK AS PLAN_TAI_GAI_FLG_RIK
+          ,PRI.INS_INFO_NAME
+          ,PRI.DISP_FONT_COL_CD
+          ,PRI.ERR_KB
+          ,PRI.SCRN_DISP_KB
+          ,PRI.DIST_KB
+          ,PRI.IMP_INS_KB
+          ,OINS.HO_INS_TYPE AS OINS_HO_INS_TYPE
+          ,OINS.RELN_INS_NO AS OINS_RELN_INS_NO
+          ,NVL(OYK.MAIN_INS_NO,'0') AS MAIN_INS_NO
+          ,INS.HO_INS_TYPE AS INS_HO_INS_TYPE
+          ,INS.RELN_INS_NO
+          ,INS.RELN_INS_CODE
+      FROM IWP_DELI3 IWP
+           INNER JOIN DPS_C_INS_MST INS
+        ON IWP.INS_NO = INS.INS_NO
+           LEFT JOIN DPS_C_SY_COM_INS_OYAKO OYK ON OYK.INS_NO = INS.INS_NO
+       AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+           LEFT JOIN DPS_C_INS_MST OINS ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+       AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+           INNER JOIN DPS_S_T_TMS_TYTEN_MST_UN TMS
+        ON IWP.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+           LEFT OUTER JOIN PROD_INS PRI
+        ON IWP.INS_NO = PRI.INS_NO
+           LEFT OUTER JOIN DPS_I_EXCEPT_DIST_INS EXC_INS
+        ON IWP.INS_NO = EXC_INS.INS_NO AND ( EXC_INS.PROD_CODE = #prodCode:CHAR# OR EXC_INS.PROD_CODE IS NULL)
+    <dynamic prepend="WHERE">
+       <isNotNull property="hoInsTypeList" prepend="AND">
+<!-- mod start -->
+           <!--<iterate prepend="INS.HO_INS_TYPE IN" open="(" close=")" conjunction=","  property="hoInsTypeList">-->
+           <iterate prepend="NVL(OINS.HO_INS_TYPE,INS.HO_INS_TYPE) IN" open="(" close=")" conjunction=","  property="hoInsTypeList">
+<!-- mod end -->
+               #hoInsTypeList[].dbValue#
+           </iterate>
+       </isNotNull>
+    </dynamic>
+     ORDER BY OINS_HO_INS_TYPE, OINS_RELN_INS_NO, MAIN_INS_NO, INS_HO_INS_TYPE, INS.RELN_INS_NO, INS.RELN_INS_CODE, TMS_TYTEN_CD
+  </select>
+
+  <!-- 検索リスト（MMP品重点品） -->
+  <select id="selectListPriorityDeli" resultMap="resultMap" parameterClass="java.util.Map" >
+      WITH
+        TARGET_INS AS (
+        	<!-- 施設別計画がある施設の親子 -->
+            SELECT
+              INS.INS_NO
+              ,INS.RELN_INS_NO
+              ,INS.RELN_INS_CODE
+              ,INS.INS_ABBR_NAME
+              ,INS.INS_CLASS
+              ,INS.OLD_INSR_FLG
+              ,INS.HO_INS_TYPE
+              ,INS.DEL_FLG
+              ,INS.REQ_FLG
+            FROM DPS_C_INS_MST INS
+            INNER JOIN (
+              SELECT DISTINCT INS2.RELN_INS_NO
+              FROM
+                DPS_I_INS_PLAN IP
+                INNER JOIN DPS_C_INS_MST_ALL INS2 ON IP.INS_NO = INS2.INS_NO
+              WHERE
+                    IP.JGI_NO = #jgiNo:INTEGER#
+                AND IP.PROD_CODE = #prodCode:CHAR#
+                AND IP.PLANNED_VALUE_Y IS NOT NULL
+                AND IP.PLANNED_VALUE_Y > 0
+		      <isNotNull property="hoInsTypeList" prepend="AND">
+		           <iterate prepend="INS2.HO_INS_TYPE IN" open="(" close=")" conjunction=","  property="hoInsTypeList">
+		               #hoInsTypeList[].dbValue#
+		           </iterate>
+		      </isNotNull>
+            ) RELN ON INS.RELN_INS_NO = RELN. RELN_INS_NO
+			UNION
+        	<!-- 施設特約店別計画がある施設の親子 -->
+            SELECT
+              INS.INS_NO
+              ,INS.RELN_INS_NO
+              ,INS.RELN_INS_CODE
+              ,INS.INS_ABBR_NAME
+              ,INS.INS_CLASS
+              ,INS.OLD_INSR_FLG
+              ,INS.HO_INS_TYPE
+              ,INS.DEL_FLG
+              ,INS.REQ_FLG
+            FROM DPS_C_INS_MST INS
+            INNER JOIN (
+              SELECT DISTINCT INS2.RELN_INS_NO
+              FROM
+                DPS_I_INS_WS_PLAN IWP
+                INNER JOIN DPS_C_INS_MST INS2 ON IWP.INS_NO = INS2.INS_NO
+              WHERE
+                  IWP.JGI_NO = #jgiNo:INTEGER#
+              AND IWP.PROD_CODE = #prodCode:CHAR#
+		      <isNotNull property="hoInsTypeList" prepend="AND">
+		           <iterate prepend="INS2.HO_INS_TYPE IN" open="(" close=")" conjunction=","  property="hoInsTypeList">
+		               #hoInsTypeList[].dbValue#
+		           </iterate>
+		      </isNotNull>
+            ) RELN ON INS.RELN_INS_NO = RELN. RELN_INS_NO
+			UNION
+        	<!-- 実績がある施設の親子 -->
+            SELECT
+              INS.INS_NO
+              ,INS.RELN_INS_NO
+              ,INS.RELN_INS_CODE
+              ,INS.INS_ABBR_NAME
+              ,INS.INS_CLASS
+              ,INS.OLD_INSR_FLG
+              ,INS.HO_INS_TYPE
+              ,INS.DEL_FLG
+              ,INS.REQ_FLG
+            FROM DPS_C_INS_MST INS
+            INNER JOIN (
+              SELECT DISTINCT INS2.RELN_INS_NO
+              FROM
+                DPS_I_DELIVERY_RESULT DR
+                INNER JOIN DPS_C_MR_INS_PROD_ALL T1 ON DR.INS_NO = T1.INS_NO AND DR.JGI_NO = T1.MR_NO AND T1.PROD_CODE = #prodCode:CHAR# AND T1.MAIN_MR = '0'
+                INNER JOIN DPS_C_INS_MST INS2 ON DR.INS_NO = INS2.INS_NO
+              WHERE
+                  DR.JGI_NO = #jgiNo:INTEGER#
+              AND DR.PROD_CODE in (
+              #prodCode:CHAR#
+		      <isNotNull property="resultRefProdCode1" prepend=",">
+              #resultRefProdCode1:CHAR#
+		      </isNotNull>
+		      <isNotNull property="resultRefProdCode2" prepend=",">
+              #resultRefProdCode2:CHAR#
+		      </isNotNull>
+		      <isNotNull property="resultRefProdCode3" prepend=",">
+              #resultRefProdCode3:CHAR#
+		      </isNotNull>
+              )
+		      <isNotNull property="hoInsTypeList" prepend="AND">
+		           <iterate prepend="INS2.HO_INS_TYPE IN" open="(" close=")" conjunction=","  property="hoInsTypeList">
+		               #hoInsTypeList[].dbValue#
+		           </iterate>
+		      </isNotNull>
+            ) RELN ON INS.RELN_INS_NO = RELN. RELN_INS_NO
+        )
+        ,IWP AS (
+        SELECT PLAN.* FROM DPS_I_INS_WS_PLAN PLAN
+         INNER JOIN TARGET_INS INS ON INS.INS_NO = PLAN.INS_NO
+         WHERE PLAN.JGI_NO = #jgiNo:INTEGER#
+           AND PLAN.PROD_CODE = #prodCode:CHAR#
+        )
+        ,DELI AS (
+        SELECT DR.* FROM DPS_I_DELIVERY_RESULT DR
+         INNER JOIN TARGET_INS INS ON INS.INS_NO = DR.INS_NO
+         WHERE DR.JGI_NO = #jgiNo:INTEGER#
+           AND DR.PROD_CODE = #prodCode:CHAR#
+        )
+        <isNotNull property="resultRefProdCode1">
+        ,DELI1 AS (
+        SELECT DR.* FROM DPS_I_DELIVERY_RESULT DR
+         INNER JOIN TARGET_INS INS ON INS.INS_NO = DR.INS_NO
+         WHERE DR.JGI_NO = #jgiNo:INTEGER#
+           AND DR.PROD_CODE = #resultRefProdCode1:CHAR#
+        )
+        </isNotNull>
+        <isNotNull property="resultRefProdCode2">
+        ,DELI2 AS (
+        SELECT DR.* FROM DPS_I_DELIVERY_RESULT DR
+         INNER JOIN TARGET_INS INS ON INS.INS_NO = DR.INS_NO
+         WHERE DR.JGI_NO = #jgiNo:INTEGER#
+           AND DR.PROD_CODE = #resultRefProdCode2:CHAR#
+        )
+        </isNotNull>
+        <isNotNull property="resultRefProdCode3">
+        ,DELI3 AS (
+        SELECT DR.* FROM DPS_I_DELIVERY_RESULT DR
+         INNER JOIN TARGET_INS INS ON INS.INS_NO = DR.INS_NO
+         WHERE DR.JGI_NO = #jgiNo:INTEGER#
+           AND DR.PROD_CODE = #resultRefProdCode3:CHAR#
+        )
+        </isNotNull>
+        ,IWP_DELI AS (
+        SELECT IWP.SEQ_KEY
+              ,COALESCE(IWP.JGI_NO,DELI.JGI_NO) AS JGI_NO
+              ,COALESCE(IWP.INS_NO,DELI.INS_NO) AS INS_NO
+              ,COALESCE(IWP.TMS_TYTEN_CD,DELI.TMS_TYTEN_CD) AS TMS_TYTEN_CD
+              ,IWP.DIST_VALUE_Y
+              ,IWP.MODIFY_VALUE_Y
+              ,IWP.PLANNED_VALUE_Y
+              ,IWP.BEF_PLANNED_VALUE_Y
+              ,IWP.SPECIAL_INS_PLAN_FLG
+              ,IWP.EXCEPT_DIST_INS_FLG
+              ,IWP.DEL_INS_FLG
+              ,IWP.IS_JGI_NO
+              ,IWP.IS_JGI_NAME
+              ,IWP.IS_DATE
+              ,IWP.UP_JGI_NO
+              ,IWP.UP_JGI_NAME
+              ,IWP.UP_DATE
+              ,DELI.PRE_FAR_ADVANCE_PERIOD
+              ,DELI.FAR_ADVANCE_PERIOD
+              ,DELI.ADVANCE_PERIOD
+              ,DELI.CURRENT_PERIOD
+              ,DELI.CURRENT_PLAN_VALUE
+          FROM IWP
+               FULL OUTER JOIN DELI
+            ON IWP.JGI_NO = DELI.JGI_NO
+           AND IWP.INS_NO = DELI.INS_NO
+           AND IWP.TMS_TYTEN_CD = DELI.TMS_TYTEN_CD
+        )
+        ,IWP_DELI1 AS (
+        SELECT IWP.SEQ_KEY
+              <isNotNull property="resultRefProdCode1">
+              ,COALESCE(IWP.JGI_NO,DELI1.JGI_NO) AS JGI_NO
+              ,COALESCE(IWP.INS_NO,DELI1.INS_NO) AS INS_NO
+              ,COALESCE(IWP.TMS_TYTEN_CD,DELI1.TMS_TYTEN_CD) AS TMS_TYTEN_CD
+              </isNotNull>
+              <isNull property="resultRefProdCode1">
+              ,IWP.JGI_NO
+              ,IWP.INS_NO
+              ,IWP.TMS_TYTEN_CD
+              </isNull>
+              ,IWP.DIST_VALUE_Y
+              ,IWP.MODIFY_VALUE_Y
+              ,IWP.PLANNED_VALUE_Y
+              ,IWP.BEF_PLANNED_VALUE_Y
+              ,IWP.SPECIAL_INS_PLAN_FLG
+              ,IWP.EXCEPT_DIST_INS_FLG
+              ,IWP.DEL_INS_FLG
+              ,IWP.IS_JGI_NO
+              ,IWP.IS_JGI_NAME
+              ,IWP.IS_DATE
+              ,IWP.UP_JGI_NO
+              ,IWP.UP_JGI_NAME
+              ,IWP.UP_DATE
+              ,IWP.PRE_FAR_ADVANCE_PERIOD
+              ,IWP.FAR_ADVANCE_PERIOD
+              ,IWP.ADVANCE_PERIOD
+              ,IWP.CURRENT_PERIOD
+              ,IWP.CURRENT_PLAN_VALUE
+              <isNotNull property="resultRefProdCode1">
+              ,DELI1.PRE_FAR_ADVANCE_PERIOD AS PRE_FAR_ADVANCE_PERIOD1
+              ,DELI1.FAR_ADVANCE_PERIOD AS FAR_ADVANCE_PERIOD1
+              ,DELI1.ADVANCE_PERIOD AS ADVANCE_PERIOD1
+              ,DELI1.CURRENT_PERIOD AS CURRENT_PERIOD1
+              ,DELI1.CURRENT_PLAN_VALUE AS CURRENT_PLAN_VALUE1
+              </isNotNull>
+              <isNull property="resultRefProdCode1">
+              ,NULL AS PRE_FAR_ADVANCE_PERIOD1
+              ,NULL AS FAR_ADVANCE_PERIOD1
+              ,NULL AS ADVANCE_PERIOD1
+              ,NULL AS CURRENT_PERIOD1
+              ,NULL AS CURRENT_PLAN_VALUE1
+              </isNull>
+          FROM IWP_DELI IWP
+              <isNotNull property="resultRefProdCode1">
+               FULL OUTER JOIN DELI1
+            ON IWP.JGI_NO = DELI1.JGI_NO
+           AND IWP.INS_NO = DELI1.INS_NO
+           AND IWP.TMS_TYTEN_CD = DELI1.TMS_TYTEN_CD
+              </isNotNull>
+        )
+        ,IWP_DELI2 AS (
+        SELECT IWP.SEQ_KEY
+              <isNotNull property="resultRefProdCode2">
+              ,COALESCE(IWP.JGI_NO,DELI2.JGI_NO) AS JGI_NO
+              ,COALESCE(IWP.INS_NO,DELI2.INS_NO) AS INS_NO
+              ,COALESCE(IWP.TMS_TYTEN_CD,DELI2.TMS_TYTEN_CD) AS TMS_TYTEN_CD
+              </isNotNull>
+              <isNull property="resultRefProdCode2">
+              ,IWP.JGI_NO
+              ,IWP.INS_NO
+              ,IWP.TMS_TYTEN_CD
+              </isNull>
+              ,IWP.DIST_VALUE_Y
+              ,IWP.MODIFY_VALUE_Y
+              ,IWP.PLANNED_VALUE_Y
+              ,IWP.BEF_PLANNED_VALUE_Y
+              ,IWP.SPECIAL_INS_PLAN_FLG
+              ,IWP.EXCEPT_DIST_INS_FLG
+              ,IWP.DEL_INS_FLG
+              ,IWP.IS_JGI_NO
+              ,IWP.IS_JGI_NAME
+              ,IWP.IS_DATE
+              ,IWP.UP_JGI_NO
+              ,IWP.UP_JGI_NAME
+              ,IWP.UP_DATE
+              ,IWP.PRE_FAR_ADVANCE_PERIOD
+              ,IWP.FAR_ADVANCE_PERIOD
+              ,IWP.ADVANCE_PERIOD
+              ,IWP.CURRENT_PERIOD
+              ,IWP.CURRENT_PLAN_VALUE
+              ,IWP.PRE_FAR_ADVANCE_PERIOD1
+              ,IWP.FAR_ADVANCE_PERIOD1
+              ,IWP.ADVANCE_PERIOD1
+              ,IWP.CURRENT_PERIOD1
+              ,IWP.CURRENT_PLAN_VALUE1
+              <isNotNull property="resultRefProdCode2">
+              ,DELI2.PRE_FAR_ADVANCE_PERIOD AS PRE_FAR_ADVANCE_PERIOD2
+              ,DELI2.FAR_ADVANCE_PERIOD AS FAR_ADVANCE_PERIOD2
+              ,DELI2.ADVANCE_PERIOD AS ADVANCE_PERIOD2
+              ,DELI2.CURRENT_PERIOD AS CURRENT_PERIOD2
+              ,DELI2.CURRENT_PLAN_VALUE AS CURRENT_PLAN_VALUE2
+              </isNotNull>
+              <isNull property="resultRefProdCode2">
+              ,NULL AS PRE_FAR_ADVANCE_PERIOD2
+              ,NULL AS FAR_ADVANCE_PERIOD2
+              ,NULL AS ADVANCE_PERIOD2
+              ,NULL AS CURRENT_PERIOD2
+              ,NULL AS CURRENT_PLAN_VALUE2
+              </isNull>
+          FROM IWP_DELI1 IWP
+              <isNotNull property="resultRefProdCode2">
+               FULL OUTER JOIN DELI2
+            ON IWP.JGI_NO = DELI2.JGI_NO
+           AND IWP.INS_NO = DELI2.INS_NO
+           AND IWP.TMS_TYTEN_CD = DELI2.TMS_TYTEN_CD
+              </isNotNull>
+        )
+        ,IWP_DELI3 AS (
+        SELECT IWP.SEQ_KEY
+              <isNotNull property="resultRefProdCode3">
+              ,COALESCE(IWP.JGI_NO,DELI3.JGI_NO) AS JGI_NO
+              ,COALESCE(IWP.INS_NO,DELI3.INS_NO) AS INS_NO
+              ,COALESCE(IWP.TMS_TYTEN_CD,DELI3.TMS_TYTEN_CD) AS TMS_TYTEN_CD
+              </isNotNull>
+              <isNull property="resultRefProdCode3">
+              ,IWP.JGI_NO
+              ,IWP.INS_NO
+              ,IWP.TMS_TYTEN_CD
+              </isNull>
+              ,IWP.DIST_VALUE_Y
+              ,IWP.MODIFY_VALUE_Y
+              ,IWP.PLANNED_VALUE_Y
+              ,IWP.BEF_PLANNED_VALUE_Y
+              ,IWP.SPECIAL_INS_PLAN_FLG
+              ,IWP.EXCEPT_DIST_INS_FLG
+              ,IWP.DEL_INS_FLG
+              ,IWP.IS_JGI_NO
+              ,IWP.IS_JGI_NAME
+              ,IWP.IS_DATE
+              ,IWP.UP_JGI_NO
+              ,IWP.UP_JGI_NAME
+              ,IWP.UP_DATE
+              ,IWP.PRE_FAR_ADVANCE_PERIOD
+              ,IWP.FAR_ADVANCE_PERIOD
+              ,IWP.ADVANCE_PERIOD
+              ,IWP.CURRENT_PERIOD
+              ,IWP.CURRENT_PLAN_VALUE
+              ,IWP.PRE_FAR_ADVANCE_PERIOD1
+              ,IWP.FAR_ADVANCE_PERIOD1
+              ,IWP.ADVANCE_PERIOD1
+              ,IWP.CURRENT_PERIOD1
+              ,IWP.CURRENT_PLAN_VALUE1
+              ,IWP.PRE_FAR_ADVANCE_PERIOD2
+              ,IWP.FAR_ADVANCE_PERIOD2
+              ,IWP.ADVANCE_PERIOD2
+              ,IWP.CURRENT_PERIOD2
+              ,IWP.CURRENT_PLAN_VALUE2
+              <isNotNull property="resultRefProdCode3">
+              ,DELI3.PRE_FAR_ADVANCE_PERIOD AS PRE_FAR_ADVANCE_PERIOD3
+              ,DELI3.FAR_ADVANCE_PERIOD AS FAR_ADVANCE_PERIOD3
+              ,DELI3.ADVANCE_PERIOD AS ADVANCE_PERIOD3
+              ,DELI3.CURRENT_PERIOD AS CURRENT_PERIOD3
+              ,DELI3.CURRENT_PLAN_VALUE AS CURRENT_PLAN_VALUE3
+              </isNotNull>
+              <isNull property="resultRefProdCode3">
+              ,NULL AS PRE_FAR_ADVANCE_PERIOD3
+              ,NULL AS FAR_ADVANCE_PERIOD3
+              ,NULL AS ADVANCE_PERIOD3
+              ,NULL AS CURRENT_PERIOD3
+              ,NULL AS CURRENT_PLAN_VALUE3
+              </isNull>
+          FROM IWP_DELI2 IWP
+              <isNotNull property="resultRefProdCode3">
+               FULL OUTER JOIN DELI3
+            ON IWP.JGI_NO = DELI3.JGI_NO
+           AND IWP.INS_NO = DELI3.INS_NO
+           AND IWP.TMS_TYTEN_CD = DELI3.TMS_TYTEN_CD
+              </isNotNull>
+        )
+        ,PROD_INS AS (
+        SELECT PIM.INS_INFO_NAME
+              ,PIM.DISP_FONT_COL_CD
+              ,PIM.ERR_KB
+              ,PIM.SCRN_DISP_KB
+              ,PIM.DIST_KB
+              ,PIM.IMP_INS_KB
+              ,PIM.INS_NO
+          FROM DPS_C_MR_INS_PROD_ALL PIM
+         WHERE PIM.PROD_CODE = #prodCode:CHAR#
+           AND PIM.MR_NO = #jgiNo:INTEGER#
+           AND PIM.MAIN_MR = '0'
+        )
+    SELECT IWP.SEQ_KEY
+          ,#jgiNo:INTEGER# AS JGI_NO
+          ,#prodCode:CHAR# AS PROD_CODE
+          ,COALESCE(IWP.INS_NO,TARGET_INS.INS_NO) AS INS_NO
+          ,IWP.TMS_TYTEN_CD
+          ,IWP.DIST_VALUE_Y
+          ,IWP.MODIFY_VALUE_Y
+          ,IWP.PLANNED_VALUE_Y
+          ,IWP.BEF_PLANNED_VALUE_Y
+          ,IWP.SPECIAL_INS_PLAN_FLG
+          ,CASE
+            WHEN NVL2(IWP.INS_NO,EXC_INS.INS_NO,EXC_INS2.INS_NO) IS NULL THEN '0'
+            ELSE '1'
+           END AS EXCEPT_DIST_INS_FLG
+          ,CASE
+            WHEN NVL2(IWP.INS_NO,INS.DEL_FLG,TARGET_INS.DEL_FLG) ='1' THEN '1'
+            WHEN NVL2(IWP.INS_NO,INS.REQ_FLG,TARGET_INS.REQ_FLG) ='1' THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '●', 1, 1)=1  THEN '1'
+            WHEN INSTRC(INS.INS_ABBR_NAME, '〇', 1, 1)=1  THEN '1'
+            ELSE '0'
+           END AS DEL_INS_FLG
+          ,IWP.IS_JGI_NO
+          ,IWP.IS_JGI_NAME
+          ,IWP.IS_DATE
+          ,IWP.UP_JGI_NO
+          ,IWP.UP_JGI_NAME
+          ,IWP.UP_DATE
+          ,NVL2(IWP.INS_NO,INS.INS_ABBR_NAME,TARGET_INS.INS_ABBR_NAME) AS INS_ABBR_NAME
+          ,NVL2(IWP.INS_NO,INS.RELN_INS_NO,TARGET_INS.RELN_INS_NO)     AS RELN_INS_NO
+          ,NVL2(IWP.INS_NO,INS.RELN_INS_CODE,TARGET_INS.RELN_INS_CODE) AS RELN_INS_CODE
+          ,NVL2(IWP.INS_NO,INS.INS_CLASS,TARGET_INS.INS_CLASS)         AS INS_CLASS
+          ,NVL2(IWP.INS_NO,INS.OLD_INSR_FLG,TARGET_INS.OLD_INSR_FLG)   AS OLD_INSR_FLG
+          ,NVL2(IWP.INS_NO,INS.HO_INS_TYPE,TARGET_INS.HO_INS_TYPE)     AS HO_INS_TYPE
+          ,TMS.TMS_TYTEN_MEI_KJ
+          ,IWP.PRE_FAR_ADVANCE_PERIOD
+          ,IWP.FAR_ADVANCE_PERIOD
+          ,IWP.ADVANCE_PERIOD
+          ,IWP.CURRENT_PERIOD
+          ,IWP.CURRENT_PLAN_VALUE
+          ,IWP.PRE_FAR_ADVANCE_PERIOD1
+          ,IWP.FAR_ADVANCE_PERIOD1
+          ,IWP.ADVANCE_PERIOD1
+          ,IWP.CURRENT_PERIOD1
+          ,IWP.CURRENT_PLAN_VALUE1
+          ,IWP.PRE_FAR_ADVANCE_PERIOD2
+          ,IWP.FAR_ADVANCE_PERIOD2
+          ,IWP.ADVANCE_PERIOD2
+          ,IWP.CURRENT_PERIOD2
+          ,IWP.CURRENT_PLAN_VALUE2
+          ,IWP.PRE_FAR_ADVANCE_PERIOD3
+          ,IWP.FAR_ADVANCE_PERIOD3
+          ,IWP.ADVANCE_PERIOD3
+          ,IWP.CURRENT_PERIOD3
+          ,IWP.CURRENT_PLAN_VALUE3
+          ,NULL AS JGI_NAME
+          ,NULL AS TEAM_CODE
+          ,NULL AS BUMON_RYAKU_NAME
+          ,TMS.PLAN_TAI_GAI_FLG_TOK AS PLAN_TAI_GAI_FLG_TOK
+          ,TMS.PLAN_TAI_GAI_FLG_RIK AS PLAN_TAI_GAI_FLG_RIK
+          ,NVL2(IWP.INS_NO,PRI.INS_INFO_NAME    ,PRI2.INS_INFO_NAME)    AS INS_INFO_NAME
+          ,NVL2(IWP.INS_NO,PRI.DISP_FONT_COL_CD ,PRI2.DISP_FONT_COL_CD) AS DISP_FONT_COL_CD
+          ,NVL2(IWP.INS_NO,PRI.ERR_KB           ,PRI2.ERR_KB)           AS ERR_KB
+          ,NVL2(IWP.INS_NO,PRI.SCRN_DISP_KB     ,PRI2.SCRN_DISP_KB)     AS SCRN_DISP_KB
+          ,NVL2(IWP.INS_NO,PRI.DIST_KB          ,PRI2.DIST_KB)          AS DIST_KB
+          ,NVL2(IWP.INS_NO,PRI.IMP_INS_KB       ,PRI2.IMP_INS_KB)       AS IMP_INS_KB
+      FROM IWP_DELI3 IWP
+           INNER JOIN DPS_C_INS_MST INS
+        ON IWP.INS_NO = INS.INS_NO
+           INNER JOIN DPS_S_T_TMS_TYTEN_MST_UN TMS
+        ON IWP.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+           FULL OUTER JOIN TARGET_INS
+        ON IWP.INS_NO = TARGET_INS.INS_NO
+           LEFT OUTER JOIN PROD_INS PRI
+        ON IWP.INS_NO = PRI.INS_NO
+           LEFT OUTER JOIN PROD_INS PRI2
+        ON TARGET_INS.INS_NO = PRI2.INS_NO
+           LEFT OUTER JOIN DPS_I_EXCEPT_DIST_INS EXC_INS
+        ON IWP.INS_NO = EXC_INS.INS_NO AND ( EXC_INS.PROD_CODE = #prodCode:CHAR# OR EXC_INS.PROD_CODE IS NULL)
+           LEFT OUTER JOIN DPS_I_EXCEPT_DIST_INS EXC_INS2
+        ON TARGET_INS.INS_NO = EXC_INS2.INS_NO AND ( EXC_INS2.PROD_CODE = #prodCode:CHAR# OR EXC_INS2.PROD_CODE IS NULL)
+     ORDER BY HO_INS_TYPE, RELN_INS_NO, RELN_INS_CODE, TMS_TYTEN_CD
+  </select>
+
+</sqlMap>

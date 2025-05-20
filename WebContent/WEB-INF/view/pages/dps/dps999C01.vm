@@ -1,0 +1,71 @@
+## ------------------------------------
+## 子画面ウィンドウの帳票[完了]画面
+## ------------------------------------
+#set($layout = "nothingLayout.vm" )
+#parse("WEB-INF/view/cmn/xhtml.vm")
+<html>
+#parse("WEB-INF/view/cmn/headerInfo.vm")
+<body onload="window.focus()">
+
+<div class="clear"></div>
+<div id="messageArea">
+#allMessage()
+</div>
+
+<script language="javascript">
+<!--
+##帳票出力
+function download() {
+    document.${form.bean.getActionPath()}.action = '$link.setAction("${form.bean.getActionPath()}Download")';
+    document.${form.bean.getActionPath()}.submit();
+    return false;
+}
+##帳票選択画面に戻る
+function backSelectPage() {
+    document.${form.bean.getActionPath()}.action = '$link.setAction("dps998C00F00")';
+    document.${form.bean.getActionPath()}.submit();
+}
+
+## キー入力無効
+window.document.onkeydown = function () {
+    event.keyCode = null;
+    return false;
+}
+//-->
+</script>
+<form name="${form.bean.getActionPath()}" method="post">
+<div class="label">
+<table align="center" width="100%" height="200px" border="0" cellpadding="5" style="text-align: center;">
+    <tr>
+        #if($!form.bean.downLoadFileName)
+        <td>ファイルの作成が完了しました</td>
+        #else
+        <td>出力対象のデータが見つかりませんでした。</td>
+        #end
+    </tr>
+    <tr>
+        <td>
+            #if($!form.bean.downLoadFileName)
+            <input type="button" name="close" value="出力する" onClick="return download()" />
+            #else
+            <input type="button" name="close" value="出力する" onClick="return download()" disabled/>
+            #end
+            #if($!form.bean.backSelectPageFlg && $!form.bean.selectedSosCd)
+            <input type="button" name="back" value="戻る" onClick="return backSelectPage()" />
+            #end
+            <input type="button" name="close" value="閉じる" onClick="self.window.close()" />
+        </td>
+    </tr>
+    <tr>
+        <td><span class="guide">　別組織で作成する際は、当画面を閉じてください。</span></td>
+    </tr>
+</table>
+</div>
+<input type="hidden" name="downLoadFileName" id="downLoadFileName" value="$!form.bean.downLoadFileName" />
+<input type="hidden" name="category" id="category" value="$!form.bean.category" />
+#if($!form.bean.backSelectPageFlg && $!form.bean.selectedSosCd)
+<input type="hidden" name="outputSosCd" id="outputSosCd" value="$!form.bean.selectedSosCd" />
+#end
+</form>
+</body>
+</html>

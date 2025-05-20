@@ -1,0 +1,298 @@
+## (医)積上結果表示ダイアログ
+#set($layout = "dialogueLayout.vm" )
+#set($bodyOnloadMethod  = "dpm501C01F00()")
+#set($dataListFileName  = "dpm501C01x01.vm")
+#set($dataListFileName2 = "dpm501C01x02.vm")
+
+## 検索結果
+#if($form.getRequestData("DPM501C01_DATA_R_SEARCH_RESULT"))
+    #set($result = $form.getRequestData("DPM501C01_DATA_R_SEARCH_RESULT"))
+#end
+#if($form.getRequestData("DPM501C01_DATA_R_SEARCH_RESULT"))
+    #set($resultDetail = $form.getRequestData("DPM501C01_DATA_R_SEARCH_RESULT").detailList)
+#end
+
+## カテゴリリスト
+#set($categoryList = $service.getManageCategoryList(false,false))
+## カテゴリ名
+#set($prodCategory = "")
+#if($form.bean.prodCategory)
+#foreach($codeAndValue in $categoryList)
+    #if($codeAndValue.code == $form.bean.prodCategory)
+        #set($prodCategory = "$codeAndValue.value")
+        #set($prodCategoryCode = "$codeAndValue.code")
+    #end
+#end
+#end
+
+## 実施計画区分
+#set($plannedType = $security.getPlannedType().toString())
+#set($plannedTypeStr = "")
+#if ($plannedType == "PLANNED_1")
+    #set($plannedTypeStr = "実施計画１")
+#elseif ($plannedType == "PLANNED_2")
+    #set($plannedTypeStr = "実施計画２")
+#end
+
+## ヘッダータイトル
+#set($titleUH = $form.bean.titleUH)
+#set($titleP = $form.bean.titleP)
+#set($titleZ = $form.bean.titleZ)
+
+
+<script language="javascript">
+<!--
+document.getElementById("closeWindow").value = "true";
+
+## 明細行グリッド
+#set($CoverId1 = "dpm501C01CoverId1")
+#set($GridObjName1 = "dpm501C01Grid1")
+var ${GridObjName1};
+
+## 集計行グリッド
+#set($CoverId2 = "dpm501C01CoverId2")
+#set($GridObjName2 = "dpm501C01Grid2")
+var ${GridObjName2};
+
+## 編集検知フラグ
+var editFlg = false;
+
+document.getElementById("closeWindow").value = "true";
+
+## 初期表示
+function dpm501C01F00() {
+    doInitGrid2(); ## 集計行
+    ## 集計行のデータ読み込み
+    if (document.getElementById("$dataListFileName2")) {
+        var loadXMLString = document.getElementById("$dataListFileName2").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName2}.loadXMLString(loadXMLString);
+        }
+    }
+
+    doInitGrid1(); ## 明細行
+    ## 明細行のデータ読み込み
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName1}.loadXMLString(loadXMLString);
+            ${GridObjName1}.setRowspan("1",6,${GridObjName1}.getRowsNum());
+        }
+        for (rowId = 1; rowId <= ${GridObjName1}.getRowsNum(); rowId++) {
+            ## 合計列の計算処理
+            doCalcSumCol(${GridObjName1}, rowId);
+        }
+    }
+    ## 集計行の値をセット
+    setSumOtherGrid(${GridObjName1}, ${GridObjName2}, 2);
+    setSumOtherGrid(${GridObjName1}, ${GridObjName2}, 3);
+    setSumOtherGrid(${GridObjName1}, ${GridObjName2}, 4);
+    setSumOtherGrid(${GridObjName1}, ${GridObjName2}, 5);
+    setSumOtherGrid(${GridObjName1}, ${GridObjName2}, 7);
+    setSumOtherGrid(${GridObjName1}, ${GridObjName2}, 8);
+    setSumOtherGrid(${GridObjName1}, ${GridObjName2}, 9);
+    setSumOtherGrid(${GridObjName1}, ${GridObjName2}, 10);
+}
+
+## DHTMLXGrid生成(明細行)
+function doInitGrid1() {
+    #if($resultDetail)
+        ${GridObjName1} = createDhtmlXGridLodingExt("${GridObjName1}", "${CoverId1}");
+    #else
+        ${GridObjName1} = createDhtmlXGrid("${GridObjName1}");
+    #end
+    ${GridObjName1}.setHeader(",,,,,,,,,,");
+    ${GridObjName1}.setInitWidths("35,200,90,90,90,90,140,90,90,90,90");
+    ${GridObjName1}.setColAlign("center,left,right,right,right,right,center,right,right,right,right");
+    ${GridObjName1}.setColTypes("ch,ro,ron,ron,ron,ro,ron,ron,ron,ron,ron");
+    ${GridObjName1}.enableResizing("false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName1}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName1}.enableDistributedParsing(true,50,300);
+    ${GridObjName1}.enableAutoHeight(true, getGridHeight('dpm501C01', 500));
+    ${GridObjName1}.enableBlockSelection();
+    ${GridObjName1}.forceLabelSelection(true);
+    ${GridObjName1}.setCSVDelimiter("\t");
+    ${GridObjName1}.setNumberFormat("0,000",2);
+    ${GridObjName1}.setNumberFormat("0,000",3);
+    ${GridObjName1}.setNumberFormat("0,000",4);
+    ${GridObjName1}.setNumberFormat("0,000",5);
+    ${GridObjName1}.setNumberFormat("0,000",7);
+    ${GridObjName1}.setNumberFormat("0,000",8);
+    ${GridObjName1}.setNumberFormat("0,000",9);
+    ${GridObjName1}.setNumberFormat("0,000",10);
+    ${GridObjName1}.setSizes();
+    ${GridObjName1}.setNoHeader(true);
+    ${GridObjName1}.init();
+    ${GridObjName1}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        copyBlock(${GridObjName1}, keycode, ctrl, shift);
+        if(!(currentCellMove(${GridObjName1},keycode))){return false;}
+        return true;
+    });
+    ${GridObjName1}.attachEvent("onScroll",function(sLeft,sTop){
+    	${GridObjName2}.objBox.scrollLeft=${GridObjName1}.objBox.scrollLeft
+    });
+}
+
+## DHTMLXGrid生成(集計行)
+function doInitGrid2() {
+    #if($resultDetail)
+        ${GridObjName2} = createDhtmlXGridLodingExt("${GridObjName2}", "${CoverId2}");
+    #else
+        ${GridObjName2} = createDhtmlXGrid("${GridObjName2}");
+    #end
+    ${GridObjName2}.setHeader("担当者計画　$!plannedTypeStr　$!prodCategory,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan");
+    ${GridObjName2}.attachHeader("選択,品目名称,積上前(Y価ベース),#cspan,#cspan,#cspan,,積上後(Y価ベース),#cspan,#cspan,#cspan");
+    ${GridObjName2}.attachHeader("#rspan,#rspan,$titleUH,$titleP,$titleZ,UHP合計,#rspan,$titleUH,$titleP,$titleZ,合計");
+    ${GridObjName2}.setInitWidths("35,200,90,90,90,90,140,90,90,90,90");
+    ${GridObjName2}.setColAlign("center,left,right,right,right,right,center,right,right,right,right");
+    ${GridObjName2}.setColTypes("ro,ro,ron,ron,ron,ro,ron,ron,ron,ron,ron");
+    ${GridObjName2}.enableResizing("false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName2}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName2}.enableAutoHeight(true, 100);
+    ${GridObjName2}.objBox.style.overflowX="hidden";
+    ${GridObjName2}.objBox.style.overflowY="hidden";
+    ${GridObjName2}.enableBlockSelection();
+    ${GridObjName2}.forceLabelSelection(true);
+    ${GridObjName2}.setCSVDelimiter("\t");
+    ${GridObjName2}.setNumberFormat("0,000",2);
+    ${GridObjName2}.setNumberFormat("0,000",3);
+    ${GridObjName2}.setNumberFormat("0,000",4);
+    ${GridObjName2}.setNumberFormat("0,000",5);
+    ${GridObjName2}.setNumberFormat("0,000",7);
+    ${GridObjName2}.setNumberFormat("0,000",8);
+    ${GridObjName2}.setNumberFormat("0,000",9);
+    ${GridObjName2}.setNumberFormat("0,000",10);
+    ${GridObjName2}.setSizes();
+    ${GridObjName2}.init();
+    ${GridObjName2}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        copyBlock(${GridObjName2}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName2}.attachEvent("onBeforeSelect",function(newId,oldId){return;});
+}
+
+## 計画値の合計列の計算処理
+function doCalcSumCol(grid, rowId){
+    ## 積上前
+    var sumValue = null;
+    var value1 = grid.cells(rowId,2).getValue();
+    var value2 = grid.cells(rowId,3).getValue();
+    var value3 = grid.cells(rowId,4).getValue();
+    if(value1 != null && value1.toString() != ""){
+        sumValue = convertToInteger(grid,rowId,2);
+    }
+    if(value2 != null && value2.toString() != ""){
+        sumValue = sumValue + convertToInteger(grid,rowId,3);
+    }
+    if(value3 != null && value3.toString() != ""){
+        sumValue = sumValue + convertToInteger(grid,rowId,4);
+    }
+    var cell = grid.cells(rowId, 5);
+    if (sumValue != null) {
+        cell.setValue(sumValue);
+    }
+    else {
+        cell.setValue(null);
+    }
+
+    ## 積上後
+    sumValue = null;
+    value1 = grid.cells(rowId,7).getValue();
+    value2 = grid.cells(rowId,8).getValue();
+    value3 = grid.cells(rowId,9).getValue();
+    if(value1 != null && value1.toString() != ""){
+        sumValue = convertToInteger(grid,rowId,7);
+    }
+    if(value2 != null && value2.toString() != ""){
+        sumValue = sumValue + convertToInteger(grid,rowId,8);
+    }
+    if(value3 != null && value3.toString() != ""){
+        sumValue = sumValue + convertToInteger(grid,rowId,9);
+    }
+    cell = grid.cells(rowId, 10);
+    if (sumValue != null) {
+        cell.setValue(sumValue);
+    }
+    else {
+        cell.setValue(null);
+    }
+}
+
+## 更新処理
+function dpm501C01F05Execute() {
+    ##入力チェック
+    if (!executeValidation()) {
+        return;
+    }
+    ##確認
+    if (!confirm('$text.get("DPM501C01.001","dialogue")')) {
+        return;
+    }
+    var form = document.dpm501C01Form;
+    ##フォームに更新情報を格納
+    addCheckRowIdList(form, ${GridObjName1}, 'rowIdList', 'updateRowId', 0);
+    var actionPath = "$link.setAction('dpm501C01F05Execute')";
+    form.action = actionPath;
+    form.submit();
+    dpm501C01F05Execute = blockIt;
+}
+
+## 更新時入力チェック
+function executeValidation() {
+    ## [必須] 品目選択
+    var checkedRows = ${GridObjName1}.getCheckedRows(0);
+    errorMsg = '$text.get("DPC1006E",["品目"])';
+    addErrorInfo(!isEntered(checkedRows), errorMsg);
+    return validation();
+}
+
+## ダイアログを閉じる
+function closeWindow() {
+    if (editFlg) {
+        if (window.confirm('$text.get("DPC999C99.001","dialogue")')) {
+            window.close();
+        }
+    }
+    else {
+        window.close();
+    }
+}
+//-->
+</script>
+
+<div class="disp">
+<form name="dpm501C01Form" method="post">
+<table style="margin-top: 2px; margin-bottom: 2px; float: left; width: 100%;">
+    #if ($result && $result.disableUpdate)
+        <span class="guide">※積上後(Y価ベース)において、登録可能最大値(9,999,999,999千円)を超えている品目があるため、登録できません。</span>
+    #end
+    <tr>
+        <td colspan="2">
+            <input type="button" value="閉じる" style="width: 80px;" onclick="closeWindow()" />
+            #if ($!security.hasAuth($!form.getField("DPM501C01_EDIT_AUTH")))
+            #if ($result && !$result.disableUpdate)
+            <input type="button" value="登録" style="width: 80px;" onclick="dpm501C01F05Execute()" />
+            #else
+            <input type="button" value="登録" style="width: 80px;" onclick="dpm501C01F05Execute()" disabled />
+            #end
+            #end
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href='#' onClick='allCheckboxChange(${GridObjName1},0,true)' class="allCheckboxChange">すべての品目を選択</a>
+            <a href='#' onClick='allCheckboxChange(${GridObjName1},0,false)' class="allCheckboxChange">すべての品目を解除</a>
+        </td>
+        <td style="text-align: right; vertical-align: bottom;"><label>$consts.tableHeader</label></td>
+    </tr>
+</table>
+#if($resultDetail)
+    #loadingGridDiv4("${GridObjName2}", "${CoverId2}", "width: 99.5%; clear: both;")
+    #loadingGridDiv4("${GridObjName1}", "${CoverId1}", "width: 99.5%; clear: both;")
+#else
+    <div id="${GridObjName2}" style="width: 99.5%; clear: both;"></div>
+    <div id="${GridObjName1}" style="width: 99.5%; clear: both;"></div>
+#end
+#token()
+</form>
+</div>

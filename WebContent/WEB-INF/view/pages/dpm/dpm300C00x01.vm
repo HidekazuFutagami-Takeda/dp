@@ -1,0 +1,145 @@
+#set( $layout = "nothingLayout.vm" )
+#set( $data = $form.getRequestData("DPM300C00_DATA_R"))
+#set( $dataList = $data.getDetailList())
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#if($form.bean.prodCategory)
+    #set( $formProdCategory = $form.bean.prodCategory )
+#else
+    #set( $formProdCategory = 1 )
+#end
+##RowId用カウンタ
+#set( $idcnt = 1 )
+##追加ボタンId
+#set( $bid = 1 )
+#foreach($resultData in $dataList)
+    ##集計行
+    ##項目の施設コード、品目コードが前行と異なる場合、集計行を表示する
+    #set( $sisetuflg = $resultData.isTytenSumRowFlg() )
+    #set( $hinmokuflg = false )
+     #set( $q = '"' )
+     #set( $inputBgClass = " class='inputB2'" )
+     #if($resultData.getTmsTytenCd())
+        #set( $sumRowFlg = "false" )
+     #else
+        #set( $type = "ro" )
+        #set( $inputBgClass = "" )
+        #set( $sumRowFlg = "true" )
+     #end
+     #set($bgClass = "")
+     #if(!($sisetuflg) && !($hinmokuflg))
+     <row id='$idcnt'>
+        ##メッセージ見出し用
+        <userdata name="tmsTytenName">$!resultData.getTmsTytemName()</userdata>
+        ##ツールチップ用
+        <userdata name="toolTipUH">$!resultData.getUpDateJgiNameUH()&#13;$!format.toString($!resultData.getUpDateUH(), "yyyy/MM/dd HH:mm:ss")</userdata>
+        <userdata name="toolTipP">$!resultData.getUpDateJgiNameP()&#13;$!format.toString($!resultData.getUpDateP(), "yyyy/MM/dd HH:mm:ss")</userdata>
+        <userdata name="toolTipZ">$!resultData.getUpDateJgiNameZ()&#13;$!format.toString($!resultData.getUpDateZ(), "yyyy/MM/dd HH:mm:ss")</userdata>
+        ##送信データ
+        <userdata name="rowIdList">$!form.bean.prodCode,$!resultData.getTmsTytenCd(),$!resultData.getSeqKeyUH(),$!resultData.getUpDateUH().getTime(),$!resultData.getBeforeBaseTUH(),$!resultData.getSeqKeyP(),$!resultData.getUpDateP().getTime(),$!resultData.getBeforeBaseTP(),$!resultData.getSeqKeyZ(),$!resultData.getUpDateZ().getTime(),$!resultData.getBeforeBaseTZ()</userdata>
+        ##計算、追加用インデックス
+        <userdata name="tyChangeRateUH">$!resultData.getTyChangeRateUH()</userdata>
+        <userdata name="tyChangeRateP">$!resultData.getTyChangeRateP()</userdata>
+        <userdata name="tyChangeRateZ">$!resultData.getTyChangeRateZ()</userdata>
+        <userdata name="bid">$bid</userdata>
+        <userdata name="rowType">input</userdata>
+        <userdata name="subTotalId">$bid</userdata>
+        <userdata name="planTaiGaiFlgTok">$!resultData.getPlanTaiGaiFlgTok()</userdata>
+        <cell$bgClass>　　#if($!resultData.getPlanTaiGaiFlgTok())${tmsselect.planTaiGaiLabel}#end$!resultData.getTmsTytemName()</cell>
+        <cell$bgClass>$!resultData.getTmsTytenCd()</cell>
+        <cell$bgClass><![CDATA[<a href="#" onclick="if(linkClick())dpm301C00F05('$!resultData.getTmsTytenCd()');">品目別</a>]]></cell>
+        <cell$bgClass type="ron">$!resultData.getBaseYUH()</cell>
+        ##流通政策部のみデータを表示【UH】
+        #if($form.bean.isRyutsu())
+        	<cell$bgClass type='#setColType($!resultData.getBeforeBaseTUH(), "ro" ,"ron")'>$!resultData.getBeforeBaseTUH()</cell>
+        	<cell$inputBgClass type='#setColType( $!resultData.getBaseTUH(), "ed" ,"edn")'>$!resultData.getBaseTUH()</cell>
+        #else
+            <cell$bgClass></cell>
+            <cell$bgClass></cell>
+        #end
+        <cell$bgClass type="ron">$!resultData.getBaseYP()</cell>
+        ##流通政策部のみデータを表示【P】
+        #if($form.bean.isRyutsu())
+        	<cell$bgClass type='#setColType( $!resultData.getBeforeBaseTP(), "ro" ,"ron")'>$!resultData.getBeforeBaseTP()</cell>
+        	<cell$inputBgClass type='#setColType( $!resultData.getBaseTP(), "ed" ,"edn")'>$!resultData.getBaseTP()</cell>
+        #else
+            <cell$bgClass></cell>
+            <cell$bgClass></cell>
+        #end
+        ##タイトルが存在する時のみ表示【Z】
+		#if ($titleZ != "")
+	        <cell$bgClass type="ron">$!resultData.getBaseYZ()</cell>
+	        ##流通政策部のみデータを表示【Z】
+	        #if($form.bean.isRyutsu())
+	        	<cell$bgClass type='#setColType( $!resultData.getBeforeBaseTZ(), "ro" ,"ron")'>$!resultData.getBeforeBaseTZ()</cell>
+	        	<cell$inputBgClass type='#setColType( $!resultData.getBaseTZ(), "ed" ,"edn")'>$!resultData.getBaseTZ()</cell>
+	        #else
+	            <cell$bgClass></cell>
+	            <cell$bgClass></cell>
+	        #end
+        #else
+        	<cell$bgClass></cell>
+	        <cell$bgClass></cell>
+	        <cell$bgClass></cell>
+        #end
+        <cell$bgClass></cell>
+        <cell$bgClass></cell>
+        <cell$bgClass></cell>
+        #set( $idcnt = $idcnt + 1 )
+    </row>
+    #end
+    ##特約店中計
+    #if($sisetuflg)
+    <row id='$idcnt'>
+    #set($subTotalId = $bid + 1)
+    <userdata name="sumRowFlg">true</userdata>
+    <userdata name="rowType">subTotal</userdata>
+    <userdata name="subTotalId">$subTotalId</userdata>
+        <cell class="sumOfficeTokuG">　$!resultData.getTmsTytemName()　計</cell>
+        <cell class="sumOfficeTokuG">$!resultData.getTmsTytenCd()</cell>
+        <cell class="sumOfficeTokuG"></cell>
+        <cell class="sumOfficeTokuG" type='#setColType( $!resultData.getBaseYUH(), "ro" ,"ron")'>$!resultData.getBaseYUH()</cell>
+        ##流通政策部のみデータを表示【UH】
+        #if($form.bean.isRyutsu())
+        	<cell class="sumOfficeTokuG" type='#setColType( $!resultData.getBeforeBaseTUH(), "ro" ,"ron")'>$!resultData.getBeforeBaseTUH()</cell>
+        	<cell class="sumOfficeTokuG" type='#setColType( $!resultData.getBaseTUH(), "ro" ,"ron")'>$!resultData.getBaseTUH()</cell>
+        #else
+	        <cell class="sumOfficeTokuG"></cell>
+	        <cell class="sumOfficeTokuG"></cell>
+        #end
+        <cell class="sumOfficeTokuG" type='#setColType( $!resultData.getBaseYP(), "ro" ,"ron")'>$!resultData.getBaseYP()</cell>
+        ##流通政策部のみデータを表示【P】
+        #if($form.bean.isRyutsu())
+	        <cell class="sumOfficeTokuG" type='#setColType( $!resultData.getBeforeBaseTP(), "ro" ,"ron")'>$!resultData.getBeforeBaseTP()</cell>
+	        <cell class="sumOfficeTokuG" type='#setColType( $!resultData.getBaseTP(), "ro" ,"ron")'>$!resultData.getBaseTP()</cell>
+        #else
+	        <cell class="sumOfficeTokuG"></cell>
+	        <cell class="sumOfficeTokuG"></cell>
+        #end
+        ##データが存在する時のみ表示【Z】
+        #if($!resultData.getSeqKeyZ() != "")
+        	<cell class="sumOfficeTokuG" type='#setColType( $!resultData.getBaseYZ(), "ro" ,"ron")'>$!resultData.getBaseYZ()</cell>
+	        ##流通政策部のみデータを表示【Z】
+	        #if($form.bean.isRyutsu())
+		        <cell class="sumOfficeTokuG" type='#setColType( $!resultData.getBeforeBaseTZ(), "ro" ,"ron")'>$!resultData.getBeforeBaseTZ()</cell>
+		        <cell class="sumOfficeTokuG" type='#setColType( $!resultData.getBaseTZ(), "ro" ,"ron")'>$!resultData.getBaseTZ()</cell>
+	        #else
+		        <cell class="sumOfficeTokuG"></cell>
+		        <cell class="sumOfficeTokuG"></cell>
+	        #end
+        #else
+			<cell class="sumOfficeTokuG"></cell>
+			<cell class="sumOfficeTokuG"></cell>
+			<cell class="sumOfficeTokuG"></cell>
+        #end
+        <cell class="sumOfficeTokuG"></cell>
+        <cell class="sumOfficeTokuG"></cell>
+        <cell class="sumOfficeTokuG"></cell>
+        #set( $bid = $bid + 1 )
+        #set( $idcnt = $idcnt + 1 )
+     </row>
+     #end
+#end
+</rows>
+#end

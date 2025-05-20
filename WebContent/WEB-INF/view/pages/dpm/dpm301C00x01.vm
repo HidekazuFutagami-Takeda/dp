@@ -1,0 +1,81 @@
+#set( $layout = "nothingLayout.vm" )
+#set( $data = $form.getRequestData("DPM301C00_DATA_R"))
+#set( $header = $form.getRequestData("DPM301C00_INPUT_DATA_R"))
+#set( $dataList = $data.getDetailList())
+## 流通フラグ
+#set($ryutsuFlg = $form.bean.ryutsu)
+
+#set($titleP = $form.bean.titleP)
+#set($titleZ = $form.bean.titleZ)
+
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#if($form.bean.prodCategory)
+    #set( $formProdCategory = $form.bean.prodCategory )
+#else
+    #set( $formProdCategory = 1 )
+#end
+##RowId用カウンタ
+#set( $idcnt = 1 )
+#foreach($resultData in $dataList)
+     #set( $q = '"' )
+     #set( $inputBgClass = " class='inputB2'" )
+     ##明細行
+     <row id='$idcnt'>
+        ##メッセージ見出し用
+        <userdata name="prodName">$!resultData.getProdName()</userdata>
+        ##ツールチップ用
+        <userdata name="toolTipUH">
+        #if($!resultData.getUpDateJgiNameUH())
+            $!resultData.getUpDateJgiNameUH()&#13;$!format.toString($!resultData.getUpDateUH(), "yyyy/MM/dd HH:mm:ss")
+        #end
+        </userdata>
+        <userdata name="toolTipP">
+        #if($!resultData.getUpDateJgiNameP())
+            $!resultData.getUpDateJgiNameP()&#13;$!format.toString($!resultData.getUpDateP(), "yyyy/MM/dd HH:mm:ss")
+        #end
+        </userdata>
+        <userdata name="toolTipZ">
+        #if($!resultData.getUpDateJgiNameZ())
+            $!resultData.getUpDateJgiNameZ()&#13;$!format.toString($!resultData.getUpDateZ(), "yyyy/MM/dd HH:mm:ss")
+        #end
+        </userdata>
+        ##送信データ
+        <userdata name="rowIdList">$!resultData.getProdCode(),$!header.getTmsTytenCd(),$!resultData.getSeqKeyUH(),$!resultData.getUpDateUH().getTime(),$!resultData.getBaseSUH(),$!resultData.getSeqKeyP(),$!resultData.getUpDateP().getTime(),$!resultData.getBaseSP(),$!resultData.getSeqKeyZ(),$!resultData.getUpDateZ().getTime(),$!resultData.getBaseSZ()</userdata>
+        ##計算、追加用インデックス
+        <userdata name="tyChangeRateUH">$!resultData.getTyChangeRateUH()</userdata>
+        <userdata name="tyChangeRateP">$!resultData.getTyChangeRateP()</userdata>
+        <userdata name="tyChangeRateZ">$!resultData.getTyChangeRateZ()</userdata>
+        <userdata name="rowType">input</userdata>
+        <cell>$!resultData.getProdName()</cell>
+        <cell><![CDATA[<a href="#" onclick="if(linkClick())dpm300C00F05('$!resultData.getProdCode()');">特約店別</a>]]></cell>
+        <cell type='#setColType( $!resultData.getBaseYUH(), "ro" ,"ron")'>$!resultData.getBaseYUH()</cell>
+        <cell type='#setColType( $!resultData.getBaseSUH(), "ro" ,"ron")'>$!resultData.getBaseSUH()</cell>
+        #if($ryutsuFlg)
+        <cell$inputBgClass type='#setColType( $!resultData.getBaseSUH(), "ed" ,"edn")'>$!resultData.getBaseSUH()</cell>
+        #else
+        <cell type='#setColType( $!resultData.getBaseSUH(), "ro" ,"ron")'></cell>
+        #end
+        <cell type='#setColType( $!resultData.getBaseYP(), "ro" ,"ron")'>$!resultData.getBaseYP()</cell>
+        <cell type='#setColType( $!resultData.getBaseSP(), "ro" ,"ron")'>$!resultData.getBaseSP()</cell>
+        #if($ryutsuFlg && $titleP != "")
+        <cell$inputBgClass type='#setColType( $!resultData.getBaseSP(), "ed" ,"edn")'>$!resultData.getBaseSP()</cell>
+        #else
+        <cell type='#setColType( $!resultData.getBaseSP(), "ro" ,"ron")'></cell>
+        #end
+        <cell type='#setColType( $!resultData.getBaseYZ(), "ro" ,"ron")'>$!resultData.getBaseYZ()</cell>
+        <cell type='#setColType( $!resultData.getBaseSZ(), "ro" ,"ron")'>$!resultData.getBaseSZ()</cell>
+        #if($ryutsuFlg && $titleZ != "")
+        <cell$inputBgClass type='#setColType( $!resultData.getBaseSZ(), "ed" ,"edn")'>$!resultData.getBaseSZ()</cell>
+        #else
+        <cell type='#setColType( $!resultData.getBaseSZ(), "ro" ,"ron")'></cell>
+        #end
+        <cell></cell>
+        <cell></cell>
+        <cell></cell>
+        #set( $idcnt = $idcnt + 1 )
+    </row>
+#end
+</rows>
+#end

@@ -1,0 +1,899 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_INS_WS_PLAN_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.InsWsPlan" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INS_NO" property="insNo" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="DIST_VALUE_Y" property="distValueY" jdbcType="BIGINT" />
+    <result column="MODIFY_VALUE_Y" property="modifyValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_Y" property="plannedValueY" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_VALUE_Y" property="befPlannedValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_T" property="plannedValueT" jdbcType="BIGINT" />
+    <result column="SPECIAL_INS_PLAN_FLG" property="specialInsPlanFlg" jdbcType="CHAR" />
+    <result column="EXCEPT_DIST_INS_FLG" property="exceptDistInsFlg" jdbcType="CHAR" />
+    <result column="DEL_INS_FLG" property="delInsFlg" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultSumJgiMap" class="java.util.LinkedHashMap" >
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="DIST_VALUE_UH_Y" property="distValueUhY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_UH_Y" property="plannedValueUhY" jdbcType="BIGINT" />
+    <result column="DIST_VALUE_P_Y" property="distValuePY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_P_Y" property="plannedValuePY" jdbcType="BIGINT" />
+  </resultMap>
+
+  <resultMap id="resultSumProdMap" class="java.util.LinkedHashMap" >
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="DIST_VALUE_UH_Y" property="distValueUhY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_UH_Y" property="plannedValueUhY" jdbcType="BIGINT" />
+    <result column="DIST_VALUE_P_Y" property="distValuePY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_P_Y" property="plannedValuePY" jdbcType="BIGINT" />
+  </resultMap>
+
+  <resultMap id="resultImportantHbn" class="java.util.LinkedHashMap" >
+    <result column="JGI_NO" property="JGI_NO" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="PROD_CODE" jdbcType="CHAR" />
+    <result column="INS_NO" property="INS_NO" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD" property="TMS_TYTEN_CD" jdbcType="CHAR" />
+    <result column="MAIN_INS_NO" property="MAIN_INS_NO" jdbcType="CHAR" />
+    <result column="DIST_VALUE_Y" property="DIST_VALUE_Y" jdbcType="BIGINT" />
+    <result column="MODIFY_VALUE_Y" property="MODIFY_VALUE_Y" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_Y" property="PLANNED_VALUE_Y" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_VALUE_Y" property="BEF_PLANNED_VALUE_Y" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_T" property="PLANNED_VALUE_T" jdbcType="BIGINT" />
+    <result column="SPECIAL_INS_PLAN_FLG" property="SPECIAL_INS_PLAN_FLG" jdbcType="CHAR" />
+    <result column="EXCEPT_DIST_INS_FLG" property="EXCEPT_DIST_INS_FLG" jdbcType="CHAR" />
+    <result column="DEL_INS_FLG" property="DEL_INS_FLG" jdbcType="CHAR" />
+  </resultMap>
+
+  <resultMap id="resultHbnMissBase" class="java.util.LinkedHashMap" >
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="PLANNED_VALUE_UH_Y" property="plannedValueUhY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_P_Y" property="plannedValuePY" jdbcType="BIGINT" />
+  </resultMap>
+
+  <resultMap id="resultInsWsCount" class="jp.co.takeda.model.InsWsCount" >
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="COUNT" property="count" jdbcType="INTEGER" />
+  </resultMap>
+
+  <resultMap id="resultCheckToolMap" class="jp.co.takeda.model.CheckTool" >
+    <result column="UP_SOS_CD" property="upSosCd" jdbcType="INTEGER" />
+    <result column="UP_BUMON_RYAKU_NAME" property="upBumonRyakuName" jdbcType="CHAR" />
+    <result column="SOS_CD" property="sosCd" jdbcType="INTEGER" />
+    <result column="BUMON_RYAKU_NAME" property="bumonRyakuName" jdbcType="CHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="INTEGER" />
+    <result column="PROD_NAME" property="prodName" jdbcType="CHAR" />
+    <result column="MR_NO" property="mrNo" jdbcType="INTEGER" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="CHAR" />
+    <result column="INS_TYPE" property="insType" jdbcType="CHAR" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="INTEGER" />
+    <result column="TMS_TYTEN_MEI_KJ" property="tmsTytenMeiKj" jdbcType="CHAR" />
+    <result column="INS_NO" property="insNo" jdbcType="INTEGER" />
+    <result column="INS_ABBR_NAME" property="insAbbrName" jdbcType="CHAR" />
+    <result column="YBasePlanSen" property="yBasePlanSen" jdbcType="INTEGER" />
+  </resultMap>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,INS_NO
+          ,TMS_TYTEN_CD
+          ,DIST_VALUE_Y
+          ,MODIFY_VALUE_Y
+          ,PLANNED_VALUE_Y
+          ,BEF_PLANNED_VALUE_Y
+          ,PLANNED_VALUE_T
+          ,SPECIAL_INS_PLAN_FLG
+          ,EXCEPT_DIST_INS_FLG
+          ,DEL_INS_FLG
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_INS_WS_PLAN
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.InsWsPlan" >
+    SELECT SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,INS_NO
+          ,TMS_TYTEN_CD
+          ,DIST_VALUE_Y
+          ,MODIFY_VALUE_Y
+          ,PLANNED_VALUE_Y
+          ,BEF_PLANNED_VALUE_Y
+          ,PLANNED_VALUE_T
+          ,SPECIAL_INS_PLAN_FLG
+          ,EXCEPT_DIST_INS_FLG
+          ,DEL_INS_FLG
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_INS_WS_PLAN
+     WHERE JGI_NO = #jgiNo:INTEGER#
+       AND PROD_CODE = #prodCode:CHAR#
+       AND INS_NO = #insNo:CHAR#
+       AND TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+  </select>
+
+  <!-- 検索リスト -->
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT IWP.SEQ_KEY
+          ,IWP.JGI_NO
+          ,IWP.PROD_CODE
+          ,IWP.INS_NO
+          ,IWP.TMS_TYTEN_CD
+          ,IWP.DIST_VALUE_Y
+          ,IWP.MODIFY_VALUE_Y
+          ,IWP.PLANNED_VALUE_Y
+          ,IWP.BEF_PLANNED_VALUE_Y
+          ,IWP.PLANNED_VALUE_T
+          ,IWP.SPECIAL_INS_PLAN_FLG
+          ,IWP.EXCEPT_DIST_INS_FLG
+          ,IWP.DEL_INS_FLG
+          ,IWP.IS_JGI_NO
+          ,IWP.IS_JGI_NAME
+          ,IWP.IS_DATE
+          ,IWP.UP_JGI_NO
+          ,IWP.UP_JGI_NAME
+          ,IWP.UP_DATE
+      FROM DPS_I_INS_WS_PLAN IWP
+           INNER JOIN DPS_C_INS_MST INS
+        ON IWP.INS_NO = INS.INS_NO
+           INNER JOIN (<include refid="COMMON_SqlMap.tms" />) TMS
+        ON IWP.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+     WHERE IWP.JGI_NO = #jgiNo:INTEGER#
+       AND IWP.PROD_CODE = #prodCode:CHAR#
+       <isNotNull property="hoInsTypeList">
+           <iterate prepend="AND INS.HO_INS_TYPE IN" open="(" close=")" conjunction=","  property="hoInsTypeList">
+               #hoInsTypeList[].dbValue#
+           </iterate>
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.InsWsPlan" >
+    INSERT INTO DPS_I_INS_WS_PLAN
+          (SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,INS_NO
+          ,TMS_TYTEN_CD
+          ,DIST_VALUE_Y
+          ,MODIFY_VALUE_Y
+          ,PLANNED_VALUE_Y
+          ,BEF_PLANNED_VALUE_Y
+          ,PLANNED_VALUE_T
+          ,SPECIAL_INS_PLAN_FLG
+          ,EXCEPT_DIST_INS_FLG
+          ,DEL_INS_FLG
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE)
+    VALUES (ORADPX01.SEQ_DPS_I_INS_WS_PLAN.NEXTVAL
+          ,#jgiNo:INTEGER#
+          ,#prodCode:CHAR#
+          ,#insNo:CHAR#
+          ,#tmsTytenCd:CHAR#
+          ,#distValueY:BIGINT#
+          ,#modifyValueY:BIGINT#
+          ,#plannedValueY:BIGINT#
+          ,#befPlannedValueY:BIGINT#
+          ,#plannedValueT:BIGINT#
+          ,#specialInsPlanFlg:CHAR#
+          ,#exceptDistInsFlg:CHAR#
+          ,#delInsFlg:CHAR#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <select id="selectImportantHbn" resultMap="resultImportantHbn" parameterClass="java.util.Map" >
+    WITH
+      YOKUHIN AS (
+        SELECT
+          PROD_CODE,
+          YAKKOU_SIJOU_CODE
+        FROM
+          DPS_C_PLANNED_PROD
+        WHERE
+          PROD_CODE = #prodCode:CHAR#
+      ),
+      JOGAI AS (
+        SELECT
+          NVL(PROD_CODE, (SELECT PROD_CODE FROM YOKUHIN)) AS PROD_CODE,
+          DPS_I_EXCEPT_DIST_INS.INS_NO
+        FROM
+          DPS_I_EXCEPT_DIST_INS
+        WHERE
+          PROD_CODE = (SELECT PROD_CODE FROM YOKUHIN) OR
+          PROD_CODE IS NULL
+      ),
+      DR_TBL AS (
+        SELECT
+          DR.INS_NO,
+          DR.PROD_CODE,
+          DR.TMS_TYTEN_CD,
+          DR.INS_TYPE,
+          (TO_NUMBER(#refTo:CHAR#) - TO_NUMBER(#refFrom:CHAR#) + 1) AS KIKAN,
+          NVL(DR.DELIVERY_RECORD_01, 0) AS DELIVERY_RECORD_01,
+          NVL(DR.DELIVERY_RECORD_02, 0) AS DELIVERY_RECORD_02,
+          NVL(DR.DELIVERY_RECORD_03, 0) AS DELIVERY_RECORD_03,
+          NVL(DR.DELIVERY_RECORD_04, 0) AS DELIVERY_RECORD_04,
+          NVL(DR.DELIVERY_RECORD_05, 0) AS DELIVERY_RECORD_05,
+          NVL(DR.DELIVERY_RECORD_06, 0) AS DELIVERY_RECORD_06,
+          NVL(DR.DELIVERY_RECORD_07, 0) AS DELIVERY_RECORD_07,
+          NVL(DR.DELIVERY_RECORD_08, 0) AS DELIVERY_RECORD_08,
+          NVL(DR.DELIVERY_RECORD_09, 0) AS DELIVERY_RECORD_09,
+          NVL(DR.DELIVERY_RECORD_10, 0) AS DELIVERY_RECORD_10,
+          NVL(DR.DELIVERY_RECORD_11, 0) AS DELIVERY_RECORD_11,
+          NVL(DR.DELIVERY_RECORD_12, 0) AS DELIVERY_RECORD_12,
+          NVL(DR.DELIVERY_RECORD_13, 0) AS DELIVERY_RECORD_13,
+          NVL(DR.DELIVERY_RECORD_14, 0) AS DELIVERY_RECORD_14,
+          NVL(DR.DELIVERY_RECORD_15, 0) AS DELIVERY_RECORD_15,
+          NVL(DR.DELIVERY_RECORD_16, 0) AS DELIVERY_RECORD_16,
+          NVL(DR.DELIVERY_RECORD_17, 0) AS DELIVERY_RECORD_17,
+          NVL(DR.DELIVERY_RECORD_18, 0) AS DELIVERY_RECORD_18,
+          NVL(DR.DELIVERY_RECORD_19, 0) AS DELIVERY_RECORD_19,
+          NVL(DR.DELIVERY_RECORD_20, 0) AS DELIVERY_RECORD_20,
+          NVL(DR.DELIVERY_RECORD_21, 0) AS DELIVERY_RECORD_21,
+          NVL(DR.DELIVERY_RECORD_22, 0) AS DELIVERY_RECORD_22,
+          NVL(DR.DELIVERY_RECORD_23, 0) AS DELIVERY_RECORD_23,
+          NVL(DR.DELIVERY_RECORD_24, 0) AS DELIVERY_RECORD_24,
+          CASE
+            WHEN JOGAI.INS_NO IS NULL THEN '0'
+            ELSE '1'
+          END AS JOGAI_FLG,
+          CASE
+            WHEN INS_MST.DEL_FLG = 0 AND INS_MST.REQ_FLG = 0 THEN '0'
+            WHEN INSTRC(INS_MST.INS_ABBR_NAME, '●', 1, 1)=1  THEN '1'
+            WHEN INSTRC(INS_MST.INS_ABBR_NAME, '〇', 1, 1)=1  THEN '1'
+            ELSE '1'
+          END AS DEL_INS_FLG
+        FROM
+          DPS_I_DELIVERY_RESULT DR
+        INNER JOIN
+          DPS_C_INS_MST INS_MST
+        ON
+          DR.INS_NO = INS_MST.INS_NO
+        LEFT OUTER JOIN
+          JOGAI
+        ON
+          DR.INS_NO = JOGAI.INS_NO
+        WHERE
+          DR.PROD_CODE = #refProdCode:CHAR# AND
+          DR.INS_TYPE = #insType:CHAR# AND
+          DR.INS_TYPE IN ('1', '2') AND
+          DR.SLOPPY_CHARGE_FLG = '0' AND
+          DR.JGI_NO = #jgiNo:INTEGER#
+      ),
+      DR_TBL_LEN AS (
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '01' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_01 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '02' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_02 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '03' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_03 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '04' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_04 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '05' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_05 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '06' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_06 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '07' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_07 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '08' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_08 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '09' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_09 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '10' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_10 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '11' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_11 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '12' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_12 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '13' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_13 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '14' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_14 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '15' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_15 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '16' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_16 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '17' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_17 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '18' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_18 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '19' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_19 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '20' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_20 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '21' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_21 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '22' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_22 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '23' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_23 AS DELIVERY_RECORD FROM DR_TBL
+        UNION ALL
+        SELECT DR_TBL.PROD_CODE, DR_TBL.INS_NO, DR_TBL.TMS_TYTEN_CD, DR_TBL.INS_TYPE, DR_TBL.KIKAN, '24' AS REF_PERIOD, DR_TBL.JOGAI_FLG, DR_TBL.DEL_INS_FLG, DR_TBL.DELIVERY_RECORD_24 AS DELIVERY_RECORD FROM DR_TBL
+      ),
+      DR_TBL_SUM AS (
+        SELECT
+          DR_TBL_LEN.PROD_CODE,
+          DR_TBL_LEN.INS_TYPE,
+          DR_TBL_LEN.INS_NO,
+          DR_TBL_LEN.TMS_TYTEN_CD,
+          DR_TBL_LEN.JOGAI_FLG,
+          DR_TBL_LEN.DEL_INS_FLG,
+          CASE
+            WHEN (DR_TBL_LEN.JOGAI_FLG = '1' OR DR_TBL_LEN.DEL_INS_FLG = '1') THEN 0
+            WHEN SUM(NVL(DR_TBL_LEN.DELIVERY_RECORD, 0)) &lt;= 0 THEN 0
+            ELSE SUM(NVL(DR_TBL_LEN.DELIVERY_RECORD, 0)) * (6 / DR_TBL_LEN.KIKAN)
+          END AS SUM_RESULT
+        FROM
+          DR_TBL_LEN
+        WHERE
+          REF_PERIOD BETWEEN #refFrom:CHAR# AND #refTo:CHAR#
+        GROUP BY
+          DR_TBL_LEN.PROD_CODE,
+          DR_TBL_LEN.INS_TYPE,
+          DR_TBL_LEN.INS_NO,
+          DR_TBL_LEN.TMS_TYTEN_CD,
+          DR_TBL_LEN.JOGAI_FLG,
+          DR_TBL_LEN.DEL_INS_FLG,
+          DR_TBL_LEN.KIKAN
+      ),
+      DR_MAIN AS (
+        SELECT
+          DR_TBL_SUM.PROD_CODE,
+          DR_TBL_SUM.INS_NO,
+          DR_TBL_SUM.TMS_TYTEN_CD,
+          DR_TBL_SUM.INS_TYPE,
+          DR_TBL_SUM.JOGAI_FLG,
+          DR_TBL_SUM.DEL_INS_FLG,
+          NVL(INS_MST.MAIN_INS_NO, DR_TBL_SUM.INS_NO) AS MAIN_INS_NO,
+          DR_TBL_SUM.SUM_RESULT
+        FROM
+          DR_TBL_SUM
+        INNER JOIN
+          DPS_C_INS_MST INS_MST
+        ON
+          DR_TBL_SUM.INS_NO = INS_MST.INS_NO
+      ),
+      DR_MAIN_SUM AS (
+        SELECT
+          DR_MAIN.PROD_CODE,
+          DR_MAIN.MAIN_INS_NO,
+          DR_MAIN.INS_TYPE,
+          SUM(DR_MAIN.SUM_RESULT) AS DELIVERY_RECORD_SUM
+        FROM
+          DR_MAIN
+        GROUP BY
+          DR_MAIN.PROD_CODE,
+          DR_MAIN.MAIN_INS_NO,
+          DR_MAIN.INS_TYPE
+      ),
+      DR_BASE AS (
+        SELECT
+          DR_MAIN.PROD_CODE,
+          DR_MAIN.INS_NO,
+          DR_MAIN.TMS_TYTEN_CD,
+          DR_MAIN.INS_TYPE,
+          DR_MAIN.MAIN_INS_NO,
+          DR_MAIN.JOGAI_FLG,
+          DR_MAIN.DEL_INS_FLG,
+          DR_MAIN.SUM_RESULT,
+          DR_MAIN_SUM.DELIVERY_RECORD_SUM
+        FROM
+          DR_MAIN
+        INNER JOIN
+          DR_MAIN_SUM
+        ON
+          DR_MAIN.PROD_CODE = DR_MAIN_SUM.PROD_CODE AND
+          DR_MAIN.MAIN_INS_NO = DR_MAIN_SUM.MAIN_INS_NO AND
+          DR_MAIN.INS_TYPE = DR_MAIN_SUM.INS_TYPE
+      )
+    SELECT
+      INS_PLAN.JGI_NO,
+      INS_PLAN.PROD_CODE,
+      DR_BASE.INS_NO,
+      DR_BASE.TMS_TYTEN_CD,
+      DR_BASE.MAIN_INS_NO,
+      CASE
+        WHEN #zeroDistFlg:CHAR# = '1' THEN 0
+        WHEN DR_BASE.JOGAI_FLG = '1' THEN 0
+        WHEN DR_BASE.DEL_INS_FLG = '1' THEN 0
+        ELSE (INS_PLAN.PLANNED_VALUE_Y * DECODE(DR_BASE.DELIVERY_RECORD_SUM, 0, 0, (DR_BASE.SUM_RESULT / DR_BASE.DELIVERY_RECORD_SUM)))
+      END AS DIST_VALUE_Y,
+      NULL AS MODIFY_VALUE_Y,
+      CASE
+        WHEN #zeroDistFlg:CHAR# = '1' THEN 0
+        WHEN DR_BASE.JOGAI_FLG = '1' THEN 0
+        WHEN DR_BASE.DEL_INS_FLG = '1' THEN 0
+        ELSE (INS_PLAN.PLANNED_VALUE_Y * DECODE(DR_BASE.DELIVERY_RECORD_SUM, 0, 0, (DR_BASE.SUM_RESULT / DR_BASE.DELIVERY_RECORD_SUM)))
+      END AS PLANNED_VALUE_Y,
+      0 AS BEF_PLANNED_VALUE_Y,
+      0 AS PLANNED_VALUE_T,
+      '0' AS SPECIAL_INS_PLAN_FLG,
+      DR_BASE.JOGAI_FLG AS EXCEPT_DIST_INS_FLG,
+      DR_BASE.DEL_INS_FLG AS DEL_INS_FLG
+    FROM
+      DPS_I_INS_PLAN INS_PLAN
+    INNER JOIN
+      DR_BASE
+    ON
+      INS_PLAN.PROD_CODE = #prodCode:CHAR# AND
+      INS_PLAN.INS_NO = DR_BASE.MAIN_INS_NO
+    INNER JOIN
+      DPS_C_JGI_MST JGI_MST
+    ON
+      JGI_MST.JGI_NO = INS_PLAN.JGI_NO
+    WHERE
+      INS_PLAN.PLANNED_VALUE_Y > 0
+    ORDER BY
+      DR_BASE.MAIN_INS_NO,
+      DIST_VALUE_Y DESC,
+      INS_PLAN.JGI_NO,
+      DR_BASE.PROD_CODE,
+      DR_BASE.INS_NO,
+      DR_BASE.TMS_TYTEN_CD
+  </select>
+
+  <select id="selectHbnMissBase" resultMap="resultHbnMissBase" parameterClass="java.util.Map" >
+    SELECT
+      JGI_NO,
+      PROD_CODE,
+      NVL(PLANNED_VALUE_UH_Y,0) AS PLANNED_VALUE_UH_Y,
+      NVL(PLANNED_VALUE_P_Y,0) AS PLANNED_VALUE_P_Y
+    FROM
+      DPS_I_MR_PLAN MR_PLAN
+    WHERE
+      MR_PLAN.JGI_NO = #jgiNo:INTEGER#
+      AND MR_PLAN.PROD_CODE = #prodCode:CHAR#
+    ORDER BY PROD_CODE
+  </select>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.InsWsPlan" >
+    UPDATE DPS_I_INS_WS_PLAN
+       SET PLANNED_VALUE_Y = #plannedValueY:BIGINT#
+          ,MODIFY_VALUE_Y  = #modifyValueY:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_INS_WS_PLAN
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </delete>
+
+  <!-- 削除・(従業員・品目) -->
+  <delete id="deleteByJgi" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_INS_WS_PLAN
+     WHERE JGI_NO = #jgiNo:INTEGER#
+       AND PROD_CODE = #prodCode:CHAR#
+  </delete>
+
+  <!-- 削除・(組織・品目) -->
+  <delete id="deleteBySos" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_INS_WS_PLAN
+     WHERE JGI_NO IN (SELECT JGI_NO FROM DPS_C_JGI_MST WHERE SOS_CD3 = #sosCd3:VARCHAR#)
+       AND PROD_CODE = #prodCode:CHAR#
+  </delete>
+
+  <!-- 削除・(品目) -->
+  <delete id="deleteByProdCd" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_INS_WS_PLAN
+     WHERE PROD_CODE = #prodCode:CHAR#
+  </delete>
+
+  <!-- 検索サマリー -->
+  <select id="selectJgiSummary" resultMap="resultSumJgiMap" parameterClass="java.util.Map" >
+   WITH INS_WS_SUM AS
+    (
+    SELECT IWP.JGI_NO AS JGI_NO
+          ,CASE HO_INS_TYPE
+                WHEN '1' THEN '1'
+                WHEN '2' THEN '1'
+                WHEN '3' THEN '2'
+                WHEN '4' THEN '2'
+           END AS INS_TYPE
+          ,SUM(DIST_VALUE_Y) AS DIST_VALUE_Y
+          ,SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_Y
+      FROM DPS_I_INS_WS_PLAN IWP
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IWP.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_PLANNED_PROD PP
+        ON IWP.PROD_CODE = PP.PROD_CODE
+           INNER JOIN DPS_C_INS_MST INS
+        ON IWP.INS_NO = INS.INS_NO
+     WHERE IWP.PROD_CODE = #prodCode:CHAR#
+       <isNotNull prepend="AND" property="sosCd3">
+           JM.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="sosCd4">
+           JM.SOS_CD4 = #sosCd4:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="jgiNo">
+           IWP.JGI_NO = #jgiNo:INTEGER#
+       </isNotNull>
+     GROUP BY IWP.JGI_NO, HO_INS_TYPE
+    )
+    SELECT JM.JGI_NO
+          ,DIST_VALUE_UH_Y
+          ,PLANNED_VALUE_UH_Y
+          ,DIST_VALUE_P_Y
+          ,PLANNED_VALUE_P_Y
+      FROM DPS_C_VI_JGI_MST JM
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD
+           LEFT JOIN
+           (SELECT JGI_NO
+                  ,SUM(DIST_VALUE_Y) AS DIST_VALUE_UH_Y
+                  ,SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_UH_Y
+              FROM INS_WS_SUM
+             WHERE INS_TYPE = '1'
+             GROUP BY JGI_NO) SUM1
+        ON JM.JGI_NO = SUM1.JGI_NO
+           LEFT JOIN
+           (SELECT JGI_NO
+                  ,SUM(DIST_VALUE_Y) AS DIST_VALUE_P_Y
+                  ,SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_P_Y
+              FROM INS_WS_SUM
+             WHERE INS_TYPE = '2'
+             GROUP BY JGI_NO) SUM2
+        ON JM.JGI_NO = SUM2.JGI_NO
+     WHERE
+       <isNotNull property="jgiKbList">
+           <iterate prepend="JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               #jgiKbList[].dbValue#
+           </iterate>
+       </isNotNull>
+       <isNotNull prepend="AND" property="jokenSetList">
+       EXISTS (SELECT JO.JGI_NO
+       FROM DPS_C_JGI_JOKEN JO
+       WHERE JO.JGI_NO = JM.JGI_NO
+           <isNotNull property="jokenSetList">
+               <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                   #jokenSetList[].dbValue#
+               </iterate>
+           </isNotNull>
+       )
+       </isNotNull>
+       <isNotNull prepend="AND" property="sosCd3">
+           JM.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="sosCd4">
+           JM.SOS_CD4 = #sosCd4:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="jgiNo">
+           JM.JGI_NO = #jgiNo:INTEGER#
+       </isNotNull>
+     ORDER BY BR_CODE, DIST_SEQ, DIST_CODE, TEAM_CODE, SHOKUSEI_CD, SHOKUSHU_CD, JGI_NO
+  </select>
+
+  <!-- 検索サマリー -->
+  <select id="selectProdSummary" resultMap="resultSumProdMap" parameterClass="java.util.Map" >
+   WITH INS_WS_SUM AS
+    (
+    SELECT IWP.PROD_CODE AS PROD_CODE
+          ,CASE NVL(OINS.HO_INS_TYPE, INS.HO_INS_TYPE)
+                WHEN '1' THEN '1'
+                WHEN '2' THEN '1'
+                WHEN '3' THEN '2'
+                WHEN '4' THEN '2'
+           END AS INS_TYPE
+          ,SUM(DIST_VALUE_Y) AS DIST_VALUE_Y
+          ,SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_Y
+      FROM DPS_I_INS_WS_PLAN IWP
+			INNER JOIN DPS_C_JGI_MST JM
+        ON IWP.JGI_NO = JM.JGI_NO
+			INNER JOIN DPS_C_PLANNED_PROD PP
+        ON IWP.PROD_CODE = PP.PROD_CODE
+			INNER JOIN DPS_C_INS_MST INS
+        ON IWP.INS_NO = INS.INS_NO
+			LEFT JOIN DPS_C_SY_COM_INS_OYAKO OYK
+		ON OYK.INS_NO = INS.INS_NO
+		AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+			LEFT JOIN DPS_C_INS_MST OINS
+		ON NVL(OYK.MAIN_INS_NO,OYK.INS_NO) = OINS.INS_NO
+		AND OYK.OYAKO_KB = #oyakoKb:CHAR#
+     WHERE PP.PROD_CODE = #prodCode:CHAR#
+       AND PP.PLAN_LEVEL_INS_WS = '1'
+       <isNotNull prepend="AND" property="sosCd3">
+           JM.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="sosCd4">
+           JM.SOS_CD4 = #sosCd4:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="jgiNo">
+           IWP.JGI_NO = #jgiNo:INTEGER#
+       </isNotNull>
+     GROUP BY IWP.PROD_CODE, NVL(OINS.HO_INS_TYPE, INS.HO_INS_TYPE)
+    )
+    SELECT PP.PROD_CODE
+          ,DIST_VALUE_UH_Y
+          ,PLANNED_VALUE_UH_Y
+          ,DIST_VALUE_P_Y
+          ,PLANNED_VALUE_P_Y
+      FROM DPS_C_PLANNED_PROD PP
+           LEFT JOIN
+           (SELECT PROD_CODE
+                  ,SUM(DIST_VALUE_Y) AS DIST_VALUE_UH_Y
+                  ,SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_UH_Y
+              FROM INS_WS_SUM
+             WHERE INS_TYPE = '1'
+             GROUP BY PROD_CODE) SUM1
+        ON PP.PROD_CODE = SUM1.PROD_CODE
+           LEFT JOIN
+           (SELECT PROD_CODE
+                  ,SUM(DIST_VALUE_Y) AS DIST_VALUE_P_Y
+                  ,SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_P_Y
+              FROM INS_WS_SUM
+             WHERE INS_TYPE = '2'
+             GROUP BY PROD_CODE) SUM2
+        ON PP.PROD_CODE = SUM2.PROD_CODE
+     WHERE PP.PROD_CODE = #prodCode:CHAR#
+       AND PP.PLAN_LEVEL_INS_WS = '1'
+  </select>
+
+  <!-- 検索サマリー (ワクチン)-->
+  <select id="selectProdSummaryVac" resultMap="resultSumProdMap" parameterClass="java.util.Map" >
+   WITH INS_WS_SUM AS
+    (
+    SELECT IWP.PROD_CODE AS PROD_CODE
+          ,CASE HO_INS_TYPE
+                WHEN '1' THEN '1'
+                WHEN '2' THEN '1'
+                WHEN '3' THEN '2'
+                WHEN '4' THEN '2'
+           END AS INS_TYPE
+          ,SUM(DIST_VALUE_Y) AS DIST_VALUE_Y
+          ,SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_Y
+      FROM DPS_I_INS_WS_PLAN IWP
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IWP.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_PLANNED_PROD PP
+        ON IWP.PROD_CODE = PP.PROD_CODE
+           INNER JOIN DPS_C_INS_MST INS
+        ON IWP.INS_NO = INS.INS_NO
+     WHERE PP.PROD_CODE = #prodCode:CHAR#
+       AND PP.PLAN_LEVEL_INS_WS = '1'
+       <isNotNull prepend="AND" property="sosCd3">
+           JM.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="sosCd4">
+           JM.SOS_CD4 = #sosCd4:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="jgiNo">
+           IWP.JGI_NO = #jgiNo:INTEGER#
+       </isNotNull>
+     GROUP BY IWP.PROD_CODE, HO_INS_TYPE
+    )
+    SELECT PP.PROD_CODE
+          ,DIST_VALUE_UH_Y
+          ,PLANNED_VALUE_UH_Y
+          ,DIST_VALUE_P_Y
+          ,PLANNED_VALUE_P_Y
+      FROM DPS_C_PLANNED_PROD PP
+           LEFT JOIN
+           (SELECT PROD_CODE
+                  ,SUM(DIST_VALUE_Y) AS DIST_VALUE_UH_Y
+                  ,SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_UH_Y
+              FROM INS_WS_SUM
+             WHERE INS_TYPE = '1'
+             GROUP BY PROD_CODE) SUM1
+        ON PP.PROD_CODE = SUM1.PROD_CODE
+           LEFT JOIN
+           (SELECT PROD_CODE
+                  ,SUM(DIST_VALUE_Y) AS DIST_VALUE_P_Y
+                  ,SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_P_Y
+              FROM INS_WS_SUM
+             WHERE INS_TYPE = '2'
+             GROUP BY PROD_CODE) SUM2
+        ON PP.PROD_CODE = SUM2.PROD_CODE
+     WHERE PP.PROD_CODE = #prodCode:CHAR#
+       AND PP.PLAN_LEVEL_INS_WS = '1'
+  </select>
+
+  <!-- 削除施設数取得 -->
+  <select id="selectDelInsCount" resultMap="resultInsWsCount" parameterClass="java.util.Map" >
+    SELECT COUNT('X') AS COUNT
+         <isEqual property="prodList" compareValue="true">
+          ,PP.PROD_CODE
+          ,NULL AS JGI_NO
+         </isEqual>
+         <isNotEqual property="prodList" compareValue="true">
+          ,NULL AS PROD_CODE
+          ,JM.JGI_NO
+         </isNotEqual>
+      FROM DPS_I_INS_WS_PLAN IWP
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IWP.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_PLANNED_PROD PP
+        ON IWP.PROD_CODE = PP.PROD_CODE
+           INNER JOIN DPS_C_INS_MST INS
+        ON IWP.INS_NO = INS.INS_NO
+     WHERE PP.PROD_CODE = #prodCode:CHAR#
+       AND PP.PLAN_LEVEL_INS_WS = '1'
+       AND (INS.DEL_FLG ='1' OR INS.REQ_FLG ='1' OR INS.INS_ABBR_NAME like '●%' OR INS.INS_ABBR_NAME like '○%' OR INS.INS_ABBR_NAME like '〇%')
+       AND IWP.MODIFY_VALUE_Y >= 1
+       <isNotNull prepend="AND" property="sosCd3">
+           JM.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="jgiNo">
+           IWP.JGI_NO = #jgiNo:INTEGER#
+       </isNotNull>
+     <isEqual property="prodList" compareValue="true">
+     GROUP BY PP.PROD_CODE
+     </isEqual>
+     <isNotEqual property="prodList" compareValue="true">
+     GROUP BY JM.JGI_NO
+     </isNotEqual>
+  </select>
+
+  <!-- 計画立案対象外特約店数取得 -->
+  <select id="selectTaiGaiTytenCount" resultMap="resultInsWsCount" parameterClass="java.util.Map" >
+    SELECT COUNT('X') AS COUNT
+         <isEqual property="prodList" compareValue="true">
+          ,PP.PROD_CODE
+          ,NULL AS JGI_NO
+         </isEqual>
+         <isNotEqual property="prodList" compareValue="true">
+          ,NULL AS PROD_CODE
+          ,JM.JGI_NO
+         </isNotEqual>
+      FROM DPS_I_INS_WS_PLAN IWP
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IWP.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_PLANNED_PROD PP
+        ON IWP.PROD_CODE = PP.PROD_CODE
+           INNER JOIN DPS_C_INS_MST INS
+        ON IWP.INS_NO = INS.INS_NO
+           INNER JOIN DPS_S_T_TMS_TYTEN_MST_UN TMS
+        ON IWP.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+     WHERE PP.PROD_CODE = #prodCode:CHAR#
+       AND PP.PLAN_LEVEL_INS_WS = '1'
+       AND TMS.PLAN_TAI_GAI_FLG_RIK = '1'
+       AND IWP.MODIFY_VALUE_Y >= 1
+       <isNotNull prepend="AND" property="sosCd3">
+           JM.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="jgiNo">
+           IWP.JGI_NO = #jgiNo:INTEGER#
+       </isNotNull>
+     <isEqual property="prodList" compareValue="true">
+     GROUP BY PP.PROD_CODE
+     </isEqual>
+     <isNotEqual property="prodList" compareValue="true">
+     GROUP BY JM.JGI_NO
+     </isNotEqual>
+  </select>
+
+  <!-- 配分除外施設数取得 -->
+  <select id="selectExceptDistInsCount" resultMap="resultInsWsCount" parameterClass="java.util.Map" >
+    SELECT COUNT('X') AS COUNT
+         <isEqual property="prodList" compareValue="true">
+          ,PP.PROD_CODE
+          ,NULL AS JGI_NO
+         </isEqual>
+         <isNotEqual property="prodList" compareValue="true">
+          ,NULL AS PROD_CODE
+          ,JM.JGI_NO
+         </isNotEqual>
+      FROM DPS_I_INS_WS_PLAN IWP
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IWP.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_PLANNED_PROD PP
+        ON IWP.PROD_CODE = PP.PROD_CODE
+           INNER JOIN DPS_C_INS_MST INS
+        ON IWP.INS_NO = INS.INS_NO
+           LEFT OUTER JOIN DPS_I_EXCEPT_DIST_INS EXC_INS
+        ON IWP.INS_NO = EXC_INS.INS_NO AND ( EXC_INS.PROD_CODE = #prodCode:CHAR# OR EXC_INS.PROD_CODE IS NULL)
+     WHERE PP.PROD_CODE = #prodCode:CHAR#
+       AND PP.PLAN_LEVEL_INS_WS = '1'
+       AND EXC_INS.INS_NO IS NOT NULL
+       AND EXC_INS.EXCEPT_FLG = '1'
+       AND IWP.MODIFY_VALUE_Y >= 1
+       <isNotNull prepend="AND" property="sosCd3">
+           JM.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="jgiNo">
+           IWP.JGI_NO = #jgiNo:INTEGER#
+       </isNotNull>
+     <isEqual property="prodList" compareValue="true">
+     GROUP BY PP.PROD_CODE
+     </isEqual>
+     <isNotEqual property="prodList" compareValue="true">
+     GROUP BY JM.JGI_NO
+     </isNotEqual>
+  </select>
+
+  <!-- 対象品目特約店計画取得 -->
+  <select id="selectCheckTool" resultMap="resultCheckToolMap" parameterClass="java.util.Map" >
+    SELECT
+        SOSMST.BR_CODE AS UP_SOS_CD
+       ,SOSMST.BUMON_RYAKU_NAME AS UP_BUMON_RYAKU_NAME
+       ,DSM.DIST_CODE AS SOS_CD
+       ,DSM.BUMON_RYAKU_NAME AS BUMON_RYAKU_NAME
+       ,P.PROD_CODE AS PROD_CODE
+       ,PP.PROD_NAME AS PROD_NAME
+       ,MIP.MR_NO AS MR_NO
+       ,DJM.JGI_NAME AS JGI_NAME
+       ,CASE DIM.HO_INS_TYPE
+          WHEN '1' THEN 'UH'
+          WHEN '2' THEN 'UH'
+          WHEN '3' THEN 'P'
+          WHEN '4' THEN 'P'
+       END INS_TYPE
+       ,P.TMS_TYTEN_CD AS TMS_TYTEN_CD
+       ,TMS.TMS_TYTEN_MEI_KJ AS TMS_TYTEN_MEI_KJ
+       ,P.INS_NO AS INS_NO
+       ,DIM.INS_ABBR_NAME AS INS_ABBR_NAME
+       ,SUBSTR(P.PLANNED_VALUE_Y,1,length(P.PLANNED_VALUE_Y)-3) YBasePlanSen
+     FROM DPS_I_INS_WS_PLAN P
+         INNER JOIN DPS_C_PLANNED_PROD PP
+      ON PP.PROD_CODE = P.PROD_CODE
+         INNER JOIN DPS_C_MR_INS_PROD_ALL MIP
+      ON (P.INS_NO = MIP.INS_NO
+       AND P.PROD_CODE= MIP.PROD_CODE)
+         INNER JOIN DPS_C_JGI_MST DJM
+      ON MIP.MR_NO = DJM.JGI_NO
+         INNER JOIN DPS_C_INS_MST DIM
+      ON P.INS_NO = DIM.INS_NO
+         INNER JOIN DPS_C_SOS_MST DSM
+      ON DSM.SOS_CD = DJM.SOS_CD
+       AND DSM.BUMON_RANK = '3'
+         INNER JOIN DPS_C_SOS_MST SOSMST
+      ON DSM.UP_SOS_CD = SOSMST.SOS_CD
+         INNER JOIN DPS_S_T_TMS_TYTEN_MST_UN TMS
+      ON TMS.TMS_TYTEN_CD = P.TMS_TYTEN_CD
+    WHERE
+      P.PROD_CODE IN (
+      select DATA_CD from DPS_C_CD_MST where DATA_KBN = 'check_prod'
+      )
+     AND P.TMS_TYTEN_CD IN
+      (
+      select DATA_CD from DPS_C_CD_MST where DATA_KBN = 'check_ws'
+      )
+     AND P.PLANNED_VALUE_Y >= 1000
+     ORDER BY SOSMST.BR_CODE,DSM.DIST_CODE,MIP.MR_NO,P.PROD_CODE,DIM.HO_INS_TYPE,P.TMS_TYTEN_CD,P.INS_NO
+      </select>
+
+</sqlMap>

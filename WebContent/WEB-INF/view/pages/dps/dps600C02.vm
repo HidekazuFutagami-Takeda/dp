@@ -1,0 +1,35 @@
+#set( $layout = "defaultLayout_JQ.vm" )
+#set($q = '"')
+#set($pageTitle = $text.get("dps600C02","title"))
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+
+## -----------------------------
+## addHeaderScript
+## ダブルクオート(")を表示させたい場合は${q}を使用すること
+## -----------------------------
+#set($addHeaderScript = "
+	## リンク移動
+	function executeLink() {
+	    var actionPath = '$link.setAction('dps600C00F00')';
+	    document.dps600C02Form.action = actionPath;
+	    document.dps600C02Form.submit();
+	}
+")
+
+## -----------------------------
+## HTML
+## -----------------------------
+#tabbar("sienSisetuTokuyaku", "dps600C00F00")
+<div id="tabBox" class="label">
+<form name="dps600C02Form" method="post">
+<div align="left" style="float: left;width: 80%;">
+    施設医師別計画の配分処理を開始しました。<br>
+    実行結果はTakedaCompassの「アテンション」またはトップ画面の「お知らせ」にてご確認下さい。
+</div>
+<div align="right" style="float: right;width: 20%;">
+    <a href="#" onclick="executeLink()">一覧へ戻る</a>
+</div>
+#token()
+<input type="hidden" name="sosCd3" value="$!form.bean.getSosCd3()" />
+</form>
+</div>

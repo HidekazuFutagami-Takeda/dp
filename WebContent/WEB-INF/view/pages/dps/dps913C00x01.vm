@@ -1,0 +1,402 @@
+#set( $dataList = $form.getRequestData("DPS913C00_DATA_R"))
+#set( $teamList = $dataList.getDeliveryResultMrDtoSList())
+#set( $gridList = $dataList.getDeliveryResultMrDtoList())
+
+#set( $idcnt = 1 )
+
+##各集計行集計範囲
+#set( $srange = "" )
+#set( $hrange = "" )
+
+##各集計行
+#set( $srowids = "" )
+#set( $hrowids = "" )
+##追加ボタンId
+#set( $bid = 1 )
+#set( $sflg = false )
+#set( $s1 = " style='border-width:1px 0px 4px 1px;border-bottom-style:double;'" )
+#set( $s2 = " style='border-width:1px 1px 4px 0px;border-bottom-style:double;'" )
+#set( $s3 = " style='border-width:1px 1px 4px 1px;border-bottom-style:double;'" )
+#set( $s4 = " style='border-width:1px 0px 1px 1px;'" )
+#set( $s5 = " style='border-width:1px 1px 1px 0px;'" )
+#set( $s6 = " style='border-width:1px 1px 0px 1px;' class='textL'" )
+#if($form.bean.page)
+    #set( $page = $format.parseInteger($form.bean.page))
+#else
+    #set( $page = $format.parseInteger("4"))
+#end
+$!consts.getDhtmlxGridXmlHeader()
+#set($decimalFormat = $form.bean.getDefaultRateFormat())
+<rows>
+    #foreach($team in $teamList)
+        #if($idcnt == 1 || $idcnt == $teamList.size())
+            #set( $style1 = $s1 )
+            #set( $style2 = $s2 )
+            #set( $style3 = $s3 )
+        #else
+            #set( $style1 = $s4 )
+            #set( $style2 = $s5 )
+            #set( $style3 = "")
+        #end
+        #if($idcnt == 1)
+            #set($c = "sumOfficeTokuG")
+        #elseif($idcnt == $teamList.size())
+            #set($c = "")
+        #else
+            #set($c = "sumTeam")
+        #end
+        <row id='$idcnt'>
+           ## add Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+           #if($idcnt == 1)
+               <cell style='border-width:1px 1px 0px 0px;'>$!team.getProdName()</cell>
+           #else
+               <cell style='border-width:1px 1px 0px 0px;'></cell>
+           #end
+           ## add End 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+           <cell ></cell>
+           <cell$style1 class='textL $!c'>$!team.getSosName()</cell>
+           <cell$style2 class='$!c'></cell>
+           #if($page == 0)
+               #if($team.getMonNnuSum())
+                   #set($valindex1 = 28)
+                   #set($valindex2 = 29)
+                   #set($valindex3 = 30)
+                   #foreach($Sum in $team.getMonNnuSum())
+                       #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                           <cell$style3 class='$!c'>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                           #if($velocityCount == $valindex1)
+                               #set($val1 = $!Sum)
+                           #end
+                           #if($velocityCount == $valindex2)
+                               #set($val2 = $!Sum)
+                           #end
+                       #elseif($velocityCount == $valindex3)
+                           <cell$style3 class='$!c'>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                           #set($valindex1 = $valindex1 + 30)
+                           #set($valindex2 = $valindex2 + 30)
+                           #set($valindex3 = $valindex3 + 30)
+                       #else
+                           <cell$style3 class='$!c'>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                       #end
+                   #end
+               #end
+               #if($team.getMonNnuUH())
+                   #set($valindex1 = 28)
+                   #set($valindex2 = 29)
+                   #set($valindex3 = 30)
+                   #foreach($UH in $team.getMonNnuUH())
+                       #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                           <cell$style3 class='$!c'>$!format.parseMoneyToThousandUnit($!UH)</cell>
+                           #if($velocityCount == $valindex1)
+                               #set($val1 = $!UH)
+                           #end
+                           #if($velocityCount == $valindex2)
+                               #set($val2 = $!UH)
+                           #end
+                       #elseif($velocityCount == $valindex3)
+                           <cell$style3 class='$!c'>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                           #set($valindex1 = $valindex1 + 30)
+                           #set($valindex2 = $valindex2 + 30)
+                           #set($valindex3 = $valindex3 + 30)
+                       #else
+                           <cell$style3 class='$!c'>$!format.parseMoneyToThousandUnit($!UH)</cell>
+                       #end
+                   #end
+               #end
+               #if($team.getMonNnuP())
+                   #set($valindex1 = 28)
+                   #set($valindex2 = 29)
+                   #set($valindex3 = 30)
+                   #foreach($P in $team.getMonNnuP())
+                       #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                           <cell$style3 class='$!c'>$!format.parseMoneyToThousandUnit($!P)</cell>
+                           #if($velocityCount == $valindex1)
+                               #set($val1 = $!P)
+                           #end
+                           #if($velocityCount == $valindex2)
+                               #set($val2 = $!P)
+                           #end
+                       #elseif($velocityCount == $valindex3)
+                           <cell$style3 class='$!c'>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                           #set($valindex1 = $valindex1 + 30)
+                           #set($valindex2 = $valindex2 + 30)
+                           #set($valindex3 = $valindex3 + 30)
+                       #else
+                           <cell$style3 class='$!c'>$!format.parseMoneyToThousandUnit($!P)</cell>
+                       #end
+                   #end
+               #end
+           #else
+               #if($team.getMonNnuSum())
+                   #foreach($Sum in $paging.getPagingBean($team.getMonNnuSum(),6,$page).getCrntPageData())
+                       <cell$style3 class='$!c'>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                   #end
+                   #set($valindex1 = 4)
+                   #set($valindex2 = 5)
+                   #set($valindex3 = 6)
+                   #foreach($Sum in $paging.getPagingBean($team.getMonNnuSum(),6,5).getCrntPageData())
+                       #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                           <cell$style3 class='$!c'>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                           #if($velocityCount == $valindex1)
+                               #set($val1 = $!Sum)
+                           #end
+                           #if($velocityCount == $valindex2)
+                               #set($val2 = $!Sum)
+                           #end
+                       #elseif($velocityCount == $valindex3)
+                           <cell$style3 class='$!c'>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                           #set($valindex1 = $valindex1 + 6)
+                           #set($valindex2 = $valindex2 + 6)
+                           #set($valindex3 = $valindex3 + 6)
+                       #else
+                           <cell$style3 class='$!c'>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                       #end
+
+                   #end
+               #end
+               #if($team.getMonNnuUH())
+                   #foreach($UH in $paging.getPagingBean($team.getMonNnuUH(),6,$page).getCrntPageData())
+                       <cell$style3 class='$!c'>$!format.parseMoneyToThousandUnit($!UH)</cell>
+                   #end
+                   #set($valindex1 = 4)
+                   #set($valindex2 = 5)
+                   #set($valindex3 = 6)
+                   #foreach($UH in $paging.getPagingBean($team.getMonNnuUH(),6,5).getCrntPageData())
+                       #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                           <cell$style3 class='$!c'>$!format.parseMoneyToThousandUnit($!UH)</cell>
+                           #if($velocityCount == $valindex1)
+                               #set($val1 = $!UH)
+                           #end
+                           #if($velocityCount == $valindex2)
+                               #set($val2 = $!UH)
+                           #end
+                       #elseif($velocityCount == $valindex3)
+                           <cell$style3 class='$!c'>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                           #set($valindex1 = $valindex1 + 6)
+                           #set($valindex2 = $valindex2 + 6)
+                           #set($valindex3 = $valindex3 + 6)
+                       #else
+                           <cell$style3 class='$!c'>$!format.parseMoneyToThousandUnit($!UH)</cell>
+                       #end
+                   #end
+               #end
+               #if($team.getMonNnuP())
+                   #foreach($P in $paging.getPagingBean($team.getMonNnuP(),6,$page).getCrntPageData())
+                       <cell$style3 class='$!c'>$!format.parseMoneyToThousandUnit($!P)</cell>
+                   #end
+                   #set($valindex1 = 4)
+                   #set($valindex2 = 5)
+                   #set($valindex3 = 6)
+                   #foreach($P in $paging.getPagingBean($team.getMonNnuP(),6,5).getCrntPageData())
+                       #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                           <cell$style3 class='$!c'>$!format.parseMoneyToThousandUnit($!P)</cell>
+                           #if($velocityCount == $valindex1)
+                               #set($val1 = $!P)
+                           #end
+                           #if($velocityCount == $valindex2)
+                               #set($val2 = $!P)
+                           #end
+                       #elseif($velocityCount == $valindex3)
+                           <cell$style3 class='$!c'>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                           #set($valindex1 = $valindex1 + 6)
+                           #set($valindex2 = $valindex2 + 6)
+                           #set($valindex3 = $valindex3 + 6)
+                       #else
+                           <cell$style3 class='$!c'>$!format.parseMoneyToThousandUnit($!P)</cell>
+                       #end
+                   #end
+               #end
+           #end
+        </row>
+        #set( $srange = $srange + "," + $idcnt)
+        #set( $idcnt = $idcnt + 1 )
+    #end
+    #foreach($data in $gridList)
+        #if($data.getJgiName() == "計")
+            #set( $style1 = "")
+            #set( $style2 = " class='textC sumTeam'")
+            #set( $c = " class='sumTeam'")
+            #set( $jgiName = $data.getJgiName())
+        #else
+            #set( $style1 = $s6 )
+            #set( $style2 = " class='textL'")
+            #set( $c = "")
+            #set( $jgiName = $data.getJgiName() + "（" + $data.getShokushuName() + "）" )
+        #end
+        <row id='$idcnt'>
+            ## add Start 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+            ## <cell style='border-width:0px 1px 1px 0px;'></cell>
+            <cell$style1></cell>
+            ## add End 2022/5/11 H.Futagami バックログNo.13　過去実績参照で選択している品目を一覧に表示する
+            <cell></cell>
+            <userdata name="bid">$bid</userdata>
+            <cell$style1>$!data.getSosName()</cell>
+            <cell$style2>$jgiName</cell>
+           #if($page == 0)
+               #if($data.getMonNnuSum())
+                   #set($valindex1 = 28)
+                   #set($valindex2 = 29)
+                   #set($valindex3 = 30)
+                   #foreach($Sum in $data.getMonNnuSum())
+                       #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                           <cell$c>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                           #if($velocityCount == $valindex1)
+                               #set($val1 = $!Sum)
+                           #end
+                           #if($velocityCount == $valindex2)
+                               #set($val2 = $!Sum)
+                           #end
+                       #elseif($velocityCount == $valindex3)
+                           <cell$c>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                           #set($valindex1 = $valindex1 + 30)
+                           #set($valindex2 = $valindex2 + 30)
+                           #set($valindex3 = $valindex3 + 30)
+                       #else
+                           <cell$c>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                       #end
+                   #end
+               #end
+               #if($data.getMonNnuUH())
+                   #set($valindex1 = 28)
+                   #set($valindex2 = 29)
+                   #set($valindex3 = 30)
+                   #foreach($UH in $data.getMonNnuUH())
+                       #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                           <cell$c>$!format.parseMoneyToThousandUnit($!UH)</cell>
+                           #if($velocityCount == $valindex1)
+                               #set($val1 = $!UH)
+                           #end
+                           #if($velocityCount == $valindex2)
+                               #set($val2 = $!UH)
+                           #end
+                       #elseif($velocityCount == $valindex3)
+                           <cell$c>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                           #set($valindex1 = $valindex1 + 30)
+                           #set($valindex2 = $valindex2 + 30)
+                           #set($valindex3 = $valindex3 + 30)
+                       #else
+                           <cell$c>$!format.parseMoneyToThousandUnit($!UH)</cell>
+                       #end
+                   #end
+               #end
+               #if($data.getMonNnuP())
+                   #set($valindex1 = 28)
+                   #set($valindex2 = 29)
+                   #set($valindex3 = 30)
+                   #foreach($P in $data.getMonNnuP())
+                       #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                           <cell$c>$!format.parseMoneyToThousandUnit($!P)</cell>
+                           #if($velocityCount == $valindex1)
+                               #set($val1 = $!P)
+                           #end
+                           #if($velocityCount == $valindex2)
+                               #set($val2 = $!P)
+                           #end
+                       #elseif($velocityCount == $valindex3)
+                           <cell$c>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                           #set($valindex1 = $valindex1 + 30)
+                           #set($valindex2 = $valindex2 + 30)
+                           #set($valindex3 = $valindex3 + 30)
+                       #else
+                           <cell$c>$!format.parseMoneyToThousandUnit($!P)</cell>
+                       #end
+                   #end
+               #end
+           #else
+               #if($data.getMonNnuSum())
+                   #set($valindex1 = 4)
+                   #set($valindex2 = 5)
+                   #set($valindex3 = 6)
+                   #foreach($Sum in $paging.getPagingBean($data.getMonNnuSum(),6,$page).getCrntPageData())
+                       <cell$c>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                   #end
+                   #foreach($Sum in $paging.getPagingBean($data.getMonNnuSum(),6,5).getCrntPageData())
+                       #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                           <cell$c>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                           #if($velocityCount == $valindex1)
+                               #set($val1 = $!Sum)
+                           #end
+                           #if($velocityCount == $valindex2)
+                               #set($val2 = $!Sum)
+                           #end
+                       #elseif($velocityCount == $valindex3)
+                           <cell$c>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                           #set($valindex1 = $valindex1 + 6)
+                           #set($valindex2 = $valindex2 + 6)
+                           #set($valindex3 = $valindex3 + 6)
+                       #else
+                           <cell$c>$!format.parseMoneyToThousandUnit($!Sum)</cell>
+                       #end
+                   #end
+               #end
+               #if($data.getMonNnuUH())
+                   #set($valindex1 = 4)
+                   #set($valindex2 = 5)
+                   #set($valindex3 = 6)
+                   #foreach($UH in $paging.getPagingBean($data.getMonNnuUH(),6,$page).getCrntPageData())
+                       <cell$c>$!format.parseMoneyToThousandUnit($!UH)</cell>
+                   #end
+                   #foreach($UH in $paging.getPagingBean($data.getMonNnuUH(),6,5).getCrntPageData())
+                       #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                           <cell$c>$!format.parseMoneyToThousandUnit($!UH)</cell>
+                           #if($velocityCount == $valindex1)
+                               #set($val1 = $!UH)
+                           #end
+                           #if($velocityCount == $valindex2)
+                               #set($val2 = $!UH)
+                           #end
+                       #elseif($velocityCount == $valindex3)
+                           <cell$c>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                           #set($valindex1 = $valindex1 + 6)
+                           #set($valindex2 = $valindex2 + 6)
+                           #set($valindex3 = $valindex3 + 6)
+                       #else
+                           <cell$c>$!format.parseMoneyToThousandUnit($!UH)</cell>
+                       #end
+                   #end
+               #end
+               #if($data.getMonNnuP())
+                   #set($valindex1 = 4)
+                   #set($valindex2 = 5)
+                   #set($valindex3 = 6)
+                   #foreach($P in $paging.getPagingBean($data.getMonNnuP(),6,$page).getCrntPageData())
+                       <cell$c>$!format.parseMoneyToThousandUnit($!P)</cell>
+                   #end
+                   #foreach($P in $paging.getPagingBean($data.getMonNnuP(),6,5).getCrntPageData())
+                       #if($velocityCount == $valindex1 || $velocityCount == $valindex2)
+                           <cell$c>$!format.parseMoneyToThousandUnit($!P)</cell>
+                           #if($velocityCount == $valindex1)
+                               #set($val1 = $!P)
+                           #end
+                           #if($velocityCount == $valindex2)
+                               #set($val2 = $!P)
+                           #end
+                       #elseif($velocityCount == $valindex3)
+                           <cell$c>$!format.doubleToString($!format.calcRatio($val1, $val2, false), $decimalFormat)</cell>
+                           #set($valindex1 = $valindex1 + 6)
+                           #set($valindex2 = $valindex2 + 6)
+                           #set($valindex3 = $valindex3 + 6)
+                       #else
+                           <cell$c>$!format.parseMoneyToThousandUnit($!P)</cell>
+                       #end
+                   #end
+               #end
+           #end
+        </row>
+        #set( $srange = $srange + "," + $idcnt)
+        #set( $idcnt = $idcnt + 1 )
+    #end
+
+##計算行だったら
+    ##set( $srange = "" )
+    ##set( $hrange = $hrange + "," + $idcnt )
+    ##set( $idcnt = $idcnt + 1 )
+    ##set( $bid = $bid + 1 )
+##
+    #set( $srowids =  $srowids + $hrange )
+    #set( $hrowids =  "," + 1)
+    ##集計行
+    <userdata name="hrange">$hrange</userdata>
+    <userdata name="srowids">$srowids</userdata>
+    <userdata name="hrowids">$hrowids</userdata>
+</rows>

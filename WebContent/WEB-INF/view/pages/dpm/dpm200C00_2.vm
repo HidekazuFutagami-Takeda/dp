@@ -1,0 +1,283 @@
+## (ワ)施設別計画編集画面
+#set($bodyOnloadMethod = "dpm200C01F00()")
+#set($dataListFileName = "dpm200C01x01.vm")
+#set($dataListFileName2 = "dpm200C01x02.vm")
+#set( $dataList = $form.getRequestData("DPM200C01_DATA_R_SEARCH_RESULT"))
+
+## 実施計画区分
+#set($plannedType = $security.getPlannedType().toString())
+#set($plannedTypeStr = "")
+#if ($plannedType == "PLANNED_1")
+    #set($plannedTypeStr = "実施計画１")
+#elseif ($plannedType == "PLANNED_2")
+    #set($plannedTypeStr = "実施計画２")
+#end
+
+<script language="javascript">
+<!--
+document.getElementById("closeWindow").value = "true";
+
+
+## 編集検知フラグ
+var editFlg = false;
+## 表示時雑組織フラグ
+var iniEtcSosFlg = false;
+## 初期表示
+function dpm200C01F00() {
+    doInitGrid();
+    doInitGrid2();
+    ## 明細行のデータ読み込み
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName1}.loadXMLString(loadXMLString);
+        }
+    }
+    ## 集計行のデータ読み込み
+    if (document.getElementById("$dataListFileName2")) {
+        var loadXMLString = document.getElementById("$dataListFileName2").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName2}.loadXMLString(loadXMLString);
+            ## 施設合計行計算処理
+            setSumOtherGrid(${GridObjName1}, ${GridObjName2}, 4);
+
+            doCalcMrSumRow();
+            ## 担当者計画-施設別計画の計算処理
+            doCalcFormulaRow(${GridObjName2}, 4);
+        }
+    }
+    ## 担当者・施設のセット
+    ## 担当者選択時
+    #if ($form.bean.jgiNo && $form.bean.jgiNo != "")
+        sosApply("", "$!form.bean.jgiNo", "04","$!form.bean.etcSosFlg");
+    ## チーム選択時
+    #elseif ($form.bean.sosCd4 && $form.bean.sosCd4 != "")
+        sosApply("$!form.bean.sosCd4", "", "04","$!form.bean.etcSosFlg");
+    ## 特約店Ｇ選択時
+    #elseif ($form.bean.sosCd3 && $form.bean.sosCd3 != "")
+        sosApply("$!form.bean.sosCd3", "", "04","$!form.bean.etcSosFlg");
+    ## 特約店部選択時
+    #elseif ($form.bean.sosCd2 && $form.bean.sosCd2 != "")
+        sosApply("$!form.bean.sosCd2", "", "04","$!form.bean.etcSosFlg");
+    ## 全社選択時
+    #else
+        sosApply("", "", "04","$!form.bean.etcSosFlg");
+    #end
+
+    ## 表示時の雑組織フラグ取得
+    var _etcSosFlg = document.getElementById('etcSosFlg');
+    if(_etcSosFlg == true){
+        iniEtcSosFlg = true;
+    }
+
+    ## 抽出条件の制御
+    ## 重点先/一般先
+    document.getElementById("activityType_tr").style.display=''
+    ## 市区町村
+    document.getElementById("addr_tr").style.display=''
+    ## （ワ）ボタン
+    document.getElementById("vaccine_button_td").style.display=''
+    ## （医）ボタン
+    document.getElementById("no_vaccine_button_td").style.display='none'
+    ## 対象区分
+    document.getElementById("insType_tr").style.display='none'
+    ## 計画
+    document.getElementById("planData_tr").style.display='none'
+
+    ## カテゴリ初期化 dpm200C00.vmのメソッド
+    initializeCategory();
+
+}
+
+## DHTMLXGrid生成(明細行)
+function doInitGrid() {
+    #if($dataList)
+        ${GridObjName1} = createDhtmlXGridLodingExt("${GridObjName1}", "${CoverId1}");
+    #else
+        ${GridObjName1} = createDhtmlXGrid("${GridObjName1}");
+    #end
+    ${GridObjName1}.setHeader(",,,,");
+    ${GridObjName1}.setInitWidths("200,200,100,70,90");
+    ${GridObjName1}.setColAlign("left,left,center,center,right");
+    ${GridObjName1}.setColTypes("ro,ro,ro,ro,edn");
+    ${GridObjName1}.enableResizing("false,false,false,false,false");
+    ${GridObjName1}.enableTooltips("false,false,false,false,false");
+    ${GridObjName1}.enableDistributedParsing(true,50,300);
+    ${GridObjName1}.enableAutoHeight(true, getGridHeight('dpm200C01', $!gridHeight));
+    ${GridObjName1}.enableBlockSelection();
+    ${GridObjName1}.forceLabelSelection(true);
+    ${GridObjName1}.setCSVDelimiter("\t");
+    ${GridObjName1}.setNumberFormat("0,000",4);
+    ${GridObjName1}.setSizes();
+    ${GridObjName1}.setNoHeader(true);
+    ${GridObjName1}.init();
+    ${GridObjName1}.enableEditEvents(true, false, true);
+
+    ##  --- 編集中に登録ボタンが押された場合のチェッカー
+    window.editValueChecker = new EditingValueChecker(${GridObjName1},'$text.get("DPC1036E",[""])' );
+
+    ${GridObjName1}.attachEvent("onEditCell",function(stage,rowId,columnId,newvalue,oldvalue){
+
+	    ## --- 編集中に登録ボタンが押された場合のチェック用に値とstageを保持 ---
+	    window.editValueChecker.saveState(stage,newvalue);
+
+        if(stage == 1){
+            editFlg=true;
+            setIme(${GridObjName1},rowId,columnId,"inactive",10);
+        }
+        if(stage == 2){
+            if(stage == 0){
+                if(isSumRow(rowId) == "true"){
+                    return false;
+                }
+            }
+            if(newvalue.toString() != oldvalue.toString()){
+                intCheck(${GridObjName1},rowId,columnId,newvalue);
+                minusStyle(${GridObjName1},rowId, columnId);
+                ##表示施設計
+                setSumOtherGrid(${GridObjName1}, ${GridObjName2}, columnId);
+                ##担当者計
+                doCalcMrSumRow();
+                editFlg = true;
+            }
+        }
+        return true;
+    });
+
+    ${GridObjName1}.attachEvent("onRowSelect",function(rowId,columnId){
+        ${GridObjName1}.editCell();
+    });
+    ${GridObjName1}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName1},keycode))){return false;}
+        ## ペースト処理時
+        copyBlock(${GridObjName1}, keycode, ctrl, shift, new Array("4"));
+        if (keycode == 86 && ctrl) {
+            setSumOtherGrid(${GridObjName1}, ${GridObjName2}, 4);
+            doCalcMrSumRow();
+            editFlg=true;
+        }
+        return true;
+    });
+    ${GridObjName1}.attachEvent("onMouseOver",function(rowId,cellInd){
+        var title = "";
+        if(cellInd == 4){
+            title = ${GridObjName1}.getUserData(rowId,"toolTip");
+            if(title == null){
+                title = "";
+            }
+            ${GridObjName1}.cells(rowId,cellInd).cell.title = title;
+        }
+    });
+}
+function doInitGrid2() {
+    ##if (${GridObjName2} == null) {
+	    #if($dataList)
+	        ${GridObjName2} = createDhtmlXGridLodingExt("${GridObjName2}", "${CoverId2}");
+	    #else
+	        ${GridObjName2} = createDhtmlXGrid("${GridObjName2}");
+	    #end
+        ##${GridObjName2} = createDhtmlXGrid("${GridObjName2}");
+        ${GridObjName2}.setHeader("施設計画　$plannedTypeStr　$prodName,#cspan,#cspan,#cspan,#cspan");
+        ${GridObjName2}.attachHeader("市区町村,施設名称,施設固定コード,,B価ベース",["","","","",""],null);
+        ${GridObjName2}.setInitWidths("200,200,100,70,90");
+        ${GridObjName2}.setColAlign("left,left,center,center,right");
+        ${GridObjName2}.setColTypes("ro,ro,ro,ro,ron");
+        ${GridObjName2}.enableResizing("false,false,false,false,false");
+        ${GridObjName2}.enableTooltips("false,false,false,false,false");
+        ${GridObjName2}.enableDistributedParsing(true,50,300);
+        ${GridObjName2}.setNumberFormat("0,000",4);
+        ${GridObjName2}.enableAutoHeight(true, 100);
+        ${GridObjName2}.objBox.style.overflowX="hidden";
+        ${GridObjName2}.objBox.style.overflowY="hidden";
+        ${GridObjName2}.init();
+        ${GridObjName2}.enableEditEvents(true, false, true);
+        ${GridObjName2}.enableBlockSelection();
+        ${GridObjName2}.forceLabelSelection(true);
+        ${GridObjName2}.setCSVDelimiter("\t");
+        ${GridObjName2}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+            copyBlock(${GridObjName2}, keycode, ctrl, shift, new Array("6"));
+            return true;
+            });
+        ${GridObjName2}.attachEvent("onBeforeSelect",function(newId,oldId){return;});
+    ##}
+}
+
+## 全合計行の計算処理
+function doCalcAllSumRow(){
+	for (columnId = 4; columnId <= 4; columnId++) {
+        setSumOtherGrid(${GridObjName1},${GridObjName2},columnId);
+    }
+}
+
+## 担当者計の計算処理
+function doCalcMrSumRow(){
+    for (columnId = 4; columnId <= 4; columnId++) {
+
+        var iDetailSumValue = convertToInteger(${GridObjName2},3,columnId); // 明細合計値
+        var detailSumValue = ${GridObjName2}.cells(3,columnId).getValue();
+
+        var hideValue = ${GridObjName2}.getUserData(2,"hideValue"); // 計画値 非表示分
+        var iHideValue = 0;
+        if (hideValue != null && hideValue != "") {
+            iHideValue = hideValue - 0;
+        }
+
+        var isValueExist = false;
+        if (detailSumValue != null && isEntered(detailSumValue)) {
+            isValueExist = true;
+        }
+        if (hideValue != null && isEntered(hideValue)) {
+            isValueExist = true;
+        }
+
+        if (isValueExist) {
+            var MrSum = iDetailSumValue + iHideValue;
+            ${GridObjName2}.cells(1, columnId).setValue(MrSum);
+            minusStyle(${GridObjName2},1, columnId);
+        }
+        else {
+            ${GridObjName2}.cells(1, columnId).setValue(null);
+        }
+    }
+}
+
+## 担当者計画-施設別計画の計算処理
+function doCalcFormulaRow(grid, colId){
+    var iUpValue = convertToInteger(grid,1,colId); // 上位値
+    var upValue = grid.cells(1,colId).getValue();
+
+    var iDetailSumValue = convertToInteger(grid,3,colId); // 明細合計値
+    var detailSumValue = grid.cells(3,colId).getValue();
+
+    var isValueExist = false;
+    if (upValue != null && isEntered(upValue)) {
+        isValueExist = true;
+    }
+    if (detailSumValue != null && isEntered(detailSumValue)) {
+        isValueExist = true;
+    }
+
+    var cell = grid.cells(2,colId);
+    if (isValueExist) {
+        ##cell.setValue(iUpValue - iDetailSumValue - iHideValue);
+        cell.setValue(iUpValue - iDetailSumValue);
+    }
+    else {
+        cell.setValue(null);
+    }
+}
+
+//-->
+</script>
+
+#if($dataList)
+	<div id="${GridObjName2}" style="width: 99.5%; clear: both;"></div>
+	<div id="${GridObjName1}" style="width: 99.5%; clear: both;"></div>
+	#loadingGridDiv2("${GridObjName2}", "${CoverId2}" ,"width: 99.5%; clear: both;")
+	#loadingGridDiv2("${GridObjName1}", "${CoverId1}" ,"width: 99.5%; clear: both;")
+#else
+	<div id="${GridObjName2}" style="width: 99.5%; clear: both;"></div>
+    <div id="${GridObjName1}" style="width: 99.5%; clear: both;"></div>
+#end
+
+#token()

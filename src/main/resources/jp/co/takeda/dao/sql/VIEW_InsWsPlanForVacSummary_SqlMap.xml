@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_InsWsPlanForVacSummary_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.view.InsWsPlanForVacSummary" >
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="ADDR_CODE_PREF" property="addrCodePref" jdbcType="VARCHAR" />
+    <result column="ADDR_CODE_CITY" property="addrCodeCity" jdbcType="VARCHAR" />
+    <result column="SHIKUCHOSON_MEI_KJ" property="shikuchosonMeiKj" jdbcType="VARCHAR" />
+    <result column="ACTIVITY_TYPE" property="activityType" jdbcType="CHAR" />
+    <result column="DIST_VALUE_Y" property="distValueB" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_Y" property="plannedValueB" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD" property="advancePeriod" jdbcType="BIGINT" />
+  </resultMap>
+
+  <!-- 検索リスト -->
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+  WITH IWP AS (
+    SELECT COALESCE(IWP.JGI_NO,DELI.JGI_NO) AS JGI_NO
+          ,COALESCE(IWP.PROD_CODE,DELI.PROD_CODE) AS PROD_CODE
+          ,COALESCE(IWP.INS_NO,DELI.INS_NO) AS INS_NO
+          ,IWP.DIST_VALUE_Y
+          ,IWP.PLANNED_VALUE_Y
+          ,DELI.ADVANCE_PERIOD
+      FROM (SELECT * FROM DPS_I_INS_WS_PLAN WHERE JGI_NO = #jgiNo:INTEGER#) IWP
+           FULL OUTER JOIN (SELECT * FROM DPS_I_DELIVERY_RESULT WHERE JGI_NO = #jgiNo:INTEGER#) DELI
+        ON IWP.INS_NO = DELI.INS_NO
+       AND IWP.PROD_CODE = DELI.PROD_CODE
+       AND IWP.TMS_TYTEN_CD = DELI.TMS_TYTEN_CD
+    )
+  ,SUM AS (
+    SELECT IWP.JGI_NO
+          ,IWP.PROD_CODE
+          ,INS.ADDR_CODE_PREF
+          ,INS.ADDR_CODE_CITY
+          ,AT.ACTIVITY_TYPE
+          ,SUM(IWP.DIST_VALUE_Y) AS DIST_VALUE_Y
+          ,SUM(IWP.PLANNED_VALUE_Y) AS PLANNED_VALUE_Y
+          ,SUM(IWP.ADVANCE_PERIOD) AS ADVANCE_PERIOD
+      FROM IWP
+           INNER JOIN DPS_C_INS_MST INS
+        ON IWP.INS_NO = INS.INS_NO
+           LEFT JOIN DPS_V_ACTIVITY_TYPE AT
+        ON IWP.INS_NO = AT.INS_NO
+     GROUP BY IWP.JGI_NO
+             ,IWP.PROD_CODE
+             ,INS.ADDR_CODE_PREF
+             ,INS.ADDR_CODE_CITY
+             ,AT.ACTIVITY_TYPE
+    )
+    SELECT SUM.JGI_NO
+          ,SUM.PROD_CODE
+          ,SUM.ADDR_CODE_PREF
+          ,SUM.ADDR_CODE_CITY
+          ,CASE SUM.ADDR_CODE_CITY
+             WHEN '000' THEN JIS.FUKEN_MEI_KJ
+             ELSE JIS.SHIKUCHOSON_MEI_KJ
+           END AS SHIKUCHOSON_MEI_KJ
+          ,SUM.ACTIVITY_TYPE
+          ,SUM.DIST_VALUE_Y
+          ,SUM.PLANNED_VALUE_Y
+          ,SUM.ADVANCE_PERIOD
+      FROM SUM
+           INNER JOIN DPS_S_SY_T_JIS_MST JIS
+        ON SUM.ADDR_CODE_PREF = JIS.TODOUFUKEN_CD
+       AND SUM.ADDR_CODE_CITY = JIS.SHIKUCHOSON_CD
+           INNER JOIN DPS_C_PLANNED_PROD PP
+        ON SUM.PROD_CODE = PP.PROD_CODE
+        <!-- add Start 2022/12/1  Y.Taniguchi バックログNo.31 -->
+        AND PP.CATEGORY = '04'
+        <!-- add End 2022/12/1  Y.Taniguchi バックログNo.31 -->
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+</sqlMap>

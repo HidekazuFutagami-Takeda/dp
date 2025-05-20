@@ -1,0 +1,50 @@
+<script language="javascript">
+<!--
+var aH = document.documentElement.clientHeight - 20;
+var aW = document.documentElement.clientWidth - 20;
+var iconHeight = 20;
+##alert("aH=" + aH + ",aW=" + aW);
+##----------------------
+## 支援
+##----------------------
+#if($security.hasDps())
+aH = aH - 160;
+if (aH < 402) {
+  aH = 402;
+}
+document.getElementById("menuErea").style.height = aH;
+document.getElementById("statusErea").style.height = aH - 40;
+document.getElementById("statusContents").style.height = aH - 80;
+var aW = document.documentElement.clientWidth - 7;
+if (aW < 985) {
+  aW = 985;
+}
+document.getElementById("topPageContents").style.width = aW;
+aW = aW - 190;
+if (aW < 795) {
+  aW = 795;
+}
+document.getElementById("rightArea").style.width = aW;
+##----------------------
+## 管理
+##----------------------
+#elseif($security.hasDpm())
+aH = aH - 160;
+if (aH < 382) {
+  aH = 382;
+}
+document.getElementById("menuErea").style.height = (aH + 95 - iconHeight) + "px";
+document.getElementById("sosArea").style.height = (aH + 95 - iconHeight) + "px";
+var aW = document.documentElement.clientWidth - 7;
+if (aW < 985) {
+  aW = 985;
+}
+document.getElementById("topPageContents").style.width = aW;
+aW = aW - 190;
+if (aW < 795) {
+  aW = 795;
+}
+document.getElementById("rightArea").style.width = aW;
+#end
+//-->
+</script>

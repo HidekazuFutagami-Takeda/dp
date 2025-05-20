@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_I_IYAKU_PLAN_SqlMap" >
+  <resultMap id="resultMap" class="jp.co.takeda.model.ManageIyakuPlan" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="CAL_YEAR" property="calYear" jdbcType="CHAR" />
+    <result column="CAL_TERM" property="calTerm" jdbcType="CHAR" />
+    <result column="INS_TYPE" property="insType" jdbcType="VARCHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="PLANNED_1_VALUE_Y" property="implPlan.planned1ValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_1_VALUE_T" property="implPlan.planned1ValueT" jdbcType="BIGINT" />
+    <result column="PLANNED_2_VALUE_Y" property="implPlan.planned2ValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_2_VALUE_T" property="implPlan.planned2ValueT" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_1_VALUE_Y" property="implPlan.befPlanned1ValueY" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_1_VALUE_T" property="implPlan.befPlanned1ValueT" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_2_VALUE_Y" property="implPlan.befPlanned2ValueY" jdbcType="BIGINT" />
+    <result column="BEF_PLANNED_2_VALUE_T" property="implPlan.befPlanned2ValueT" jdbcType="BIGINT" />
+    <result column="DEL_FLG" property="delFlg" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="IS_PG_ID" property="isPgId" jdbcType="VARCHAR" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="UP_PG_ID" property="upPgId" jdbcType="VARCHAR" />
+
+    <result column="STACKED_VALUE" property="stackedValue" jdbcType="BIGINT" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="column">
+     SEQ_KEY
+          , IP.CAL_YEAR
+          , IP.CAL_TERM
+          , IP.INS_TYPE
+          , IP.PROD_CODE
+          , IP.PLANNED_1_VALUE_Y
+          , IP.PLANNED_1_VALUE_T
+          , IP.PLANNED_2_VALUE_Y
+          , IP.PLANNED_2_VALUE_T
+          , IP.BEF_PLANNED_1_VALUE_Y
+          , IP.BEF_PLANNED_1_VALUE_T
+          , IP.BEF_PLANNED_2_VALUE_Y
+          , IP.BEF_PLANNED_2_VALUE_T
+          , IP.DEL_FLG
+          , IP.IS_JGI_NO
+          , IP.IS_JGI_NAME
+          , IP.IS_DATE
+          , IP.IS_PG_ID
+          , IP.UP_JGI_NO
+          , IP.UP_JGI_NAME
+          , IP.UP_DATE
+          , IP.UP_PG_ID
+          , SUM.STACKED_VALUE
+          , NULL AS PROD_NAME
+  </sql>
+
+  <sql id="branchPlan">
+            SELECT BP.CAL_YEAR
+                  ,BP.CAL_TERM
+                  ,BP.INS_TYPE
+                  ,BP.PROD_CODE
+                  ,SUM(BP.PLANNED_2_VALUE_Y) AS STACKED_VALUE
+              FROM DPM_I_BRANCH_PLAN BP
+             WHERE BP.DEL_FLG = 0
+             GROUP BY CAL_YEAR, CAL_TERM, INS_TYPE, PROD_CODE
+  </sql>
+
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT <include refid="column"/>
+      FROM DPM_I_IYAKU_PLAN IP
+           LEFT JOIN (<include refid="branchPlan"/>) SUM
+        ON IP.CAL_YEAR = SUM.CAL_YEAR
+       AND IP.CAL_TERM = SUM.CAL_TERM
+       AND IP.INS_TYPE = SUM.INS_TYPE
+       AND IP.PROD_CODE = SUM.PROD_CODE
+     WHERE IP.SEQ_KEY = #seqKey:BIGINT#
+       AND IP.CAL_YEAR = #calYear:CHAR#
+       AND IP.CAL_TERM = #calTerm:CHAR#
+  </select>
+
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.ManageIyakuPlan" >
+    SELECT <include refid="column"/>
+      FROM DPM_I_IYAKU_PLAN IP
+           LEFT JOIN (<include refid="branchPlan"/>) SUM
+        ON IP.CAL_YEAR = SUM.CAL_YEAR
+       AND IP.CAL_TERM = SUM.CAL_TERM
+       AND IP.INS_TYPE = SUM.INS_TYPE
+       AND IP.PROD_CODE = SUM.PROD_CODE
+     WHERE IP.CAL_YEAR = #calYear:CHAR#
+       AND IP.CAL_TERM = #calTerm:CHAR#
+       AND IP.INS_TYPE = #insType:VARCHAR#
+       AND IP.PROD_CODE = #prodCode:CHAR#
+  </select>
+
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT IP.SEQ_KEY
+          ,IP.CAL_YEAR
+          ,IP.CAL_TERM
+          ,'1' AS INS_TYPE
+          ,PP.PROD_CODE
+          ,IP.PLANNED_1_VALUE_Y
+          ,IP.PLANNED_1_VALUE_T
+          ,IP.PLANNED_2_VALUE_Y
+          ,IP.PLANNED_2_VALUE_T
+          ,IP.BEF_PLANNED_1_VALUE_Y
+          ,IP.BEF_PLANNED_1_VALUE_T
+          ,IP.BEF_PLANNED_2_VALUE_Y
+          ,IP.BEF_PLANNED_2_VALUE_T
+          ,IP.DEL_FLG
+          ,IP.IS_JGI_NO
+          ,IP.IS_JGI_NAME
+          ,IP.IS_DATE
+          ,IP.IS_PG_ID
+          ,IP.UP_JGI_NO
+          ,IP.UP_JGI_NAME
+          ,IP.UP_DATE
+          ,IP.UP_PG_ID
+          ,SUM.STACKED_VALUE
+          ,PP.PROD_NAME
+          ,PP.GROUP_CODE
+          ,PP.STAT_PROD_CODE
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPM_C_PLANNED_PROD PP
+           LEFT JOIN DPM_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD
+           LEFT JOIN DPM_I_IYAKU_PLAN IP
+        ON IP.PROD_CODE = PP.PROD_CODE
+       AND IP.CAL_YEAR = PP.CAL_YEAR
+       AND IP.CAL_TERM = PP.CAL_TERM
+       AND IP.INS_TYPE = '1'
+           LEFT JOIN (<include refid="branchPlan"/>) SUM
+        ON SUM.PROD_CODE = PP.PROD_CODE
+       AND SUM.CAL_YEAR = PP.CAL_YEAR
+       AND SUM.CAL_TERM = PP.CAL_TERM
+       AND SUM.INS_TYPE = '1'
+     WHERE PP.PLAN_LEVEL_ZENSHA = '1'
+       AND PP.SALES = #sales:CHAR#
+       AND PP.CAL_YEAR = #calYear:CHAR#
+       AND PP.CAL_TERM = #calTerm:CHAR#
+       <isNotNull prepend="AND" property="category">
+           PP.CATEGORY = #category:CHAR#
+       </isNotNull>
+    UNION
+    SELECT IP.SEQ_KEY
+          ,IP.CAL_YEAR
+          ,IP.CAL_TERM
+          ,'2' AS INS_TYPE
+          ,PP.PROD_CODE
+          ,IP.PLANNED_1_VALUE_Y
+          ,IP.PLANNED_1_VALUE_T
+          ,IP.PLANNED_2_VALUE_Y
+          ,IP.PLANNED_2_VALUE_T
+          ,IP.BEF_PLANNED_1_VALUE_Y
+          ,IP.BEF_PLANNED_1_VALUE_T
+          ,IP.BEF_PLANNED_2_VALUE_Y
+          ,IP.BEF_PLANNED_2_VALUE_T
+          ,IP.DEL_FLG
+          ,IP.IS_JGI_NO
+          ,IP.IS_JGI_NAME
+          ,IP.IS_DATE
+          ,IP.IS_PG_ID
+          ,IP.UP_JGI_NO
+          ,IP.UP_JGI_NAME
+          ,IP.UP_DATE
+          ,IP.UP_PG_ID
+          ,SUM.STACKED_VALUE
+          ,PP.PROD_NAME
+          ,PP.GROUP_CODE
+          ,PP.STAT_PROD_CODE
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPM_C_PLANNED_PROD PP
+           LEFT JOIN DPM_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD
+           LEFT JOIN DPM_I_IYAKU_PLAN IP
+        ON IP.PROD_CODE = PP.PROD_CODE
+       AND IP.CAL_YEAR = PP.CAL_YEAR
+       AND IP.CAL_TERM = PP.CAL_TERM
+       AND IP.INS_TYPE = '2'
+           LEFT JOIN (<include refid="branchPlan"/>) SUM
+        ON SUM.PROD_CODE = PP.PROD_CODE
+       AND SUM.CAL_YEAR = PP.CAL_YEAR
+       AND SUM.CAL_TERM = PP.CAL_TERM
+       AND SUM.INS_TYPE = '2'
+     WHERE PP.PLAN_LEVEL_ZENSHA = '1'
+       AND PP.SALES = #sales:CHAR#
+       AND PP.CAL_YEAR = #calYear:CHAR#
+       AND PP.CAL_TERM = #calTerm:CHAR#
+       <isNotNull prepend="AND" property="category">
+           PP.CATEGORY = #category:CHAR#
+       </isNotNull>
+    UNION
+    SELECT IP.SEQ_KEY
+          ,IP.CAL_YEAR
+          ,IP.CAL_TERM
+          ,'3' AS INS_TYPE
+          ,PP.PROD_CODE
+          ,IP.PLANNED_1_VALUE_Y
+          ,IP.PLANNED_1_VALUE_T
+          ,IP.PLANNED_2_VALUE_Y
+          ,IP.PLANNED_2_VALUE_T
+          ,IP.BEF_PLANNED_1_VALUE_Y
+          ,IP.BEF_PLANNED_1_VALUE_T
+          ,IP.BEF_PLANNED_2_VALUE_Y
+          ,IP.BEF_PLANNED_2_VALUE_T
+          ,IP.DEL_FLG
+          ,IP.IS_JGI_NO
+          ,IP.IS_JGI_NAME
+          ,IP.IS_DATE
+          ,IP.IS_PG_ID
+          ,IP.UP_JGI_NO
+          ,IP.UP_JGI_NAME
+          ,IP.UP_DATE
+          ,IP.UP_PG_ID
+          ,SUM.STACKED_VALUE
+          ,PP.PROD_NAME
+          ,PP.GROUP_CODE
+          ,PP.STAT_PROD_CODE
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+      FROM DPM_C_PLANNED_PROD PP
+           LEFT JOIN DPM_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD
+           LEFT JOIN DPM_I_IYAKU_PLAN IP
+        ON IP.PROD_CODE = PP.PROD_CODE
+       AND IP.CAL_YEAR = PP.CAL_YEAR
+       AND IP.CAL_TERM = PP.CAL_TERM
+       AND IP.INS_TYPE = '3'
+           LEFT JOIN (<include refid="branchPlan"/>) SUM
+        ON SUM.PROD_CODE = PP.PROD_CODE
+       AND SUM.CAL_YEAR = PP.CAL_YEAR
+       AND SUM.CAL_TERM = PP.CAL_TERM
+       AND SUM.INS_TYPE = '3'
+     WHERE PP.PLAN_LEVEL_ZENSHA = '1'
+       AND PP.SALES = #sales:CHAR#
+       AND PP.CAL_YEAR = #calYear:CHAR#
+       AND PP.CAL_TERM = #calTerm:CHAR#
+       <isNotNull prepend="AND" property="category">
+           PP.CATEGORY = #category:CHAR#
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <insert id="insert" parameterClass="jp.co.takeda.model.ManageIyakuPlan" >
+    INSERT INTO DPM_I_IYAKU_PLAN
+          (SEQ_KEY
+          , CAL_YEAR
+          , CAL_TERM
+          , INS_TYPE
+          , PROD_CODE
+          , PLANNED_1_VALUE_Y
+          , PLANNED_1_VALUE_T
+          , PLANNED_2_VALUE_Y
+          , PLANNED_2_VALUE_T
+          , BEF_PLANNED_1_VALUE_Y
+          , BEF_PLANNED_1_VALUE_T
+          , BEF_PLANNED_2_VALUE_Y
+          , BEF_PLANNED_2_VALUE_T
+          , DEL_FLG
+          , IS_JGI_NO
+          , IS_JGI_NAME
+          , IS_DATE
+          , IS_PG_ID
+          , UP_JGI_NO
+          , UP_JGI_NAME
+          , UP_DATE
+          , UP_PG_ID)
+    VALUES (ORADPX01.SEQ_DPM_I_IYAKU_PLAN.NEXTVAL
+          , #calYear:CHAR#
+          , #calTerm:CHAR#
+          , #insType:VARCHAR#
+          , #prodCode:CHAR#
+          , #implPlan.planned1ValueY:BIGINT#
+          , #implPlan.planned1ValueT:BIGINT#
+          , #implPlan.planned2ValueY:BIGINT#
+          , #implPlan.planned2ValueT:BIGINT#
+          , #implPlan.befPlanned1ValueY:BIGINT#
+          , #implPlan.befPlanned1ValueT:BIGINT#
+          , #implPlan.befPlanned2ValueY:BIGINT#
+          , #implPlan.befPlanned2ValueT:BIGINT#
+          , #delFlg:CHAR#
+          , #isJgiNo:INTEGER#
+          , #isJgiName:VARCHAR#
+          , SYSTIMESTAMP
+          , #isPgId:VARCHAR#
+          , #upJgiNo:INTEGER#
+          , #upJgiName:VARCHAR#
+          , SYSTIMESTAMP
+          , #upPgId:VARCHAR#)
+  </insert>
+
+  <update id="update" parameterClass="jp.co.takeda.model.ManageIyakuPlan" >
+    UPDATE DPM_I_IYAKU_PLAN
+       SET DEL_FLG = #delFlg:CHAR#
+          ,PLANNED_1_VALUE_Y = #implPlan.planned1ValueY:BIGINT#
+          ,PLANNED_1_VALUE_T = #implPlan.planned1ValueT:BIGINT#
+          ,PLANNED_2_VALUE_Y = #implPlan.planned2ValueY:BIGINT#
+          ,PLANNED_2_VALUE_T = #implPlan.planned2ValueT:BIGINT#
+          ,BEF_PLANNED_1_VALUE_Y = #implPlan.befPlanned1ValueY:BIGINT#
+          ,BEF_PLANNED_1_VALUE_T = #implPlan.befPlanned1ValueT:BIGINT#
+          ,BEF_PLANNED_2_VALUE_Y = #implPlan.befPlanned2ValueY:BIGINT#
+          ,BEF_PLANNED_2_VALUE_T = #implPlan.befPlanned2ValueT:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+          ,UP_PG_ID = #upPgId:VARCHAR#
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+</sqlMap>

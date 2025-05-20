@@ -1,0 +1,498 @@
+## (ワ)特約店別計画追加画面
+#set($layout = "dialogueLayout.vm" )
+#set($pageTitle = $text.get("dps502C05","title"))
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($bodyOnloadMethod = "dps502C05F00()")
+#set($dataListFileName = "dps502C05x01.vm")
+
+## 検索結果データ
+#if($form.getRequestData("DPS502C05_DATA_R_SEARCH_RESULT"))
+    #set($resultData = $form.getRequestData("DPS502C05_DATA_R_SEARCH_RESULT"))
+#end
+
+<script language="javascript">
+<!--
+var editFlg = false;
+document.getElementById("closeWindow").value = "true";
+#set($GridObjName = "dps502C05Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps502C05CoverId")
+var ${GridObjName};
+
+## 初期表示
+function dps502C05F00(){
+    ## グリッド初期化
+    doInitGrid();
+    ## グリッドデータ読み込み
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+           ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+    if (document.getElementById("areaName")) {
+        var areaName = document.getElementById("areaName").value;
+        if(areaName){
+            document.getElementById("sos").childNodes[0].nodeValue = areaName;
+        }else{
+            document.getElementById("sos").childNodes[0].nodeValue = "　";
+        }
+    }
+    document.getElementById("tytenCd").focus();
+}
+
+## DHTMLXGrid生成
+function doInitGrid() {
+	${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("品目名称,特約店別計画");
+    ${GridObjName}.setInitWidths("265,200");
+    ${GridObjName}.setColAlign("left,right");
+    ${GridObjName}.setColTypes("ro,ron");
+    ${GridObjName}.enableResizing("false,false");
+    ${GridObjName}.enableTooltips("false,false");
+    ${GridObjName}.setNumberFormat("0,000",1);
+    ${GridObjName}.enableDistributedParsing(true,50,260);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps502C05', $!gridHeight));
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.init();
+    ${GridObjName}.enableEditEvents(true, false, true);
+    ##  --- 編集中に登録ボタンが押された場合のチェッカー
+    window.editValueChecker = new EditingValueChecker(${GridObjName},'$text.get("DPC1036E",[""])' );
+
+    ${GridObjName}.attachEvent("onEditCell",function(stage,rowId,cellInd,newvalue,oldvalue){
+		## --- 編集中に登録ボタンが押された場合のチェック用に値とstageを保持 ---
+		window.editValueChecker.saveState(stage,newvalue);
+
+    	if(stage == 1){
+            setIme(${GridObjName},rowId,cellInd,"inactive",10);
+        }
+        if(stage == 2){
+            if(newvalue.toString() != oldvalue.toString()){
+                intCheck(${GridObjName},rowId,cellInd,newvalue);
+                minusStyle(${GridObjName},rowId, cellInd);
+                editFlg = true;
+            }
+        }
+        return true;
+    });
+    ${GridObjName}.attachEvent("onRowSelect",function(rowId,cellInd){
+        ${GridObjName}.editCell();
+    });
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift,new Array("1"));
+        if (keycode == 86 && ctrl) {
+            editFlg=true;
+        }
+        return true;
+    });
+}
+
+## 表示(特約店)処理
+function dps502C05F05(){
+    ##入力チェック
+    if (!dps502C05F05Validation()) {
+        return;
+    }
+    ## 確認
+    if(editFlg){
+        if(!window.confirm('$text.get("DPC999C99.001","dialogue")')){
+            return false;
+        }
+    }
+    ##送信
+    var actionPath = '$link.setAction('dps502C05F05')';
+    document.dps502C05Form.action = actionPath;
+    document.dps502C05Form.submit();
+    dps502C05F10 = blockIt;
+    dps502C05F15 = blockIt;
+    dps502C05F16Execute = blockIt;
+    dps502C05F05 = blockIt;
+}
+
+## 表示(特約店)処理の入力チェック
+function dps502C05F05Validation(){
+    ## [必須] 特約店コード
+    tytenCd = document.dps502C05Form.tytenCd.value;
+    errorMsg = '$text.get("DPC1003E",["特約店コード"])';
+    isAdded = addErrorInfo(!isEntered(tytenCd), errorMsg);
+    ## [半角数値] 特約店コード
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["特約店コード","半角数値"])';
+        isAdded = addErrorInfo(!isNumber(tytenCd), errorMsg);
+        if (!isAdded) {
+            ## [桁数(13桁以上)]
+            min = 13;
+            errorMsg = '$text.get("DPC1027E",["特約店コード","' + min + '"])';
+            addErrorInfo(!isByteInRangeMin(tytenCd, min), errorMsg);
+            ## [桁数(13桁以下)]
+            max = 13;
+            errorMsg = '$text.get("DPC1027E",["特約店コード","' + max + '"])';
+            addErrorInfo(!isByteInRange(tytenCd, max), errorMsg);
+        }
+    }
+    return validation();
+}
+
+## 表示(エリア)処理
+function dps502C05F10(){
+    ##入力チェック
+    if (!dps502C05F10Validation()) {
+        return;
+    }
+    ## 確認
+    if(editFlg){
+        if(!window.confirm('$text.get("DPC999C99.001","dialogue")')){
+            return false;
+        }
+    }
+    ##送信
+    var actionPath = '$link.setAction('dps502C05F10')';
+    document.dps502C05Form.action = actionPath;
+    document.dps502C05Form.submit();
+    dps502C05F05 = blockIt;
+    dps502C05F15 = blockIt;
+    dps502C05F16Execute = blockIt;
+    dps502C05F10 = blockIt;
+}
+
+## 表示（エリア）処理の入力チェック
+function dps502C05F10Validation(){
+    ## [必須] リージョンコード
+    brCd = document.dps502C05Form.brCd.value;
+## mod Start 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+##    errorMsg = '$text.get("DPC1003E",["営業部コード"])';
+    errorMsg = '$text.get("DPC1003E",["リージョンコード"])';
+## mod End 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+    isAdded = addErrorInfo(!isEntered(brCd), errorMsg);
+    ## [半角数値] リージョンコード
+    if(!isAdded){
+## mod Start 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+##        errorMsg = '$text.get("DPC1004E",["営業部コード","半角数値"])';
+        errorMsg = '$text.get("DPC1004E",["リージョンコード","半角数値"])';
+## mod End 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+        isAdded = addErrorInfo(!isNumber(brCd), errorMsg);
+        if (!isAdded) {
+            ## [桁数(3桁以上)]
+            min = 3;
+## mod Start 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+##            errorMsg = '$text.get("DPC1027E",["営業部コード","' + min + '"])';
+            errorMsg = '$text.get("DPC1027E",["リージョンコード","' + min + '"])';
+## mod End 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+            addErrorInfo(!isByteInRangeMin(brCd, min), errorMsg);
+
+            ## [桁数(3桁以下)]
+            max = 3;
+## mod Start 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+##            errorMsg = '$text.get("DPC1027E",["営業部コード","' + max + '"])';
+            errorMsg = '$text.get("DPC1027E",["リージョンコード","' + max + '"])';
+## mod End 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+            addErrorInfo(!isByteInRange(brCd, max), errorMsg);
+        }
+    }
+    ## [必須] エリアコード
+    distCd = document.dps502C05Form.distCd.value;
+    errorMsg = '$text.get("DPC1003E",["エリアコード"])';
+    isAdded = addErrorInfo(!isEntered(distCd), errorMsg);
+    ## [半角数値] エリアコード
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["エリアコード","半角数値"])';
+        isAdded = addErrorInfo(!isNumber(distCd), errorMsg);
+        if (!isAdded) {
+            ## [桁数(3桁以上)]
+            min = 3;
+            errorMsg = '$text.get("DPC1027E",["エリアコード","' + min + '"])';
+            addErrorInfo(!isByteInRangeMin(distCd, min), errorMsg);
+            ## [桁数(3桁以下)]
+            max = 3;
+            errorMsg = '$text.get("DPC1027E",["エリアコード","' + max + '"])';
+            addErrorInfo(!isByteInRange(distCd, max), errorMsg);
+        }
+    }
+    return validation();
+}
+
+## 検索処理
+function dps502C05F15(){
+    ##入力チェック
+    if (!dps502C05F15Validation()) {
+        return;
+    }
+    ## 確認
+    if(editFlg){
+        if(!window.confirm('$text.get("DPC999C99.001","dialogue")')){
+            return false;
+        }
+    }
+    ##送信
+    var actionPath = '$link.setAction('dps502C05F15')';
+    document.dps502C05Form.action = actionPath;
+    document.dps502C05Form.submit();
+    dps502C05F05 = blockIt;
+    dps502C05F10 = blockIt;
+    dps502C05F16Execute = blockIt;
+    dps502C05F15 = blockIt;
+}
+
+## 検索処理 入力チェック
+function dps502C05F15Validation(){
+    ## [必須] 特約店コード
+    tytenCd = document.dps502C05Form.tytenCd.value;
+    errorMsg = '$text.get("DPC1003E",["特約店コード"])';
+    isAdded = addErrorInfo(!isEntered(tytenCd), errorMsg);
+    ## [半角数値] 特約店コード
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["特約店コード","半角数値"])';
+        isAdded = addErrorInfo(!isNumber(tytenCd), errorMsg);
+        if (!isAdded) {
+            ## [桁数(13桁以上)]
+            min = 13;
+            errorMsg = '$text.get("DPC1027E",["特約店コード","' + min + '"])';
+            addErrorInfo(!isByteInRangeMin(tytenCd, min), errorMsg);
+
+            ## [桁数(13桁以下)]
+            max = 13;
+            errorMsg = '$text.get("DPC1027E",["特約店コード","' + max + '"])';
+            addErrorInfo(!isByteInRange(tytenCd, max), errorMsg);
+        }
+    }
+    ## [必須] リージョンコード
+    brCd = document.dps502C05Form.brCd.value;
+## mod Start 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+##    errorMsg = '$text.get("DPC1003E",["営業部コード"])';
+    errorMsg = '$text.get("DPC1003E",["リージョンコード"])';
+## mod End 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+    isAdded = addErrorInfo(!isEntered(brCd), errorMsg);
+    ## [半角数値] リージョンコード
+    if(!isAdded){
+## mod Start 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+##        errorMsg = '$text.get("DPC1004E",["営業部コード","半角数値"])';
+        errorMsg = '$text.get("DPC1004E",["リージョンコード","半角数値"])';
+## mod End 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+        isAdded = addErrorInfo(!isNumber(brCd), errorMsg);
+        if (!isAdded) {
+            ## [桁数(3桁以上)]
+            min = 3;
+## mod Start 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+##            errorMsg = '$text.get("DPC1027E",["営業部コード","' + min + '"])';
+            errorMsg = '$text.get("DPC1027E",["リージョンコード","' + min + '"])';
+## mod End 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+            addErrorInfo(!isByteInRangeMin(brCd, min), errorMsg);
+
+            ## [桁数(3桁以下)]
+            max = 3;
+## mod Start 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+##            errorMsg = '$text.get("DPC1027E",["営業部コード","' + max + '"])';
+            errorMsg = '$text.get("DPC1027E",["リージョンコード","' + max + '"])';
+## mod End 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+            addErrorInfo(!isByteInRange(brCd, max), errorMsg);
+        }
+    }
+    ## [必須] エリアコード
+    distCd = document.dps502C05Form.distCd.value;
+    errorMsg = '$text.get("DPC1003E",["エリアコード"])';
+    isAdded = addErrorInfo(!isEntered(distCd), errorMsg);
+    ## [半角数値] リージョンコード
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["エリアコード","半角数値"])';
+        isAdded = addErrorInfo(!isNumber(distCd), errorMsg);
+        if (!isAdded) {
+            ## [桁数(3桁以上)]
+            min = 3;
+            errorMsg = '$text.get("DPC1027E",["エリアコード","' + min + '"])';
+            addErrorInfo(!isByteInRangeMin(distCd, min), errorMsg);
+            ## [桁数(3桁以下)]
+            max = 3;
+            errorMsg = '$text.get("DPC1027E",["エリアコード","' + max + '"])';
+            addErrorInfo(!isByteInRange(distCd, max), errorMsg);
+        }
+    }
+    return validation();
+}
+
+## 登録処理
+function dps502C05F16Execute(){
+
+    ## --- 編集中セル値の登録時チェック ---
+	if(window.editValueChecker.isValid() == false){
+		return;
+	}
+
+    ##入力チェック
+    if (!dps502C05F16Validation()) {
+        return;
+    }
+    ##確認
+    if (!confirm('$text.get("DPS502C05.001","dialogue")')) {
+        return;
+    }
+    ##送信データ作成
+    var form = document.dps502C05Form;
+    for (var rowId = 1; rowId <= ${GridObjName}.getRowsNum(); rowId++) {
+        var userData = ${GridObjName}.getUserData(rowId, 'updateRowId');
+        var planValue = ${GridObjName}.cells(rowId,1).getValue();
+        userData += "," + planValue;
+        ${GridObjName}.setUserData(rowId, 'updateRowId', userData);
+    }
+    addRowIdList(form, ${GridObjName}, 'rowIdList', 'updateRowId');
+    var actionPath = "$link.setAction('dps502C05F16Execute')";
+    form.action = actionPath;
+    form.submit();
+    dps502C05F05 = blockIt;
+    dps502C05F10 = blockIt;
+    dps502C05F15 = blockIt;
+    dps502C05F16Execute = blockIt;
+}
+
+## 登録処理 入力チェック
+function dps502C05F16Validation(){
+    for (rowId = 1; rowId <= ${GridObjName}.getRowsNum(); rowId++) {
+        prodName = ${GridObjName}.cells(rowId, 0).getValue();
+        msgHeader = "品目【" + prodName + "】の";
+        ## 特約店別計画
+        value = ${GridObjName}.cells(rowId, 1).getValue().toString();
+        amountValidation('特約店別計画',value,10,true,msgHeader);
+    }
+    return validation();
+}
+
+## 閉じる処理
+function closeWindow(){
+    if (editFlg) {
+        if (window.confirm('$text.get("DPC999C99.001","dialogue")')) {
+            window.close();
+        }
+    }
+    else {
+        window.close();
+    }
+}
+
+## 特約店選択ダイアログを開く
+function openTytenDialog(){
+    var url = '$link.setAction("dps912C00F00").addQueryData("tmsSelectMode","$tmsselect.getGrayAndEnableButtonMode()").addQueryData("tytenApplyFuncName","dps502C05TytenApply")';
+    openModalWindowW(url);
+}
+
+## 特約店選択ダイアログ コールバック
+function dps502C05TytenApply(tytenCd, tytenName){
+    document.getElementById("tytenCd").value = tytenCd;
+    document.getElementById("tytenName").value = tytenName;
+    document.getElementById("tytenNameLabel").innerHTML = "<label>" + tytenName + "</label>";
+}
+
+## 組織選択ダイアログ コールバック
+function dps502C05SosApply(sosCd, jgiNo, sosMaxSrchGetValue){
+
+    ## 共通コールバック関数呼び出し
+    sosApplyExt(sosCd, jgiNo, sosMaxSrchGetValue,false);
+    ## テキストにコピー
+    document.getElementById("brCd").value = document.getElementById("brCode").value;
+    document.getElementById("distCd").value = document.getElementById("distCode").value;
+    document.getElementById("areaName").value = document.getElementById("sos").childNodes[0].nodeValue;
+}
+//-->
+</script>
+
+<div class="disp" style="padding:0px;margin:5px;">
+<form name="dps502C05Form" method="post">
+## 検索条件
+<div align="left" style="float: left;width: 100%;">
+    <table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+        <td class="gridIndex" style="width:150px;">特約店コード*</td>
+        <td style="width:270px;">
+            <input type="text" name="tytenCd" id="tytenCd" value="$!form.bean.tytenCd" size="15" maxlength="13" style="ime-mode:disabled" />
+        </td>
+        <td>
+            <input type="button"  value="表示" onClick="dps502C05F05()"  style="width:80px;" />
+        </td>
+    </tr>
+    <tr>
+        <td class="gridIndex">特約店</td>
+        <td>
+            <table class="gridLine" cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+            <tr>
+                <td style="width:270px;">
+                    <nobr><label id="tytenNameLabel">$!form.bean.tytenName　</label></nobr>
+                </td>
+            </tr>
+            </table>
+        </td>
+        <td>
+            <input type="button" value="選択" onClick="openTytenDialog()"  style="width:80px;" />
+        </td>
+    </tr>
+    </table>
+    <div style="padding:2px"></div>
+    <table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+## mod Start 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+##        <td class="gridIndex" style="width:150px;">営業部コード*</td>
+        <td class="gridIndex" style="width:150px;">リージョンコード*</td>
+## mod End 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える
+        <td style="width:60px;">
+            <input type="text" name="brCd" id="brCd" value="$!form.bean.brCd"  size="8" maxlength="3" style="ime-mode:disabled" />
+        </td>
+        <td class="gridIndex" style="width:150px;">エリアコード*</td>
+        <td style="width:60px;">
+            <input type="text" name="distCd" id="distCd" value="$!form.bean.distCd" size="8" maxlength="3" style="ime-mode:disabled" />
+        </td>
+        <td>
+            <input type="button"  value="表示" onClick="dps502C05F10()" style="width:80px;" />
+        </td>
+    </tr>
+    <tr>
+        <td class="gridIndex">エリア</td>
+        <td colspan="4">
+            #sosDialogBase2("dps502C05SosApply", "02", "02", "02",true,true)
+        </td>
+    </tr>
+    </table>
+</div>
+<div align="left" style="float: left;width: 100%; margin-top:5px; margin-bottom:2px;">
+    #set($disabled = "disabled")
+##    #if($resultData && $resultData.addFlg && $form.bean.wsEndFlg)  ## ← 2021/4/20 ワクチン医薬統合にて、あえて〆フラグをボタン表示条件から外した。医薬の動作に合わせた。登録ボタンは押せるが、サーバ側にてエラーを返す
+    #if($resultData && $resultData.addFlg)
+        #set($disabled = "")
+    #end
+	<div style="display: flex;">
+	    <input type="button" value="検索" onClick="dps502C05F15()" style="width:80px;" />
+	    <input type="button" value="登録する" onClick="dps502C05F16Execute()" style="width:80px;" $!disabled />
+	    <input type="button" value="閉じる" onClick="closeWindow()" style="width:80px;" />
+	</div>
+</div>
+<div align="left" style="float: left; width: 100%;">
+<table style="width: 52%;" cellspacing="0" cellpadding="1">
+    <tr>
+	    <td style="width:10px;"></td>
+	    <td class="statusNot legendSize">&nbsp;</td>
+		<td style="padding-right:10px;"><label>：計画立案対象外特約店</label></td>
+## mod Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+        #if($form.bean.kaBaseKb == "1")
+        <td class="label" style="text-align:right;vertical-align:bottom;">$consts.tableHeaderB</td>
+        #else
+        <td class="label" style="text-align:right;vertical-align:bottom;">$consts.tableHeaderS</td>
+        #end
+## mod End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+    </tr>
+</table>
+</div>
+<div align="left" style="float: left;width: 100%;">
+    #loadingGridDiv2("${GridObjName}", "${CoverId}", "width: 52%; clear: both;")
+</div>
+<div class="guide">※修正計画は、10千円単位で入力してください。</div>
+## hidden項目
+<input type="hidden" name="tytenName" id="tytenName" value="$!form.bean.tytenName" />
+<input type="hidden" name="areaName" id="areaName" value="$!form.bean.areaName" />
+## mod Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+<input type="hidden" name="kaBaseKb" value="$!form.bean.kaBaseKb"/>
+## mod End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+#token()
+</form>
+</div>

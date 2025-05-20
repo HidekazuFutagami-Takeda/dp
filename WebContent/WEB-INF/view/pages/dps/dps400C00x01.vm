@@ -1,0 +1,184 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS400C00_DATA_R_SEARCH_RESULT"))
+    #set( $dataList = $form.getRequestData("DPS400C00_DATA_R_SEARCH_RESULT"))
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+
+<rows>
+#foreach($resultData in $dataList)
+    ##品目固定コード
+        #set($prodCode = "")
+        #if($resultData.distributionProd.prodCode)
+            #set($prodCode = $resultData.distributionProd.prodCode)
+        #end
+    ##品目名称
+        #set($prodName = "")
+        #if($resultData.distributionProd.prodName)
+            #set($prodName = $resultData.distributionProd.prodName)
+        #end
+    ##製品区分
+        #set($prodType = "")
+        #if($resultData.distributionProd.prodType)
+            #set($prodType = $resultData.distributionProd.prodType)
+        #end
+    ##配分状況
+        #set($insWsPlanStatSum = ${resultData.distributionProd.insWsPlanStatSum})
+        #set($statusName = "")
+        #set($statusDate = "")
+        #set($statusFontColor = "")
+        #set($selectValue = "1")
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　MMP品→仕入品以外（2018上期時点でGMBU品/SPBU品/ONC品）
+##        ## MMP品
+##        #if($form.bean.category == "1")
+        ## 仕入品,ワクチン以外（2018上期時点でGMBU品/SPBU品/ONC品）
+        ##if(($form.bean.category != "02")&&($form.bean.category != "04"))
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　MMP品→仕入品以外（2018上期時点でGMBU品/SPBU品/ONC品）
+        ##set($codeAndValueInsWsPlanDist = $progress.progressInsWsPlanDistStatus($!{insWsPlanStatSum}))
+        ##if($!codeAndValueInsWsPlanDist.code.equals("NOT"))
+        ##    #if($codeAndValueInsWsPlanDist.value && $codeAndValueInsWsPlanDist.value != "")
+        ##        #set($statusName = $codeAndValueInsWsPlanDist.value)
+        ##        #set($statusDate = "<br>#writeLastUpDate($insWsPlanStatSum.distStartDate,'-')")
+        ##        #set($statusFontColor = "#FF0000")
+        ##        #set($selectValue = "0")
+        ##    #end
+        ##else
+        ##    #set($statusName = $codeAndValueInsWsPlanDist.value)
+        ##    #set($statusDate = "<br>#writeLastUpDate($insWsPlanStatSum.distEndDate,'-')")
+        ##    #set($selectValue = "0")
+        ##end
+        ## 仕入品,ワクチン
+        ##else
+        #if($resultData.distributionProd.StatusForInsWsPlan)
+            #set($statusValue = $!resultData.distributionProd.StatusForInsWsPlan.toString())
+            #if($statusValue == "DISTING")
+                #set($statusName = "配分中")
+                #set($statusDate = "<br>#writeLastUpDate($!insWsPlanStatSum.distStartDate,'-')")
+                #set($statusFontColor = "#FF0000")
+                #set($selectValue = "0")
+            #elseif($statusValue == "DISTED" || $statusValue == "PLAN_OPENED" || $statusValue == "PLAN_COMPLETED")
+                #set($statusName = "配分済")
+                #set($statusDate = "<br>#writeLastUpDate($!insWsPlanStatSum.distEndDate,'-')")
+                #set($selectValue = "0")
+            #else
+                #set($statusName = "")
+            #end
+        #end
+        ##end
+    ##本部案/エリア案
+        #set($base = "" )
+        #if($resultData.honbu)
+            #set($base = "本部案")
+        #else
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            #set($base = "エリア案")
+##            #set($base = "営業所案")
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        #end
+    ##配分基準最終更新日
+        #set($distParamUpDate = "<br>#writeLastUpDate($resultData.lastUpdate,'-')")
+    ##[UH]配分品目名
+        #set($refProdNameUH = "")
+        #if($resultData.baseParamUH.refProdInfo.prodName)
+            #set($refProdNameUH = $resultData.baseParamUH.refProdInfo.prodName)
+        #end
+    ##[UH]配分品目製品区分
+        #set($refProdTypeUH = "")
+        #if($resultData.baseParamUH.refProdInfo.prodType)
+            #set($refProdTypeUH = $resultData.baseParamUH.refProdInfo.prodType)
+        #end
+    ##[UH]実績参照期間(FROM)
+        #set($refPeriodFromUH = "")
+        #if($resultData.refPeriodFromUH)
+            #set($refPeriodFromUH = $!{format.toString($!{resultData.refPeriodFromUH},"yyyy/MM")})
+        #end
+    ##[UH]実績参照期間(TO)
+        #set($refPeriodToUH = "")
+        #if($resultData.refPeriodToUH)
+            #set($refPeriodToUH = $!{format.toString($!{resultData.refPeriodToUH},"yyyy/MM")})
+        #end
+    ##[UH]参照品目1
+        #set($resultRefProdName1UH = "")
+        #if($resultData.baseParamUH.resultRefProdName1)
+            #set($resultRefProdName1UH = $resultData.baseParamUH.resultRefProdName1)
+        #end
+    ##[UH]参照品目2
+        #set($resultRefProdName2UH = "")
+        #if($resultData.baseParamUH.resultRefProdName2)
+            #set($resultRefProdName2UH = $resultData.baseParamUH.resultRefProdName2)
+        #end
+    ##[UH]参照品目3
+        #set($resultRefProdName3UH = "")
+        #if($resultData.baseParamUH.resultRefProdName3)
+            #set($resultRefProdName3UH = $resultData.baseParamUH.resultRefProdName3)
+        #end
+    ##[P]配分品目名
+        #set($refProdNameP = "")
+        #if($resultData.baseParamP.refProdInfo.prodName)
+            #set($refProdNameP = $resultData.baseParamP.refProdInfo.prodName)
+        #end
+    ##[P]配分品目製品区分
+        #set($refProdTypeP = "")
+        #if($resultData.baseParamP.refProdInfo.prodType)
+            #set($refProdTypeP = $resultData.baseParamP.refProdInfo.prodType)
+        #end
+    ##[P]実績参照期間(FROM)
+        #set($refPeriodFromP = "")
+        #if($resultData.refPeriodFromP)
+            #set($refPeriodFromP = $!{format.toString($!{resultData.refPeriodFromP},"yyyy/MM")})
+        #end
+    ##[P]実績参照期間(TO)
+        #set($refPeriodToP = "")
+        #if($resultData.refPeriodToP)
+            #set($refPeriodToP = $!{format.toString($!{resultData.refPeriodToP},"yyyy/MM")})
+        #end
+    ##[P]参照品目1
+        #set($resultRefProdName1P = "")
+        #if($resultData.baseParamP.resultRefProdName1)
+            #set($resultRefProdName1P = $resultData.baseParamP.resultRefProdName1)
+        #end
+    ##[P]参照品目2
+        #set($resultRefProdName2P = "")
+        #if($resultData.baseParamP.resultRefProdName2)
+            #set($resultRefProdName2P = $resultData.baseParamP.resultRefProdName2)
+        #end
+    ##[P]参照品目3
+        #set($resultRefProdName3P = "")
+        #if($resultData.baseParamP.resultRefProdName3)
+            #set($resultRefProdName3P = $resultData.baseParamP.resultRefProdName3)
+        #end
+    ##ステータス最終更新日
+        #set($statusLastUpDate = "")
+        #if($resultData.distributionProd.statusLastUpdate)
+            #set($statusLastUpDate = $resultData.distributionProd.statusLastUpdate.time)
+        #end
+    <row id='$velocityCount'>
+        <cell style="height:35"></cell>
+##        #if($form.bean.category == "1")
+##            <cell style="height:35"></cell>
+##        #else
+            <cell style="height:35">$!selectValue</cell>
+##        #end
+        <cell style="height:35">$!prodName</cell>
+        <cell style="height:35">$!prodType</cell>
+        <cell style="height:35"><![CDATA[<font color="$statusFontColor">$!statusName</font>$!statusDate]]></cell>
+        <cell style="height:35">$!base</cell>
+        <cell style="height:35"><![CDATA[#if($form.bean.category != $vaccineCode)<a href="#" onclick="executeLink('$link.setAction('dps400C01F00')','$!form.bean.sosCd3Tran','$!prodCode','$!form.bean.category')">編集</a>#end$!distParamUpDate]]></cell>
+        <cell style="height:35">$!refProdNameUH</cell>
+        <cell style="height:35">$!refProdTypeUH</cell>
+        <cell style="height:35">$!refPeriodFromUH - $!refPeriodToUH</cell>
+        <cell style="height:35">$!resultRefProdName1UH</cell>
+        <cell style="height:35">$!resultRefProdName2UH</cell>
+        <cell style="height:35">$!resultRefProdName3UH</cell>
+        <cell style="height:35">$!refProdNameP</cell>
+        <cell style="height:35">$!refProdTypeP</cell>
+        <cell style="height:35">$!refPeriodFromP - $!refPeriodToP</cell>
+        <cell style="height:35">$!resultRefProdName1P</cell>
+        <cell style="height:35">$!resultRefProdName2P</cell>
+        <cell style="height:35">$!resultRefProdName3P</cell>
+        ##品目固定コード,品目名称,ステータス最終更新日
+        <userdata name="updateRowId">$!prodCode,$!prodName,$!statusLastUpDate</userdata>
+    </row>
+#end
+</rows>
+#end

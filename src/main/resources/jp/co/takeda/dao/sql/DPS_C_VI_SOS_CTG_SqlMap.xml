@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_C_VI_SOS_CTG_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.view.SosCtg" >
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="CATEGORY" property="category" jdbcType="VARCHAR" />
+  </resultMap>
+  <!-- 検索 -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SOS_CD
+          ,CATEGORY
+    FROM DPS_C_VI_SOS_CTG SC
+      INNER JOIN DPS_C_CD_MST CM ON CM.DATA_CD = SC.CATEGORY AND CM.DATA_KBN = 'category'
+    <isNotNull property="sosCd">
+    WHERE SOS_CD = #sosCd:VARCHAR#
+    </isNotNull>
+    ORDER BY CM.DATA_SEQ
+  </select>
+  <select id="selectBySosCdAndCategory" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SOS_CD
+          ,CATEGORY
+    FROM DPS_C_VI_SOS_CTG SC
+      INNER JOIN DPS_C_CD_MST CM ON CM.DATA_CD = SC.CATEGORY AND CM.DATA_KBN = 'category'
+    WHERE SOS_CD = #sosCd:VARCHAR#
+    AND SC.CATEGORY = #category:VARCHAR#
+    ORDER BY CM.DATA_SEQ
+  </select>
+</sqlMap>

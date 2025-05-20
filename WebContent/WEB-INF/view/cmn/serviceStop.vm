@@ -1,0 +1,19 @@
+#set( $layout = "errorPageLayout.vm" )
+<center>
+<div id="errorPage">
+<br><center><span class="errorTitle">納入計画システムはサービス停止中です。</span></center><br><br>
+#if ($errors.exist())
+#foreach ($e in $errors.all)
+<span class="errorText">　・$e</span><br>
+#end
+#end
+#if (!$!form.bean.isDialogueFlg())
+<a href="$!service.getHomeAndNaviPath()">ホームへ</a>
+#end
+<br>
+<br>
+#if ($!form.bean.isDialogueFlg())
+<input type="button" name="close" value="閉じる" onclick="window.close();" />
+#end
+</div>
+</center>

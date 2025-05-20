@@ -1,0 +1,32 @@
+##(医)特約店別計画配分処理起動確認画面
+#set($pageTitle = $text.get("dps500C01","title"))
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+
+<script language="javascript">
+<!--
+## リンク移動
+function executeLink() {
+    var actionPath = '$link.setAction('dps500C00F05')';
+    document.dps500C01Form.action = actionPath;
+    document.dps500C01Form.submit();
+}
+//-->
+</script>
+#tabbar("sienTokuyaku", "dps500C00F00")
+<div id="tabBox" class="label">
+<form name="dps500C01Form" method="post">
+    <div class="midTitle">配分処理実行</div>
+    <div align="right">
+        <a href="#" onclick="executeLink()">一覧へ戻る</a>
+    </div>
+    <div align="left">
+        <label>
+            特約店別計画の配分処理を開始しました。<br>
+            実行結果はTakedaCompassの「アテンション」またはトップ画面の「お知らせ」にてご確認下さい。
+        </label>
+    </div>
+    #token()
+    <input type="hidden" name="sosCd2" id="sosCd2" value="$!form.bean.getSosCd2()" />
+    <input type="hidden" name="category" id="category" value="$!form.bean.getCategory()" />
+</form>
+</div>

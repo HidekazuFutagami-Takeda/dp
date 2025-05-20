@@ -1,0 +1,57 @@
+## 補足画面
+## 「④No.6 一括確定のエラー表示対応」対応前のdps940C00.vmの内容をコピーして作成
+#set($contentsId = "freeSizeContents")
+#set($layout = "dialogueLayout.vm" )
+#set($pageTitle = $text.get("dps940C00","title"))
+#set($bodyOnloadMethod = "dps940C00F03()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($sosCd = $form.bean.sosCd)
+#set($category = $form.bean.category)
+#set($requestUrlLeft = "dps940C00F03?sFlg=true&sosCd=$!sosCd&category=$!category")
+#set($requestUrl = "$!requestUrlLeft")
+#set($dps940C00F01Data = $form.getRequestData("DPS940C00F01_DATA_R"))
+#set($bumonRank = $dps940C00F01Data.getSosMst().getBumonRank().getDbValue())
+#set($sosName = $dps940C00F01Data.getSosMst().getBumonSeiName())
+
+#set($GridObjName = "dps940C00F01Grid")
+#set($CoverId = "dps940C00F01CoverId")
+#if($!bumonRank == 2)
+	#set($bumonName = "リージョン" )
+#elseif($!bumonRank == 3)
+	#set($bumonName = "エリア" )
+#end
+<div id="dps940grid-container">
+<div class="title">
+<p class="floatL">$bumonName : $sosName</p><input type="button" value="閉じる" style="width:100px;" onclick="window.close();" class="floatR" />
+</div>
+<script language="javascript">
+<!--
+var ${GridObjName};
+## 初期表示＋読込処理
+
+function dps940C00F03() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("担当者名,施設名/特約店名,詳細");
+    ${GridObjName}.setInitWidths("80,150,550");
+    ${GridObjName}.setColAlign("left,left,left");
+    ${GridObjName}.setColTypes("ro,ro,ro");
+    ${GridObjName}.enableResizing("false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false");
+    ${GridObjName}.enableAutoWidth(true);
+    ${GridObjName}.enableAutoHeight(true);
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.objBox.style.overflowY="hidden";
+    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.setSizes();
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.init();
+    ${GridObjName}.load("$link.setAction($requestUrl)", "");
+}
+//-->
+</script>
+<div class="table">
+#loadingGridDiv("${GridObjName}", "${CoverId}")
+</div>
+</div>
+#token()
+

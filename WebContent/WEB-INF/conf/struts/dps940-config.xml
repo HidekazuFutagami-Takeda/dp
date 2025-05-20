@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+ "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+
+    <form-beans>
+        <form-bean name="Dps940C00Form" type="jp.co.takeda.web.in.dps.Dps940C00Form" />
+        <!-- add Start 2022/7/13 H.futagami ④No.6 一括確定のエラー表示対応 -->
+        <form-bean name="Dps940C01Form" type="jp.co.takeda.web.in.dps.Dps940C01Form" />
+        <!-- add End 2022/7/13 H.futagami ④No.6 一括確定のエラー表示対応 -->
+    </form-beans>
+
+<action-mappings type="jp.co.takeda.web.cmn.action.DpActionMapping">
+
+<!-- ***********************************************************************
+
+   補足情報画面
+
+ ***********************************************************************  -->
+<!-- mod Start 2022/7/13 H.futagami ④No.6 一括確定のエラー表示対応 -->
+<!--
+<action path="/dps940C00F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps940C00Action" name="Dps940C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps940C00F00" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps940C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps940C00.vm" />
+</action>
+-->
+<action path="/dps940C00F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps940C00Action" name="Dps940C01Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps940C00F00" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps940C01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps940C01.vm" />
+</action>
+
+<action path="/dps940C00F03"
+ type="jp.co.takeda.web.ctrl.dps.Dps940C00Action" name="Dps940C01Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps940C00F03" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps940C01x01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps940C01x01.vm" />
+</action>
+<!-- mod End 2022/7/13 H.futagami ④No.6 一括確定のエラー表示対応 -->
+
+<action path="/dps940C00F01"
+ type="jp.co.takeda.web.ctrl.dps.Dps940C00Action" name="Dps940C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps940C00F01" />
+    <set-property property="generateToken" value="false" />
+<!-- mod Start 2022/7/13 R.takamoto ④No.6 一括確定のエラー表示対応 -->
+<!--    <forward name="success" path="/WEB-INF/view/pages/dps/dps940C00x01.vm" /> -->
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps940C00.vm" />
+<!--    <forward name="failure" path="/WEB-INF/view/pages/dps/dps940C00x01.vm" /> -->
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps940C00.vm" />
+<!-- mod End 2022/7/13 R.takamoto ④No.6 一括確定のエラー表示対応 -->
+</action>
+
+</action-mappings>
+
+</struts-config>

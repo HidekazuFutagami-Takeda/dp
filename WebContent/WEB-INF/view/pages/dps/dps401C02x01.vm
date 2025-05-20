@@ -1,0 +1,579 @@
+#set( $layout = "nothingLayout.vm" )
+#set( $dataList = $form.getRequestData("DPS401C02_DATA_R"))
+#set( $gridList = $dataList.getInsWsPlanUpDateResultDto())
+
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+#set($decimalFormat = $form.bean.getDefaultRateFormat())
+<rows>
+##合計
+#if($gridList && $gridList.get(0))
+    #set($oldResultData = $gridList.get(0))
+#end
+<row id='1'>
+    <userdata name="hrange">$!hrange</userdata>
+    <userdata name="sumRowFlg">true</userdata>
+    <cell style='background-color: #FDDDFF;border-right-style:none;'>全施特計</cell>
+    <cell style='background-color: #FDDDFF;border-right-style:none;border-left-style:none;'></cell>
+    <cell style='background-color: #FDDDFF;border-right-style:none;border-left-style:none;'></cell>
+    <cell style='background-color: #FDDDFF;border-left-style:none;'></cell>
+    <cell style='background-color: #FDDDFF;' type="ron">$!oldResultData.getDistValueY()</cell>
+    <cell style='background-color: #FDDDFF;' type="ro"></cell>
+    <cell style='background-color: #FDDDFF;' type="ron">$!oldResultData.getPlannedValueY()</cell>
+    #if($pageData)
+        #foreach($monNnuValue in $pageData)
+            <cell style='background-color: #FDDDFF;#setMinusStyle($!monNnuValue.getPreFarAdvancePeriod())'>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+            <cell style='background-color: #FDDDFF;#setMinusStyle($!monNnuValue.getFarAdvancePeriod())'>$!monNnuValue.getFarAdvancePeriod()</cell>
+            <cell style='background-color: #FDDDFF;#setMinusStyle($!monNnuValue.getAdvancePeriod())'>$!monNnuValue.getAdvancePeriod()</cell>
+            <cell style='background-color: #FDDDFF;#setMinusStyle($!monNnuValue.getCurrentPlanValue())'>$!monNnuValue.getCurrentPlanValue()</cell>
+            <cell style='background-color: #FDDDFF;#setMinusStyle($!monNnuValue.getCurrentPeriod())'>$!monNnuValue.getCurrentPeriod()</cell>
+            <cell style='background-color: #FDDDFF;#setMinusStyle($!monNnuValue.getCurrentRate())'>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+        #end
+    #end
+</row>
+##集計行表示判断用変数
+##set( $isFirst = true )
+##RowId用カウンタ
+#set( $cnt = 2 )
+##各集計行集計範囲
+#set( $srange = "" )
+#set( $hrange = "" )
+##各集計行
+#set( $srowids = "" )
+#set( $hrowids = "" )
+##追加ボタンId
+#set( $bid = 1 )
+#set($firstFlg = true)
+#set($secondFlg = false)
+#set($lastFlg = false)
+
+#foreach($resultData in $gridList)
+  ##flg状況を退避
+  #set( $firstFlgOld = $firstFlg )
+  #set( $secondFlgOld = $secondFlg )
+  ##borderの設定初期化
+  #set( $cellBorder = "white" )
+  #set( $s = "" )
+  #if($velocityCount > 2)
+    ##集計行
+    ##項目に特定の文字列が入っていた場合、集計行を表示する
+    #set( $sisetuflg = $oldResultData.getInsSumFlg() )
+    #set( $q = '"' )
+    #set( $sipFlg = "false" )
+    #set( $edFlg = "false" )
+    #set( $delFlg = "false" )
+    #set($cellFontColor = "")
+    #if($firstFlg)
+        #set( $InsHeader = $!oldResultData.getInsHeader() )
+        #set( $InsName = $!oldResultData.getInsName() )
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　SPBUを追加するという意図で、仕入品(2)→仕入品以外という条件の書き方に変更
+
+         #if( ($category && $category == "$siireCode" && $!security.hasAuthEdit("DPS401C02"))
+         || ($category && $!security.hasAuthEdit("DPS401C02")) )
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　SPBUを追加するという意図で、仕入品(2)→仕入品以外という条件の書き方に変更
+           #set( $addButton = "<![CDATA[<input type='button' value='追加' onClick='inspos = $bid;openModalWindowW(${q}${link.setAction('dps912C04F00')}?tmsSelectMode=$tmsselect.getGrayAndDisableButtonMode()&tytenApplyFuncName=dps401C02TytenApply&sosCd=$!form.bean.sosCd3&jgiNo=$!form.bean.jgiNo&insType=$!form.bean.insType${q});editOn();' />]]>" )
+        #else
+           #set( $addButton = "" )
+        #end
+        ##表示色の判定
+        #if($oldResultData.dispFontColCd)
+            #set($cellFontColor = "color:#$!{oldResultData.getDispFontColCd()};")
+        #end
+        ##2行目フラグをONにしておく
+        #set($secondFlg = true)
+    #elseif($secondFlg)
+        #set( $InsHeader = "" )
+        ##施設情報名称の表示と、表示色の判定
+        #if($!oldResultData.getInsInfoName())
+            #set($InsName = "　$!{oldResultData.getInsInfoName()}")
+        #else
+            #set( $InsName = "" )
+        #end
+        #if($oldResultData.dispFontColCd)
+            #set($cellFontColor = "color:#$!{oldResultData.getDispFontColCd()};")
+        #end
+        #set( $InsClass = "" )
+        #set( $addButton = "" )
+        #set($secondFlg = false)
+    #else
+        #set( $InsHeader = "" )
+        #set( $InsName = "" )
+        #set( $InsClass = "" )
+        #set( $addButton = "" )
+    #end
+    #if ($oldResultData && $oldResultData.getInsNo().equals($resultData.getInsNo()))
+        #if($firstFlg)
+            #set($s = "s0")
+        #else
+            #set($s = "s1")
+        #end
+        #set($firstFlg = false)
+    #else
+        #set($s = "s2")
+        ##最終行フラグ(施設合計なしの場合)
+        #if(!($oldResultData.getInsSumFlg()))
+            #set($lastFlg = true)
+        #end
+        #set($firstFlg = true)
+    #end
+    #if($oldResultData.getDistValueY())
+       #set( $typed = "ron" )
+    #else
+       #set( $typed = "ro" )
+    #end
+    #if($oldResultData.getModifyValueY())
+       #set( $typem = "edn" )
+    #else
+       #set( $typem = "ed" )
+    #end
+    #if($oldResultData.getPlannedValueY())
+       #set( $typey = "ron" )
+    #else
+       #set( $typey = "ro" )
+    #end
+    #set( $inputBgClass = " class='inputB'" )
+    #if($oldResultData.getTmsTytenCd())
+       #set( $sumRowFlg = "false" )
+    #else
+       #set( $type = "ro" )
+       #set( $inputBgClass = "" )
+       #set( $sumRowFlg = "true" )
+    #end
+    #set($bgClass = "")
+    ## 削除施設の場合
+    #if($oldResultData.getDelInsFlg())
+       ## 背景色グレー
+       #set( $bgClass = " class='delIns'" )
+       #set( $delFlg = "true" )
+       ## border色指定
+       #set( $cellBorder = "#E1E1E1" )
+    ## 配分除外の場合
+    #elseif($oldResultData.getExceptDistInsFlg())
+       ## 背景色黄色
+       #set( $bgClass = " class='exceptDist'" )
+       #set( $edFlg = "true" )
+       ## border色指定
+       #set( $cellBorder = "#B39400" )
+    ## 特定施設個別計画の場合
+    #elseif($oldResultData.getSpecialInsPlanFlg())
+       ## 背景色水色
+       #set( $bgClass = " class='specialInsPlan'" )
+       #set( $sipFlg = "true" )
+       ## 色指定
+       #set( $cellBorder = "#CCFFFF" )
+    #end
+
+    ##特約店行のセル設定
+    #set($bgClassTms = "")
+    ## 削除施設の場合
+    #if($oldResultData.getDelInsFlg())
+       ## 背景色グレー
+       #set( $bgClassTms = " class='delIns'" )
+       #set( $delFlg = "true" )
+       ## border色指定
+       #set( $cellBorder = "#E1E1E1" )
+    ## 配分除外の場合
+    #elseif($oldResultData.getExceptDistInsFlg())
+       ## 背景色黄色
+       #set( $bgClassTms = " class='exceptDist'" )
+       #set( $edFlg = "true" )
+       ## border色指定
+       #set( $cellBorder = "#B39400" )
+    ## 特定施設個別計画の場合
+    #elseif($oldResultData.getSpecialInsPlanFlg())
+       ## 背景色水色
+       #set( $bgClassTms = " class='specialInsPlan'" )
+       #set( $sipFlg = "true" )
+       ## 色指定
+       #set( $cellBorder = "#CCFFFF" )
+    ## 計画立案対象外フラグ(来期用)がTRUEの場合
+    #elseif($oldResultData.getPlanTaiGaiFlgRik())
+       ## 背景色グレー
+       #set( $bgClassTms = " class='planTaiGaiFlgRik'" )
+       ## 色指定
+       #set( $cellBorder = "#E1E1E1" )
+    #end
+
+    ## 登録不可の場合、計画値の編集、追加ボタン非表示
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　SPBUを追加するという意図で、仕入品(2)→仕入品以外という条件の書き方に変更
+
+    #if(   (($category && $category == "$siireCode" && $!security.hasAuthEdit("DPS401C02"))
+           || ($category && $!security.hasAuthEdit("DPS401C02")) )
+        && (!($dataList.getIsStatusMrCompleted()))
+        && (!$form.bean.wsEndFlg)
+       )
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　SPBUを追加するという意図で、仕入品(2)→仕入品以外という条件の書き方に変更
+    #else
+       #set( $typey = "ron" )
+       #set( $typem = "ron" )
+       ##特約店行のセル設定
+       #if($bgClassTms == "")
+          #set( $inputBgClass = $bgClass )
+       #else
+          #set( $inputBgClass = $bgClassTms )
+       #end
+       #set( $addButton = "" )
+    #end
+    #set($pageData = $oldResultData.getInsWsPlanMonNnu())
+    ##border、colorのスタイル設定、fontカラー
+    #set( $s0 = " style='border-bottom-color:${cellBorder};$!{cellFontColor}'")
+    #set( $s1 = " style='border-top-color:${cellBorder};border-bottom-color:${cellBorder};$!{cellFontColor}'")
+    #set( $s2 = " style='border-top-color:${cellBorder};$!{cellFontColor}'")
+    #set( $s3 = " style='border-top-color:${cellBorder};$!{cellFontColor}'")
+    #set( $s4 = " style='border-top-color:${cellBorder};border-left-color:${cellBorder};$!{cellFontColor}'")
+    #if( $s == "s0" )
+        #set( $s = $s0 )
+    #elseif( $s == "s1" )
+        #set( $s = $s1 )
+    #elseif( $s == "s2" )
+        #set( $s = $s2 )
+    #elseif( $s == "s3" )
+        #set( $s = $s3 )
+    #elseif( $s == "s4" )
+        #set( $s = $s4 )
+    #end
+    #if(!($sisetuflg) && !($hinmokuflg))
+    <row id='$cnt'>
+        #if($firstFlgOld)
+            #set($firstFlgOld = false)
+        #end
+        #if($secondFlgOld)
+            #set($secondFlgOld = false)
+        #end
+       <userdata name="cellFontColor">$!{cellFontColor}</userdata>
+       <userdata name="errFlg">$!oldResultData.getErrFlg()</userdata>
+       <userdata name="alertFlg">$!oldResultData.getAlertFlg()</userdata>
+       ##メッセージ見出し用
+       <userdata name="insName">$!oldResultData.getInsName()</userdata>
+       <userdata name="tmsTytenName">$!oldResultData.getTmsTytenName()</userdata>
+       ##グリッド操作用
+       <userdata name="insNoA">$!oldResultData.getInsNo()</userdata>
+       <userdata name="tmsTytenCd">$!oldResultData.getTmsTytenCd()</userdata>
+       <userdata name="sumRowFlg">$sumRowFlg</userdata>
+       <userdata name="rowType">input</userdata>
+       ##送信データ
+       <userdata name="selectRowId">$!oldResultData.getSeqKey(),$!oldResultData.getPlannedUpDate().Time,$!oldResultData.getInsNo(),$!oldResultData.getTmsTytenCd(),$sipFlg,$edFlg,$delFlg</userdata>
+       ##計算、追加用特約店追加ボタンインデックス
+       <userdata name="bid">$bid</userdata>
+       ##削除（予定）施設フラグ
+       <userdata name="delInsFlg">$oldResultData.getDelInsFlg()</userdata>
+       ##計画立案対象外フラグ（来期用）
+       <userdata name="planTaiGaiFlgRik">$oldResultData.getPlanTaiGaiFlgRik()</userdata>
+       ##配分除外施設フラグ
+       <userdata name="exceptDistInsFlg">$oldResultData.getExceptDistInsFlg()</userdata>
+       #if($lastFlg)
+       <userdata name="srange">,$cnt</userdata>
+       #end
+       <cell$bgClass$s><![CDATA[<span style='color:#000'>$!InsHeader</span>]]></cell>
+       <cell$bgClass$s>$!InsName</cell>
+       <cell$bgClassTms>#if( $oldResultData.getPlanTaiGaiFlgRik() )$tmsselect.getPlanTaiGaiLabel()#end$!oldResultData.getTmsTytenName()</cell>
+       <cell$bgClassTms$s>$!addButton</cell>
+       <cell$bgClassTms type='$typed'>$!oldResultData.getDistValueY()</cell>
+       <cell$inputBgClass type='$typem'>$!oldResultData.getModifyValueY()</cell>
+       <cell$bgClassTms type='$typey'>$!oldResultData.getPlannedValueY()</cell>
+       #if($pageData)
+       #foreach($monNnuValue in $pageData)
+           <cell$bgClassTms type='#setColType( $!monNnuValue.getPreFarAdvancePeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getPreFarAdvancePeriod())'>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+           <cell$bgClassTms type='#setColType( $!monNnuValue.getFarAdvancePeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getFarAdvancePeriod())'>$!monNnuValue.getFarAdvancePeriod()</cell>
+           <cell$bgClassTms type='#setColType( $!monNnuValue.getAdvancePeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getAdvancePeriod())'>$!monNnuValue.getAdvancePeriod()</cell>
+           <cell$bgClassTms type='#setColType( $!monNnuValue.getCurrentPlanValue(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getCurrentPlanValue())'>$!monNnuValue.getCurrentPlanValue()</cell>
+           <cell$bgClassTms type='#setColType( $!monNnuValue.getCurrentPeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getCurrentPeriod())'>$!monNnuValue.getCurrentPeriod()</cell>
+           <cell$bgClassTms type='#setColType( $!monNnuValue.getCurrentRate(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getCurrentRate())'>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+       #end
+       #end
+       #if($lastFlg)
+           #set( $srange = "" )
+           #set( $bid = $bid + 1 )
+           #set( $hrange = $hrange + "," + $cnt )
+           #set($lastFlg = false)
+       #else
+           #set( $srange = $srange + "," + $cnt)
+       #end
+       #set( $cnt = $cnt + 1 )
+    </row>
+    ##比較用施設コード、品目コード更新
+    #set( $oldInsNo = $oldResultData.getInsNo() )
+    #set( $oldProdCode = $oldResultData.getProdCode() )
+    ##set( $isFirst = false )
+    #end
+    ##施設合計
+    #if($sisetuflg)
+        #set($insForName = "")
+        #if($firstFlgOld || $secondFlgOld)
+            #set($insForName = $!oldResultData.insInfoName)
+        #end
+    <row id='$cnt'>
+    <userdata name="cellFontColor">$!{cellFontColor}</userdata>
+    <userdata name="srange">$srange</userdata>
+    <userdata name="sumRowFlg">true</userdata>
+        <cell$bgClass$s3></cell>
+        <cell$bgClass$s3>　$!insForName</cell>
+        <cell$bgClass style="text-align:left;border-right-style:none;">施設合計</cell>
+        <cell$bgClass$s4></cell>
+        <cell$bgClass type="ron">$!oldResultData.getDistValueY()</cell>
+        <cell$bgClass type="ro"></cell>
+        <cell$bgClass type="ron">$!oldResultData.getPlannedValueY()</cell>
+        #if($pageData)
+        #foreach($monNnuValue in $pageData)
+            <cell$bgClass type='#setColType( $!monNnuValue.getPreFarAdvancePeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getPreFarAdvancePeriod())'>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+            <cell$bgClass type='#setColType( $!monNnuValue.getFarAdvancePeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getFarAdvancePeriod())'>$!monNnuValue.getFarAdvancePeriod()</cell>
+            <cell$bgClass type='#setColType( $!monNnuValue.getAdvancePeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getAdvancePeriod())'>$!monNnuValue.getAdvancePeriod()</cell>
+            <cell$bgClass type='#setColType( $!monNnuValue.getCurrentPlanValue(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getCurrentPlanValue())'>$!monNnuValue.getCurrentPlanValue()</cell>
+            <cell$bgClass type='#setColType( $!monNnuValue.getCurrentPeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getCurrentPeriod())'>$!monNnuValue.getCurrentPeriod()</cell>
+            <cell$bgClass type='#setColType( $!monNnuValue.getCurrentRate(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getCurrentRate())'>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+        #end
+        #end
+        #set( $srange = "" )
+        #set( $bid = $bid + 1 )
+        #set( $hrange = $hrange + "," + $cnt )
+        #set( $cnt = $cnt + 1 )
+        ##set( $isFirst = true )
+     </row>
+     #end
+  #end
+    #set($oldResultData = $resultData)
+#end
+##最終行
+#if($gridList.size() > 1)
+  ##flg状況を退避
+  #set( $firstFlgOld = $firstFlg )
+  #set( $secondFlgOld = $secondFlg )
+    ##borderの設定初期化
+    #set( $cellBorder = "white" )
+    #set( $s = "" )
+    ##集計行
+    ##項目に特定の文字列が入っていた場合、集計行を表示する
+    #set( $sisetuflg = $oldResultData.getInsSumFlg() )
+    #set( $q = '"' )
+    #set( $sipFlg = "false" )
+    #set( $edFlg = "false" )
+    #if($firstFlg)
+       #set( $InsHeader = $!oldResultData.getInsHeader() )
+       #set( $InsName = $!oldResultData.getInsName() )
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　SPBUを追加するという意図で、仕入品(2)→仕入品以外という条件の書き方に変更
+
+       #if( ($category && $category == "$siireCode" && ($!security.hasAuthEdit("DPS401C02")))
+         || ($category && ($!security.hasAuthEdit("DPS401C02"))) )
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　SPBUを追加するという意図で、仕入品(2)→仕入品以外という条件の書き方に変更
+           #set( $addButton = "<![CDATA[<input type='button' value='追加' onClick='inspos = $bid;openModalWindowW(${q}${link.setAction('dps912C04F00')}?tmsSelecteMode=$tmsselect.getGrayAndDisableButtonMode()&tytenApplyFuncName=dps401C02TytenApply&sosCd=$!form.bean.sosCd3&jgiNo=$!form.bean.jgiNo&insType=$!form.bean.insType${q})' />]]>" )
+       #else
+           #set( $addButton = "" )
+       #end
+    #elseif($secondFlg)
+        #set( $InsHeader = "" )
+        ##施設情報名称の表示と、表示色の判定
+        #if($!oldResultData.getInsInfoName())
+            #set($InsName = "　$!{oldResultData.getInsInfoName()}")
+        #else
+            #set( $InsName = "" )
+        #end
+        #if($oldResultData.dispFontColCd)
+            #set($cellFontColor = "color:#$!{oldResultData.getDispFontColCd()};")
+        #end
+        #set( $InsClass = "" )
+        #set( $addButton = "" )
+        #set($secondFlg = false)
+    #else
+       #set( $InsHeader = "" )
+       #set( $InsName = "" )
+       #set( $InsClass = "" )
+       #set( $addButton = "" )
+    #end
+    #if ( ($!resultData.getInsNo()) && ($oldResultData.getInsNo() == $resultData.getInsNo()))
+        #set($s = "s1")
+        #set($firstFlg = false)
+    #else
+        #set($s = "s2")
+        ##最終行フラグ(施設合計なしの場合)
+        if(!($oldResultData.getInsSumFlg()))
+            #set($lastFlg = true)
+        end
+        #set($firstFlg = true)
+    #end
+    #if($oldResultData.getDistValueY())
+       #set( $typed = "ron" )
+    #else
+       #set( $typed = "ro" )
+    #end
+    #if($oldResultData.getModifyValueY())
+       #set( $typem = "edn" )
+    #else
+       #set( $typem = "ed" )
+    #end
+    #if($oldResultData.getPlannedValueY())
+       #set( $typey = "ron" )
+    #else
+       #set( $typey = "ro" )
+    #end
+    #set( $inputBgClass = " class='inputB'" )
+    #if($oldResultData.getTmsTytenCd())
+       #set( $sumRowFlg = "false" )
+    #else
+       #set( $type = "ro" )
+       #set( $inputBgClass = "" )
+       #set( $sumRowFlg = "true" )
+    #end
+    ## 特定施設個別計画の場合
+    #set($bgClass = "")
+    #if($oldResultData.getSpecialInsPlanFlg())
+       ## 背景色水色
+       #set( $bgClass = " class='specialInsPlan'" )
+       #set( $sipFlg = "true" )
+       ## border色指定
+       #set( $cellBorder = "#CCFFFF" )
+    #end
+    ## 配分除外の場合
+    #if($oldResultData.getExceptDistInsFlg())
+       ## 背景色黄色
+       #set( $bgClass = " class='exceptDist'" )
+       #set( $edFlg = "true" )
+       ## border色指定
+       #set( $cellBorder = "#B39400" )
+    #end
+    ## 削除施設の場合
+    #if($oldResultData.getDelInsFlg())
+       ## 背景色グレー
+       #set( $bgClass = " class='delIns'" )
+       ## 入力項目なし
+       #set( $inputBgClass = " class='delIns'" )
+       #set( $typey = "ro" )
+       ## 特約店追加ボタンなし
+       #set( $addButton = "" )
+       ## border色指定
+       #set( $cellBorder = "#E1E1E1" )
+    #end
+    ## 〆の場合、追加ボタン非表示
+    #if($form.bean.wsEndFlg)
+        #set( $addButton = "" )
+    #end
+    ## 登録不可の場合、計画値の編集、追加ボタン非表示
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　SPBUを追加するという意図で、仕入品(2)→仕入品以外という条件の書き方に変更
+
+    #if(   (($category && $category == "$siireCode" && $!security.hasAuthEdit("DPS401C02"))
+           || ($category && $!security.hasAuthEdit("DPS401C02")) )
+        && (!($dataList.getIsStatusMrCompleted()))
+        && (!$form.bean.wsEndFlg)
+       )
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　SPBUを追加するという意図で、仕入品(2)→仕入品以外という条件の書き方に変更
+    #else
+       #set( $typey = "ron" )
+       #set( $typem = "ron" )
+       #set( $inputBgClass = $bgClass )
+       #set( $addButton = "" )
+    #end
+    #set($pageData = $oldResultData.getInsWsPlanMonNnu())
+    ##borderのスタイル設定
+    #set( $s0 = " style='border-bottom-color:${cellBorder};$!{cellFontColor}'")
+    #set( $s1 = " style='border-top-color:${cellBorder};border-bottom-color:${cellBorder};$!{cellFontColor}'")
+    #set( $s2 = " style='border-top-color:${cellBorder};$!{cellFontColor}'")
+    #set( $s3 = " style='border-top-color:${cellBorder};$!{cellFontColor}'")
+    #set( $s4 = " style='border-top-color:${cellBorder};border-left-color:${cellBorder};$!{cellFontColor}'")
+
+    #if( $s == "s0" )
+        #set( $s = $s0 )
+    #elseif( $s == "s1" )
+        #set( $s = $s1 )
+    #elseif( $s == "s2" )
+        #set( $s = $s2 )
+    #elseif( $s == "s3" )
+        #set( $s = $s3 )
+    #elseif( $s == "s4" )
+        #set( $s = $s4 )
+    #end
+    #if(!($sisetuflg) && !($hinmokuflg))
+    <row id='$cnt'>
+       <userdata name="cellFontColor">$!{cellFontColor}</userdata>
+       <userdata name="errFlg">$!oldResultData.getErrFlg()</userdata>
+       <userdata name="alertFlg">$!oldResultData.getAlertFlg()</userdata>
+       ##メッセージ見出し用
+       <userdata name="insName">$!oldResultData.getInsName()</userdata>
+       <userdata name="tmsTytenName">$!oldResultData.getTmsTytenName()</userdata>
+       ##グリッド操作用
+       <userdata name="insNoA">$!oldResultData.getInsNo()</userdata>
+       <userdata name="tmsTytenCd">$!oldResultData.getTmsTytenCd()</userdata>
+       <userdata name="sumRowFlg">$sumRowFlg</userdata>
+       <userdata name="rowType">input</userdata>
+       ##送信データ
+       <userdata name="selectRowId">$!oldResultData.getSeqKey(),$!oldResultData.getPlannedUpDate().Time,$!oldResultData.getInsNo(),$!oldResultData.getTmsTytenCd()</userdata>
+       ##計算、追加用特約店追加ボタンインデックス
+       <userdata name="bid">$bid</userdata>
+       ##計画立案対象外フラグ（来期用）
+       <userdata name="planTaiGaiFlgRik">$!oldResultData.getPlanTaiGaiFlgRik()</userdata>
+       ##配分除外施設フラグ
+       <userdata name="exceptDistInsFlg">$oldResultData.getExceptDistInsFlg()</userdata>
+       #if($lastFlg)
+       <userdata name="srange">,$cnt</userdata>
+       #end
+       <cell$bgClass$s><![CDATA[<span style='color:#000'>$!InsHeader</span>]]></cell>
+       <cell$bgClass$s>$!InsName</cell>
+       <cell$bgClass>#if( $oldResultData.getPlanTaiGaiFlgRik() )$tmsselect.getPlanTaiGaiLabel()#end$!oldResultData.getTmsTytenName()</cell>
+       <cell$bgClass$s>$!addButton</cell>
+       <cell$bgClass type='$typed'>$!oldResultData.getDistValueY()</cell>
+       <cell$inputBgClass type='$typem'>$!oldResultData.getModifyValueY()</cell>
+       <cell$bgClass type='$typey'>$!oldResultData.getPlannedValueY()</cell>
+       #if($pageData)
+       #foreach($monNnuValue in $pageData)
+           <cell$bgClass type='#setColType( $!monNnuValue.getPreFarAdvancePeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getPreFarAdvancePeriod())'>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+           <cell$bgClass type='#setColType( $!monNnuValue.getFarAdvancePeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getFarAdvancePeriod())'>$!monNnuValue.getFarAdvancePeriod()</cell>
+           <cell$bgClass type='#setColType( $!monNnuValue.getAdvancePeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getAdvancePeriod())'>$!monNnuValue.getAdvancePeriod()</cell>
+           <cell$bgClass type='#setColType( $!monNnuValue.getCurrentPlanValue(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getCurrentPlanValue())'>$!monNnuValue.getCurrentPlanValue()</cell>
+           <cell$bgClass type='#setColType( $!monNnuValue.getCurrentPeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getCurrentPeriod())'>$!monNnuValue.getCurrentPeriod()</cell>
+           <cell$bgClass type='#setColType( $!monNnuValue.getCurrentRate(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getCurrentRate())'>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+       #end
+       #end
+       #if($lastFlg)
+           #set( $srange = "" )
+           #set( $bid = $bid + 1 )
+           #set( $hrange = $hrange + "," + $cnt )
+           #set($lastFlg = false)
+       #else
+           #set( $srange = $srange + "," + $cnt)
+       #end
+       #set( $cnt = $cnt + 1 )
+    </row>
+    ##比較用施設コード、品目コード更新
+    #set( $oldInsNo = $oldResultData.getInsNo() )
+    #set( $oldProdCode = $oldResultData.getProdCode() )
+    ##set( $isFirst = false )
+    #end
+    ##施設合計
+    #if($sisetuflg)
+        #set($insForName = "")
+        #if($firstFlgOld || $secondFlgOld)
+            #set($insForName = $!oldResultData.insInfoName)
+        #end
+    <row id='$cnt'>
+    <userdata name="cellFontColor">$!{cellFontColor}</userdata>
+    <userdata name="srange">$srange</userdata>
+    <userdata name="sumRowFlg">true</userdata>
+        <cell$bgClass$s3></cell>
+        <cell$bgClass$s3>　$!insForName</cell>
+        <cell$bgClass style="text-align:left;border-right-style:none;">施設合計</cell>
+        <cell$bgClass$s4></cell>
+        <cell$bgClass type="ron">$!oldResultData.getDistValueY()</cell>
+        <cell$bgClass type="ro"></cell>
+        <cell$bgClass type="ron">$!oldResultData.getPlannedValueY()</cell>
+        #if($pageData)
+        #foreach($monNnuValue in $pageData)
+            <cell$bgClass type='#setColType( $!monNnuValue.getPreFarAdvancePeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getPreFarAdvancePeriod())'>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+            <cell$bgClass type='#setColType( $!monNnuValue.getFarAdvancePeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getFarAdvancePeriod())'>$!monNnuValue.getFarAdvancePeriod()</cell>
+            <cell$bgClass type='#setColType( $!monNnuValue.getAdvancePeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getAdvancePeriod())'>$!monNnuValue.getAdvancePeriod()</cell>
+            <cell$bgClass type='#setColType( $!monNnuValue.getCurrentPlanValue(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getCurrentPlanValue())'>$!monNnuValue.getCurrentPlanValue()</cell>
+            <cell$bgClass type='#setColType( $!monNnuValue.getCurrentPeriod(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getCurrentPeriod())'>$!monNnuValue.getCurrentPeriod()</cell>
+            <cell$bgClass type='#setColType( $!monNnuValue.getCurrentRate(), "ro" ,"ron")' style='#setMinusStyle($!monNnuValue.getCurrentRate())'>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+        #end
+        #end
+        #set( $srange = "" )
+        #set( $bid = $bid + 1 )
+        #set( $hrange = $hrange + "," + $cnt )
+        #set( $cnt = $cnt + 1 )
+        ##set( $isFirst = true )
+     </row>
+     #end
+#end
+#set( $srowids =  $srowids + $hrange )
+##集計行
+<userdata name="srowids">$srowids</userdata>
+<userdata name="hrowids">,1</userdata>
+</rows>
+#end

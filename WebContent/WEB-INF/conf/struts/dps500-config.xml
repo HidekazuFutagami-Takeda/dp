@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+ "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+
+    <form-beans>
+        <form-bean name="Dps500C00Form" type="jp.co.takeda.web.in.dps.Dps500C00Form" />
+        <form-bean name="Dps500C01Form" type="jp.co.takeda.web.in.dps.Dps500C01Form" />
+    </form-beans>
+
+<action-mappings type="jp.co.takeda.web.cmn.action.DpActionMapping">
+<!-- ***********************************************************************
+
+    (医)特約店別計画配分対象品目一覧画面
+
+ ***********************************************************************  -->
+<action path="/dps500C00F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps500C00Action" name="Dps500C00Form"
+ scope="session"
+ validate="false">
+    <set-property property="actionMethod" value="dps500C00F00" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps500C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps500C00.vm" />
+</action>
+
+<action path="/dps500C00F05"
+ type="jp.co.takeda.web.ctrl.dps.Dps500C00Action" name="Dps500C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps500C00F05" />
+    <set-property property="validationMethod" value="dps500C00F05Validation" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps500C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps500C00.vm" />
+</action>
+
+<action path="/dps500C00F10Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps500C00Action" name="Dps500C00Form"
+ scope="session"
+ validate="true">
+    <set-property property="actionMethod" value="dps500C00F10Execute" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="validationMethod" value="dps500C00F10Validation" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps500C01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps500C00.vm" />
+</action>
+
+<!-- ***********************************************************************
+
+    (医)特約店別計画配分処理起動確認画面
+
+ ***********************************************************************  -->
+<action path="/dps500C01F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps500C01Action" name="Dps500C01Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps500C01F00" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps500C01.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps500C01.vm" />
+</action>
+
+</action-mappings>
+</struts-config>

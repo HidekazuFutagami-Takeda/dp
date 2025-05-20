@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_V_WS_PLAN_STATUS_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.WsPlanStatusForVac" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="SLIDE_STATUS" property="statusSlideForWs" jdbcType="CHAR" />
+    <result column="SLIDE_START_DATE" property="slideStartDate" jdbcType="TIMESTAMP" />
+    <result column="SLIDE_END_DATE" property="slideEndDate" jdbcType="TIMESTAMP" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultSummaryMap" class="jp.co.takeda.model.WsPlanStatusForVac" >
+    <result column="SLIDE_STATUS" property="statusSlideForWs" jdbcType="CHAR" />
+    <result column="SLIDE_START_DATE" property="slideStartDate" jdbcType="TIMESTAMP" />
+    <result column="SLIDE_END_DATE" property="slideEndDate" jdbcType="TIMESTAMP" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="columnList">
+           SEQ_KEY
+          ,PROD_CODE
+          ,SLIDE_STATUS
+          ,SLIDE_START_DATE
+          ,SLIDE_END_DATE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+  </sql>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+    <include refid="columnList" />
+      FROM DPS_V_WS_PLAN_STATUS
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.WsPlanStatusForVac" >
+    SELECT
+    <include refid="columnList" />
+      FROM DPS_V_WS_PLAN_STATUS
+     WHERE PROD_CODE = #prodCode:CHAR#
+  </select>
+
+<!-- 検索リスト -->
+<select id="selectList" resultMap="resultMap" parameterClass="java.util.Map">
+SELECT
+  WPS.SEQ_KEY
+  ,WPS.PROD_CODE
+  ,WPS.SLIDE_STATUS
+  ,WPS.SLIDE_START_DATE
+  ,WPS.SLIDE_END_DATE
+  ,WPS.IS_JGI_NO
+  ,WPS.IS_JGI_NAME
+  ,WPS.IS_DATE
+  ,WPS.UP_JGI_NO
+  ,WPS.UP_JGI_NAME
+  ,WPS.UP_DATE
+FROM
+  DPS_C_PLANNED_PROD PP
+    LEFT OUTER JOIN DPS_V_WS_PLAN_STATUS WPS ON PP.PROD_CODE = WPS.PROD_CODE
+WHERE
+  PP.SALES = #sales:CHAR#
+  AND PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+  AND PP.PLAN_LEVEL_WS = '1'
+</select>
+
+  <!-- サマリ取得 -->
+  <select id="selectSummary" resultMap="resultSummaryMap" >
+    SELECT
+      MAX(WPS.SLIDE_STATUS) AS SLIDE_STATUS
+      ,MAX(WPS.SLIDE_START_DATE) AS SLIDE_START_DATE
+      ,MAX(WPS.SLIDE_END_DATE) AS SLIDE_END_DATE
+      ,MAX(WPS.UP_DATE) AS UP_DATE
+    FROM
+      DPS_V_WS_PLAN_STATUS WPS
+        INNER JOIN DPS_C_PLANNED_PROD PP ON WPS.PROD_CODE = PP.PROD_CODE
+    WHERE
+      PP.SALES = #sales:CHAR#
+      AND PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+      AND PP.PLAN_LEVEL_WS = '1'
+  </select>
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.WsPlanStatusForVac" >
+    INSERT INTO DPS_V_WS_PLAN_STATUS
+          (<include refid="columnList" />)
+    VALUES (ORADPX01.SEQ_DPS_V_WS_PLAN_STATUS.NEXTVAL
+          ,#prodCode:CHAR#
+          ,#statusSlideForWs:CHAR#
+          ,#slideStartDate:TIMESTAMP#
+          ,#slideEndDate:TIMESTAMP#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.WsPlanStatusForVac" >
+    UPDATE DPS_V_WS_PLAN_STATUS
+       SET SLIDE_STATUS = #statusSlideForWs:CHAR#
+          ,SLIDE_START_DATE = #slideStartDate:TIMESTAMP#
+          ,SLIDE_END_DATE = #slideEndDate:TIMESTAMP#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_V_WS_PLAN_STATUS
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </delete>
+
+</sqlMap>

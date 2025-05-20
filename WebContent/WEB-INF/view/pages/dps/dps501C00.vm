@@ -1,0 +1,180 @@
+## (医)特約店別計画スライド画面
+#set($pageTitle = $text.get("dps501C00","title"))
+#set($bodyOnloadMethod = "dps501C00F00()")
+
+#set($vaccineCode = $service.getShienVaccineCode())
+## ワクチンの場合
+#if($form.bean.category == $vaccineCode)
+    #if($form.getRequestData("DPS501C01_DATA_R"))
+        #set($resultData = $form.getRequestData("DPS501C01_DATA_R"))
+    #end
+## 医薬の場合
+#else
+    #if($form.getRequestData("DPS501C00_DATA_R"))
+        #set($resultData = $form.getRequestData("DPS501C00_DATA_R"))
+    #end
+#end
+
+<script language="javascript">
+<!--
+## 初期表示
+function dps501C00F00(){
+    ## 支店設定
+    ##sosApply("$!security.defaultSosCd", "$!security.defaultJgiNo", "01");
+}
+## 検索処理
+function dps501C00F05(){
+    ##入力チェック
+    if (!dps501C00F05Validation()) {
+        return;
+    }
+
+    ##送信
+    var actionPath = '$link.setAction('dps501C00F05')';
+    document.dps501C00Form.action = actionPath;
+    document.dps501C00Form.submit();
+    dps501C00F10 = blockIt;
+    dps501C00F05 = blockIt;
+}
+## 検索時入力チェック
+function dps501C00F05Validation() {
+    ## [必須] 組織
+    ##value = document.dps501C00Form.sosCd2.value;
+    ##errorMsg = '$text.get("DPC1003E",["組織"])';
+    ##addErrorInfo(!isEntered(value), errorMsg);
+
+    ## [必須] カテゴリ
+    value = document.dps501C00Form.category.value;
+    errorMsg = '$text.get("DPC1003E",["カテゴリ"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    return validation();
+}
+## スライド処理実行
+function dps501C00F10(){
+    ##入力チェック
+    if (!dps501C00F10Validation()) {
+        return;
+    }
+
+    ##確認
+    if (!confirm('$text.get("DPS501C00.001","dialogue")')) {
+        return;
+    }
+
+    ##送信
+    var actionPath = '$link.setAction('dps501C00F10Execute')';
+    document.dps501C00Form.action = actionPath;
+    document.dps501C00Form.submit();
+    dps501C00F05 = blockIt;
+    dps501C00F10 = blockIt;
+}
+
+## スライド処理実行
+function dps501C00F20(){
+    ##入力チェック
+    if (!dps501C00F10Validation()) {
+        return;
+    }
+
+    ##確認
+    if (!confirm('$text.get("DPS501C00.001","dialogue")')) {
+        return;
+    }
+
+    ##送信
+    var actionPath = '$link.setAction('dps501C00F20Execute')';
+    document.dps501C00Form.action = actionPath;
+    document.dps501C00Form.submit();
+    dps501C00F05 = blockIt;
+    dps501C00F20 = blockIt;
+}
+
+## スライド時入力チェック
+function dps501C00F10Validation() {
+    ## [必須] 組織
+    ##value = document.dps501C00Form.sosCd2.value;
+    ##errorMsg = '$text.get("DPC1003E",["組織"])';
+    ##addErrorInfo(!isEntered(value), errorMsg);
+
+    ## [必須] カテゴリ
+    value = document.dps501C00Form.category.value;
+    errorMsg = '$text.get("DPC1003E",["カテゴリ"])';
+    addErrorInfo(!isEntered(value), errorMsg);
+
+    return validation();
+}
+//-->
+</script>
+
+#tabbar("sienTokuyaku", "dps501C00F00")
+<div id="tabBox">
+<form name="dps501C00Form" method="post">
+## 検索条件
+    <div align="left" style="float: left;width: 50%;">
+        <table class="gridLine" cellspacing="0" cellpadding="1">
+        <tr>
+            <td class="gridIndex" style="width:150px;">カテゴリ*</td>
+            <td>
+                <table  cellspacing="0" cellpadding="0">
+                <tr>
+            		## 本画面はカテゴリを独自設定
+                    ##set($categoryList = $service.getCategoryNoStarsList(false,false))
+                    ##<td>#selectWithFunc ("category", $categoryList, $!form.bean.category, "dps501C00F05()")</td>
+                    <td>#selectWithFunc ("category", $!form.bean.prodCategoryList, $!form.bean.category, "dps501C00F05()")</td>
+                </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="gridIndex" style="width:150px;">スライド実施状態</td>
+            <td>
+                <table  cellspacing="0" cellpadding="0">
+                <tr>
+                    <td>
+                        #if($resultData.statusSlideForWs)
+                            <label>
+                            #set($slideStatus = $!resultData.statusSlideForWs.toString())
+                            #set($slideStartDate = $!resultData.slideStartDate)
+                            #set($slideEndDate = $!resultData.slideEndDate)
+
+                            #if($slideStatus.equals("NONE"))
+                                スライド前
+                            #elseif($slideStatus.equals("SLIDING"))
+                                スライド中<br/>
+                                ($!format.toString($slideStartDate ,"MM/dd HH:mm") -)
+                            #elseif($slideStatus.equals("SLIDED"))
+                                スライド済<br/>
+                                ($format.toString($slideStartDate ,"MM/dd HH:mm") - $format.toString($slideEndDate ,"MM/dd HH:mm"))
+                            #end
+                            </label>
+                        #end
+                    </td>
+                </tr>
+                </table>
+            </td>
+        </tr>
+        </table>
+        #if($!security.hasAuthEdit("DPS501"))
+        #if($resultData.statusSlideForWs)
+            #if($slideStatus.equals("NONE") && $!form.bean.wsEndFlg)
+                #if($form.bean.category == $vaccineCode)
+                    <input type="button" value="スライドする" style="width:100px;" onclick="dps501C00F20()" />
+                #else
+                    <input type="button" value="スライドする" style="width:100px;" onclick="dps501C00F10()" />
+                #end
+            #else
+                <input type="button" value="スライドする" style="width:100px;" onclick="" disabled />
+            #end
+        #else
+            <input type="button" value="スライドする" style="width:100px;" onclick="" disabled />
+        #end
+        #end
+    </div>
+    <div class="label" align="right" style="float: right;width: 40%;">
+        #upDateInfo($!resultData.getUpUserName(), $!resultData.getUpDate())
+    </div>
+## hieen項目
+#token()
+</form>
+</div>

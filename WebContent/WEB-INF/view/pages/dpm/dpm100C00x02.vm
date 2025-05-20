@@ -1,0 +1,137 @@
+## (医)組織別計画編集画面 集計行
+#set($layout = "nothingLayout.vm" )
+#if ($form.getRequestData("DPM100C00_DATA_R_SEARCH_RESULT"))
+    #set( $resultObj = $form.getRequestData("DPM100C00_DATA_R_SEARCH_RESULT").detailTotal)
+#end
+#if ($form.getRequestData("DPM100C00_DATA_R_SEARCH_RESULT"))
+    #set( $bumonFlag = $form.getRequestData("DPM100C00_DATA_R_BUMON_FLAG"))
+#end
+#if($resultObj)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#set( $rowId = 1 )
+    ## [UH]Y価ベース
+    #set( $yBaseValueUH = "")
+        #if($resultObj.yBaseValueUH)
+            #set( $yBaseValueUH = $resultObj.yBaseValueUH)
+        #end
+    ## [UH]T価ベース
+    #set( $tBaseValueUH = "")
+        #if($resultObj.tBaseValueUH)
+            #set( $tBaseValueUH = $resultObj.tBaseValueUH)
+        #end
+    ## [UH]最終更新情報(ツールチップ)
+    #set( $lastUpNameUH = "")
+    #set( $lastUpDateUH = "")
+        #if($resultObj.upDateUH)
+            #set( $lastUpNameUH = "$!resultObj.upJgiNameUH&#13;")
+            #set( $lastUpDateUH = "$!format.toString($!resultObj.upDateUH, 'yyyy/MM/dd HH:mm:ss')")
+        #end
+    ## [P]Y価ベース
+    #set( $yBaseValueP = "")
+        #if($resultObj.yBaseValueP)
+            #set( $yBaseValueP = $resultObj.yBaseValueP)
+        #end
+    ## [P]T価ベース
+    #set( $tBaseValueP = "")
+        #if($resultObj.tBaseValueP)
+            #set( $tBaseValueP = $resultObj.tBaseValueP)
+        #end
+    ## [P]最終更新情報(ツールチップ)
+    #set( $lastUpNameP = "")
+    #set( $lastUpDateP = "")
+        #if($resultObj.upDateP)
+            #set( $lastUpNameP = "$!resultObj.upJgiNameP&#13;")
+            #set( $lastUpDateP = "$!format.toString($!resultObj.upDateP, 'yyyy/MM/dd HH:mm:ss')")
+        #end
+    ## [Z]Y価ベース
+    #set( $yBaseValueZ = "")
+        #if($resultObj.yBaseValueZ)
+            #set( $yBaseValueZ = $resultObj.yBaseValueZ)
+        #end
+    ## [Z]T価ベース
+    #set( $tBaseValueZ = "")
+        #if($resultObj.tBaseValueZ)
+            #set( $tBaseValueZ = $resultObj.tBaseValueZ)
+        #end
+    ## [P]最終更新情報(ツールチップ)
+    #set( $lastUpNameZ = "")
+    #set( $lastUpDateZ = "")
+        #if($resultObj.upDateZ)
+            #set( $lastUpNameZ = "$!resultObj.upJgiNameZ&#13;")
+            #set( $lastUpDateZ = "$!format.toString($!resultObj.upDateZ, 'yyyy/MM/dd HH:mm:ss')")
+        #end
+    ## 上位計画移行許可フラグ
+    #set($canMovePlanLevel = false)
+    #if($resultObj.canMovePlanLevel)
+        #if($bumonFlag)
+            #set($canMovePlanLevel = true)
+        #end
+    #end
+    ## MRユーザ従業員番号
+    #set($mrJgiNo = $!form.bean.jgiNo)
+
+    ## 上位計画行
+    <row id='$rowId'>
+        ## 担当者計画
+        #if($form.bean.sosCd4)
+            #if($canMovePlanLevel)
+            <cell class="sumTeam"><![CDATA[チーム計画<br><a href="#" onclick="searchPlanTeam('$form.bean.sosCd3','$form.bean.oncSosFlg')">▲チーム別</a>　<a href="#" onclick="dpm101C00F05Team('$form.bean.sosCd4','$form.bean.etcSosFlg','$form.bean.oncSosFlg')">品目別</a>]]></cell>
+            #else
+            <cell class="sumTeam"><![CDATA[チーム計画<br>　　　　　　　　　　<a href="#" onclick="dpm101C00F05Team('$form.bean.sosCd4','$form.bean.etcSosFlg','$form.bean.oncSosFlg')">品目別</a>]]></cell>
+            #end
+        ## チーム計画（ONC以外）、担当者計画（ONC）
+        #elseif ($form.bean.sosCd3)
+            #if($canMovePlanLevel)
+            <cell class="sumTeam"><![CDATA[エリア計画<br><a href="#" onclick="searchPlanOffice('$form.bean.sosCd2','$form.bean.oncSosFlg')">▲エリア別</a>　<a href="#" onclick="dpm101C00F05Office('$form.bean.sosCd3','$form.bean.oncSosFlg')">品目別</a>]]></cell>
+            #else
+            <cell class="sumTeam"><![CDATA[エリア計画<br>#if($mrJgiNo == "")　　　　　　　　 <a href="#" onclick="dpm101C00F05Office('$form.bean.sosCd3','$form.bean.oncSosFlg')">品目別</a>#end]]></cell>
+            #end
+        ## エリア計画
+        #elseif ($form.bean.sosCd2)
+            #if($canMovePlanLevel)
+            <cell class="sumTeam"><![CDATA[リージョン計画<br><a href="#" onclick="searchPlanSiten()">▲リージョン別</a>　　<a href="#" onclick="dpm101C00F05Siten('$form.bean.sosCd2','$form.bean.oncSosFlg')">品目別</a>]]></cell>
+            #else
+            <cell class="sumTeam"><![CDATA[リージョン計画<br>　　　　　　　　 <a href="#" onclick="dpm101C00F05Siten('$form.bean.sosCd2','$form.bean.oncSosFlg')">品目別</a>]]></cell>
+            #end
+        ## リージョン計画
+        #else
+        <cell class="sumTeam"><![CDATA[全社計画<br>　　　　　　　　 <a href="#" onclick="dpm101C00F05All()">品目別</a>]]></cell>
+        #end
+        <cell class="sumTeam" type="ro">-</cell>
+        <cell class="sumTeam">$yBaseValueUH</cell>
+        <cell class="sumTeam" type="ro">-</cell>
+        <cell class="sumTeam">$yBaseValueP</cell>
+        <cell class="sumTeam" type="ro">-</cell>
+        <cell class="sumTeam">$yBaseValueZ</cell>
+        <cell class="sumTeam" type="ro">-</cell>
+        <cell class="sumTeam"></cell>
+        <userdata name="toolTipUH">$lastUpNameUH$lastUpDateUH</userdata>
+        <userdata name="toolTipP">$lastUpNameP$lastUpDateP</userdata>
+        <userdata name="toolTipZ">$lastUpNameZ$lastUpDateZ</userdata>
+    </row>
+    ## 計算行
+    #set( $rowId = $rowId + 1 )
+    <row id='$rowId'>
+        #if ($form.bean.sosCd4)
+        <cell class="sumTeam" style="height:30px;">チーム計画 - 担当者計画</cell>
+        #elseif ($form.bean.sosCd3 && $form.bean.oncSosFlg == true)
+        <cell class="sumTeam" style="height:30px;">エリア計画 - 担当者計画</cell>
+        #elseif ($form.bean.sosCd3 && $form.bean.oncSosFlg == false)
+        <cell class="sumTeam" style="height:30px;">エリア計画 - チーム計画</cell>
+        #elseif ($form.bean.sosCd2)
+        <cell class="sumTeam" style="height:30px;">リージョン計画 - エリア計画</cell>
+        #else
+        <cell class="sumTeam" style="height:30px;">全社計画 - リージョン計画</cell>
+        #end
+        <cell class="sumTeam" type="ro">-</cell>
+        <cell class="sumTeam" style="color:#FF0000;"></cell>
+        <cell class="sumTeam" type="ro">-</cell>
+        <cell class="sumTeam" style="color:#FF0000;"></cell>
+        <cell class="sumTeam" type="ro">-</cell>
+        <cell class="sumTeam" style="color:#FF0000;"></cell>
+        <cell class="sumTeam" type="ro">-</cell>
+        <cell class="sumTeam" style="color:#FF0000;"></cell>
+    </row>
+</rows>
+#end

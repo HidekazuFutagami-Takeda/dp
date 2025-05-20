@@ -1,0 +1,162 @@
+#set($layout = "nothingLayout.vm" )
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　カテゴリ別に分かれていたデータクラスを統一
+###set($dps000C00F28Data = $form.getRequestData("DPS000C00F28_DATA_R"))
+#set($dps000C00F28Data = $form.getRequestData("DPS000C00F20_DATA_R"))
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　カテゴリ別に分かれていたデータクラスを統一　
+#set($sosList = $dps000C00F28Data.getSosStatusSummaryList())
+#set($rank = $progress.getProgressIyakuRank())
+#set($rankString = $rank.toString())
+#set($style = $!progress.getStyle())
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#set($bgEnd = "class='statusEnd statusSize'")
+#set($bgIng = "class='statusIng statusSize'")
+#set($bgNot = "class='statusNot statusSize'")
+##add Start 2022/7/25 H.Futagami 2022年4月組織変更対応  トップ画面 エリア計画の表示修正
+#set($bgNothing = "class='statusNothing statusSize'")
+##add End 2022/7/25 H.Futagami 2022年4月組織変更対応  トップ画面 エリア計画の表示修正
+#if($sosList)
+#if($rankString.equals("SITEN"))
+    #foreach($data in $sosList)
+
+        #set($officePlanStatSum = $data.officePlanStatSum)
+        #set($insWsPlanStatSum = $data.insWsPlanStatSum)
+        #set($sosCd = $data.getSosCd())
+        #set($sosLink = $progress.createChangeLink("$data.bumonSeiName","dps000C00F00Change","false","false","$!sosCd","","",$!style))
+        ##営業所計画
+        #set($codeAndValueOffice = $progress.progressOfficePlanStatus($!officePlanStatSum, $!rank, $!sosCd, "2"))
+        #set($officeStatus = $!codeAndValueOffice.value)
+        #if($!codeAndValueOffice.code.equals("NOT"))
+            #set($officeClass = $bgNot)
+        #elseif($!codeAndValueOffice.code.equals("ING"))
+            #set($officeClass = $bgIng)
+            #set($officeStatus = $officeStatus)
+        #elseif($!codeAndValueOffice.code.equals("END"))
+            #set($officeClass = $bgEnd)
+            #set($officeStatus = $!officeStatus + "<br>" + $!format.toString($!officePlanStatSum.upDate, 'MM/dd HH:mm'))
+        ##add Start 2022/7/25 H.Futagami 2022年4月組織変更対応  トップ画面 エリア計画の表示修正
+        #elseif($!codeAndValueOffice.code.equals("NOTHING"))
+            #set($officeClass = $bgNothing)
+            #set($officeStatus = $officeStatus)
+        ##add End 2022/7/25 H.Futagami 2022年4月組織変更対応  トップ画面 エリア計画の表示修正
+        #end
+        ##施設特約店別計画配分状況
+        #set($codeAndValueInsWsPlanDist = $progress.progressInsWsPlanDistStatus($!officePlanStatSum, $!insWsPlanStatSum, $!rank, $!sosCd))
+        #set($insWsPlanDistStatus = $codeAndValueInsWsPlanDist.value)
+        #if($!codeAndValueInsWsPlanDist.code.equals("NOT"))
+            #set($insWsPlanDistClass = $bgNot)
+        #elseif($!codeAndValueInsWsPlanDist.code.equals("ING"))
+            #set($insWsPlanDistClass = $bgIng)
+            #set($insWsPlanDistStatus = $!insWsPlanDistStatus)
+        #elseif($!codeAndValueInsWsPlanDist.code.equals("END"))
+            #set($insWsPlanDistClass = $bgEnd)
+            #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>" + $!format.toString($insWsPlanStatSum.distEndDate, 'MM/dd HH:mm'))
+        #end
+        ##施設特約店別計画所長確定
+        ##mod Start 2022/8/18 H.Futagami 2022年4月組織変更対応 top画面から施設特約店別計画品目一覧画面へ遷移時のカテゴリ条件変更
+        ###set($codeAndValueInsWsPlanMrFix = $progress.progressInsWsPlanMrFixStatus($!insWsPlanStatSum, $!rank, $!sosCd, null))
+        #set($codeAndValueInsWsPlanMrFix = $progress.progressInsWsPlanMrFixStatus($!insWsPlanStatSum, $!rank, $!sosCd, null, $!form.bean.category))
+        ##mod End 2022/8/18 H.Futagami 2022年4月組織変更対応 top画面から施設特約店別計画品目一覧画面へ遷移時のカテゴリ条件変更
+        #set($insWsPlanMrFixStatus = $codeAndValueInsWsPlanMrFix.value)
+        #if($!codeAndValueInsWsPlanMrFix.code.equals("NOT"))
+            #set($insWsPlanMrFixClass = $bgNot)
+        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("ING"))
+            #set($insWsPlanMrFixClass = $bgIng)
+            #set($insWsPlanMrFixStatus = $!insWsPlanMrFixStatus)
+        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("END"))
+            #set($insWsPlanMrFixClass = $bgEnd)
+            #set($insWsPlanMrFixStatus = $!insWsPlanMrFixStatus + "<br>" + $!format.toString($insWsPlanStatSum.insWsFixDate, 'MM/dd HH:mm'))
+        #end
+        ##計画立案対象外
+        #set($codeAndValueExceptPlan = $progress.progressExceptPlanStatus($!insWsPlanStatSum.exceptPlanCount ,$!sosCd, $!form.bean.category))
+        #set($exceptPlanStatus = $codeAndValueExceptPlan.value)
+        #if($!codeAndValueExceptPlan.code.equals("NOT"))
+            #set($exceptPlanClass = $bgNot)
+        #elseif($!codeAndValueExceptPlan.code.equals("ING"))
+            #set($exceptPlanClass = $bgIng)
+        #end
+        <row id="$velocityCount">
+            <cell $!style><![CDATA[$!sosLink]]></cell>
+            <cell $!officeClass $!style><![CDATA[$!officeStatus]]></cell>
+            <cell $!insWsPlanDistClass $!style><![CDATA[$!insWsPlanDistStatus]]></cell>
+            <cell $!insWsPlanMrFixClass $!style><![CDATA[$!insWsPlanMrFixStatus]]></cell>
+            <cell $!exceptPlanClass $!style><![CDATA[$!exceptPlanStatus]]></cell>
+            <cell $!bgNot $!style><![CDATA[<a href="#"  $!style onclick="return dps999C00F00Output('$!sosCd')">出力</a>]]></cell>
+        </row>
+    #end
+#elseif ($rankString.equals("OFFICE"))
+    #foreach($data in $sosList)
+        #set($officePlanStatSum = $data.officePlanStatSum)
+        #set($insWsPlanStatSum = $data.insWsPlanStatSum)
+        #set($sosCd = $data.getSosCd())
+        #set($sosLink = $progress.createChangeLink("$data.bumonSeiName","dps000C00F00Change","false","false","$sosCd","","dps000C00F00",$!style))
+        ##営業所計画
+        #set($codeAndValue = $progress.progressOfficePlanStatus($!officePlanStatSum, $!rank, $!sosCd, "2"))
+        #set($officeStatus = $codeAndValue.value)
+        #if($codeAndValue.code.equals("NOT"))
+            #set($officeClass = $bgNot)
+        #elseif($codeAndValue.code.equals("ING"))
+            #set($officeClass = $bgIng)
+            #set($officeStatus = $officeStatus)
+        #elseif($codeAndValue.code.equals("END"))
+            #set($officeClass = $bgEnd)
+            #set($officeStatus = $officeStatus + "<br>" + $!format.toString($!officePlanStatSum.upDate, 'MM/dd HH:mm'))
+        ##add Start 2022/7/25 H.Futagami 2022年4月組織変更対応  トップ画面 エリア計画の表示修正
+        #elseif($!codeAndValueOffice.code.equals("NOTHING"))
+            #set($officeClass = $bgNothing)
+            #set($officeStatus = $officeStatus)
+        ##add End 2022/7/25 H.Futagami 2022年4月組織変更対応  トップ画面 エリア計画の表示修正
+        #end
+        ##施設特約店別計画配分状況
+        #set($codeAndValueInsWsPlanDist = $progress.progressInsWsPlanDistStatus($!officePlanStatSum, $!insWsPlanStatSum, $!rank, $!sosCd))
+        #set($insWsPlanDistStatus = $codeAndValueInsWsPlanDist.value)
+        #if($!codeAndValueInsWsPlanDist.code.equals("NOT"))
+            #set($insWsPlanDistClass = $bgNot)
+        #elseif($!codeAndValueInsWsPlanDist.code.equals("ING"))
+            #set($insWsPlanDistClass = $bgIng)
+            #set($insWsPlanDistStatus = $insWsPlanDistStatus)
+        #elseif($codeAndValueInsWsPlanDist.code.equals("END"))
+            #set($insWsPlanDistClass = $bgEnd)
+            #set($insWsPlanDistStatus = $insWsPlanDistStatus + "<br>" + $!format.toString($!insWsPlanStatSum.distEndDate, 'MM/dd HH:mm'))
+        #end
+        ##施設特約店別計画所長確定
+        ##mod Start 2022/8/18 H.Futagami 2022年4月組織変更対応 top画面から施設特約店別計画品目一覧画面へ遷移時のカテゴリ条件変更
+        ###set($codeAndValueInsWsPlanMrFix = $progress.progressInsWsPlanMrFixStatus($!insWsPlanStatSum, $!rank, $!sosCd, null))
+        #set($codeAndValueInsWsPlanMrFix = $progress.progressInsWsPlanMrFixStatus($!insWsPlanStatSum, $!rank, $!sosCd, null, $!form.bean.category))
+        ##mod End 2022/8/18 H.Futagami 2022年4月組織変更対応 top画面から施設特約店別計画品目一覧画面へ遷移時のカテゴリ条件変更
+        #set($insWsPlanMrFixStatus = $codeAndValueInsWsPlanMrFix.value)
+        #if($!codeAndValueInsWsPlanMrFix.code.equals("NOT"))
+            #set($insWsPlanMrFixClass = $bgNot)
+        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("ING"))
+            #set($insWsPlanMrFixClass = $bgIng)
+            #set($insWsPlanMrFixStatus = $insWsPlanMrFixStatus)
+        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("END"))
+            #set($insWsPlanMrFixClass = $bgEnd)
+            #set($insWsPlanMrFixStatus = $insWsPlanMrFixStatus + "<br>" + $!format.toString($!insWsPlanStatSum.insWsFixDate, 'MM/dd HH:mm'))
+        #end
+        ##計画立案対象外
+        #set($codeAndValueExceptPlan = $progress.progressExceptPlanStatus($!insWsPlanStatSum.exceptPlanCount ,$!sosCd, $!form.bean.category))
+        #set($exceptPlanStatus = $codeAndValueExceptPlan.value)
+        #if($!codeAndValueExceptPlan.code.equals("NOT"))
+            #set($exceptPlanClass = $bgNot)
+        #elseif($!codeAndValueExceptPlan.code.equals("ING"))
+            #set($exceptPlanClass = $bgIng)
+        #end
+        ##営業所計画<br>－施設特約店別計画UHP合計
+        #set($officeInswsClass = "")
+        #if($data.officeInswsChoseiUHPFlg)
+            #set( $officeInswsClass = "chosei_ari_top")
+        #end
+        <row id="$velocityCount">
+            <cell $!style><![CDATA[$!sosLink]]></cell>
+            <cell $!officeClass $!style><![CDATA[$!officeStatus]]></cell>
+            <cell $!insWsPlanDistClass $!style><![CDATA[$!insWsPlanDistStatus]]></cell>
+            <cell $!insWsPlanMrFixClass $!style><![CDATA[$!insWsPlanMrFixStatus]]></cell>
+            <cell $!exceptPlanClass $!style><![CDATA[$!exceptPlanStatus]]></cell>
+            <cell $!bgNot $!style><![CDATA[<a href="#"  $!style onclick="return dps999C00F00Output('$!sosCd')">出力</a>]]></cell>
+            <cell class="$officeInswsClass"><![CDATA[$progress.createOfficeChoseiString($data.officeInswsChoseiUHPFlg, $data.officeInswsChoseiUHPUpDate, $!sosCd, "2")]]></cell>
+        </row>
+    #end
+#end
+#end
+</rows>

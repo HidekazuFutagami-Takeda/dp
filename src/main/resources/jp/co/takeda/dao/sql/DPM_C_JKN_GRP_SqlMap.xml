@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_C_JKN_GRP_SqlMap" >
+  <resultMap id="resultMap" class="jp.co.takeda.model.JknGrp" >
+	<result column="ID" property="jknGrpId" jdbcType="VARCHAR" />
+	<result column="JOKEN_SET_CD" property="jokenSetCd" jdbcType="VARCHAR" />
+	<result column="JOKEN_KBN" property="jokenKbn" jdbcType="INTEGER" />
+	<result column="SOS_LVL" property="sosLvl" jdbcType="INTEGER" />
+	<result column="PRIORITY" property="priority" jdbcType="INTEGER" />
+	<result column="BIKO" property="biko" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <select id="searchListByJgiNo" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT
+        JG.ID,
+        JG.JOKEN_SET_CD,
+        JG.JOKEN_KBN,
+        JG.SOS_LVL,
+        JG.PRIORITY,
+        JG.BIKO
+    FROM
+        DPM_C_JKN_GRP JG
+    WHERE
+        (JG.ID, JG.PRIORITY) in
+            (SELECT
+                ID, MIN(PRIORITY)
+            FROM
+                DPM_C_JKN_GRP JG1
+                INNER JOIN DPS_S_SY_M_JGI_JOKEN MJJ2 ON JG1.JOKEN_SET_CD = MJJ2.JOKEN_SET_CD
+            WHERE
+                MJJ2.JGI_NO = #jgiNo:INTEGER#
+            GROUP BY
+                ID )
+    ORDER BY
+        ID
+  </select>
+
+
+</sqlMap>

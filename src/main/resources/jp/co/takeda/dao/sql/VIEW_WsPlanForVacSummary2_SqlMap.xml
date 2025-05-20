@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_WsPlanForVacSummary2_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.WsPlanForVacSummary2" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="TMS_TYTEN_CD" property="tmsTytenCd" jdbcType="CHAR" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="KA_BASE_KB" property="kaBaseKb" jdbcType="CHAR" />
+    <result column="PLANNED_VALUE" property="plannedValue" jdbcType="BIGINT" />
+    <result column="INS_STACK_VALUE" property="insStackValue" jdbcType="BIGINT" />
+    <result column="TMS_TYTEN_MEI_KJ" property="tmsTytenMeiKj" jdbcType="VARCHAR" />
+    <result column="STAT_PROD_CODE" property="statProdCode" jdbcType="CHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result column="PRE_FAR_ADVANCE_PERIOD" property="monNnuSummary.preFarAdvancePeriod" jdbcType="BIGINT" />
+    <result column="FAR_ADVANCE_PERIOD" property="monNnuSummary.farAdvancePeriod" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD" property="monNnuSummary.advancePeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PERIOD" property="monNnuSummary.currentPeriod" jdbcType="BIGINT" />
+    <result column="CURRENT_PLAN_VALUE" property="monNnuSummary.currentPlanValue" jdbcType="BIGINT" />
+    <result column="PLAN_TAI_GAI_FLG_RIK" property="planTaiGaiFlgRik" jdbcType="CHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="WS_SUM">
+    SELECT NULL AS SEQ_KEY
+          ,WP.PROD_CODE
+          ,NULL AS SOS_CD
+          <isEqual property="tytenKisLevel.dbValue" compareValue="01">
+          ,TMS.TMS_TYTEN_CD_HONTEN
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="02">
+          ,TMS.TMS_TYTEN_CD_HONTEN
+          ,TMS.TMS_TYTEN_CD_SHISHA
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="03">
+          ,TMS.TMS_TYTEN_CD_HONTEN
+          ,TMS.TMS_TYTEN_CD_SHISHA
+          ,TMS.TMS_TYTEN_CD_SHITEN
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="04">
+          ,TMS.TMS_TYTEN_CD_HONTEN
+          ,TMS.TMS_TYTEN_CD_SHISHA
+          ,TMS.TMS_TYTEN_CD_SHITEN
+          ,TMS.TMS_TYTEN_CD_KA
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="05">
+          ,TMS.TMS_TYTEN_CD_HONTEN
+          ,TMS.TMS_TYTEN_CD_SHISHA
+          ,TMS.TMS_TYTEN_CD_SHITEN
+          ,TMS.TMS_TYTEN_CD_KA
+          ,TMS.TMS_TYTEN_CD_BLK_1
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="06">
+          ,TMS.TMS_TYTEN_CD
+          </isEqual>
+          ,SUM(WP.PLANNED_VALUE) AS PLANNED_VALUE
+          ,SUM(WP.INS_STACK_VALUE) AS INS_STACK_VALUE
+          ,NULL AS PRE_FAR_ADVANCE_PERIOD
+          ,NULL AS FAR_ADVANCE_PERIOD
+          ,NULL AS ADVANCE_PERIOD
+          ,NULL AS CURRENT_PERIOD
+          ,NULL AS CURRENT_PLAN_VALUE
+          ,SUM(TMS.PLAN_TAI_GAI_FLG_RIK) AS PLAN_TAI_GAI_FLG_RIK
+          ,NULL AS UP_DATE
+      FROM DPS_V_WS_PLAN WP
+           INNER JOIN (<include refid="COMMON_SqlMap.tms" />) TMS
+        ON WP.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+     WHERE WP.KA_BASE_KB = #kaBaseKb:CHAR#
+     <isNotNull prepend="AND" property="tmsTytenCdPart">
+           WP.TMS_TYTEN_CD LIKE #tmsTytenCdPart:CHAR#
+     </isNotNull>
+     <isNotNull prepend="AND" property="tmsTytenCd">
+           WP.TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+     </isNotNull>
+     GROUP BY WP.PROD_CODE
+          <isEqual property="tytenKisLevel.dbValue" compareValue="01">
+          ,TMS.TMS_TYTEN_CD_HONTEN
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="02">
+          ,TMS.TMS_TYTEN_CD_HONTEN
+          ,TMS.TMS_TYTEN_CD_SHISHA
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="03">
+          ,TMS.TMS_TYTEN_CD_HONTEN
+          ,TMS.TMS_TYTEN_CD_SHISHA
+          ,TMS.TMS_TYTEN_CD_SHITEN
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="04">
+          ,TMS.TMS_TYTEN_CD_HONTEN
+          ,TMS.TMS_TYTEN_CD_SHISHA
+          ,TMS.TMS_TYTEN_CD_SHITEN
+          ,TMS.TMS_TYTEN_CD_KA
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="05">
+          ,TMS.TMS_TYTEN_CD_HONTEN
+          ,TMS.TMS_TYTEN_CD_SHISHA
+          ,TMS.TMS_TYTEN_CD_SHITEN
+          ,TMS.TMS_TYTEN_CD_KA
+          ,TMS.TMS_TYTEN_CD_BLK_1
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="06">
+          ,TMS.TMS_TYTEN_CD
+          </isEqual>
+  </sql>
+
+  <sql id="WS_NO_SUM">
+    SELECT WP.SEQ_KEY
+          ,WP.PROD_CODE
+          ,WP.SOS_CD
+          <isEqual property="tytenKisLevel.dbValue" compareValue="01">
+          ,TMS.TMS_TYTEN_CD_HONTEN
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="02">
+          ,TMS.TMS_TYTEN_CD_HONTEN
+          ,TMS.TMS_TYTEN_CD_SHISHA
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="03">
+          ,TMS.TMS_TYTEN_CD_HONTEN
+          ,TMS.TMS_TYTEN_CD_SHISHA
+          ,TMS.TMS_TYTEN_CD_SHITEN
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="04">
+          ,TMS.TMS_TYTEN_CD_HONTEN
+          ,TMS.TMS_TYTEN_CD_SHISHA
+          ,TMS.TMS_TYTEN_CD_SHITEN
+          ,TMS.TMS_TYTEN_CD_KA
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="05">
+          ,TMS.TMS_TYTEN_CD_HONTEN
+          ,TMS.TMS_TYTEN_CD_SHISHA
+          ,TMS.TMS_TYTEN_CD_SHITEN
+          ,TMS.TMS_TYTEN_CD_KA
+          ,TMS.TMS_TYTEN_CD_BLK_1
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="06">
+          ,TMS.TMS_TYTEN_CD
+          </isEqual>
+          ,WP.PLANNED_VALUE AS PLANNED_VALUE
+          ,WP.INS_STACK_VALUE AS INS_STACK_VALUE
+          ,NULL AS PRE_FAR_ADVANCE_PERIOD
+          ,NULL AS FAR_ADVANCE_PERIOD
+          ,NULL AS ADVANCE_PERIOD
+          ,NULL AS CURRENT_PERIOD
+          ,NULL AS CURRENT_PLAN_VALUE
+          ,TMS.PLAN_TAI_GAI_FLG_RIK
+          ,WP.UP_DATE
+      FROM DPS_V_WS_PLAN WP
+           INNER JOIN (<include refid="COMMON_SqlMap.tms" />) TMS
+        ON WP.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+     WHERE WP.KA_BASE_KB = #kaBaseKb:CHAR#
+     <isNotNull prepend="AND" property="tmsTytenCdPart">
+           WP.TMS_TYTEN_CD LIKE #tmsTytenCdPart:CHAR#
+     </isNotNull>
+     <isNotNull prepend="AND" property="tmsTytenCd">
+           WP.TMS_TYTEN_CD = #tmsTytenCd:CHAR#
+     </isNotNull>
+  </sql>
+
+  <!-- 検索/検索条件に一致する特約店別計画を取得後、サマリーする。 -->
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH WS_SUM AS (
+  <!-- tytenKisLevel="06"の場合は、画面側で編集する為SEQ_KEYを返す必要があるが、それはGROUP BYやSUMをするとエラーになるので、SQLを分けた -->
+        <isEqual property="tytenKisLevel.dbValue" compareValue="06">
+        <include refid="WS_NO_SUM" />
+        </isEqual>
+        <isNotEqual property="tytenKisLevel.dbValue" compareValue="06">
+        <include refid="WS_SUM" />
+        </isNotEqual>
+    )
+    SELECT WS_SUM.SEQ_KEY
+          ,TMS.TMS_TYTEN_CD
+          ,TMS.TMS_TYTEN_MEI_KJ
+          ,PP.PROD_CODE
+          ,WS_SUM.SOS_CD
+          ,PP.STAT_PROD_CODE
+          ,PP.PROD_NAME
+          ,#kaBaseKb:CHAR# AS KA_BASE_KB
+          ,WS_SUM.PLANNED_VALUE
+          ,WS_SUM.INS_STACK_VALUE
+          ,WS_SUM.PRE_FAR_ADVANCE_PERIOD
+          ,WS_SUM.FAR_ADVANCE_PERIOD
+          ,WS_SUM.ADVANCE_PERIOD
+          ,WS_SUM.CURRENT_PERIOD
+          ,WS_SUM.CURRENT_PLAN_VALUE
+          ,NVL2(CM.DATA_SEQ, CM.DATA_SEQ, 999) AS DATA_SEQ
+          ,WS_SUM.PLAN_TAI_GAI_FLG_RIK
+          ,WS_SUM.UP_DATE
+      FROM WS_SUM
+           INNER JOIN (<include refid="COMMON_SqlMap.tms" />) TMS
+      <isEqual property="tytenKisLevel.dbValue" compareValue="01">
+        ON WS_SUM.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+       AND TYTEN_KIS_LVLL = '01'
+      </isEqual>
+      <isEqual property="tytenKisLevel.dbValue" compareValue="02">
+        ON WS_SUM.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+       AND WS_SUM.TMS_TYTEN_CD_SHISHA = TMS.TMS_TYTEN_CD_SHISHA
+       AND TYTEN_KIS_LVLL = '02'
+      </isEqual>
+      <isEqual property="tytenKisLevel.dbValue" compareValue="03">
+        ON WS_SUM.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+       AND WS_SUM.TMS_TYTEN_CD_SHISHA = TMS.TMS_TYTEN_CD_SHISHA
+       AND WS_SUM.TMS_TYTEN_CD_SHITEN = TMS.TMS_TYTEN_CD_SHITEN
+       AND TYTEN_KIS_LVLL = '03'
+      </isEqual>
+      <isEqual property="tytenKisLevel.dbValue" compareValue="04">
+        ON WS_SUM.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+       AND WS_SUM.TMS_TYTEN_CD_SHISHA = TMS.TMS_TYTEN_CD_SHISHA
+       AND WS_SUM.TMS_TYTEN_CD_SHITEN = TMS.TMS_TYTEN_CD_SHITEN
+       AND WS_SUM.TMS_TYTEN_CD_KA = TMS.TMS_TYTEN_CD_KA
+       AND TYTEN_KIS_LVLL = '04'
+      </isEqual>
+      <isEqual property="tytenKisLevel.dbValue" compareValue="05">
+        ON WS_SUM.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+       AND WS_SUM.TMS_TYTEN_CD_SHISHA = TMS.TMS_TYTEN_CD_SHISHA
+       AND WS_SUM.TMS_TYTEN_CD_SHITEN = TMS.TMS_TYTEN_CD_SHITEN
+       AND WS_SUM.TMS_TYTEN_CD_KA = TMS.TMS_TYTEN_CD_KA
+       AND WS_SUM.TMS_TYTEN_CD_BLK_1 = TMS.TMS_TYTEN_CD_BLK_1
+       AND TYTEN_KIS_LVLL = '05'
+      </isEqual>
+      <isEqual property="tytenKisLevel.dbValue" compareValue="06">
+        ON WS_SUM.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+      </isEqual>
+           INNER JOIN DPS_C_PLANNED_PROD PP
+        ON WS_SUM.PROD_CODE = PP.PROD_CODE
+<!-- mid Start 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える -->
+<!--        LEFT JOIN DPS_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod' AND PP.PROD_CODE = CM.DATA_CD-->
+        LEFT JOIN DPS_C_CD_MST CM ON CM.DATA_KBN = 'sort_prod_ws' AND PP.PROD_CODE = CM.DATA_CD
+<!-- mid End 2022/6/8 R.takamoto バックログNo.26　特約店別計画関連の品目並び順を変える -->
+     WHERE
+      PP.SALES = #sales:CHAR#
+      AND PP.PLAN_LEVEL_WS = '1'
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 検索/検索条件に一致する特約店別計画を取得後、サマリーする。納入実績も取得する -->
+  <select id="selectListWithNnu" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH WS_SUM AS (
+        <include refid="WS_SUM" />
+    ),
+    WS_SUM2 AS (
+    SELECT
+          WS_SUM.SEQ_KEY
+          ,WS_SUM.PROD_CODE
+          ,WS_SUM AS SOS_CD
+          <isEqual property="tytenKisLevel.dbValue" compareValue="01">
+          ,WS_SUM.TMS_TYTEN_CD_HONTEN
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="02">
+          ,WS_SUM.TMS_TYTEN_CD_HONTEN
+          ,WS_SUM.TMS_TYTEN_CD_SHISHA
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="03">
+          ,WS_SUM.TMS_TYTEN_CD_HONTEN
+          ,WS_SUM.TMS_TYTEN_CD_SHISHA
+          ,WS_SUM.TMS_TYTEN_CD_SHITEN
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="04">
+          ,WS_SUM.TMS_TYTEN_CD_HONTEN
+          ,WS_SUM.TMS_TYTEN_CD_SHISHA
+          ,WS_SUM.TMS_TYTEN_CD_SHITEN
+          ,WS_SUM.TMS_TYTEN_CD_KA
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="05">
+          ,WS_SUM.TMS_TYTEN_CD_HONTEN
+          ,WS_SUM.TMS_TYTEN_CD_SHISHA
+          ,WS_SUM.TMS_TYTEN_CD_SHITEN
+          ,WS_SUM.TMS_TYTEN_CD_KA
+          ,WS_SUM.TMS_TYTEN_CD_BLK_1
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="06">
+          ,WS_SUM.TMS_TYTEN_CD
+          </isEqual>
+          ,WS_SUM.PLANNED_VALUE
+          ,WS_SUM.INS_STACK_VALUE
+          <!-- 価ベース区分により取得カラム変更 -->
+          <isEqual property="kaBaseKb.dbValue" compareValue="1">
+          ,SUM(WS_SUM.PRE_FAR_ADVANCE_PERIOD) AS PRE_FAR_ADVANCE_PERIOD
+          ,SUM(WS_SUM.FAR_ADVANCE_PERIOD) AS FAR_ADVANCE_PERIOD
+          ,SUM(WS_SUM.ADVANCE_PERIOD) AS ADVANCE_PERIOD
+          ,SUM(WS_SUM.CURRENT_PERIOD) AS CURRENT_PERIOD
+          ,SUM(WS_SUM.CURRENT_PLAN_VALUE) AS CURRENT_PLAN_VALUE
+          </isEqual>
+          <isEqual property="kaBaseKb.dbValue" compareValue="2">
+          ,SUM(PRE_FAR_ADVANCE_PERIOD_T) AS PRE_FAR_ADVANCE_PERIOD
+          ,SUM(FAR_ADVANCE_PERIOD_T) AS FAR_ADVANCE_PERIOD
+          ,SUM(ADVANCE_PERIOD_T) AS ADVANCE_PERIOD
+          ,SUM(CURRENT_PERIOD_T) AS CURRENT_PERIOD
+          ,NULL AS CURRENT_PLAN_VALUE
+          ,WS_SUM.UP_DATE
+          </isEqual>
+      FROM WS_SUM
+           INNER JOIN (<include refid="COMMON_SqlMap.tms" />) TMS
+      <isEqual property="tytenKisLevel.dbValue" compareValue="01">
+        ON WS_SUM.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+      </isEqual>
+      <isEqual property="tytenKisLevel.dbValue" compareValue="02">
+        ON WS_SUM.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+       AND WS_SUM.TMS_TYTEN_CD_SHISHA = TMS.TMS_TYTEN_CD_SHISHA
+      </isEqual>
+      <isEqual property="tytenKisLevel.dbValue" compareValue="03">
+        ON WS_SUM.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+       AND WS_SUM.TMS_TYTEN_CD_SHISHA = TMS.TMS_TYTEN_CD_SHISHA
+       AND WS_SUM.TMS_TYTEN_CD_SHITEN = TMS.TMS_TYTEN_CD_SHITEN
+      </isEqual>
+      <isEqual property="tytenKisLevel.dbValue" compareValue="04">
+        ON WS_SUM.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+       AND WS_SUM.TMS_TYTEN_CD_SHISHA = TMS.TMS_TYTEN_CD_SHISHA
+       AND WS_SUM.TMS_TYTEN_CD_SHITEN = TMS.TMS_TYTEN_CD_SHITEN
+       AND WS_SUM.TMS_TYTEN_CD_KA = TMS.TMS_TYTEN_CD_KA
+      </isEqual>
+      <isEqual property="tytenKisLevel.dbValue" compareValue="05">
+        ON WS_SUM.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+       AND WS_SUM.TMS_TYTEN_CD_SHISHA = TMS.TMS_TYTEN_CD_SHISHA
+       AND WS_SUM.TMS_TYTEN_CD_SHITEN = TMS.TMS_TYTEN_CD_SHITEN
+       AND WS_SUM.TMS_TYTEN_CD_KA = TMS.TMS_TYTEN_CD_KA
+       AND WS_SUM.TMS_TYTEN_CD_BLK_1 = TMS.TMS_TYTEN_CD_BLK_1
+      </isEqual>
+      <isEqual property="tytenKisLevel.dbValue" compareValue="06">
+        ON WS_SUM.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+      </isEqual>
+           LEFT JOIN DPS_V_DELIVERY_RESULT DELI
+        ON TMS.TMS_TYTEN_CD = DELI.TMS_TYTEN_CD
+       AND WS_SUM.PROD_CODE = DELI.PROD_CODE
+     GROUP BY WS_SUM.PROD_CODE
+          <isEqual property="tytenKisLevel.dbValue" compareValue="01">
+          ,WS_SUM.TMS_TYTEN_CD_HONTEN
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="02">
+          ,WS_SUM.TMS_TYTEN_CD_HONTEN
+          ,WS_SUM.TMS_TYTEN_CD_SHISHA
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="03">
+          ,WS_SUM.TMS_TYTEN_CD_HONTEN
+          ,WS_SUM.TMS_TYTEN_CD_SHISHA
+          ,WS_SUM.TMS_TYTEN_CD_SHITEN
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="04">
+          ,WS_SUM.TMS_TYTEN_CD_HONTEN
+          ,WS_SUM.TMS_TYTEN_CD_SHISHA
+          ,WS_SUM.TMS_TYTEN_CD_SHITEN
+          ,WS_SUM.TMS_TYTEN_CD_KA
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="05">
+          ,WS_SUM.TMS_TYTEN_CD_HONTEN
+          ,WS_SUM.TMS_TYTEN_CD_SHISHA
+          ,WS_SUM.TMS_TYTEN_CD_SHITEN
+          ,WS_SUM.TMS_TYTEN_CD_KA
+          ,WS_SUM.TMS_TYTEN_CD_BLK_1
+          </isEqual>
+          <isEqual property="tytenKisLevel.dbValue" compareValue="06">
+          ,WS_SUM.TMS_TYTEN_CD
+          </isEqual>
+          ,WS_SUM.PLANNED_VALUE
+          ,WS_SUM.INS_STACK_VALUE
+    )
+    SELECT TMS.TMS_TYTEN_CD
+          ,TMS.TMS_TYTEN_MEI_KJ
+          ,PP.PROD_CODE
+          ,PP.STAT_PROD_CODE
+          ,PP.PROD_NAME
+          ,#kaBaseKb:CHAR# AS KA_BASE_KB
+          ,WS_SUM2.PLANNED_VALUE
+          ,WS_SUM2.INS_STACK_VALUE
+          ,WS_SUM2.PRE_FAR_ADVANCE_PERIOD
+          ,WS_SUM2.FAR_ADVANCE_PERIOD
+          ,WS_SUM2.ADVANCE_PERIOD
+          ,WS_SUM2.CURRENT_PERIOD
+          ,WS_SUM2.CURRENT_PLAN_VALUE
+      FROM WS_SUM2
+           INNER JOIN (<include refid="COMMON_SqlMap.tms" />) TMS
+      <isEqual property="tytenKisLevel.dbValue" compareValue="01">
+        ON WS_SUM2.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+       AND TYTEN_KIS_LVLL = '01'
+      </isEqual>
+      <isEqual property="tytenKisLevel.dbValue" compareValue="02">
+        ON WS_SUM2.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+       AND WS_SUM2.TMS_TYTEN_CD_SHISHA = TMS.TMS_TYTEN_CD_SHISHA
+       AND TYTEN_KIS_LVLL = '02'
+      </isEqual>
+      <isEqual property="tytenKisLevel.dbValue" compareValue="03">
+        ON WS_SUM2.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+       AND WS_SUM2.TMS_TYTEN_CD_SHISHA = TMS.TMS_TYTEN_CD_SHISHA
+       AND WS_SUM2.TMS_TYTEN_CD_SHITEN = TMS.TMS_TYTEN_CD_SHITEN
+       AND TYTEN_KIS_LVLL = '03'
+      </isEqual>
+      <isEqual property="tytenKisLevel.dbValue" compareValue="04">
+        ON WS_SUM2.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+       AND WS_SUM2.TMS_TYTEN_CD_SHISHA = TMS.TMS_TYTEN_CD_SHISHA
+       AND WS_SUM2.TMS_TYTEN_CD_SHITEN = TMS.TMS_TYTEN_CD_SHITEN
+       AND WS_SUM2.TMS_TYTEN_CD_KA = TMS.TMS_TYTEN_CD_KA
+       AND TYTEN_KIS_LVLL = '04'
+      </isEqual>
+      <isEqual property="tytenKisLevel.dbValue" compareValue="05">
+        ON WS_SUM2.TMS_TYTEN_CD_HONTEN = TMS.TMS_TYTEN_CD_HONTEN
+       AND WS_SUM2.TMS_TYTEN_CD_SHISHA = TMS.TMS_TYTEN_CD_SHISHA
+       AND WS_SUM2.TMS_TYTEN_CD_SHITEN = TMS.TMS_TYTEN_CD_SHITEN
+       AND WS_SUM2.TMS_TYTEN_CD_KA = TMS.TMS_TYTEN_CD_KA
+       AND WS_SUM2.TMS_TYTEN_CD_BLK_1 = TMS.TMS_TYTEN_CD_BLK_1
+       AND TYTEN_KIS_LVLL = '05'
+      </isEqual>
+      <isEqual property="tytenKisLevel.dbValue" compareValue="06">
+        ON WS_SUM2.TMS_TYTEN_CD = TMS.TMS_TYTEN_CD
+      </isEqual>
+           INNER JOIN DPS_C_PLANNED_PROD PP
+        ON WS_SUM2.PROD_CODE = PP.PROD_CODE
+     WHERE
+       PP.SALES = #sales:CHAR#
+       AND PP.PLAN_LEVEL_WS = '1'
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+</sqlMap>

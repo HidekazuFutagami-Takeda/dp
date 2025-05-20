@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_C_MR_INS_PROD_SqlMap" >
+  <resultMap id="resultMap" class="jp.co.takeda.model.InsJgiSos" >
+    <result column="INS_NO" property="insNo" jdbcType="INTEGER" />
+    <result column="MR_NO" property="mrNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="MR_CAT" property="mrCat" jdbcType="VARCHAR" />
+    <result column="MAIN_MR" property="mainMr" jdbcType="VARCHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+<!--検索-->
+  <!--組織配下COC_CD2が同一の施設担当者-->
+  <select id="selectBanch" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT IP.INS_NO
+          ,IP.MR_NO
+          ,IP.PROD_CODE
+          ,IP.MR_CAT
+          ,IP.MAIN_MR
+          ,IP.IS_JGI_NO
+          ,IP.IS_JGI_NAME
+          ,IP.IS_DATE
+          ,IP.UP_JGI_NO
+          ,IP.UP_JGI_NAME
+          ,IP.UP_DATE
+      from DPM_C_MR_INS_PROD IP
+     INNER JOIN DPS_S_SY_M_JGI_MST JM
+        ON IP.MR_NO = JM.JGI_NO
+     WHERE IP.INS_NO = #insNo:VARCHAR#
+       AND JM.SOS_CD2 = #sosCd2:VARCHAR#
+  </select>
+
+<!--検索-->
+  <!--組織配下COC_CD3が同一の施設担当者-->
+  <select id="selectOffice" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT IP.INS_NO
+          ,IP.MR_NO
+          ,IP.PROD_CODE
+          ,IP.MR_CAT
+          ,IP.MAIN_MR
+          ,IP.IS_JGI_NO
+          ,IP.IS_JGI_NAME
+          ,IP.IS_DATE
+          ,IP.UP_JGI_NO
+          ,IP.UP_JGI_NAME
+          ,IP.UP_DATE
+      from DPM_C_MR_INS_PROD IP
+     INNER JOIN DPS_S_SY_M_JGI_MST JM
+        ON IP.MR_NO = JM.JGI_NO
+     WHERE IP.INS_NO = #insNo:VARCHAR#
+       AND JM.SOS_CD3 = #sosCd3:VARCHAR#
+  </select>
+
+</sqlMap>

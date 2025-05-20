@@ -1,0 +1,461 @@
+## (医)組織別計画編集画面 明細行
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPM500C00_DATA_R_SEARCH_RESULT"))
+    #set( $dataList = $form.getRequestData("DPM500C00_DATA_R_SEARCH_RESULT").detailList)
+#end
+#set( $oncSosFlg = true)
+## add end 2018/1/18 M.Wada J17-0010_2018年4月組織変更対応（各種アプリ）
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#set( $rowId = 1 )
+#foreach($resultObj in $dataList)
+    ## 組織コード
+    #set( $sosCd = "")
+    #if($resultObj.sosCd)
+        #set( $sosCd = $resultObj.sosCd)
+    #end
+
+    ## 組織名
+    #set( $sosName = "")
+    #if($resultObj.sosName)
+        #set( $sosName = $resultObj.sosName)
+    #end
+
+    ## 従業員番号
+    #set( $jgiNo = "")
+    #if($resultObj.jgiNo)
+        #set( $jgiNo = $resultObj.jgiNo)
+    #end
+
+    ## 従業員名
+    #set( $jgiName = "")
+    #if($resultObj.jgiName)
+        #set( $jgiName = $resultObj.jgiName)
+    #end
+
+    ## 期別計画
+    #set($plannedTermValue = "")
+    #if($resultObj.plannedTermValue)
+        #set($plannedTermValue = $resultObj.plannedTermValue)
+    #end
+
+## add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    ## 累計実績
+    #set( $recordTotalValueYb = "")
+	#if($resultObj.recordTotalValueYb)
+	    #set( $recordTotalValueYb = $resultObj.recordTotalValueYb)
+	#end
+    ## 当月実績
+    #set( $recordTougetuValueYb = "")
+	#if($resultObj.recordTougetuValueYb)
+	    #set( $recordTougetuValueYb = $resultObj.recordTougetuValueYb)
+	#end
+## add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+    ## 月初計画_積上【1月目】
+    #set($plannedStacked1Value = "")
+    #if($resultObj.plannedStacked1Value)
+         #set($plannedStacked1Value = $resultObj.plannedStacked1Value)
+    #end
+
+    ## 月初計画_計画【1月目】
+    #set($planned1ValueYb = "")
+    #set($planned1ValueYbType = "ed")
+    #if($resultObj.planned1ValueYb)
+        #set($planned1ValueYb = $resultObj.planned1ValueYb)
+        #set($planned1ValueYbType = "edn")
+    #end
+
+    ## 月末見込_積上【1月目】
+    #set($expectedStacked1Value = "")
+    #if($resultObj.expectedStacked1Value)
+        #set($expectedStacked1Value = $resultObj.expectedStacked1Value)
+    #end
+
+    ## 月末見込_計画【1月目】
+    #set($expected1ValueYb = "")
+    #set($expected1ValueYbType = "ed")
+    #if($resultObj.expected1ValueYb)
+        #set($expected1ValueYb = $resultObj.expected1ValueYb)
+        #set($expected1ValueYbType = "edn")
+    #end
+
+## add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    ## 実績【1月目】
+    #set( $record1ValueYb = "")
+    	#if($resultObj.record1ValueYb)
+	        #set( $record1ValueYb = $resultObj.record1ValueYb)
+	    #end
+## add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+    ## 月初計画_積上【2月目】
+    #set($plannedStacked2Value = "")
+    #if($resultObj.plannedStacked2Value)
+         #set($plannedStacked2Value = $resultObj.plannedStacked2Value)
+    #end
+
+    ## 月初計画_計画【2月目】
+    #set($planned2ValueYb = "")
+    #set($planned2ValueYbType = "ed")
+    #if($resultObj.planned2ValueYb)
+        #set($planned2ValueYb = $resultObj.planned2ValueYb)
+        #set($planned2ValueYbType = "edn")
+    #end
+
+    ## 月末見込_積上【2月目】
+    #set($expectedStacked2Value = "")
+    #if($resultObj.expectedStacked2Value)
+        #set($expectedStacked2Value = $resultObj.expectedStacked2Value)
+    #end
+
+    ## 月末見込_計画【2月目】
+    #set($expected2ValueYb = "")
+    #set($expected2ValueYbType = "ed")
+    #if($resultObj.expected2ValueYb)
+        #set($expected2ValueYb = $resultObj.expected2ValueYb)
+        #set($expected2ValueYbType = "edn")
+    #end
+
+## add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    ## 実績【2月目】
+    #set( $record2ValueYb = "")
+    	#if($resultObj.record2ValueYb)
+	        #set( $record2ValueYb = $resultObj.record2ValueYb)
+	    #end
+## add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+    ## 月初計画_積上【3月目】
+    #set($plannedStacked3Value = "")
+    #if($resultObj.plannedStacked3Value)
+         #set($plannedStacked3Value = $resultObj.plannedStacked3Value)
+    #end
+
+    ## 月初計画_計画【3月目】
+    #set($planned3ValueYb = "")
+    #set($planned3ValueYbType = "ed")
+    #if($resultObj.planned3ValueYb)
+        #set($planned3ValueYb = $resultObj.planned3ValueYb)
+        #set($planned3ValueYbType = "edn")
+    #end
+
+    ## 月末見込_積上【3月目】
+    #set($expectedStacked3Value = "")
+    #if($resultObj.expectedStacked3Value)
+        #set($expectedStacked3Value = $resultObj.expectedStacked3Value)
+    #end
+
+    ## 月末見込_計画【3月目】
+    #set($expected3ValueYb = "")
+    #set($expected3ValueYbType = "ed")
+    #if($resultObj.expected3ValueYb)
+        #set($expected3ValueYb = $resultObj.expected3ValueYb)
+        #set($expected3ValueYbType = "edn")
+    #end
+
+## add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    ## 実績【3月目】
+    #set( $record3ValueYb = "")
+    	#if($resultObj.record3ValueYb)
+	        #set( $record3ValueYb = $resultObj.record3ValueYb)
+	    #end
+## add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+    ## 月初計画_積上【4月目】
+    #set($plannedStacked4Value = "")
+    #if($resultObj.plannedStacked4Value)
+         #set($plannedStacked4Value = $resultObj.plannedStacked4Value)
+    #end
+
+    ## 月初計画_計画【4月目】
+    #set($planned4ValueYb = "")
+    #set($planned4ValueYbType = "ed")
+    #if($resultObj.planned4ValueYb)
+        #set($planned4ValueYb = $resultObj.planned4ValueYb)
+        #set($planned4ValueYbType = "edn")
+    #end
+
+    ## 月末見込_積上【4月目】
+    #set($expectedStacked4Value = "")
+    #if($resultObj.expectedStacked4Value)
+        #set($expectedStacked4Value = $resultObj.expectedStacked4Value)
+    #end
+
+    ## 月末見込_計画【4月目】
+    #set($expected4ValueYb = "")
+    #set($expected4ValueYbType = "ed")
+    #if($resultObj.expected4ValueYb)
+        #set($expected4ValueYb = $resultObj.expected4ValueYb)
+        #set($expected4ValueYbType = "edn")
+    #end
+
+## add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    ## 実績4【4月目】
+    #set( $record4ValueYb = "")
+    	#if($resultObj.record4ValueYb)
+	        #set( $record4ValueYb = $resultObj.record4ValueYb)
+	    #end
+## add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+    ## 月初計画_積上【5月目】
+    #set($plannedStacked5Value = "")
+    #if($resultObj.plannedStacked5Value)
+         #set($plannedStacked5Value = $resultObj.plannedStacked5Value)
+    #end
+
+    ## 月初計画_計画【5月目】
+    #set($planned5ValueYb = "")
+    #set($planned5ValueYbType = "ed")
+    #if($resultObj.planned5ValueYb)
+        #set($planned5ValueYb = $resultObj.planned5ValueYb)
+        #set($planned5ValueYbType = "edn")
+    #end
+
+    ## 月末見込_積上【5月目】
+    #set($expectedStacked5Value = "")
+    #if($resultObj.expectedStacked5Value)
+        #set($expectedStacked5Value = $resultObj.expectedStacked5Value)
+    #end
+
+    ## 月末見込_計画【5月目】
+    #set($expected5ValueYb = "")
+    #set($expected5ValueYbType = "ed")
+    #if($resultObj.expected5ValueYb)
+        #set($expected5ValueYb = $resultObj.expected5ValueYb)
+        #set($expected5ValueYbType = "edn")
+    #end
+
+## add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    ## 実績【5月目】
+    #set( $record5ValueYb = "")
+    	#if($resultObj.record5ValueYb)
+	        #set( $record5ValueYb = $resultObj.record5ValueYb)
+	    #end
+## add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+    ## 月初計画_積上【6月目】
+    #set($plannedStacked6Value = "")
+    #if($resultObj.plannedStacked6Value)
+         #set($plannedStacked6Value = $resultObj.plannedStacked6Value)
+    #end
+
+    ## 月初計画_計画【6月目】
+    #set($planned6ValueYb = "")
+    #set($planned6ValueYbType = "ed")
+    #if($resultObj.planned6ValueYb)
+        #set($planned6ValueYb = $resultObj.planned6ValueYb)
+        #set($planned6ValueYbType = "edn")
+    #end
+
+    ## 月末見込_積上【6月目】
+    #set($expectedStacked6Value = "")
+    #if($resultObj.expectedStacked6Value)
+        #set($expectedStacked6Value = $resultObj.expectedStacked6Value)
+    #end
+
+    ## 月末見込_計画【6月目】
+    #set($expected6ValueYb = "")
+    #set($expected6ValueYbType = "ed")
+    #if($resultObj.expected6ValueYb)
+        #set($expected6ValueYb = $resultObj.expected6ValueYb)
+        #set($expected6ValueYbType = "edn")
+    #end
+
+## add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    ## 実績【6月目】
+    #set( $record6ValueYb = "")
+    	#if($resultObj.record6ValueYb)
+	        #set( $record6ValueYb = $resultObj.record6ValueYb)
+	    #end
+## add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+    ## 最終更新情報(ツールチップ)
+    #set( $lastUpName = "")
+    #set( $lastUpDate = "")
+    #if($resultObj.upDate)
+        #set( $lastUpName = "$!resultObj.upJgiName&#13;")
+        #set( $lastUpDate = "$!format.toString($!resultObj.upDate, 'yyyy/MM/dd HH:mm:ss')")
+    #end
+
+    ## 明細行
+    <row id='$rowId'>
+        #if ($form.bean.sosCd3)
+            #if($resultObj.canMovePlanLevel)
+            <cell style="height:30"><![CDATA[$jgiName<br><a href="#" onclick="dpm600C00F05UH('$jgiNo','$etcSosFlg')">▼施設別・UH</a>　<a href="#" onclick="dpm600C00F05P('$jgiNo','$etcSosFlg')">▼施設別・P</a>　<a href="#" onclick="dpm600C00F05Z('$jgiNo','$etcSosFlg')">▼施設別・他</a>　<a href="#" onclick="dpm501C00F05Jgi('$jgiNo','$etcSosFlg','$oncSosFlg')">品目別</a>]]></cell>
+            #else
+            <cell style="height:30"><![CDATA[$jgiName<br>　　　　　　　　　　　　　　　　　　 <a href="#" onclick="dpm501C00F05Jgi('$jgiNo','$etcSosFlg','$oncSosFlg')">品目別</a>]]></cell>
+            #end
+        #elseif ($form.bean.sosCd2)
+            #if($resultObj.canMovePlanLevel)
+            <cell style="height:30"><![CDATA[$sosName<br><a href="#" onclick="searchPlanMR('$sosCd','$oncSosFlg')">▼担当者別</a>　<a href="#" onclick="dpm501C00F05Office('$sosCd','$oncSosFlg')">品目別</a>]]></cell>
+            #else
+            <cell style="height:30"><![CDATA[$sosName<br>　　　　　　　　 <a href="#" onclick="dpm501C00F05Office('$sosCd','$oncSosFlg')">品目別</a>]]></cell>
+            #end
+        #else
+            #if($resultObj.canMovePlanLevel)
+            <cell style="height:30"><![CDATA[$sosName<br><a href="#" onclick="searchPlanOffice('$sosCd','$oncSosFlg')">▼エリア別</a>　<a href="#" onclick="dpm501C00F05Siten('$sosCd','$oncSosFlg')">品目別</a>]]></cell>
+            #else
+            <cell style="height:30"><![CDATA[$sosName<br>　　　　　　　　 <a href="#" onclick="dpm501C00F05Siten('$sosCd','$oncSosFlg')">品目別</a>]]></cell>
+            #end
+        #end
+        ## 1月目
+        <cell style="height:30" type="ron">$plannedTermValue</cell>
+## add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        <cell style="height:30" type="ron">$recordTotalValueYb</cell>
+        <cell style="height:30" type="ron">$recordTougetuValueYb</cell>
+## add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        <cell style="height:30" type="ron">$plannedStacked1Value</cell>
+        <cell style="height:30" type="ron"></cell>
+        #if($!security.hasAuthEdit("DPM50") && $enableEdit.get(0) == true)
+        <cell style="height:30" class="inputB" type="$planned1ValueYbType">$planned1ValueYb</cell>
+        #else
+        <cell style="height:30" type="ron">$planned1ValueYb</cell>
+        #end
+        <cell style="height:30" type="ron"></cell>
+        <cell style="height:30" type="ron">$expectedStacked1Value</cell>
+        <cell style="height:30" type="ron"></cell>
+        #if($!security.hasAuthEdit("DPM50") && $enableEdit.get(0) == true)
+        <cell style="height:30" class="inputB" type="$expected1ValueYbType">$expected1ValueYb</cell>
+        #else
+        <cell style="height:30" type="ron">$expected1ValueYb</cell>
+        #end
+        <cell style="height:30" type="ron"></cell>
+## add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        <cell style="height:30" type="ron">$record1ValueYb</cell>
+## add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        ## 2月目
+        <cell style="height:30" type="ron">$plannedStacked2Value</cell>
+        <cell style="height:30" type="ron"></cell>
+        #if($!security.hasAuthEdit("DPM50") && $enableEdit.get(1) == true)
+        <cell style="height:30" class="inputB" type="$planned2ValueYbType">$planned2ValueYb</cell>
+        #else
+        <cell style="height:30" type="ron">$planned2ValueYb</cell>
+        #end
+        <cell style="height:30" type="ron"></cell>
+        <cell style="height:30" type="ron">$expectedStacked2Value</cell>
+        <cell style="height:30" type="ron"></cell>
+        #if($!security.hasAuthEdit("DPM50") && $enableEdit.get(1) == true)
+        <cell style="height:30" class="inputB" type="$expected2ValueYbType">$expected2ValueYb</cell>
+        #else
+        <cell style="height:30" type="ron">$expected2ValueYb</cell>
+        #end
+        <cell style="height:30" type="ron"></cell>
+## add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        <cell style="height:30" type="ron">$record2ValueYb</cell>
+## add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        ## 3月目
+        <cell style="height:30" type="ron">$plannedStacked3Value</cell>
+        <cell style="height:30" type="ron"></cell>
+        #if($!security.hasAuthEdit("DPM50") && $enableEdit.get(2) == true)
+        <cell style="height:30" class="inputB" type="$planned3ValueYbType">$planned3ValueYb</cell>
+        #else
+        <cell style="height:30" type="ron">$planned3ValueYb</cell>
+        #end
+        <cell style="height:30" type="ron"></cell>
+        <cell style="height:30" type="ron">$expectedStacked3Value</cell>
+        <cell style="height:30" type="ron"></cell>
+        #if($!security.hasAuthEdit("DPM50") && $enableEdit.get(2) == true)
+        <cell style="height:30" class="inputB" type="$expected3ValueYbType">$expected3ValueYb</cell>
+        #else
+        <cell style="height:30" type="ron">$expected3ValueYb</cell>
+        #end
+        <cell style="height:30" type="ron"></cell>
+## add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        <cell style="height:30" type="ron">$record3ValueYb</cell>
+## add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        ## 4月目
+        <cell style="height:30" type="ron">$plannedStacked4Value</cell>
+        <cell style="height:30" type="ron"></cell>
+        #if($!security.hasAuthEdit("DPM50") && $enableEdit.get(3) == true)
+        <cell style="height:30" class="inputB" type="$planned4ValueYbType">$planned4ValueYb</cell>
+        #else
+        <cell style="height:30" type="ron">$planned4ValueYb</cell>
+        #end
+        <cell style="height:30" type="ron"></cell>
+        <cell style="height:30" type="ron">$expectedStacked4Value</cell>
+        <cell style="height:30" type="ron"></cell>
+        #if($!security.hasAuthEdit("DPM50") && $enableEdit.get(3) == true)
+        <cell style="height:30" class="inputB" type="$expected4ValueYbType">$expected4ValueYb</cell>
+        #else
+        <cell style="height:30" type="ron">$expected4ValueYb</cell>
+        #end
+        <cell style="height:30" type="ron"></cell>
+## add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        <cell style="height:30" type="ron">$record4ValueYb</cell>
+## add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        ## 5月目
+        <cell style="height:30" type="ron">$plannedStacked5Value</cell>
+        <cell style="height:30" type="ron"></cell>
+        #if($!security.hasAuthEdit("DPM50") && $enableEdit.get(4) == true)
+        <cell style="height:30" class="inputB" type="$planned5ValueYbType">$planned5ValueYb</cell>
+        #else
+        <cell style="height:30" type="ron">$planned5ValueYb</cell>
+        #end
+        <cell style="height:30" type="ron"></cell>
+        <cell style="height:30" type="ron">$expectedStacked5Value</cell>
+        <cell style="height:30" type="ron"></cell>
+        #if($!security.hasAuthEdit("DPM50") && $enableEdit.get(4) == true)
+        <cell style="height:30" class="inputB" type="$expected5ValueYbType">$expected5ValueYb</cell>
+        #else
+        <cell style="height:30" type="ron">$expected5ValueYb</cell>
+        #end
+        <cell style="height:30" type="ron"></cell>
+## add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        <cell style="height:30" type="ron">$record5ValueYb</cell>
+## add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        ## 6月目
+        <cell style="height:30" type="ron">$plannedStacked6Value</cell>
+        <cell style="height:30" type="ron"></cell>
+        #if($!security.hasAuthEdit("DPM50") && $enableEdit.get(5) == true)
+        <cell style="height:30" class="inputB" type="$planned6ValueYbType">$planned6ValueYb</cell>
+        #else
+        <cell style="height:30" type="ron">$planned6ValueYb</cell>
+        #end
+        <cell style="height:30" type="ron"></cell>
+        <cell style="height:30" type="ron">$expectedStacked6Value</cell>
+        <cell style="height:30" type="ron"></cell>
+        #if($!security.hasAuthEdit("DPM50") && $enableEdit.get(5) == true)
+        <cell style="height:30" class="inputB" type="$expected6ValueYbType">$expected6ValueYb</cell>
+        #else
+        <cell style="height:30" type="ron">$expected6ValueYb</cell>
+        #end
+        <cell style="height:30" type="ron"></cell>
+## add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        <cell style="height:30" type="ron">$record6ValueYb</cell>
+## add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+        ## 合計
+        <cell style="height:30" type="ron"></cell>
+        <cell style="height:30" type="ron"></cell>
+        <cell style="height:30" type="ron"></cell>
+        <cell style="height:30" type="ron"></cell>
+        <cell style="height:30" type="ron"></cell>
+        <cell style="height:30" type="ron"></cell>
+        <cell style="height:30" type="ron"></cell>
+        <cell style="height:30" type="ron"></cell>
+
+        ## Validation用ユーザデータ
+        <userdata name="sosName">$sosName</userdata>
+        <userdata name="jgiName">$jgiName</userdata>
+        ## 自動計算用ユーザデータ
+        <userdata name="toolTip">$lastUpName$lastUpDate</userdata>
+        <userdata name="rowType">input</userdata>
+        ## 更新用ユーザデータ
+        ## 組織コード・従業員番号・品目コード・シーケンスキー・最終更新日時・(データ取得時の計画値・データ取得時の見込値)【1～6】 ＋ (登録ボタン押下後の入力計画値(追加) + 登録ボタン押下後の見込計画値(追加)【1～6】
+        <userdata name="updateRowId">$sosCd,$jgiNo,$!form.bean.prodCode,$!resultObj.seqKey,$!resultObj.upDate.Time,$!resultObj.planned1ValueYb,$!resultObj.expected1ValueYb,$!resultObj.planned2ValueYb,$!resultObj.expected2ValueYb,$!resultObj.planned3ValueYb,$!resultObj.expected3ValueYb,$!resultObj.planned4ValueYb,$!resultObj.expected4ValueYb,$!resultObj.planned5ValueYb,$!resultObj.expected5ValueYb,$!resultObj.planned6ValueYb,$!resultObj.expected6ValueYb</userdata>
+
+        ## add Start 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+        <userdata name="hiddenRecordTotalValueYbJisseki">$recordTotalValueYb</userdata>
+        <userdata name="hiddenRecordTougetuValueYbJisseki">$recordTougetuValueYb</userdata>
+        <userdata name="hiddenRecord1ValueYbJisseki">$record1ValueYb</userdata>
+        <userdata name="hiddenRecord2ValueYbJisseki">$record2ValueYb</userdata>
+        <userdata name="hiddenRecord3ValueYbJisseki">$record3ValueYb</userdata>
+        <userdata name="hiddenRecord4ValueYbJisseki">$record4ValueYb</userdata>
+        <userdata name="hiddenRecord5ValueYbJisseki">$record5ValueYb</userdata>
+        <userdata name="hiddenRecord6ValueYbJisseki">$record6ValueYb</userdata>
+        ## add End 2022/12/21 H.futagami No.8　計画管理の月別計画に納入実績の値を表示
+
+    </row>
+    #set( $rowId = $rowId + 1 )
+#end
+</rows>
+#end

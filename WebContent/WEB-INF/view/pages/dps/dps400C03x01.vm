@@ -1,0 +1,107 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS400C03_DATA_R_SEARCH_RESULT"))
+    #set( $dataList = $form.getRequestData("DPS400C03_DATA_R_SEARCH_RESULT"))
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+
+<rows>
+#foreach($resultData in $dataList)
+    ##品目固定コード
+        #set($prodCode = "")
+        #if($resultData.distributionForVacProd.prodCode)
+            #set($prodCode = $resultData.distributionForVacProd.prodCode)
+        #end
+    ##品目名称
+        #set($prodName = "")
+        #if($resultData.distributionForVacProd.prodName)
+            #set($prodName = $resultData.distributionForVacProd.prodName)
+        #end
+    ##製品区分
+        #set($prodType = "")
+        #if($resultData.distributionForVacProd.prodType)
+            #set($prodType = $resultData.distributionForVacProd.prodType)
+        #end
+    ##配分状況
+        #set($statusName = "")
+        #set($statusDate = "")
+        #set($statusFontColor = "")
+        #set($selectValue = "1")
+        #set($disabled = "")
+        #if($resultData.distributionForVacProd.StatusForInsWsPlan)
+            #set($statusValue = $!resultData.distributionForVacProd.StatusForInsWsPlan.toString())
+            #if($statusValue == "DISTING")
+                #set($statusName = "配分中")
+                #set($statusDate = "<br>#writeLastUpDate($!resultData.distributionForVacProd.distStartDate,'-')")
+                #set($statusFontColor = "#FF0000")
+                #set($selectValue = "0")
+                #set($disabled = " disabled='true'")
+            #elseif($statusValue == "DISTED" || $statusValue == "PLAN_OPENED" || $statusValue == "PLAN_COMPLETED")
+                #set($statusName = "配分済")
+                #set($statusDate = "<br>#writeLastUpDate($!resultData.distributionForVacProd.distEndDate,'-')")
+                #set($selectValue = "0")
+                #set($disabled = "")
+            #else
+                #set($statusName = "")
+                #set($selectValue = "1")
+                #set($disabled = "")
+            #end
+        #end
+    ##配分基準最終更新日
+        #set($distParamUpDate = "#writeLastUpDate2($resultData.lastUpdate,'')")
+    ##配分品目名
+        #set($refProdName = "")
+        #if($resultData.baseParam.refProdInfo.prodName)
+            #set($refProdName = $resultData.baseParam.refProdInfo.prodName)
+        #end
+    ##配分品目製品区分
+        #set($refProdType = "")
+        #if($resultData.baseParam.refProdInfo.prodType)
+            #set($refProdType = $resultData.baseParam.refProdInfo.prodType)
+        #end
+    ##実績参照期間(FROM)
+        #set($refPeriodFrom = "")
+        #if($resultData.refPeriodFrom)
+            #set($refPeriodFrom = $!{format.toString($!{resultData.refPeriodFrom},"yyyy/MM")})
+        #end
+    ##実績参照期間(TO)
+        #set($refPeriodTo = "")
+        #if($resultData.refPeriodTo)
+            #set($refPeriodTo = $!{format.toString($!{resultData.refPeriodTo},"yyyy/MM")})
+        #end
+    ##参照品目1
+        #set($resultRefProdName1 = "")
+        #if($resultData.baseParam.resultRefProdName1)
+            #set($resultRefProdName1 = $resultData.baseParam.resultRefProdName1)
+        #end
+    ##参照品目2
+        #set($resultRefProdName2 = "")
+        #if($resultData.baseParam.resultRefProdName2)
+            #set($resultRefProdName2 = $resultData.baseParam.resultRefProdName2)
+        #end
+    ##参照品目3
+        #set($resultRefProdName3 = "")
+        #if($resultData.baseParam.resultRefProdName3)
+            #set($resultRefProdName3 = $resultData.baseParam.resultRefProdName3)
+        #end
+    ##ステータス最終更新日
+        #set($statusLastUpDate = "")
+        #if($resultData.distributionForVacProd.statusLastUpdate)
+            #set($statusLastUpDate = $resultData.distributionForVacProd.statusLastUpdate.time)
+        #end
+    <row id='$velocityCount'>
+        <cell style="height:35"$!disabled>$!selectValue</cell>
+        <cell style="height:35">$!prodName</cell>
+        <cell style="height:35"><![CDATA[<font color="$statusFontColor">$!statusName</font>$!statusDate]]></cell>
+        <cell style="height:35"><![CDATA[$!distParamUpDate]]></cell>
+        <cell style="height:35">$!refProdName</cell>
+        <cell style="height:35">$!refPeriodFrom - $!refPeriodTo</cell>
+        <cell style="height:35">$!resultRefProdName1</cell>
+        <cell style="height:35">$!resultRefProdName2</cell>
+        <cell style="height:35">$!resultRefProdName3</cell>
+        ##品目固定コード,品目名称,ステータス最終更新日
+        <userdata name="updateRowId">$!prodCode,$!prodName,$!statusLastUpDate</userdata>
+    </row>
+#end
+</rows>
+#end

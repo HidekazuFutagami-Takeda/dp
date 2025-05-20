@@ -1,0 +1,689 @@
+## del 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　未使用となるため全コメントアウト。カテゴリ別に別れていたvmは全カテゴリ共通のdps000C00x20.vmに統一（仕入品用のvmは例外）
+###set($layout = "nothingLayout.vm" )
+###set($dps000C00F27Data = $form.getRequestData("DPS000C00F27_DATA_R"))
+###set($sosList = $dps000C00F27Data.getSosStatusSummaryList())
+###set($jgiList = $dps000C00F27Data.getJgiStatusSummaryList())
+###set($rank = $progress.getProgressIyakuRank())
+###set($rankString = $rank.toString())
+###set($style = $!progress.getStyle())
+##$!consts.getDhtmlxGridXmlHeader()
+##<rows>
+###set($bgEnd = "class='statusEnd mmpStatusSize'")
+###set($bgIng = "class='statusIng mmpStatusSize'")
+###set($bgNot = "class='statusNot mmpStatusSize'")
+###if($sosList)
+###if($rankString.equals("SITEN"))
+##    #foreach($data in $sosList)
+##        #set($officePlanStatSum = $data.officePlanStatSum)
+##        #set($mrPlanStatSum = $data.mrPlanStatSum)
+##        #set($insDocPlanStatSum = $data.insDocPlanStatSum)
+##        #set($insWsPlanStatSum = $data.insWsPlanStatSum)
+##        #set($sosCd = $data.getSosCd())
+##        #set($sosLink = $progress.createChangeLink("$data.bumonSeiName","dps000C00F00Change","false","false","$!sosCd","","",$!style))
+##        ##営業所計画
+##        #set($codeAndValueOffice = $progress.progressOfficePlanStatus($!officePlanStatSum, $!rank, $!sosCd, "1"))
+##        #set($officeStatus = $!codeAndValueOffice.value)
+##        #if($!codeAndValueOffice.code.equals("NOT"))
+##            #set($officeClass = $bgNot)
+##        #elseif($!codeAndValueOffice.code.equals("ING"))
+##            #set($officeClass = $bgIng)
+##            #set($officeStatus = $officeStatus)
+##        #elseif($!codeAndValueOffice.code.equals("END"))
+##            #set($officeClass = $bgEnd)
+##            #set($officeStatus = $!officeStatus + "<br>" + $!format.toString($!officePlanStatSum.upDate, 'MM/dd HH:mm'))
+##        #end
+##        ##試算状況
+##        #set($codeAndValueEstimation = $progress.progressEstimationStatus($!officePlanStatSum, $!mrPlanStatSum, $!rank, $!sosCd))
+##        #set($estimationStatus = $codeAndValueEstimation.value)
+##        #if($!codeAndValueEstimation.code.equals("NOT"))
+##            #set($estimationClass = $bgNot)
+##        #elseif($!codeAndValueEstimation.code.equals("ING"))
+##            #set($estimationClass = $bgIng)
+##            #set($estimationStatus = $!estimationStatus)
+##        #elseif($!codeAndValueEstimation.code.equals("END"))
+##            #set($estimationClass = $bgEnd)
+##            #set($estimationStatus = $!estimationStatus + "<br>" + $!format.toString($mrPlanStatSum.estEndDate, 'MM/dd HH:mm'))
+##        #end
+#### add start 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+####      ##チーム別計画公開
+####        #set($codeAndValueTeamOpen = $progress.progressTeamPlanAlOpenStatus($mrPlanStatSum, $rank, $sosCd))
+####        #set($teamOpenStatus = $codeAndValueTeamOpen.value)
+####        #if($!codeAndValueTeamOpen.code.equals("NOT"))
+####            #set($teamOpenClass = $bgNot)
+####        #elseif($!codeAndValueTeamOpen.code.equals("ING"))
+####            #set($teamOpenClass = $bgIng)
+####            #set($teamOpenStatus = $teamOpenStatus)
+####        #elseif($!codeAndValueTeamOpen.code.equals("END"))
+####            #set($teamOpenClass = $bgEnd)
+####            #set($teamOpenStatus = $teamOpenStatus + "<br>" + $!format.toString($mrPlanStatSum.teamPlanOpenDate, 'MM/dd HH:mm'))
+####        #end
+####      ##チーム別計画確定
+####      #set($codeAndValueTeamFix = $progress.progressTeamPlanMasterFixStatus($mrPlanStatSum, $rank, $sosCd))
+####      #set($teamFixStatus = $codeAndValueTeamFix.value)
+####        #if($!codeAndValueTeamFix.code.equals("NOT"))
+####            #set($teamFixClass = $bgNot)
+####        #elseif($!codeAndValueTeamFix.code.equals("ING"))
+####            #set($teamFixClass = $bgIng)
+####            #set($teamFixStatus = $teamFixStatus)
+####        #elseif($!codeAndValueTeamFix.code.equals("END"))
+####            #set($teamFixClass = $bgEnd)
+####            #set($teamFixStatus = $teamFixStatus + "<br>" + $!format.toString($mrPlanStatSum.teamPlanFixDate, 'MM/dd HH:mm'))
+####        #end
+#### add end 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+##        ##担当者別計画ＡＬ公開
+##        #set($codeAndValueMrPlanAlOpen = $progress.progressMrPlanAlOpenStatus($mrPlanStatSum, $rank, $sosCd))
+##        #set($mrPlanAlOpenStatus = $codeAndValueMrPlanAlOpen.value)
+##        #if($codeAndValueMrPlanAlOpen.code.equals("NOT"))
+##            #set($mrPlanAlOpenClass = $bgNot)
+##        #elseif($!codeAndValueMrPlanAlOpen.code.equals("ING"))
+##            #set($mrPlanAlOpenClass = $bgIng)
+##            #set($mrPlanAlOpenStatus = $mrPlanAlOpenStatus)
+##        #elseif($!codeAndValueMrPlanAlOpen.code.equals("END"))
+##            #set($mrPlanAlOpenClass = $bgEnd)
+##            #set($mrPlanAlOpenStatus = $mrPlanAlOpenStatus + "<br>" + $!format.toString($mrPlanStatSum.mrPlanOpenDate, 'MM/dd HH:mm'))
+##        #end
+##        ##担当者別計画ＡＬ修正
+##        #set($codeAndValueMrPlanAlUpdate = $progress.progressMrPlanAlUpdateStatus($mrPlanStatSum, $rank, $sosCd))
+##        #set($mrPlanAlUpdateStatus = $codeAndValueMrPlanAlUpdate.value)
+##        #if($!codeAndValueMrPlanAlUpdate.code.equals("NOT"))
+##            #set($mrPlanAlUpdateClass = $bgNot)
+##        #elseif($!codeAndValueMrPlanAlUpdate.code.equals("ING"))
+##            #set($mrPlanAlUpdateClass = $bgIng)
+##            #set($mrPlanAlUpdateStatus = $mrPlanAlUpdateStatus)
+##        #elseif($!codeAndValueMrPlanAlUpdate.code.equals("END"))
+##            #set($mrPlanAlUpdateClass = $bgEnd)
+##            #if($!mrPlanStatSum.mrPlanInputDate)
+##                #set($mrPlanAlUpdateStatus = $mrPlanAlUpdateStatus + "<br>" + $!format.toString($mrPlanStatSum.mrPlanInputDate, 'MM/dd HH:mm'))
+##            #else
+##                #set($mrPlanAlUpdateStatus = $mrPlanAlUpdateStatus)
+##            #end
+##        #end
+##        ##担当者別計画所長確定
+##        #set($codeAndValueMrPlanMasterFix = $progress.progressMrPlanMasterFixStatus($mrPlanStatSum, $rank, $sosCd, null))
+##        #set($mrPlanMasterFixStatus = $codeAndValueMrPlanMasterFix.value)
+##        #if($!codeAndValueMrPlanMasterFix.code.equals("NOT"))
+##            #set($mrPlanMasterFixClass = $bgNot)
+##        #elseif($!codeAndValueMrPlanMasterFix.code.equals("ING"))
+##            #set($mrPlanMasterFixClass = $bgIng)
+##            #set($mrPlanMasterFixStatus = $!mrPlanMasterFixStatus)
+##        #elseif($!codeAndValueMrPlanMasterFix.code.equals("END"))
+##            #set($mrPlanMasterFixClass = $bgEnd)
+##            #set($mrPlanMasterFixStatus = $!mrPlanMasterFixStatus + "<br>" + $!format.toString($mrPlanStatSum.mrPlanFixDate, 'MM/dd HH:mm'))
+##        #end
+#### add start 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+####        ##施設医師別計画配分状況
+####        #set($codeAndValueInsDocPlanDist = $progress.progressInsDocPlanDistStatus($mrPlanStatSum, $insDocPlanStatSum, $rank, $sosCd, null))
+####        #set($insDocPlanDistStatus = $codeAndValueInsDocPlanDist.value)
+####        #if($!codeAndValueInsDocPlanDist.code.equals("NOT"))
+####            #set($insDocPlanDistClass = $bgNot)
+####        #elseif($!codeAndValueInsDocPlanDist.code.equals("ING"))
+####            #set($insDocPlanDistClass = $bgIng)
+####            #set($insDocPlanDistStatus = $!insDocPlanDistStatus)
+####        #elseif($!codeAndValueInsDocPlanDist.code.equals("END"))
+####            #set($insDocPlanDistClass = $bgEnd)
+####            #set($insDocPlanDistStatus = $!insDocPlanDistStatus + "<br>" + $!format.toString($insDocPlanStatSum.distEndDate, 'MM/dd HH:mm'))
+####        #end
+####      ##施設医師別計画ＭＲ公開
+####        #set($codeAndValueInsDocPlanMrOpen = $progress.progressInsDocPlanMrOpenStatus($!insDocPlanStatSum, $!rank, $!sosCd, null))
+####        #set($insDocPlanMrOpenStatus = $!codeAndValueInsDocPlanMrOpen.value)
+####        #if($!codeAndValueInsDocPlanMrOpen.code.equals("NOT"))
+####            #set($insDocPlanMrOpenClass = $bgNot)
+####        #elseif($!codeAndValueInsDocPlanMrOpen.code.equals("ING"))
+####            #set($insDocPlanMrOpenClass = $bgIng)
+####            #set($insDocPlanMrOpenStatus = $!insDocPlanMrOpenStatus)
+####        #elseif($!codeAndValueInsDocPlanMrOpen.code.equals("END"))
+####            #set($insDocPlanMrOpenClass = $bgEnd)
+####            #set($insDocPlanMrOpenStatus = $!insDocPlanMrOpenStatus + "<br>" + $!format.toString($insDocPlanStatSum.insDocOpenDate, 'MM/dd HH:mm'))
+####        #end
+####      ##施設医師別計画確定
+####        #set($codeAndValueInsDocPlanMrFix = $progress.progressInsDocPlanMrFixStatus($!insDocPlanStatSum, $!rank, $!sosCd, null))
+####        #set($insDocPlanMrFixStatus = $codeAndValueInsDocPlanMrFix.value)
+####        #if($!codeAndValueInsDocPlanMrFix.code.equals("NOT"))
+####            #set($insDocPlanMrFixClass = $bgNot)
+####        #elseif($!codeAndValueInsDocPlanMrFix.code.equals("ING"))
+####            #set($insDocPlanMrFixClass = $bgIng)
+####            #set($insDocPlanMrFixStatus = $!insDocPlanMrFixStatus)
+####        #elseif($!codeAndValueInsDocPlanMrFix.code.equals("END"))
+####            #set($insDocPlanMrFixClass = $bgEnd)
+####            #set($insDocPlanMrFixStatus = $!insDocPlanMrFixStatus + "<br>" + $!format.toString($insDocPlanStatSum.insDocFixDate, 'MM/dd HH:mm'))
+####        #end
+#### add end 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+##        ##施設特約店別計画配分状況
+##        #set($codeAndValueInsWsPlanDist = $progress.progressInsWsPlanDistStatus($mrPlanStatSum, $insDocPlanStatSum, $insWsPlanStatSum, $rank, $sosCd, null, "1"))
+##        #set($insWsPlanDistStatus = $codeAndValueInsWsPlanDist.value)
+##        #if($!codeAndValueInsWsPlanDist.code.equals("NOT"))
+##            #set($insWsPlanDistClass = $bgNot)
+##        #elseif($!codeAndValueInsWsPlanDist.code.equals("ING"))
+##            #set($insWsPlanDistClass = $bgIng)
+##            #set($insWsPlanDistStatus = $!insWsPlanDistStatus)
+##        #elseif($!codeAndValueInsWsPlanDist.code.equals("END"))
+##            #set($insWsPlanDistClass = $bgEnd)
+##            #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>" + $!format.toString($insWsPlanStatSum.distEndDate, 'MM/dd HH:mm'))
+##        #end
+##        ##施設特約店別計画確定
+##        #set($codeAndValueInsWsPlanMrFix = $progress.progressInsWsPlanMrFixStatus($!insWsPlanStatSum, $!rank, $!sosCd, null))
+##        #set($insWsPlanMrFixStatus = $codeAndValueInsWsPlanMrFix.value)
+##        #if($!codeAndValueInsWsPlanMrFix.code.equals("NOT"))
+##            #set($insWsPlanMrFixClass = $bgNot)
+##        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("ING"))
+##            #set($insWsPlanMrFixClass = $bgIng)
+##            #set($insWsPlanMrFixStatus = $!insWsPlanMrFixStatus)
+##        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("END"))
+##            #set($insWsPlanMrFixClass = $bgEnd)
+##            #set($insWsPlanMrFixStatus = $!insWsPlanMrFixStatus + "<br>" + $!format.toString($insWsPlanStatSum.insWsFixDate, 'MM/dd HH:mm'))
+##        #end
+##        <row id="$velocityCount">
+##            <cell $!style><![CDATA[$!sosLink]]></cell>
+##            <cell $!officeClass $!style><![CDATA[$!officeStatus]]></cell>
+##            <cell $!estimationClass $!style><![CDATA[$!estimationStatus]]></cell>
+#### add start 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+####            <cell $!teamOpenClass $!style><![CDATA[$!teamOpenStatus]]></cell>
+####            <cell $!teamFixClass $!style><![CDATA[$!teamFixStatus]]></cell>
+#### add end 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+##            <cell $!mrPlanAlOpenClass $!style><![CDATA[$!mrPlanAlOpenStatus]]></cell>
+##            <cell $!mrPlanAlUpdateClass $!style><![CDATA[$!mrPlanAlUpdateStatus]]></cell>
+##            <cell $!mrPlanMasterFixClass $!style><![CDATA[$!mrPlanMasterFixStatus]]></cell>
+#### add start 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+####            <cell $!insDocPlanDistClass $!style><![CDATA[$!insDocPlanDistStatus]]></cell>
+#### add end 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+##            <cell $!insWsPlanDistClass $!style><![CDATA[$!insWsPlanDistStatus]]></cell>
+##            <cell $!insWsPlanMrFixClass $!style><![CDATA[$!insWsPlanMrFixStatus]]></cell>
+##        </row>
+##    #end
+###elseif ($rankString.equals("OFFICE"))
+###set($vCnt = 0)
+##    #foreach($data in $sosList)
+##        #set($officePlanStatSum = $data.officePlanStatSum)
+##        #set($mrPlanStatSum = $data.mrPlanStatSum)
+##        #set($insDocPlanStatSum = $data.insDocPlanStatSum)
+##        #set($insWsPlanStatSum = $data.insWsPlanStatSum)
+##        #set($sosCd = $data.getSosCd())
+##        ##試算タイプ
+##        #set($codeAndValueCalcType = $progress.progressCalcType($officePlanStatSum.calcType))
+##        #if($codeAndValueCalcType.code.equals("NOT"))
+##            #set($calcTypeName = "")
+##        #else
+##            #set($calcTypeName = "<br>" + $codeAndValueCalcType.value)
+##        #end
+##        #set($sosLink = $progress.createChangeLink("$data.bumonSeiName$calcTypeName","dps000C00F00Change","false","false","$sosCd","","dps000C00F00",$!style))
+##        ##営業所計画
+##        #set($codeAndValue = $progress.progressOfficePlanStatus($!officePlanStatSum, $!rank, $!sosCd, "1"))
+##        #set($officeStatus = $codeAndValue.value)
+##        #if($codeAndValue.code.equals("NOT"))
+##            #set($officeClass = $bgNot)
+##        #elseif($codeAndValue.code.equals("ING"))
+##            #set($officeClass = $bgIng)
+##            #set($officeStatus = $officeStatus)
+##        #elseif($codeAndValue.code.equals("END"))
+##            #set($officeClass = $bgEnd)
+##            #set($officeStatus = $officeStatus + "<br>" + $!format.toString($!officePlanStatSum.upDate, 'MM/dd HH:mm'))
+##        #end
+##        ##試算状況
+##        #set($codeAndValueEstimation = $progress.progressEstimationStatus($!officePlanStatSum, $mrPlanStatSum, $rank, $sosCd))
+##        #set($estimationStatus = $codeAndValueEstimation.value)
+##        #if($codeAndValueEstimation.code.equals("NOT"))
+##            #set($estimationClass = $bgNot)
+##        #elseif($codeAndValueEstimation.code.equals("ING"))
+##            #set($estimationClass = $bgIng)
+##            #set($estimationStatus = $!estimationStatus)
+##        #elseif($codeAndValueEstimation.code.equals("END"))
+##            #set($estimationClass = $bgEnd)
+##            #set($estimationStatus = $estimationStatus + "<br>" + $!format.toString($!mrPlanStatSum.estEndDate, 'MM/dd HH:mm'))
+##        #end
+#### add start 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+####      ##チーム別計画公開
+####        #set($codeAndValueTeamOpen = $progress.progressTeamPlanAlOpenStatus($!mrPlanStatSum, $!rank, $!sosCd))
+####        #set($teamOpenStatus = $codeAndValueTeamOpen.value)
+####        #if($codeAndValueTeamOpen.code.equals("NOT"))
+####            #set($teamOpenClass = $bgNot)
+####        #elseif($codeAndValueTeamOpen.code.equals("ING"))
+####            #set($teamOpenClass = $bgIng)
+####            #set($teamOpenStatus = $teamOpenStatus)
+####        #elseif($codeAndValueTeamOpen.code.equals("END"))
+####            #set($teamOpenClass = $bgEnd)
+####            #set($teamOpenStatus = $teamOpenStatus + "<br>" + $!format.toString($!mrPlanStatSum.teamPlanOpenDate, 'MM/dd HH:mm'))
+####        #end
+####      ##チーム別計画確定
+####        #set($codeAndValueTeamFix = $progress.progressTeamPlanMasterFixStatus($!mrPlanStatSum, $rank, $sosCd))
+####        #set($teamFixStatus = $codeAndValueTeamFix.value)
+####        #if($codeAndValueTeamFix.code.equals("NOT"))
+####            #set($teamFixClass = $bgNot)
+####        #elseif($codeAndValueTeamFix.code.equals("ING"))
+####            #set($teamFixClass = $bgIng)
+####            #set($teamFixStatus = $teamFixStatus)
+####        #elseif($codeAndValueTeamFix.code.equals("END"))
+####            #set($teamFixClass = $bgEnd)
+####            #set($teamFixStatus = $teamFixStatus + "<br>" + $!format.toString($!mrPlanStatSum.teamPlanFixDate, 'MM/dd HH:mm'))
+####        #end
+#### add end 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+##        ##担当者別計画ＡＬ公開
+##        #set($codeAndValueMrPlanAlOpen = $progress.progressMrPlanAlOpenStatus($!mrPlanStatSum, $!rank, $!sosCd))
+##        #set($mrPlanAlOpenStatus = $codeAndValueMrPlanAlOpen.value)
+##        #if($codeAndValueMrPlanAlOpen.code.equals("NOT"))
+##            #set($mrPlanAlOpenClass = $bgNot)
+##        #elseif($codeAndValueMrPlanAlOpen.code.equals("ING"))
+##            #set($mrPlanAlOpenClass = $bgIng)
+##            #set($mrPlanAlOpenStatus = $mrPlanAlOpenStatus)
+##        #elseif($codeAndValueMrPlanAlOpen.code.equals("END"))
+##            #set($mrPlanAlOpenClass = $bgEnd)
+##            #set($mrPlanAlOpenStatus = $mrPlanAlOpenStatus + "<br>" + $!format.toString($!mrPlanStatSum.mrPlanOpenDate, 'MM/dd HH:mm'))
+##        #end
+##        ##担当者別計画ＡＬ修正
+##        #set($codeAndValueMrPlanAlUpdate = $progress.progressMrPlanAlUpdateStatus($!mrPlanStatSum, $!rank, $!sosCd))
+##        #set($mrPlanAlUpdateStatus = $codeAndValueMrPlanAlUpdate.value)
+##        #if($codeAndValueMrPlanAlUpdate.code.equals("NOT"))
+##            #set($mrPlanAlUpdateClass = $bgNot)
+##        #elseif($codeAndValueMrPlanAlUpdate.code.equals("ING"))
+##            #set($mrPlanAlUpdateClass = $bgIng)
+##            #if($mrPlanStatSum.mrPlanInputDate)
+##                #set($mrPlanAlUpdateStatus = $mrPlanAlUpdateStatus)
+##            #else
+##                #set($mrPlanAlUpdateStatus = $mrPlanAlUpdateStatus)
+##            #end
+##        #elseif($codeAndValueMrPlanAlUpdate.code.equals("END"))
+##            #set($mrPlanAlUpdateClass = $bgEnd)
+##            #if($mrPlanStatSum.mrPlanInputDate)
+##                #set($mrPlanAlUpdateStatus = $mrPlanAlUpdateStatus + "<br>" + $!format.toString($!mrPlanStatSum.mrPlanInputDate, 'MM/dd HH:mm'))
+##            #else
+##                #set($mrPlanAlUpdateStatus = $mrPlanAlUpdateStatus)
+##            #end
+##        #end
+##        ##担当者別計画所長確定
+##        #set($codeAndValueMrPlanMasterFix = $progress.progressMrPlanMasterFixStatus($!mrPlanStatSum, $!rank, $!sosCd, null))
+##        #set($mrPlanMasterFixStatus = $codeAndValueMrPlanMasterFix.value)
+##        #if($codeAndValueMrPlanMasterFix.code.equals("NOT"))
+##            #set($mrPlanMasterFixClass = $bgNot)
+##        #elseif($codeAndValueMrPlanMasterFix.code.equals("ING"))
+##            #set($mrPlanMasterFixClass = $bgIng)
+##            #set($mrPlanMasterFixStatus = $mrPlanMasterFixStatus)
+##        #elseif($codeAndValueMrPlanMasterFix.code.equals("END"))
+##            #set($mrPlanMasterFixClass = $bgEnd)
+##            #set($mrPlanMasterFixStatus = $mrPlanMasterFixStatus + "<br>" + $!format.toString($!mrPlanStatSum.mrPlanFixDate, 'MM/dd HH:mm'))
+##        #end
+##        ##施設医師別計画配分状況
+#### add start 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+####        #set($codeAndValueInsDocPlanDist = $progress.progressInsDocPlanDistStatus($mrPlanStatSum, $insDocPlanStatSum, $rank, $!sosCd, null))
+####        #set($insDocPlanDistStatus = $codeAndValueInsDocPlanDist.value)
+####        #if($!codeAndValueInsDocPlanDist.code.equals("NOT"))
+####            #set($insDocPlanDistClass = $bgNot)
+####        #elseif($!codeAndValueInsDocPlanDist.code.equals("ING"))
+####            #set($insDocPlanDistClass = $bgIng)
+####            #set($insDocPlanDistStatus = $insDocPlanDistStatus)
+####        #elseif($codeAndValueInsDocPlanDist.code.equals("END"))
+####            #set($insDocPlanDistClass = $bgEnd)
+####            #set($insDocPlanDistStatus = $!insDocPlanDistStatus + "<br>" + $!format.toString($insDocPlanStatSum.distEndDate, 'MM/dd HH:mm'))
+####        #end
+####        ##施設医師別計画ＭＲ公開
+####        #set($codeAndValueInsDocPlanMrOpen = $progress.progressInsDocPlanMrOpenStatus($!insDocPlanStatSum, $!rank, $!sosCd, null))
+####        #set($insDocPlanMrOpenStatus = $codeAndValueInsDocPlanMrOpen.value)
+####        #if($codeAndValueInsDocPlanMrOpen.code.equals("NOT"))
+####            #set($insDocPlanMrOpenClass = $bgNot)
+####        #elseif($codeAndValueInsDocPlanMrOpen.code.equals("ING"))
+####            #set($insDocPlanMrOpenClass = $bgIng)
+####            #set($insDocPlanMrOpenStatus = $insDocPlanMrOpenStatus)
+####        #elseif($codeAndValueInsDocPlanMrOpen.code.equals("END"))
+####            #set($insDocPlanMrOpenClass = $bgEnd)
+####            #set($insDocPlanMrOpenStatus = $insDocPlanMrOpenStatus + "<br>" + $!format.toString($!insDocPlanStatSum.insDocOpenDate, 'MM/dd HH:mm'))
+####        #end
+####        ##施設医師別計画確定
+####        #set($codeAndValueInsDocPlanMrFix = $progress.progressInsDocPlanMrFixStatus($!insDocPlanStatSum, $!rank, $!sosCd, null))
+####        #set($insDocPlanMrFixStatus = $codeAndValueInsDocPlanMrFix.value)
+####        #if($!codeAndValueInsDocPlanMrFix.code.equals("NOT"))
+####            #set($insDocPlanMrFixClass = $bgNot)
+####        #elseif($!codeAndValueInsDocPlanMrFix.code.equals("ING"))
+####            #set($insDocPlanMrFixClass = $bgIng)
+####            #set($insDocPlanMrFixStatus = $insDocPlanMrFixStatus)
+####        #elseif($!codeAndValueInsDocPlanMrFix.code.equals("END"))
+####            #set($insDocPlanMrFixClass = $bgEnd)
+####            #set($insDocPlanMrFixStatus = $insDocPlanMrFixStatus + "<br>" + $!format.toString($!insDocPlanStatSum.insDocFixDate, 'MM/dd HH:mm'))
+####        #end
+#### add end 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+##        ##施設特約店別計画配分状況
+##        #set($codeAndValueInsWsPlanDist = $progress.progressInsWsPlanDistStatus($mrPlanStatSum, $insDocPlanStatSum, $insWsPlanStatSum, $rank, $sosCd, null, "1"))
+##        #set($insWsPlanDistStatus = $codeAndValueInsWsPlanDist.value)
+##        #if($!codeAndValueInsWsPlanDist.code.equals("NOT"))
+##            #set($insWsPlanDistClass = $bgNot)
+##        #elseif($!codeAndValueInsWsPlanDist.code.equals("ING"))
+##            #set($insWsPlanDistClass = $bgIng)
+##            #set($insWsPlanDistStatus = $insWsPlanDistStatus)
+##        #elseif($codeAndValueInsWsPlanDist.code.equals("END"))
+##            #set($insWsPlanDistClass = $bgEnd)
+##            #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>" + $!format.toString($insWsPlanStatSum.distEndDate, 'MM/dd HH:mm'))
+##        #end
+##        ##施設特約店別計画確定
+##        #set($codeAndValueInsWsPlanMrFix = $progress.progressInsWsPlanMrFixStatus($!insWsPlanStatSum, $!rank, $!sosCd, null))
+##        #set($insWsPlanMrFixStatus = $codeAndValueInsWsPlanMrFix.value)
+##        #if($!codeAndValueInsWsPlanMrFix.code.equals("NOT"))
+##            #set($insWsPlanMrFixClass = $bgNot)
+##        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("ING"))
+##            #set($insWsPlanMrFixClass = $bgIng)
+##            #set($insWsPlanMrFixStatus = $insWsPlanMrFixStatus)
+##        #elseif($!codeAndValueInsWsPlanMrFix.code.equals("END"))
+##            #set($insWsPlanMrFixClass = $bgEnd)
+##            #set($insWsPlanMrFixStatus = $insWsPlanMrFixStatus + "<br>" + $!format.toString($!insWsPlanStatSum.insWsFixDate, 'MM/dd HH:mm'))
+##        #end
+##        ##営業所計画－担当者別計画UHP合計
+##        #set($officeMrClass = "")
+##        #if($data.officeMrChoseiUHPFlg)
+##            #set( $officeMrClass = "chosei_ari_top")
+##        #end
+##        ##担当者別計画－施設医師別計画UHP合計
+##        #set($mrInsdocClass = "")
+##        #if($data.mrInsdocChoseiUHPFlg)
+##            #set( $mrInsdocClass = "chosei_ari_top")
+##        #end
+##        ##担当者別計画－施設特約店別計画UHP合計
+##        #set($mrInswsClass = "")
+##        #if($data.mrInswsChoseiUHPFlg)
+##            #set( $mrInswsClass = "chosei_ari_top")
+##        #end
+##        ##営業所計画<br>－施設特約店別計画UHP合計
+##        #set($officeInswsClass = "")
+##        #if($data.officeInswsChoseiUHPFlg)
+##            #set( $officeInswsClass = "chosei_ari_top")
+##        #end
+##        <row id="$velocityCount">
+##            <cell $!style><![CDATA[$!sosLink]]></cell>
+##            <cell $!officeClass  $!style><![CDATA[$!officeStatus]]></cell>
+##            <cell $!estimationClass  $!style><![CDATA[$!estimationStatus]]></cell>
+#### add start 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+####            <cell $!teamOpenClass  $!style><![CDATA[$!teamOpenStatus]]></cell>
+####            <cell $!teamFixClass  $!style><![CDATA[$!teamFixStatus]]></cell>
+#### add end 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+##            <cell $!mrPlanAlOpenClass  $!style><![CDATA[$!mrPlanAlOpenStatus]]></cell>
+##            <cell $!mrPlanAlUpdateClass  $!style><![CDATA[$!mrPlanAlUpdateStatus]]></cell>
+##            <cell $!mrPlanMasterFixClass  $!style><![CDATA[$!mrPlanMasterFixStatus]]></cell>
+##            <cell $!bgNot $!style><![CDATA[<br><a href="#" onclick="return dps998C00F00('$!sosCd')">出力</a><br><br>]]></cell>
+#### add start 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+####            <cell $!insDocPlanDistClass  $!style><![CDATA[$!insDocPlanDistStatus]]></cell>
+#### add end 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+##            <cell $!insWsPlanDistClass  $!style><![CDATA[$!insWsPlanDistStatus]]></cell>
+##            <cell $!insWsPlanMrFixClass  $!style><![CDATA[$!insWsPlanMrFixStatus]]></cell>
+##            <cell class="$officeMrClass"><![CDATA[$progress.createOfficeChoseiString($data.officeMrChoseiUHPFlg, $data.officeMrChoseiUHPUpDate, $!sosCd, "1")]]></cell>
+##            <cell class="$mrInswsClass"><![CDATA[$progress.createOfficeChoseiString($data.mrInswsChoseiUHPFlg, $data.mrInswsChoseiUHPUpDate, $!sosCd, "1")]]></cell>
+##            <cell class="$officeInswsClass"><![CDATA[$progress.createOfficeChoseiString($data.officeInswsChoseiUHPFlg, $data.officeInswsChoseiUHPUpDate, $!sosCd, "1")]]></cell>
+##        </row>
+##        #set($vCnt = $velocityCount + 1)
+##    #end
+##    ##画面表示用に空の行を1行追加
+##    #if($vCnt != 2)
+##    <row id="$vCnt">
+##    <cell></cell>
+##    <cell></cell>
+##    <cell></cell>
+##    <cell></cell>
+##    <cell></cell>
+##    <cell></cell>
+##    <cell></cell>
+##    <cell></cell>
+##    <cell></cell>
+##    <cell></cell>
+##    <cell></cell>
+##    <cell></cell>
+##    <cell></cell>
+##    <cell></cell>
+##    <cell></cell>
+##    </row>
+##    #end
+###elseif ($rankString.equals("TEAM"))
+##    #foreach($data in $sosList)
+##        #set($mrPlanStatSum = $data.mrPlanStatSum)
+##        #set($insDocPlanStatSum = $data.insDocPlanStatSum)
+##        #set($insWsPlanStatSum = $data.insWsPlanStatSum)
+##        #set($sosCd = $data.getSosCd())
+##        #set($sosLink = $progress.createChangeLink("$data.bumonSeiName","dps000C00F00Change","false","false","$sosCd","","",$!style))
+##        ##チーム別計画公開
+##        #set($codeAndValueTeamOpen = $progress.progressTeamPlanAlOpenStatus($!mrPlanStatSum, $!rank, $!sosCd))
+##        #set($teamOpenStatus = $codeAndValueTeamOpen.value)
+##        #if($codeAndValueTeamOpen.code.equals("NOT"))
+##            #set($teamOpenClass = $bgNot)
+##        #elseif($codeAndValueTeamOpen.code.equals("ING"))
+##            #set($teamOpenClass = $bgIng)
+##            #set($teamOpenStatus = $teamOpenStatus)
+##        #elseif($codeAndValueTeamOpen.code.equals("END"))
+##            #set($teamOpenClass = $bgEnd)
+##            #set($teamOpenStatus = $teamOpenStatus + "<br>" + $!format.toString($!mrPlanStatSum.teamPlanOpenDate, 'MM/dd HH:mm'))
+##        #end
+##        ##チーム別計画確定
+##        #set($codeAndValueTeamFix = $progress.progressTeamPlanMasterFixStatus($!mrPlanStatSum, $!rank, $!sosCd))
+##        #set($teamFixStatus = $codeAndValueTeamFix.value)
+##        #if($codeAndValueTeamFix.code.equals("NOT"))
+##            #set($teamFixClass = $bgNot)
+##        #elseif($codeAndValueTeamFix.code.equals("ING"))
+##            #set($teamFixClass = $bgIng)
+##            #set($teamFixStatus = $teamFixStatus)
+##        #elseif($codeAndValueTeamFix.code.equals("END"))
+##            #set($teamFixClass = $bgEnd)
+##            #set($teamFixStatus = $teamFixStatus + "<br>" + $!format.toString($!mrPlanStatSum.teamPlanFixDate, 'MM/dd HH:mm'))
+##        #end
+##        ##担当者別計画ＡＬ公開
+##        #set($codeAndValueMrPlanAlOpen = $progress.progressMrPlanAlOpenStatus($!mrPlanStatSum, $!rank, $!sosCd))
+##        #set($mrPlanAlOpenStatus = $codeAndValueMrPlanAlOpen.value)
+##        #if($codeAndValueMrPlanAlOpen.code.equals("NOT"))
+##            #set($mrPlanAlOpenClass = $bgNot)
+##        #elseif($codeAndValueMrPlanAlOpen.code.equals("ING"))
+##            #set($mrPlanAlOpenClass = $bgIng)
+##            #set($mrPlanAlOpenStatus = $mrPlanAlOpenStatus)
+##        #elseif($codeAndValueMrPlanAlOpen.code.equals("END"))
+##            #set($mrPlanAlOpenClass = $bgEnd)
+##            #set($mrPlanAlOpenStatus = $mrPlanAlOpenStatus + "<br>" + $!format.toString($!mrPlanStatSum.mrPlanOpenDate, 'MM/dd HH:mm'))
+##        #end
+##        ##担当者別計画ＡＬ修正
+##        #set($codeAndValueMrPlanAlUpdate = $progress.progressMrPlanAlUpdateStatus($!mrPlanStatSum, $!rank, $!sosCd))
+##        #set($mrPlanAlUpdateStatus = $codeAndValueMrPlanAlUpdate.value)
+##        #if($codeAndValueMrPlanAlUpdate.code.equals("NOT"))
+##            #set($mrPlanAlUpdateClass = $bgNot)
+##        #elseif($codeAndValueMrPlanAlUpdate.code.equals("ING"))
+##            #set($mrPlanAlUpdateClass = $bgIng)
+##            #set($!mrPlanAlUpdateStatus = $!mrPlanAlUpdateStatus)
+##        #elseif($codeAndValueMrPlanAlUpdate.code.equals("END"))
+##            #set($mrPlanAlUpdateClass = $bgEnd)
+##            #if($mrPlanStatSum.mrPlanInputDate)
+##                #set($mrPlanAlUpdateStatus = $!mrPlanAlUpdateStatus + "<br>" + $!format.toString($!mrPlanStatSum.mrPlanInputDate, 'MM/dd HH:mm'))
+##            #else
+##                #set($mrPlanAlUpdateStatus = $!mrPlanAlUpdateStatus)
+##            #end
+##        #end
+##        ##担当者別計画所長確定
+##        #set($codeAndValueMrPlanMasterFix = $progress.progressMrPlanMasterFixStatus($!mrPlanStatSum, $!rank, $!sosCd, null))
+##        #set($mrPlanMasterFixStatus = $codeAndValueMrPlanMasterFix.value)
+##        #if($codeAndValueMrPlanMasterFix.code.equals("NOT"))
+##            #set($mrPlanMasterFixClass = $bgNot)
+##        #elseif($codeAndValueMrPlanMasterFix.code.equals("ING"))
+##            #set($mrPlanMasterFixClass = $bgIng)
+##            #set($mrPlanMasterFixStatus = $mrPlanMasterFixStatus)
+##        #elseif($codeAndValueMrPlanMasterFix.code.equals("END"))
+##            #set($mrPlanMasterFixClass = $bgEnd)
+##            #set($mrPlanMasterFixStatus = $mrPlanMasterFixStatus + "<br>" + $!format.toString($!mrPlanStatSum.mrPlanFixDate, 'MM/dd HH:mm'))
+##        #end
+##        ##施設医師別計画配分状況
+##        #set($codeAndValueInsDocPlanDist = $progress.progressInsDocPlanDistStatus($mrPlanStatSum, $insDocPlanStatSum, $rank, $!sosCd, null))
+##        #set($insDocPlanDistStatus = $codeAndValueInsDocPlanDist.value)
+##        #if($!codeAndValueInsDocPlanDist.code.equals("NOT"))
+##            #set($insDocPlanDistClass = $bgNot)
+##        #elseif($!codeAndValueInsDocPlanDist.code.equals("ING"))
+##            #set($insDocPlanDistClass = $bgIng)
+##            #set($insDocPlanDistStatus = $insDocPlanDistStatus)
+##        #elseif($codeAndValueInsDocPlanDist.code.equals("END"))
+##            #set($insDocPlanDistClass = $bgEnd)
+##            #set($insDocPlanDistStatus = $!insDocPlanDistStatus + "<br>" + $!format.toString($insDocPlanStatSum.distEndDate, 'MM/dd HH:mm'))
+##        #end
+##        ##施設医師別計画ＭＲ公開
+##        #set($codeAndValueInsDocPlanMrOpen = $progress.progressInsDocPlanMrOpenStatus($!insDocPlanStatSum, $!rank, $!sosCd, null))
+##        #set($insDocPlanMrOpenStatus = $codeAndValueInsDocPlanMrOpen.value)
+##        #if($codeAndValueInsDocPlanMrOpen.code.equals("NOT"))
+##            #set($insDocPlanMrOpenClass = $bgNot)
+##        #elseif($codeAndValueInsDocPlanMrOpen.code.equals("ING"))
+##            #set($insDocPlanMrOpenClass = $bgIng)
+##            #set($insDocPlanMrOpenStatus = $insDocPlanMrOpenStatus)
+##        #elseif($codeAndValueInsDocPlanMrOpen.code.equals("END"))
+##            #set($insDocPlanMrOpenClass = $bgEnd)
+##            #set($insDocPlanMrOpenStatus = $insDocPlanMrOpenStatus + "<br>" + $!format.toString($!insDocPlanStatSum.insDocOpenDate, 'MM/dd HH:mm'))
+##        #end
+##        ##施設医師別計画確定
+##        #set($codeAndValueInsDocPlanMrFix = $progress.progressInsDocPlanMrFixStatus($!insDocPlanStatSum, $!rank, $!sosCd, null))
+##        #set($insDocPlanMrFixStatus = $codeAndValueInsDocPlanMrFix.value)
+##        #if($codeAndValueInsDocPlanMrFix.code.equals("NOT"))
+##            #set($insDocPlanMrFixClass = $bgNot)
+##        #elseif($codeAndValueInsDocPlanMrFix.code.equals("ING"))
+##            #set($insDocPlanMrFixClass = $bgIng)
+##            #set($insDocPlanMrFixStatus = $insDocPlanMrFixStatus)
+##        #elseif($codeAndValueInsDocPlanMrFix.code.equals("END"))
+##            #set($insDocPlanMrFixClass = $bgEnd)
+##            #set($insDocPlanMrFixStatus = $insDocPlanMrFixStatus + "<br>" + $!format.toString($!insDocPlanStatSum.insDocFixDate, 'MM/dd HH:mm'))
+##        #end
+##        ##施設特約店別計画配分状況
+##        #set($codeAndValueInsWsPlanDist = $progress.progressInsWsPlanDistStatus($mrPlanStatSum, $insDocPlanStatSum, $insWsPlanStatSum, $rank, $sosCd, null, "1"))
+##        #set($insWsPlanDistStatus = $codeAndValueInsWsPlanDist.value)
+##        #if($!codeAndValueInsWsPlanDist.code.equals("NOT"))
+##            #set($insWsPlanDistClass = $bgNot)
+##        #elseif($!codeAndValueInsWsPlanDist.code.equals("ING"))
+##            #set($insWsPlanDistClass = $bgIng)
+##            #set($insWsPlanDistStatus = $insWsPlanDistStatus)
+##        #elseif($codeAndValueInsWsPlanDist.code.equals("END"))
+##            #set($insWsPlanDistClass = $bgEnd)
+##            #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>" + $!format.toString($insWsPlanStatSum.distEndDate, 'MM/dd HH:mm'))
+##        #end
+##        ##施設特約店別計画確定
+##        #set($codeAndValueInsWsPlanMrFix = $progress.progressInsWsPlanMrFixStatus($!insWsPlanStatSum, $!rank, $!sosCd, null))
+##        #set($insWsPlanMrFixStatus = $codeAndValueInsWsPlanMrFix.value)
+##        #if($codeAndValueInsWsPlanMrFix.code.equals("NOT"))
+##            #set($insWsPlanMrFixClass = $bgNot)
+##        #elseif($codeAndValueInsWsPlanMrFix.code.equals("ING"))
+##            #set($insWsPlanMrFixClass = $bgIng)
+##            #set($insWsPlanMrFixStatus = $insWsPlanMrFixStatus)
+##        #elseif($codeAndValueInsWsPlanMrFix.code.equals("END"))
+##            #set($insWsPlanMrFixClass = $bgEnd)
+##            #set($insWsPlanMrFixStatus = $insWsPlanMrFixStatus + "<br>" + $!format.toString($!insWsPlanStatSum.insWsFixDate, 'MM/dd HH:mm'))
+##        #end
+##        ##担当者別計画－施設医師別計画UHP合計
+##        #set($mrInsdocClass = "")
+##        #if($data.mrInsdocChoseiUHPFlg)
+##            #set( $mrInsdocClass = "chosei_ari_top")
+##        #end
+##        ##担当者別計画－施設特約店別計画UHP合計
+##        #set($mrInswsClass = "")
+##        #if($data.mrInswsChoseiUHPFlg)
+##            #set( $mrInswsClass = "chosei_ari_top")
+##        #end
+##        <row id="$velocityCount">
+##            <cell $!style><![CDATA[$!sosLink]]></cell>
+##            <cell $!teamOpenClass $!style><![CDATA[$!teamOpenStatus]]></cell>
+##            <cell $!teamFixClass $!style><![CDATA[$!teamFixStatus]]></cell>
+##            <cell $!mrPlanAlOpenClass $!style><![CDATA[$!mrPlanAlOpenStatus]]></cell>
+##            <cell $!mrPlanAlUpdateClass $!style><![CDATA[$!mrPlanAlUpdateStatus]]></cell>
+##            <cell $!mrPlanMasterFixClass $!style><![CDATA[$!mrPlanMasterFixStatus]]></cell>
+##            <cell $!insDocPlanDistClass  $!style><![CDATA[$!insDocPlanDistStatus]]></cell>
+##            <cell $!insWsPlanDistClass  $!style><![CDATA[$!insWsPlanDistStatus]]></cell>
+##            <cell $!insWsPlanMrFixClass $!style><![CDATA[$!insWsPlanMrFixStatus]]></cell>
+##            <cell class="$mrInswsClass"><![CDATA[$progress.createOfficeChoseiString($data.mrInswsChoseiUHPFlg, $data.mrInswsChoseiUHPUpDate, $!sosCd, "1")]]></cell>
+##        </row>
+##    #end
+###end
+###end
+###if($jgiList)
+###if ($rankString.equals("TANTOU"))
+##    #foreach($data in $jgiList)
+##        #set($mrPlanStatSum = $data.mrPlanStatSum)
+##        #set($insDocPlanStatSum = $data.insDocPlanStatSum)
+##        #set($insWsPlanStatSum = $data.insWsPlanStatSum)
+##        #set($sosCd = $data.getSosCd())
+##        #set($jgiNo = $data.jgiNo)
+##        ##担当者別計画所長確定
+##        #set($codeAndValueMrPlanMasterFix = $progress.progressMrPlanMasterFixStatus($!mrPlanStatSum, $!rank, $!sosCd, $!jgiNo))
+##        #set($mrPlanMasterFixStatus = $codeAndValueMrPlanMasterFix.value)
+##        #if($codeAndValueMrPlanMasterFix.code.equals("NOT"))
+##            #set($mrPlanMasterFixClass = $bgNot)
+##        #elseif($codeAndValueMrPlanMasterFix.code.equals("ING"))
+##            #set($mrPlanMasterFixClass = $bgIng)
+##            #set($mrPlanMasterFixStatus = $mrPlanMasterFixStatus)
+##        #elseif($codeAndValueMrPlanMasterFix.code.equals("END"))
+##            #set($mrPlanMasterFixClass = $bgEnd)
+##            #set($mrPlanMasterFixStatus = $mrPlanMasterFixStatus + "<br>" + $!format.toString($!mrPlanStatSum.mrPlanFixDate, 'MM/dd HH:mm'))
+##        #end
+#### add start 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+####      ##施設医師別計画配分状況
+####        #set($codeAndValueInsDocPlanDist = $progress.progressInsDocPlanDistStatus($mrPlanStatSum, $insDocPlanStatSum, $rank, null, $!jgiNo))
+####        #set($insDocPlanDistStatus = $codeAndValueInsDocPlanDist.value)
+####        #if($!codeAndValueInsDocPlanDist.code.equals("NOT"))
+####            #set($insDocPlanDistClass = $bgNot)
+####        #elseif($!codeAndValueInsDocPlanDist.code.equals("ING"))
+####            #set($insDocPlanDistClass = $bgIng)
+####            #set($insDocPlanDistStatus = $insDocPlanDistStatus)
+####        #elseif($codeAndValueInsDocPlanDist.code.equals("END"))
+####            #set($insDocPlanDistClass = $bgEnd)
+####            #set($insDocPlanDistStatus = $!insDocPlanDistStatus + "<br>" + $!format.toString($insDocPlanStatSum.distEndDate, 'MM/dd HH:mm'))
+####        #end
+####      ##施設医師別計画ＭＲ公開
+####        #set($codeAndValueInsDocPlanMrOpen = $progress.progressInsDocPlanMrOpenStatus($!insDocPlanStatSum, $!rank, null, $!jgiNo))
+####        #set($insDocPlanMrOpenStatus = $codeAndValueInsDocPlanMrOpen.value)
+####        #if($codeAndValueInsDocPlanMrOpen.code.equals("NOT"))
+####            #set($insDocPlanMrOpenClass = $bgNot)
+####        #elseif($codeAndValueInsDocPlanMrOpen.code.equals("ING"))
+####            #set($insDocPlanMrOpenClass = $bgIng)
+####            #set($insDocPlanMrOpenStatus = $insDocPlanMrOpenStatus)
+####        #elseif($codeAndValueInsDocPlanMrOpen.code.equals("END"))
+####            #set($insDocPlanMrOpenClass = $bgEnd)
+####            #set($insDocPlanMrOpenStatus = $insDocPlanMrOpenStatus + "<br>" + $!format.toString($!insDocPlanStatSum.insDocOpenDate, 'MM/dd HH:mm'))
+####        #end
+####      ##施設医師別計画確定
+####        #set($codeAndValueInsDocPlanMrFix = $progress.progressInsDocPlanMrFixStatus($!insDocPlanStatSum, $!rank, null, $!jgiNo))
+####        #set($insDocPlanMrFixStatus = $codeAndValueInsDocPlanMrFix.value)
+####        #if($codeAndValueInsDocPlanMrFix.code.equals("NOT"))
+####            #set($insDocPlanMrFixClass = $bgNot)
+####        #elseif($codeAndValueInsDocPlanMrFix.code.equals("ING"))
+####            #set($insDocPlanMrFixClass = $bgIng)
+####            #set($insDocPlanMrFixStatus = $insDocPlanMrFixStatus)
+####        #elseif($codeAndValueInsDocPlanMrFix.code.equals("END"))
+####            #set($insDocPlanMrFixClass = $bgEnd)
+####            #set($insDocPlanMrFixStatus = $insDocPlanMrFixStatus + "<br>" + $!format.toString($!insDocPlanStatSum.insDocFixDate, 'MM/dd HH:mm'))
+####        #end
+#### add end 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+##        ##施設特約店別計画配分状況
+##        #set($codeAndValueInsWsPlanDist = $progress.progressInsWsPlanDistStatus($mrPlanStatSum, $insDocPlanStatSum, $insWsPlanStatSum, $rank, null,$!jgiNo, "1"))
+##        #set($insWsPlanDistStatus = $codeAndValueInsWsPlanDist.value)
+##        #if($!codeAndValueInsWsPlanDist.code.equals("NOT"))
+##            #set($insWsPlanDistClass = $bgNot)
+##        #elseif($!codeAndValueInsWsPlanDist.code.equals("ING"))
+##            #set($insWsPlanDistClass = $bgIng)
+##            #set($insWsPlanDistStatus = $insWsPlanDistStatus)
+##        #elseif($codeAndValueInsWsPlanDist.code.equals("END"))
+##            #set($insWsPlanDistClass = $bgEnd)
+##            #set($insWsPlanDistStatus = $!insWsPlanDistStatus + "<br>" + $!format.toString($insWsPlanStatSum.distEndDate, 'MM/dd HH:mm'))
+##        #end
+##        ##施設特約店別計画確定
+##        #set($codeAndValueInsWsPlanMrFix = $progress.progressInsWsPlanMrFixStatus($!insWsPlanStatSum, $!rank, null, $!jgiNo))
+##        #set($insWsPlanMrFixStatus = $codeAndValueInsWsPlanMrFix.value)
+##        #if($codeAndValueInsWsPlanMrFix.code.equals("NOT"))
+##            #set($insWsPlanMrFixClass = $bgNot)
+##        #elseif($codeAndValueInsWsPlanMrFix.code.equals("ING"))
+##            #set($insWsPlanMrFixClass = $bgIng)
+##            #set($insWsPlanMrFixStatus = $insWsPlanMrFixStatus)
+##        #elseif($codeAndValueInsWsPlanMrFix.code.equals("END"))
+##            #set($insWsPlanMrFixClass = $bgEnd)
+##            #set($insWsPlanMrFixStatus = $insWsPlanMrFixStatus + "<br>" + $!format.toString($!insWsPlanStatSum.insWsFixDate, 'MM/dd HH:mm'))
+##        #end
+##        ##担当者別計画－施設医師別計画UHP合計
+##        #set($mrInsdocClass = "")
+##        #if($data.mrInsdocChoseiUHPFlg)
+##            #set( $mrInsdocClass = "chosei_ari_top")
+##        #end
+##        ##担当者別計画－施設特約店別計画UHP合計
+##        #set($mrInswsClass = "")
+##        #if($data.mrInswsChoseiUHPFlg)
+##            #set( $mrInswsClass = "chosei_ari_top")
+##        #end
+##        <row id="$velocityCount">
+##            <cell $!style>$!{data.jgiName}（$!{data.shokushuName}）</cell>
+##            <cell $!mrPlanMasterFixClass $!style><![CDATA[$!mrPlanMasterFixStatus]]></cell>
+#### add start 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+####            <cell $!insDocPlanDistClass  $!style><![CDATA[$!insDocPlanDistStatus]]></cell>
+#### add end 2018/5/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援）
+##            <cell $!insWsPlanDistClass  $!style><![CDATA[$!insWsPlanDistStatus]]></cell>
+##            <cell $!insWsPlanMrFixClass $!style><![CDATA[$!insWsPlanMrFixStatus]]></cell>
+##            <cell class="$mrInswsClass"><![CDATA[$progress.createInswsChoseiString($data.mrInswsChoseiUHPFlg, $data.mrInswsChoseiUHPUpDate, $!sosCd, $!jgiNo, "1")]]></cell>
+##        </row>
+##    #end
+###end
+###end
+##</rows>

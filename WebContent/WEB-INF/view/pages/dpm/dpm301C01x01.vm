@@ -1,0 +1,39 @@
+#set( $layout = "nothingLayout.vm" )
+#set( $data = $form.getRequestData("DPM301C01_DATA_R"))
+#set( $header = $form.getRequestData("DPM301C01_INPUT_DATA_R"))
+#set( $dataList = $data.getDetailList())
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+##RowId用カウンタ
+#set( $idcnt = 1 )
+#foreach($resultData in $dataList)
+     #set( $q = '"' )
+     #set( $inputBgClass = " class='inputB2'" )
+     ##明細行
+     <row id='$idcnt'>
+        ##メッセージ見出し用
+        <userdata name="prodName">$!resultData.getProdName()</userdata>
+        ##ツールチップ用
+        <userdata name="toolTip">$!resultData.getUpDateJgiName()&#13;$!format.toString($!resultData.getUpDate(), "yyyy/MM/dd HH:mm:ss")</userdata>
+        ##送信データ
+        <userdata name="rowIdList">$!resultData.getProdCode(),$!header.getTmsTytenCd(),$!resultData.getSeqKey(),$!resultData.getUpDate().getTime(),$!resultData.getBaseT()</userdata>
+        ##計算、追加用インデックス
+        <userdata name="tbChangeRate">$!resultData.getTbChangeRate()</userdata>
+        <userdata name="rowType">input</userdata>
+        <cell>$!resultData.getProdName()</cell>
+        <cell><![CDATA[<a href="#" onclick="if(linkClick())dpm300C01F05('$!resultData.getProdCode()');">特約店別</a>]]></cell>
+        <cell type="ron">$!resultData.getBaseB()</cell>
+        <cell type="ron">$!resultData.getBaseT()</cell>
+        #if($security.hasAuth($form.getField("DPM301C01_EDIT_AUTH")))
+        <cell$inputBgClass type='#setColType( $!resultData.getBaseT(), "ed" ,"edn")'>$!resultData.getBaseT()</cell>
+        #else
+        <cell type="ron">$!resultData.getBaseT()</cell>
+        #end
+        <cell></cell>
+        <cell></cell>
+        #set( $idcnt = $idcnt + 1 )
+    </row>
+#end
+</rows>
+#end

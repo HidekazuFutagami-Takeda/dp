@@ -1,0 +1,15 @@
+#parse("WEB-INF/view/cmn/xhtml.vm")
+<html>
+#parse("WEB-INF/view/cmn/headerInfo.vm")
+<body onload="$!bodyOnloadMethod">
+<div class="contents">
+#if (!$form.bean.isDialogueFlg() && !$request.getAttribute("DpAction.DIALOG_KEY"))
+#parse("WEB-INF/view/cmn/homeAndNaviHeader.vm")
+<div class="clear"></div>
+#parse("WEB-INF/view/cmn/dpHeader.vm")
+<div class="clear"></div>
+#end
+$screen_content
+</div>
+</body>
+</html>

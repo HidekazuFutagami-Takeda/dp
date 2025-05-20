@@ -1,0 +1,271 @@
+## (ワ)特約店別計画参照画面
+#set($pageTitle = $text.get("dps502C03","title"))
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($bodyOnloadMethod = "dps502C03F00()")
+#set($dataListFileName = "dps502C03x01.vm")
+
+## ヘッダデータ
+#if($form.getRequestData("DPS502C03_DATA_R_RESULT_HEADER"))
+    #set($resultHeader = $form.getRequestData("DPS502C03_DATA_R_RESULT_HEADER"))
+#end
+
+## 一覧データ
+#if($form.getRequestData("DPS502C03_DATA_R_RESULT_DETAIL"))
+    #set($resultDetail = $form.getRequestData("DPS502C03_DATA_R_RESULT_DETAIL"))
+#end
+
+<script language="javascript">
+<!--
+#set($GridObjName = "dps502C03Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps502C03CoverId")
+var ${GridObjName};
+
+## 初期表示
+function dps502C03F00(){
+    #if($resultDetail)
+    ## グリッド初期化
+    doInitGrid();
+    ## グリッドデータ読み込み
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+    #end
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("特約店名,品目名称,特約店別計画編集,施設積上(B),修正計画(B)");
+    ${GridObjName}.setInitWidths("240,150,120,100,100");
+    ${GridObjName}.setColAlign("left,left,center,right,right");
+    ${GridObjName}.setColTypes("ro,ro,ro,ron,ron");
+    ${GridObjName}.enableResizing("false,false,false,false,false");
+    ${GridObjName}.enableTooltips("true,false,false,false,false");
+    ${GridObjName}.setNumberFormat("0,000",3);
+    ${GridObjName}.setNumberFormat("0,000",4);
+    ${GridObjName}.enableDistributedParsing(true,50,260);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps502C03', $!gridHeight));
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.init();
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.attachEvent("onRowCreated",function(id){
+        var cell = ${GridObjName}.cells(id,0);
+        if (cell.getAttribute("disabled")) cell.setDisabled(true);
+    });
+}
+## バリデーション
+function dps502C03Validation() {
+    ## [必須] 集約方法
+    tytenKisLevel = getCheckedRadioValue(document.dps502C03Form.tytenKisLevel);
+    errorMsg = '$text.get("DPC1003E",["集約方法"])';
+    addErrorInfo(!isEntered(tytenKisLevel), errorMsg);
+
+    ## [必須] 特約店コード（集約方法が支店、課、ブロック１、ブロック２の場合）
+    if(tytenKisLevel){
+        ## [必須] 特約店コード
+        tmsTytenCdPart = document.dps502C03Form.tmsTytenCdPart.value;
+        if(tytenKisLevel == "03" || tytenKisLevel == "04" || tytenKisLevel == "05" || tytenKisLevel == "06") {
+            errorMsg = '$text.get("DPS1029E")';
+            addErrorInfo(!isEntered(tmsTytenCdPart), errorMsg);
+        }
+    }
+    ## [半角数値] 特約店コード
+    if (tmsTytenCdPart) {
+        errorMsg = '$text.get("DPC1004E",["特約店コード","半角数値"])';
+        isAdded = addErrorInfo(!isNumber(tmsTytenCdPart), errorMsg);
+        if (!isAdded) {
+            ## [桁数] 入力特約店コード
+            errorMsg = '$text.get("DPC1027E",["特約店コード","3,5,7,9,11,13"])';
+            isAdded = addErrorInfo(!isTmsTytenCdLength(tmsTytenCdPart), errorMsg);
+            if (!isAdded) {
+                ##[集約方法]と[特約店コード]の関係性検証
+                errorMsg = '$text.get("DPS3323E")';
+                addErrorInfo(!checkTmsTytenCdAndKisLevel(tmsTytenCdPart, tytenKisLevel), errorMsg);
+            }
+        }
+    }
+    return validation();
+}
+## 検索処理
+function dps502C03F05(){
+    ##入力チェック
+    if (!dps502C03Validation()) {
+        return;
+    }
+    ##送信
+    var actionPath = '$link.setAction('dps502C03F05')';
+    document.dps502C03Form.action = actionPath;
+    document.dps502C03Form.submit();
+    dps502C03F05 = blockIt;
+    dps502C03F10Output = blockIt;
+}
+## 出力処理
+function dps502C03F10Output(){
+    ##入力チェック
+    if (!dps502C03Validation()) {
+        return;
+    }
+    ##確認
+    if (!confirm('$text.get("DPS502C03.001","dialogue")')) {
+        return;
+    }
+    ##送信
+    var actionPath = '$link.setAction('dps502C03F10Output')';
+    document.dps502C03Form.action = actionPath;
+    document.dps502C03Form.submit();
+}
+## 特約店選択ダイアログを開く
+function openTytenDialog(){
+    var url = '$link.setAction("dps912C00F00").addQueryData("tmsSelectMode","$tmsselect.getGrayAndEnableButtonMode()").addQueryData("tytenApplyFuncName","dps502C03TytenApply")';
+    openModalWindowW(url);
+
+}
+
+## 特約店選択ダイアログ コールバック
+function dps502C03TytenApply(tytenCd, tytenName){
+    document.getElementById("tmsTytenCdPart").value = removeZeroBlankFromEnd(tytenCd);
+    document.getElementById("tmsTytenName").value = tytenName;
+    document.getElementById("tmsTytenNameLabel").innerHTML = "<label>" + tytenName + "</label>";
+}
+
+## チェックされているラジオボタンのオブジェクトを取得
+function getCheckedRadioValue(objectArray){
+    for(i=0; i < objectArray.length; i++){
+        if(objectArray[i].checked){
+            return objectArray[i].value;
+        }
+    }
+    return "";
+}
+
+## 特約店編集ダイアログを開く
+function openEditDialog(tmsTytenCd, prodCode){
+    var url = "$link.setAction('dps502C04F00')";
+    url = url.concat("?tmsTytenCd=").concat(tmsTytenCd);
+    url = url.concat("&prodCode=").concat(prodCode);
+    openModalWindow(url);
+    #if($resultDetail)
+    	dps502C03F05()
+    #end
+}
+
+## 特約店追加ダイアログを開く
+function openAddDialog(){
+    ## ダイアログを開く
+    var url = '$link.setAction("dps502C05F00")';
+    openModalWindow(url);
+    #if($resultDetail)
+    	dps502C03F05()
+    #end
+}
+//-->
+</script>
+
+#tabbar("sienTokuyaku", "dps502C03F00")
+<div id="tabBox">
+<form name="dps502C03Form" method="post">
+
+## 検索条件
+<div align="left" style="float: left;width: 100%;">
+    <table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+        <td class="gridIndex" style="width:150px;">
+            T/B変換指定率登録状況
+        </td>
+        <td style="padding: 0px 5px 0px 5px;">
+            <label>
+            #if($resultHeader.changeParamBTUpDate)
+                登録済み(最終更新日：$format.toString($resultHeader.changeParamBTUpDate, "yyyy/MM/dd HH:mm"))
+            #else
+                未登録
+            #end
+            </label>
+        </td>
+    </tr>
+    <tr>
+        <td class="gridIndex">特約店</td>
+        <td style="padding: 0px;">
+            <table>
+            <tr>
+                <td>
+                    <table class="gridLine" cellspacing="0" cellpadding="0" style="border-collapse:collapse;" >
+                    <tr>
+                        <td style="width:270px;">
+                            <nobr><label id="tmsTytenNameLabel">$!form.bean.tmsTytenName　</label></nobr>
+                            <input type="hidden" name="tmsTytenName" id="tmsTytenName" value="$!form.bean.tmsTytenName" />
+                        </td>
+                    </tr>
+                    </table>
+                </td>
+                <td style="padding: 0px 0px 0px 7px;">
+                    <input type="button"  value="選択" onClick="openTytenDialog()"  style="width:80px;" />
+                </td>
+            </tr>
+            </table>
+        </td>
+        <td class="gridIndex" nowrap="nowrap" style="width:100px;">特約店コード</td>
+        <td style="padding: 0px 5px 0px 2px;">
+            <input type="text" name="tmsTytenCdPart" id="tmsTytenCdPart" value="$!form.bean.tmsTytenCdPart" size="20" maxlength="13" style="ime-mode:disabled" />
+        </td>
+    </tr>
+    <tr>
+        <td class="gridIndex">集約方法*</td>
+        <td style="padding: 0px 7px 0px 0px;">
+            #foreach($tytenKisLevel in $form.bean.tytenKisLevels)
+                #if($tytenKisLevel.code == $form.bean.tytenKisLevel)
+                    #set($checked = "checked")
+                #else
+                    #set($checked = "")
+                #end
+                <label><input type="radio" name="tytenKisLevel" value="$tytenKisLevel.code"  $checked />$tytenKisLevel.value</label>
+            #end
+        </td>
+    </tr>
+    </table>
+</div>
+## 注意書き
+<div align="left" style="float: left;width: 100%;">
+    <div class="guide">※【特約店コード】は半角数値(3桁～13桁)で入力してください。<br/></div>
+    <div class="guide">※【集約方法】がブロック2(13桁)の場合に編集が可能です。支店(7桁)、課(9桁)、ブロック1(11桁)、ブロック2(13桁)の場合、本店まで特定してください。<br/></div>
+</div>
+## ボタン
+<div align="left" style="float: left;width: 100%;">
+<table style="margin-top:4px; width: 100%;">
+    <tr>
+       <td style="width:80px;"><input type="button" value="検索" style="width:100px;" onclick="dps502C03F05()" /></td>
+       <td style="width:80px;"><input type="button" value="出力" style="width:100px;" onclick="dps502C03F10Output()" /></td>
+       ## 権限あり、かつ施設特約店別計画が〆られた後に限り、ボタン押下可能
+       #if ($!security.hasAuthEdit("DPS502") && $!security.sysManage.wsEndFlg)
+       <td style="width:120px;"><input type="button" align="right" value="特約店別計画追加" onClick="openAddDialog()"/></td>
+       #else
+       <td style="width:120px;"><input type="button" align="right" value="特約店別計画追加" onClick="" disabled /></td>
+       #end
+       #if($resultDetail)
+       <td class="label" style="text-align:right;vertical-align:bottom;">$consts.tableHeader</td>
+       #else
+       <td class="label" style="text-align:right;vertical-align:bottom;">&nbsp;&nbsp;&nbsp;</td>
+       #end
+    </tr>
+</table>
+</div>
+##検索結果
+#if($resultDetail)
+<div align="left" style="float: left;width: 100%;">
+    #loadingGridDiv2("${GridObjName}", "${CoverId}", "width:100%; clear:both;")
+</div>
+#end
+## hidden項目
+#token()
+</form>
+</div>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+ "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+
+    <form-beans>
+      <form-bean name="Dps914C00Form" type="jp.co.takeda.web.in.dps.Dps914C00Form" />
+    </form-beans>
+
+<action-mappings type="jp.co.takeda.web.cmn.action.DpActionMapping">
+<!-- ***********************************************************************
+
+	主担当従業員検索画面
+
+ ***********************************************************************  -->
+<action path="/dps914C00F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps914C00Action" name="Dps914C00Form"
+ scope="request"
+ validate="true">
+    <set-property property="actionMethod" value="dps914C00F00" />
+    <set-property property="validationMethod" value="dps914C00F00Validation" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps914C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps914C00.vm" />
+</action>
+</action-mappings>
+</struts-config>

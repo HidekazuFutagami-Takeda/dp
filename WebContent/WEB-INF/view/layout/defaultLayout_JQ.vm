@@ -1,0 +1,65 @@
+#parse("WEB-INF/view/cmn/xhtml.vm")
+<html>
+#parse("WEB-INF/view/cmn/headerInfoDhtmlx_JQ.vm")
+
+<body onload="$!bodyOnloadMethod" onfocus="$!bodyOnfocusMethod">
+#if($topPageFlg)
+<div id="topPageContents">
+#else
+<div id="contents">
+#end
+## -------------------------------
+## homeAndNaviHeader
+## -------------------------------
+#parse("WEB-INF/view/cmn/homeAndNaviHeader.vm")
+<div class="clear"></div>
+## -------------------------------
+## dpHeader
+## -------------------------------
+#parse("WEB-INF/view/cmn/dpHeader.vm")
+<div class="clear"></div>
+## -------------------------------
+## messageArea
+## -------------------------------
+<div id="messageArea">
+#allMessage()
+</div>
+## -------------------------------
+## dataListFileName(グリッドデータ1)
+## -------------------------------
+#if($dataListFileName)
+#set ($gKbn = $dataListFileName.substring(0,3))
+<textarea id="$dataListFileName" style="display:none;">
+#parse("WEB-INF/view/pages/$gKbn/$dataListFileName")
+</textarea>
+#end
+## -------------------------------
+## dataListFileName(グリッドデータ2)
+## -------------------------------
+#if($dataListFileName2)
+<textarea id="$dataListFileName2" style="display:none;">
+#parse("WEB-INF/view/pages/$gKbn/$dataListFileName2")
+</textarea>
+#end
+## -------------------------------
+## メインコンテンツ
+## -------------------------------
+<textarea id="closeWindow" style="display: none;"></textarea>
+$screen_content
+</div>
+## -------------------------------
+## JS inline
+## -------------------------------
+#if($addLastScriptLink)
+$addLastScriptLink
+#end
+#if($addLastScript)
+<script type="text/javascript">
+<!--
+$addLastScript
+// -->
+</script>
+#end
+
+</body>
+</html>

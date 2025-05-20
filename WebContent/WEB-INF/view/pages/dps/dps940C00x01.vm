@@ -1,0 +1,40 @@
+#set($layout = "nothingLayout.vm" )
+
+## del Start 2022/7/13 R.takamoto ④No.6 一括確定のエラー表示対応
+###set($dps940C00F01Data = $form.getRequestData("DPS940C00F01_DATA_R"))
+###set($list = $dps940C00F01Data.getExceptPlans())
+###set($sosMst = $dps940C00F01Data.getSosMst())
+##
+##$!consts.getDhtmlxGridXmlHeader()
+##<rows>
+###if($list)
+##	#foreach($data in $list)
+##	    <row id="$velocityCount">
+##	        <cell><![CDATA[$data.jgiName]]></cell>
+##	        <cell><![CDATA[$data.insOrTytenName]]></cell>
+##	        <cell><![CDATA[$data.wrappedMessage]]></cell>
+##	    </row>
+##	#end
+###end
+##</rows>
+## del End 2022/7/13 R.takamoto ④No.6 一括確定のエラー表示対応
+
+## add Start 2022/7/13 R.takamoto ④No.6 一括確定のエラー表示対応
+#if ( $form.getRequestData("DPS940C00F01_DATA_R"))
+    #set( $dataList = $form.getRequestData("DPS940C00F01_DATA_R"))
+#end
+
+#if($dataList)
+	$!consts.getDhtmlxGridXmlHeader()
+	<rows total_count='$dataList.size()'>
+		#foreach($resultObj in $dataList)
+			<row id="$velocityCount">
+				<cell><![CDATA[$resultObj.getBumonRyakuName2()]]></cell>
+				<cell><![CDATA[$resultObj.getBumonRyakuName3()]]></cell>
+				<cell><![CDATA[$resultObj.getJgiName()]]></cell>
+				<cell><![CDATA[$resultObj.getErrMessage()<br>対象品目＝$resultObj.getProdMessage()]]></cell>
+			</row>
+		#end
+	</rows>
+#end
+## add End 2022/7/13 R.takamoto ④No.6 一括確定のエラー表示対応

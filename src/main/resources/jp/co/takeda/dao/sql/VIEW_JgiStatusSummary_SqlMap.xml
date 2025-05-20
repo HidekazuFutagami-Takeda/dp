@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="VIEW_JgiStatusSummary_SqlMap" >
+
+  <resultMap id="mrPlanStatSum" class="jp.co.takeda.model.view.MrPlanStatSum" >
+    <result column="MR_PLAN_NONE" property="none" jdbcType="INTEGER" />
+    <result column="ESTIMATING" property="estimating" jdbcType="INTEGER" />
+    <result column="ESTIMATED" property="estimated" jdbcType="INTEGER" />
+    <result column="TEAM_PLAN_OPENED" property="teamPlanOpened" jdbcType="INTEGER" />
+    <result column="TEAM_PLAN_COMPLETED" property="teamPlanCompleted" jdbcType="INTEGER" />
+    <result column="MR_PLAN_OPENED" property="mrPlanOpened" jdbcType="INTEGER" />
+    <result column="MR_PLAN_INPUT_FINISHED" property="mrPlanInputFinished" jdbcType="INTEGER" />
+    <result column="MR_PLAN_COMPLETED" property="mrPlanCompleted" jdbcType="INTEGER" />
+    <result column="MR_PLAN_COUNT" property="totalCount" jdbcType="INTEGER" />
+    <result column="EST_START_DATE" property="estStartDate" jdbcType="TIMESTAMP" />
+    <result column="EST_END_DATE" property="estEndDate" jdbcType="TIMESTAMP" />
+    <result column="TEAM_PLAN_OPEN_DATE" property="teamPlanOpenDate" jdbcType="TIMESTAMP" />
+    <result column="TEAM_PLAN_FIX_DATE" property="teamPlanFixDate" jdbcType="TIMESTAMP" />
+    <result column="MR_PLAN_OPEN_DATE" property="mrPlanOpenDate" jdbcType="TIMESTAMP" />
+    <result column="MR_PLAN_INPUT_DATE" property="mrPlanInputDate" jdbcType="TIMESTAMP" />
+    <result column="MR_PLAN_FIX_DATE" property="mrPlanFixDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="insDocPlanStatSum" class="jp.co.takeda.model.view.InsDocPlanStatSum" >
+    <result column="INS_DOC_PLAN_NONE" property="none" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_DISTING" property="disting" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_DISTED" property="disted" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_OPENED" property="planOpened" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_COMPLETED" property="planCompleted" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_COUNT" property="totalCount" jdbcType="INTEGER" />
+    <result column="INS_DOC_DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+    <result column="INS_DOC_DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+    <result column="INS_DOC_OPEN_DATE" property="insDocOpenDate" jdbcType="TIMESTAMP" />
+    <result column="INS_DOC_FIX_DATE" property="insDocFixDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="insWsPlanStatSum" class="jp.co.takeda.model.view.InsWsPlanStatSum" >
+    <result column="INS_WS_PLAN_NONE" property="none" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_DISTING" property="disting" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_DISTED" property="disted" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_OPENED" property="planOpened" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_COMPLETED" property="planCompleted" jdbcType="INTEGER" />
+    <result column="INS_WS_PLAN_COUNT" property="totalCount" jdbcType="INTEGER" />
+    <result column="INS_WS_DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_OPEN_DATE" property="insWsOpenDate" jdbcType="TIMESTAMP" />
+    <result column="INS_WS_FIX_DATE" property="insWsFixDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.view.JgiStatusSummary" >
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result property="mrPlanStatSum" resultMap="VIEW_JgiStatusSummary_SqlMap.mrPlanStatSum" />
+    <result property="insDocPlanStatSum" resultMap="VIEW_JgiStatusSummary_SqlMap.insDocPlanStatSum" />
+    <result property="insWsPlanStatSum" resultMap="VIEW_JgiStatusSummary_SqlMap.insWsPlanStatSum" />
+    <result column="MR_INSWS_CHOSEI_UHP_FLG" property="mrInswsChoseiUHPFlg" jdbcType="CHAR" />
+    <result column="MR_INSWS_CHOSEI_UHP_UPDATE" property="mrInswsChoseiUHPUpDate" jdbcType="TIMESTAMP" />
+    <result column="MR_INSDOC_CHOSEI_UHP_FLG" property="mrInsdocChoseiUHPFlg" jdbcType="CHAR" />
+    <result column="MR_INSDOC_CHOSEI_UHP_UPDATE" property="mrInsdocChoseiUHPUpDate" jdbcType="TIMESTAMP" />
+    <result column="SHOKUSHU_NAME" property="shokushuName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <!-- 検索/ステータスサマリー -->
+  <sql id="summary_sql">
+    WITH MR_PLAN_STAT AS (SELECT JM.JGI_NO
+                  ,COUNT(CASE WHEN MPS.STATUS IS NULL THEN 1 ELSE NULL END) AS MR_PLAN_NONE
+                  ,COUNT(CASE WHEN MPS.STATUS >= '1' THEN 1 ELSE NULL END) AS ESTIMATING
+                  ,COUNT(CASE WHEN MPS.STATUS >= '2' THEN 1 ELSE NULL END) AS ESTIMATED
+                  ,COUNT(CASE WHEN MPS.STATUS >= '3' THEN 1 ELSE NULL END) AS TEAM_PLAN_OPENED
+                  ,COUNT(CASE WHEN MPS.STATUS >= '4' THEN 1 ELSE NULL END) AS TEAM_PLAN_COMPLETED
+                  ,COUNT(CASE WHEN MPS.STATUS >= '5' THEN 1 ELSE NULL END) AS MR_PLAN_OPENED
+                  ,COUNT(CASE WHEN MPS.STATUS >= '6' THEN 1 ELSE NULL END) AS MR_PLAN_INPUT_FINISHED
+                  ,COUNT(CASE WHEN MPS.STATUS >= '7' THEN 1 ELSE NULL END) AS MR_PLAN_COMPLETED
+                  ,COUNT(PP.PROD_CODE) AS MR_PLAN_COUNT
+                  ,MAX(EST_START_DATE) AS EST_START_DATE
+                  ,MAX(EST_END_DATE) AS EST_END_DATE
+                  ,MAX(TEAM_PLAN_OPEN_DATE) AS TEAM_PLAN_OPEN_DATE
+                  ,MAX(TEAM_PLAN_FIX_DATE) AS TEAM_PLAN_FIX_DATE
+                  ,MAX(MR_PLAN_OPEN_DATE) AS MR_PLAN_OPEN_DATE
+                  ,MAX(MR_PLAN_INPUT_DATE) AS MR_PLAN_INPUT_DATE
+                  ,MAX(MR_PLAN_FIX_DATE) AS MR_PLAN_FIX_DATE
+<!-- add Start 2022/08/03 R.takamoto UAT課題対応No,5:画面によって従業員の並び順が異なっている -->
+                  ,MAX(SM1.BR_CODE) AS BR_CODE
+                  ,MAX(SM1.DIST_SEQ) AS DIST_SEQ
+                  ,MAX(SM1.DIST_CODE) AS DIST_CODE
+                  ,MAX(SM1.TEAM_CODE) AS TEAM_CODE
+<!-- add End 2022/08/03 R.takamoto UAT課題対応No,5:画面によって従業員の並び順が異なっている -->
+              FROM DPS_C_JGI_MST JM
+                   LEFT OUTER JOIN DPS_C_SOS_MST SM1
+                ON JM.SOS_CD3 = SM1.SOS_CD
+                   LEFT OUTER JOIN DPS_C_PLANNED_PROD PP
+                ON JM.JGI_NO = JM.JGI_NO
+                   LEFT OUTER JOIN DPS_I_MR_PLAN_STATUS MPS
+                ON MPS.SOS_CD = SM1.SOS_CD
+               AND MPS.PROD_CODE = PP.PROD_CODE
+             WHERE PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+               <isNotNull property="sales" >
+               AND PP.SALES = #sales:CHAR#
+               </isNotNull>
+               AND PP.CATEGORY = #category:CHAR#
+             GROUP BY JM.JGI_NO
+           )
+        <isNotNull property="isNotShiire"> <!-- mod 2018/05/21 J18-0002 フラグ名変更：isMMP_ONC→isNotShiire-->
+<!--         ,INS_DOC_PLAN_STAT AS (SELECT JM.JGI_NO   -->
+<!--                  ,COUNT(CASE WHEN IDPS.STATUS IS NULL THEN 1 ELSE NULL END) AS INS_DOC_PLAN_NONE  -->
+<!--                  ,COUNT(CASE WHEN IDPS.STATUS >= '1' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_DISTING  -->
+<!--                  ,COUNT(CASE WHEN IDPS.STATUS >= '2' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_DISTED  -->
+<!--                  ,COUNT(CASE WHEN IDPS.STATUS >= '3' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_OPENED  -->
+<!--                  ,COUNT(CASE WHEN IDPS.STATUS >= '4' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_COMPLETED  -->
+<!--                  ,COUNT(JM.JGI_NO) AS INS_DOC_PLAN_COUNT  -->
+<!--                  ,MAX(DIST_START_DATE) AS INS_DOC_DIST_START_DATE  -->
+<!--                  ,MAX(DIST_END_DATE) AS INS_DOC_DIST_END_DATE  -->
+<!--                  ,MAX(INS_DOC_OPEN_DATE) AS INS_DOC_OPEN_DATE  -->
+<!--                  ,MAX(INS_DOC_FIX_DATE) AS INS_DOC_FIX_DATE  -->
+<!--              FROM DPS_C_JGI_MST JM  -->
+<!--                   LEFT OUTER JOIN DPS_I_INS_DOC_PLAN_STATUS IDPS  -->
+<!--                ON IDPS.JGI_NO = JM.JGI_NO  -->
+<!--                   LEFT OUTER JOIN DPS_C_PLANNED_PROD PP  -->
+<!--                ON IDPS.PROD_CODE = PP.PROD_CODE  -->
+<!--             WHERE PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#  -->
+<!--               <isNotNull property="sales" >  -->
+<!--               AND PP.SALES = #sales:CHAR#  -->
+<!--               </isNotNull>  -->
+<!--               AND PP.CATEGORY = #category:CHAR#  -->
+<!--               AND PP.PLAN_LEVEL_INS_DOC = '1'  -->
+<!--             GROUP BY JM.JGI_NO  -->
+<!--             )  -->
+        </isNotNull>
+        ,INS_WS_PLAN_STAT AS (SELECT JM.JGI_NO
+                  ,COUNT(CASE WHEN IWPS.STATUS IS NULL THEN 1 ELSE NULL END) AS INS_WS_PLAN_NONE
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '1' THEN 1 ELSE NULL END) AS INS_WS_PLAN_DISTING
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '2' THEN 1 ELSE NULL END) AS INS_WS_PLAN_DISTED
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '3' THEN 1 ELSE NULL END) AS INS_WS_PLAN_OPENED
+                  ,COUNT(CASE WHEN IWPS.STATUS >= '4' THEN 1 ELSE NULL END) AS INS_WS_PLAN_COMPLETED
+                  ,COUNT(JM.JGI_NO) AS INS_WS_PLAN_COUNT
+                  ,MAX(DIST_START_DATE) AS INS_WS_DIST_START_DATE
+                  ,MAX(DIST_END_DATE) AS INS_WS_DIST_END_DATE
+                  ,MAX(INS_WS_OPEN_DATE) AS INS_WS_OPEN_DATE
+                  ,MAX(INS_WS_FIX_DATE) AS INS_WS_FIX_DATE
+              FROM DPS_C_JGI_MST JM
+                   LEFT OUTER JOIN DPS_C_PLANNED_PROD PP
+                ON JM.JGI_NO = JM.JGI_NO
+                   LEFT OUTER JOIN DPS_I_INS_WS_PLAN_STATUS IWPS
+                ON IWPS.JGI_NO = JM.JGI_NO
+               AND IWPS.PROD_CODE = PP.PROD_CODE
+             WHERE PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+               <isNotNull property="sales" >
+               AND PP.SALES = #sales:CHAR#
+               </isNotNull>
+               AND PP.CATEGORY = #category:CHAR#
+             GROUP BY JM.JGI_NO
+             )
+        ,CHOSEI AS(SELECT CH.JGI_NO
+	          ,MAX(CH.MR_INSWS_CHOSEI_FLG) MR_INSWS_CHOSEI_FLG
+	          ,MAX(CH.UP_DATE) UP_DATE
+	          FROM DPS_I_CHOSEI CH
+	               INNER JOIN DPS_C_PLANNED_PROD PR
+	            ON CH.PROD_CODE = PR.PROD_CODE
+	          WHERE
+	             PR.CATEGORY=#category:CHAR#
+	          GROUP BY CH.JGI_NO
+	         )
+        ,CHOSEI4 AS(SELECT CH.JGI_NO
+	          ,MAX(CH.MR_DR_CHOSEI_FLG) MR_INSDOC_CHOSEI_FLG
+	          FROM DPS_I_CHOSEI CH
+	               INNER JOIN DPS_C_PLANNED_PROD PR
+	            ON CH.PROD_CODE = PR.PROD_CODE
+	          WHERE
+	             PR.CATEGORY=#category:CHAR#
+                AND PR.PLAN_LEVEL_INS_DOC = '1'
+	          GROUP BY CH.JGI_NO
+	         )
+    SELECT JM.JGI_NO
+          ,JM.JGI_NAME
+          ,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+          ,MR_PLAN_NONE
+          ,ESTIMATING
+          ,ESTIMATED
+          ,TEAM_PLAN_OPENED
+          ,TEAM_PLAN_COMPLETED
+          ,MR_PLAN_OPENED
+          ,MR_PLAN_INPUT_FINISHED
+          ,MR_PLAN_COMPLETED
+          ,MR_PLAN_COUNT
+          ,EST_START_DATE
+          ,EST_END_DATE
+          ,TEAM_PLAN_OPEN_DATE
+          ,TEAM_PLAN_FIX_DATE
+          ,MR_PLAN_OPEN_DATE
+          ,MR_PLAN_INPUT_DATE
+          ,MR_PLAN_FIX_DATE
+        <isNotNull property="isNotShiire"> <!-- mod 2018/05/21 J18-0002 フラグ名変更：isMMP_ONC→isNotShiire-->
+          ,NULL AS INS_DOC_PLAN_NONE
+          ,NULL AS INS_DOC_PLAN_DISTING
+          ,NULL AS INS_DOC_PLAN_DISTED
+          ,NULL AS INS_DOC_PLAN_OPENED
+          ,NULL AS INS_DOC_PLAN_COMPLETED
+          ,NULL AS INS_DOC_PLAN_COUNT
+          ,NULL AS INS_DOC_DIST_START_DATE
+          ,NULL AS INS_DOC_DIST_END_DATE
+          ,NULL AS INS_DOC_OPEN_DATE
+          ,NULL AS INS_DOC_FIX_DATE
+        </isNotNull>
+        <isNull property="isNotShiire"> <!-- mod 2018/05/21 J18-0002 フラグ名変更：isMMP_ONC→isNotShiire-->
+          ,NULL AS INS_DOC_PLAN_NONE
+          ,NULL AS INS_DOC_PLAN_DISTING
+          ,NULL AS INS_DOC_PLAN_DISTED
+          ,NULL AS INS_DOC_PLAN_OPENED
+          ,NULL AS INS_DOC_PLAN_COMPLETED
+          ,NULL AS INS_DOC_PLAN_COUNT
+          ,NULL AS INS_DOC_DIST_START_DATE
+          ,NULL AS INS_DOC_DIST_END_DATE
+          ,NULL AS INS_DOC_OPEN_DATE
+          ,NULL AS INS_DOC_FIX_DATE
+        </isNull>
+          ,INS_WS_PLAN_NONE
+          ,INS_WS_PLAN_DISTING
+          ,INS_WS_PLAN_DISTED
+          ,INS_WS_PLAN_OPENED
+          ,INS_WS_PLAN_COMPLETED
+          ,INS_WS_PLAN_COUNT
+          ,INS_WS_DIST_START_DATE
+          ,INS_WS_DIST_END_DATE
+          ,INS_WS_OPEN_DATE
+          ,INS_WS_FIX_DATE
+          ,CHOSEI.MR_INSWS_CHOSEI_FLG AS MR_INSWS_CHOSEI_UHP_FLG
+          ,CHOSEI.UP_DATE AS MR_INSWS_CHOSEI_UHP_UPDATE
+          ,CHOSEI4.MR_INSDOC_CHOSEI_FLG AS MR_INSDOC_CHOSEI_UHP_FLG
+          ,CHOSEI.UP_DATE AS MR_INSDOC_CHOSEI_UHP_UPDATE
+      FROM DPS_C_JGI_MST JM
+           INNER JOIN MR_PLAN_STAT MPS
+        ON JM.JGI_NO = MPS.JGI_NO
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ
+        ON JJ.JGI_NO = JM.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+        <isNotNull property="isNotShiire"> <!-- mod 2018/05/21 J18-0002 フラグ名変更：isMMP_ONC→isNotShiire-->
+        <!--  LEFT JOIN INS_DOC_PLAN_STAT IDPS  -->
+        <!--  ON JM.JGI_NO = IDPS.JGI_NO  -->
+        </isNotNull>
+           INNER JOIN INS_WS_PLAN_STAT IWPS
+        ON JM.JGI_NO = IWPS.JGI_NO
+           LEFT OUTER JOIN CHOSEI
+        ON JM.JGI_NO = CHOSEI.JGI_NO
+           LEFT OUTER JOIN CHOSEI4
+        ON JM.JGI_NO = CHOSEI4.JGI_NO
+    </sql>
+
+
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    <include refid = "summary_sql"/>
+    <dynamic prepend="WHERE">
+      EXISTS (
+      SELECT JGILIST.JGI_NO
+		FROM
+	      (SELECT JM.JGI_NO
+	      FROM
+	           DPS_C_VI_JGI_MST JM
+	           INNER JOIN DPS_C_SOS_MST SM
+	        ON JM.SOS_CD = SM.SOS_CD
+	        WHERE
+	         JM.JGI_KB IN
+	         <iterate open="(" close=")" conjunction=","  property="jgiKbList">
+	             #jgiKbList[].dbValue#
+	         </iterate>
+
+	       AND KENMU_KB = 0
+	       AND
+	           JM.SOS_CD = #sosCd:VARCHAR#
+	       AND
+	           JM.SOS_CD3 = #sosCd:VARCHAR#
+	       AND
+	           EXISTS (SELECT JO.JGI_NO
+	                     FROM DPS_S_SY_M_JGI_JOKEN JO
+	                     INNER JOIN DPS_C_JKN_GRP JG ON JG.JOKEN_SET_CD = JO.JOKEN_SET_CD
+	                     WHERE JO.JGI_NO = JM.JGI_NO
+	                     AND JG.SOS_LVL = 4
+	                  )
+	      <!-- add Start 2022/8/19 H.Futagami 2022年4月組織変更対応  トップ画面 担当者の表示修正 -->
+          <isNotNull property="category">
+          AND
+              EXISTS
+              (SELECT 'X'
+              FROM DPS_C_PLANNED_CTG CTG
+                  ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+              WHERE CTG.CATEGORY = #category:CHAR#
+              AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+              AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+              AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+              )
+          </isNotNull>
+	      <!-- End End 2022/8/19 H.Futagami 2022年4月組織変更対応  トップ画面 担当者の表示修正 -->
+<!-- mod Start 2022/08/03 R.takamoto UAT課題対応No,5:画面によって従業員の並び順が異なっている -->
+<!-- 	        ORDER BY BR_CODE, DIST_SEQ, DIST_CODE, TEAM_CODE, SHOKUSEI_CD, SHOKUSHU_CD, JGI_NO -->
+<!-- 	      ) JGILIST -->
+         ) JGILIST
+<!-- 	      WHERE JGILIST.JGI_NO = JM.JGI_NO -->
+         WHERE JGILIST.JGI_NO = JM.JGI_NO
+<!--       ) -->
+      )
+	 ORDER BY MPS.BR_CODE, MPS.DIST_SEQ, MPS.DIST_CODE, MPS.TEAM_CODE, JM.SHOKUSEI_CD, JM.SHOKUSHU_CD, JM.JGI_NO
+<!-- mod End 2022/08/03 R.takamoto UAT課題対応No,5:画面によって従業員の並び順が異なっている -->
+    </dynamic>
+    </select>
+
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    <include refid = "summary_sql"/>
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="jgiNo">
+        JM.JGI_NO = #jgiNo:INTEGER#
+      </isNotNull>
+      <!-- add Start 2022/8/19 H.Futagami 2022年4月組織変更対応  トップ画面 担当者の表示修正  -->
+      <isNotNull prepend="AND" property="category">
+          EXISTS
+          (SELECT 'X'
+          FROM DPS_C_PLANNED_CTG CTG
+              ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+          WHERE CTG.CATEGORY = #category:CHAR#
+          AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+          AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+          AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+          )
+      </isNotNull>
+	  <!-- End End 2022/8/19 H.Futagami 2022年4月組織変更対応  トップ画面 担当者の表示修正  -->
+    </dynamic>
+   </select>
+</sqlMap>

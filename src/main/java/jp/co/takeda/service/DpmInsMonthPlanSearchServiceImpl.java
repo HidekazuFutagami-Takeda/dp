@@ -1,0 +1,1541 @@
+package jp.co.takeda.service;
+
+import static jp.co.takeda.a.exp.ErrMessageKey.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import jp.co.takeda.a.bean.Conveyance;
+import jp.co.takeda.a.bean.MessageKey;
+import jp.co.takeda.a.exp.DataNotFoundException;
+import jp.co.takeda.a.exp.LogicalException;
+import jp.co.takeda.a.exp.SystemException;
+import jp.co.takeda.dao.CodeMasterDao;
+//add Start 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+import jp.co.takeda.dao.DpmInsJgiSosDao;
+//add End 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+import jp.co.takeda.dao.DpmSyComInsOyakoDao;
+import jp.co.takeda.dao.InsMstRealDao;
+import jp.co.takeda.dao.JgiMstRealDao;
+import jp.co.takeda.dao.ManageChangeParamBTDao;
+import jp.co.takeda.dao.ManageChangeParamYTDao;
+import jp.co.takeda.dao.ManageInsMonthPlanDao;
+import jp.co.takeda.dao.ManageInsPlanDao;
+import jp.co.takeda.dao.ManageMrMonthPlanDao;
+import jp.co.takeda.dao.ManagePlannedProdDao;
+import jp.co.takeda.dao.PlannedCtgDao;
+import jp.co.takeda.dao.ProdCategoryDao;
+import jp.co.takeda.dao.SysManageDao;
+import jp.co.takeda.dto.InsMonthPlanForVacHeaderDto;
+import jp.co.takeda.dto.InsMonthPlanForVacResultDetailAddrDto;
+import jp.co.takeda.dto.InsMonthPlanForVacResultDetailInsDto;
+import jp.co.takeda.dto.InsMonthPlanForVacResultDetailTotalDto;
+import jp.co.takeda.dto.InsMonthPlanForVacResultDto;
+import jp.co.takeda.dto.InsMonthPlanResultDetailDto;
+import jp.co.takeda.dto.InsMonthPlanResultDetailTotalDto;
+import jp.co.takeda.dto.InsMonthPlanResultDto;
+import jp.co.takeda.dto.InsMonthPlanScDto;
+import jp.co.takeda.dto.InsPlanForVacScDto;
+import jp.co.takeda.dto.InsProdMonthPlanResultDetailDto;
+import jp.co.takeda.dto.InsProdMonthPlanResultDto;
+import jp.co.takeda.dto.InsProdMonthPlanResultHeaderDto;
+import jp.co.takeda.dto.InsProdMonthPlanScDto;
+import jp.co.takeda.logic.CheckInsNoLogic;
+import jp.co.takeda.logic.MallLogic;
+import jp.co.takeda.model.Cal;
+import jp.co.takeda.model.DpmCCdMst;
+import jp.co.takeda.model.InsMst;
+import jp.co.takeda.model.JgiMst;
+import jp.co.takeda.model.ManageInsMonthPlan;
+import jp.co.takeda.model.ManageMrMonthPlan;
+import jp.co.takeda.model.ManagePlannedProd;
+import jp.co.takeda.model.PlannedCtg;
+import jp.co.takeda.model.SysManage;
+import jp.co.takeda.model.div.ActivityType;
+import jp.co.takeda.model.div.CodeMaster;
+import jp.co.takeda.model.div.InsType;
+import jp.co.takeda.model.div.MrCat;
+import jp.co.takeda.model.div.Prefecture;
+import jp.co.takeda.model.div.Term;
+import jp.co.takeda.security.DpUserInfo;
+import jp.co.takeda.util.MathUtil;
+
+/**
+ * 管理の施設別計画の検索に関するサービス実装クラス
+ *
+ * @author nozaki
+ */
+@Transactional
+@Service("dpmInsMonthPlanSearchService")
+public class DpmInsMonthPlanSearchServiceImpl implements DpmInsMonthPlanSearchService {
+
+	/**
+	 * LOGGER
+	 */
+	private static final Log LOG = LogFactory.getLog(DpmInsMonthPlanSearchServiceImpl.class);
+
+	/**
+	 * 担当者別計画DAO
+	 */
+	@Autowired(required = true)
+	@Qualifier("manageMrMonthPlanDao")
+	protected ManageMrMonthPlanDao manageMrMonthPlanDao;
+
+	/**
+	 * 施設別計画DAO
+	 */
+	@Autowired(required = true)
+	@Qualifier("manageInsMonthPlanDao")
+	protected ManageInsMonthPlanDao manageInsMonthPlanDao;
+
+	/**
+	 * 施設情報DAO
+	 */
+	@Autowired(required = true)
+	@Qualifier("insMstRealDao")
+	protected InsMstRealDao insMstRealDao;
+
+	/**
+	 * 従業員DAO
+	 */
+	@Autowired(required = true)
+	@Qualifier("jgiMstRealDao")
+	protected JgiMstRealDao jgiMstRealDao;
+
+	/**
+	 * 計画対象品目DAO
+	 */
+	@Autowired(required = true)
+	@Qualifier("managePlannedProdDao")
+	protected ManagePlannedProdDao managePlannedProdDao;
+
+	/**
+	 * 変換パラメータ(Y→T価)DAO
+	 */
+	@Autowired(required = true)
+	@Qualifier("manageChangeParamYTDao")
+	protected ManageChangeParamYTDao manageChangeParamYTDao;
+
+	/**
+	 * 変換パラメータ(B→T価)DAO
+	 */
+	@Autowired(required = true)
+	@Qualifier("manageChangeParamBTDao")
+	protected ManageChangeParamBTDao manageChangeParamBTDao;
+
+	/**
+	 * 納入計画管理DAO
+	 */
+	@Autowired(required = true)
+	@Qualifier("sysManageDao")
+	protected SysManageDao sysManageDao;
+
+	/**
+	 * 計画対象カテゴリ領域DAO
+	 */
+	@Autowired(required = true)
+	@Qualifier("plannedCtgDao")
+	protected PlannedCtgDao plannedCtgDao;
+
+	/**
+	 * 計画管理汎用マスタDAO
+	 */
+	@Autowired(required = true)
+	@Qualifier("codeMasterDao")
+	protected CodeMasterDao codeMasterDao;
+
+	/**
+	 * 品目分類DAO
+	 */
+	@Autowired(required = true)
+	@Qualifier("prodCategoryDao")
+	protected ProdCategoryDao prodCategoryDao;
+
+	/**
+	 * 親子関連情報DAO
+	 */
+	@Autowired(required = true)
+	@Qualifier("dpmSyComInsOyakoDao")
+	protected DpmSyComInsOyakoDao dpmSyComInsOyakoDao;
+
+// add Start 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+	/**
+	 * 同じ組織配下の施設担当者DAO
+	 */
+	@Autowired(required = true)
+	@Qualifier("dpmInsJgiSosDao")
+	protected DpmInsJgiSosDao dpmInsJgiSosDao;
+// add End 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+    /**
+     * 管理の共通サービス
+     */
+    @Autowired(required = true)
+    @Qualifier("dpmCommonService")
+    protected DpmCommonService dpmCommonService;
+
+    /**
+     * 管理の共通サービス
+     */
+    @Autowired(required = true)
+    @Qualifier("dpmProdSearchService")
+    protected DpmProdSearchService dpmProdSearchService;
+// add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+	// 施設別計画ヘッダー情報取得(月別)
+	public InsProdMonthPlanResultHeaderDto searchInsMonthPlanHeader(String insNo,String prodCode) {
+
+		// ----------------------
+		// 引数チェック
+		// ----------------------
+		if (insNo == null) {
+			final String errMsg = "検索対象の施設コードがnull";
+			throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+		}
+
+		try {
+			// 施設情報のチェック
+// mod Start 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+//			CheckInsNoLogic logic = new CheckInsNoLogic(jgiMstRealDao, insMstRealDao);
+			CheckInsNoLogic logic = new CheckInsNoLogic(jgiMstRealDao, insMstRealDao, dpmInsJgiSosDao);
+// mod End 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+			InsMst insMst = logic.executeInsProd(insNo, prodCode);
+			return new InsProdMonthPlanResultHeaderDto(insMst);
+
+		} catch (LogicalException e) {
+			return null;
+		}
+	}
+
+	// 施設別計画ヘッダー情報取得(月別)
+	public InsProdMonthPlanResultHeaderDto searchInsMonthPlanHeaderOyako(String insNo,String prodCode, String category) {
+
+		// ----------------------
+		// 引数チェック
+		// ----------------------
+		if (insNo == null) {
+			final String errMsg = "検索対象の施設コードがnull";
+			throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+		}
+		if (category == null) {
+			final String errMsg = "カテゴリがnull";
+			throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+		}
+
+		// -----------------------------
+		// 計画対象カテゴリ領域取得
+		// -----------------------------
+		PlannedCtg plannedCtg = new PlannedCtg();
+		try {
+			plannedCtg = plannedCtgDao.search(category);
+		} catch (DataNotFoundException e1) {
+			final String errMsg = "計画対象カテゴリ領域がnull";
+			throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+		}
+
+		// ---------------------------------
+		// /親子関連情報のカウント取得
+		// ---------------------------------
+		int oyakoCount = 0;
+		String oyakoKbProdCode = prodCode;
+		if (StringUtils.isNotEmpty(oyakoKbProdCode)) {
+			try {
+				oyakoCount = dpmSyComInsOyakoDao.searchCount(oyakoKbProdCode);
+			} catch (DataNotFoundException e) {
+				//親子関連情報が存在しない
+				oyakoKbProdCode = null;
+			}
+			if(oyakoCount == 0) {
+				//親子関連情報が存在しない
+				oyakoKbProdCode = null;
+			}
+		}
+
+		try {
+			// 施設情報のチェック
+// mod Start 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+//			CheckInsNoLogic logic = new CheckInsNoLogic(jgiMstRealDao, insMstRealDao);
+			CheckInsNoLogic logic = new CheckInsNoLogic(jgiMstRealDao, insMstRealDao, dpmInsJgiSosDao);
+// mod End 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+			InsMst insMst = logic.executeInsProdOyako(insNo, prodCode, plannedCtg.getOyakoKb(), plannedCtg.getOyakoKb2(), oyakoKbProdCode);
+			return new InsProdMonthPlanResultHeaderDto(insMst);
+
+		} catch (LogicalException e) {
+			return null;
+		}
+	}
+
+	// 施設別計画取得(医薬・月別)
+	public InsMonthPlanResultDto searchInsMonthPlan(InsMonthPlanScDto scDto, boolean detailErrFlg) throws LogicalException {
+
+		// ----------------------
+		// 引数チェック
+		// ----------------------
+		if (scDto == null) {
+			final String errMsg = "施設別計画検索条件DTOがnull";
+			throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+		}
+		if (scDto.getInsNo() == null) {
+			if (scDto.getJgiNo() == null) {
+				final String errMsg = "検索対象の従業員番号・施設コードが共にnull";
+				throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+			}
+			if (scDto.getInsType() == null) {
+				final String errMsg = "検索対象の対象区分がnull";
+				throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+			}
+		}
+		if (scDto.getProdCode() == null) {
+			final String errMsg = "検索対象の品目固定コードがnull";
+			throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+		}
+
+		String prodCode = scDto.getProdCode();
+
+		// -----------------------------
+		// 計画対象カテゴリ領域取得
+		// -----------------------------
+		PlannedCtg plannedCtg = new PlannedCtg();
+		plannedCtg = plannedCtgDao.search(scDto.getProdCategory());
+
+		// ---------------------------------
+		// /親子関連情報のカウント取得
+		// ---------------------------------
+		int oyakoCount = 0;
+		String oyakoKbProdCode = prodCode;
+		if (StringUtils.isNotEmpty(oyakoKbProdCode)) {
+			oyakoCount = dpmSyComInsOyakoDao.searchCount(oyakoKbProdCode);
+			if(oyakoCount == 0) {
+				//親子関連情報が存在しない
+				oyakoKbProdCode = null;
+			}
+		}
+
+		Integer jgiNo = null;
+		InsType insType = null;
+		String relnInsNo = null;
+
+		// 施設指定
+		if (scDto.getInsNo() != null) {
+
+			// 施設コードが設定されている場合、施設情報のチェック
+// mod Start 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+//			CheckInsNoLogic logic = new CheckInsNoLogic(jgiMstRealDao, insMstRealDao);
+			CheckInsNoLogic logic = new CheckInsNoLogic(jgiMstRealDao, insMstRealDao, dpmInsJgiSosDao);
+// mod End 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+			InsMst insMst = logic.executeInsProdOyako(scDto.getInsNo(), prodCode, plannedCtg.getOyakoKb(), plannedCtg.getOyakoKb2(), oyakoKbProdCode);
+
+			// 取得した施設情報の担当者・対象区分・施設内部コードを取得
+			jgiNo = insMst.getJgiNo();
+			insType = InsType.convertInsType(insMst.getHoInsType());
+			relnInsNo = insMst.getRelnInsNo();
+		}
+		// 全担当施設
+		else {
+			// 施設コードが設定されていない場合、検索条件の入力を使用
+			jgiNo = scDto.getJgiNo();
+			insType = scDto.getInsType();
+		}
+
+
+		// 施設別計画取得
+		List<ManageInsMonthPlan> insPlanList = null;
+		try {
+			insPlanList = manageInsMonthPlanDao.searchListByProd(ManageInsPlanDao.SORT_STRING, prodCode, jgiNo, insType, relnInsNo, plannedCtg.getOyakoKb(), plannedCtg.getOyakoKb2(),plannedCtg.getTgtInsKb(), oyakoKbProdCode);
+		} catch (DataNotFoundException e) {
+			if (detailErrFlg) {
+				throw e;
+			}
+			insPlanList = new ArrayList<ManageInsMonthPlan>();
+		}
+
+		// -----------------------------
+		// モール施設のフィルター
+		// -----------------------------
+		MallLogic mollLogic = new MallLogic();
+		insPlanList = mollLogic.filterManageInsMonthPlanList(insPlanList);
+		// [エラーメッセージ表示モード]、かつ、[フィルター後0件]となった場合、データがない旨を表示
+		if (detailErrFlg && (insPlanList.size() < 1)) {
+			throw new LogicalException(new Conveyance(DATA_NOT_FOUND_ERROR));
+		}
+
+		return createInsMonthPlanResultDto(prodCode, jgiNo, insType, insPlanList, plannedCtg.getOyakoKb(), plannedCtg.getOyakoKb2(), oyakoKbProdCode);
+	}
+
+	// 施設別計画取得(ワクチン・月別)
+	public InsMonthPlanForVacResultDto searchInsMonthPlanForVac(InsPlanForVacScDto scDto) throws LogicalException {
+
+		// ----------------------
+		// 引数チェック
+		// ----------------------
+		if (scDto == null) {
+			final String errMsg = "施設別計画検索条件DTOがnull";
+			throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+		}
+		if (scDto.getInsNo() == null) {
+			if (scDto.getJgiNo() == null) {
+				final String errMsg = "検索対象の従業員番号・施設コードが共にnull";
+				throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+			}
+			if (scDto.getActivityType() == null) {
+				final String errMsg = "検索対象の活動区分がnull";
+				throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+			}
+		}
+		if (scDto.getProdCode() == null) {
+			final String errMsg = "検索対象の品目固定コードがnull";
+			throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+		}
+
+		String prodCode = scDto.getProdCode();
+
+
+		// -----------------------------
+		// 計画対象カテゴリ領域取得
+		// -----------------------------
+		PlannedCtg plannedCtg = new PlannedCtg();
+		plannedCtg = plannedCtgDao.search(scDto.getProdCategory());
+
+		// ---------------------------------
+		// /親子関連情報のカウント取得
+		// ---------------------------------
+		int oyakoCount = 0;
+		String oyakoKbProdCode = prodCode;
+		if (StringUtils.isNotEmpty(oyakoKbProdCode)) {
+			oyakoCount = dpmSyComInsOyakoDao.searchCount(oyakoKbProdCode);
+			if(oyakoCount == 0) {
+				//親子関連情報が存在しない
+				oyakoKbProdCode = null;
+			}
+		}
+
+		String insNo = null;
+		Integer jgiNo = 0;
+		ActivityType activityType =  null;
+		Prefecture addrCodePref =  null;
+		String addrCodeCity =  null;
+
+		if (scDto.getInsNo() != null) {
+
+			// 施設コードが設定されている場合、施設情報のチェック
+// mod Start 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+//			CheckInsNoLogic logic = new CheckInsNoLogic(jgiMstRealDao, insMstRealDao);
+			CheckInsNoLogic logic = new CheckInsNoLogic(jgiMstRealDao, insMstRealDao, dpmInsJgiSosDao);
+// mod End 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+			InsMst insMst = logic.execute(scDto.getInsNo(), MrCat.VAC_MR);
+
+			// -----------------------------
+			// モール施設のチェック
+			// -----------------------------
+			MallLogic mallLogic = new MallLogic();
+			if (mallLogic.isMall(insMst)) {
+				throw new LogicalException(new Conveyance(new MessageKey("DPM1007E")));
+			}
+
+			// 取得した施設情報の担当者・活動区分・府県コード・市区町村コードを取得
+			insNo = insMst.getInsNo();
+			jgiNo = insMst.getJgiNo();
+			activityType = insMst.getActivityType();
+			addrCodePref = insMst.getAddrCodePref();
+			addrCodeCity = insMst.getAddrCodeCity();
+
+		} else {
+
+			// 施設コードが設定されていない場合、検索条件の入力を使用
+			jgiNo = scDto.getJgiNo();
+			activityType = scDto.getActivityType();
+			addrCodePref = scDto.getAddrCodePref();
+			addrCodeCity = scDto.getAddrCodeCity();
+
+		}
+		// 施設別計画取得
+
+		List<ManageInsMonthPlan> insPlanList;
+		try {
+			insPlanList = manageInsMonthPlanDao.searchListByProdForVac(ManageInsPlanDao.SORT_STRING, prodCode, jgiNo, activityType, addrCodePref,
+					addrCodeCity, insNo, plannedCtg.getOyakoKb(), plannedCtg.getOyakoKb2(),plannedCtg.getTgtInsKb(),oyakoKbProdCode);
+		} catch (DataNotFoundException e) {
+			insPlanList = new ArrayList<ManageInsMonthPlan>();
+		}
+
+		return createInsMonthPlaForVacnResultDto(prodCode, jgiNo, activityType, addrCodePref, addrCodeCity, insPlanList);
+
+	}
+	/**
+	 * （ワ）施設別計画検索結果DTOを作成する。
+	 *
+	 * @param prodCode 品目固定コード
+	 * @param jgiNo 従業員番号
+	 * @param insType 対象区分
+	 * @param insPlanList 対象施設計画のリスト
+	 * @return 施設別計画検索結果DTO
+	 * @throws LogicalException
+	 */
+	public InsMonthPlanForVacResultDto createInsMonthPlaForVacnResultDto(String prodCode, Integer jgiNo, ActivityType activityType, Prefecture addrCodePref, String addrCodeCity, List<ManageInsMonthPlan> insPlanList) throws LogicalException {
+
+
+		// -----------------------------
+		// 明細行作成
+		// -----------------------------
+		// 表示対象施設の計画値合計
+		Long searchPlanTermValueTotal = null;
+		Long searchPlanPlanned1ValueYbTotal = null;
+		Long searchPlanPlanned2ValueYbTotal = null;
+		Long searchPlanPlanned3ValueYbTotal = null;
+		Long searchPlanPlanned4ValueYbTotal = null;
+		Long searchPlanPlanned5ValueYbTotal = null;
+		Long searchPlanPlanned6ValueYbTotal = null;
+		Long searchPlanExpected1ValueYbTotal = null;
+		Long searchPlanExpected2ValueYbTotal = null;
+		Long searchPlanExpected3ValueYbTotal = null;
+		Long searchPlanExpected4ValueYbTotal = null;
+		Long searchPlanExpected5ValueYbTotal = null;
+		Long searchPlanExpected6ValueYbTotal = null;
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+		Long searchRecordTotalValueYbTotal = null;
+		Long searchRecordTougetuValueYbTotal = null;
+		Long searchRecord1ValueYbTotal = null;
+		Long searchRecord2ValueYbTotal = null;
+		Long searchRecord3ValueYbTotal = null;
+		Long searchRecord4ValueYbTotal = null;
+		Long searchRecord5ValueYbTotal = null;
+		Long searchRecord6ValueYbTotal = null;
+
+		String vaccineCode = new String();
+		List<DpmCCdMst> searchList = new ArrayList<DpmCCdMst>();
+
+		try {
+			// カテゴリの検索
+			searchList = codeMasterDao.searchCodeByDataKbn(CodeMaster.VAC.getDbValue());
+		} catch (DataNotFoundException e) {
+			final String errMsg = "計画管理汎用マスタに、「" + CodeMaster.VAC.getDbValue() + "」コードが登録されていません。";
+			throw new SystemException(new Conveyance(DATA_NOT_FOUND_ERROR, errMsg));
+		}
+		vaccineCode = searchList.get(0).getDataCd();
+		boolean vacCheck = dpmProdSearchService.searchPlannedProdByProdCode(prodCode).getCategory().equals(vaccineCode);
+		int tougetuCount = TougetuHantei();
+// add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+		// 前行の施設別計画(作業用)
+		ManageInsMonthPlan tmpInsPlan = null;
+
+		// 市区町村リスト
+		List<InsMonthPlanForVacResultDetailAddrDto> addrList = new ArrayList<InsMonthPlanForVacResultDetailAddrDto>();
+
+		if(!CollectionUtils.isEmpty(insPlanList)) {
+
+			// 明細行リスト
+			List<InsMonthPlanForVacResultDetailInsDto> detailList = null;
+
+			for (ManageInsMonthPlan curInsPlan : insPlanList) {
+
+				// 府県コードまたは市区町村コードが変わった場合
+				if (isChange(tmpInsPlan, curInsPlan)) {
+
+					// 前行までの明細で市区町村DTOを作成、リストに追加
+					if (tmpInsPlan != null) {
+						InsMonthPlanForVacResultDetailAddrDto detailAddr = new InsMonthPlanForVacResultDetailAddrDto(tmpInsPlan, detailList);
+						addrList.add(detailAddr);
+					}
+
+					// 明細行リスト初期化
+					detailList = new ArrayList<InsMonthPlanForVacResultDetailInsDto>();
+				}
+
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+				if(vacCheck) {
+					curInsPlan.getImplMonthPlan().setRecordTotalValueYb(curInsPlan.getImplMonthPlan().getRecordTotalValueB());
+					curInsPlan.getImplMonthPlan().setRecord1ValueYb(curInsPlan.getImplMonthPlan().getRecord1ValueB());
+					curInsPlan.getImplMonthPlan().setRecord2ValueYb(curInsPlan.getImplMonthPlan().getRecord2ValueB());
+					curInsPlan.getImplMonthPlan().setRecord3ValueYb(curInsPlan.getImplMonthPlan().getRecord3ValueB());
+					curInsPlan.getImplMonthPlan().setRecord4ValueYb(curInsPlan.getImplMonthPlan().getRecord4ValueB());
+					curInsPlan.getImplMonthPlan().setRecord5ValueYb(curInsPlan.getImplMonthPlan().getRecord5ValueB());
+					curInsPlan.getImplMonthPlan().setRecord6ValueYb(curInsPlan.getImplMonthPlan().getRecord6ValueB());
+				} else {
+					curInsPlan.getImplMonthPlan().setRecordTotalValueYb(curInsPlan.getImplMonthPlan().getRecordTotalValueY());
+					curInsPlan.getImplMonthPlan().setRecord1ValueYb(curInsPlan.getImplMonthPlan().getRecord1ValueY());
+					curInsPlan.getImplMonthPlan().setRecord2ValueYb(curInsPlan.getImplMonthPlan().getRecord2ValueY());
+					curInsPlan.getImplMonthPlan().setRecord3ValueYb(curInsPlan.getImplMonthPlan().getRecord3ValueY());
+					curInsPlan.getImplMonthPlan().setRecord4ValueYb(curInsPlan.getImplMonthPlan().getRecord4ValueY());
+					curInsPlan.getImplMonthPlan().setRecord5ValueYb(curInsPlan.getImplMonthPlan().getRecord5ValueY());
+					curInsPlan.getImplMonthPlan().setRecord6ValueYb(curInsPlan.getImplMonthPlan().getRecord6ValueY());
+				}
+
+
+				switch (tougetuCount){
+				case 0:
+					curInsPlan.getImplMonthPlan().setRecordTougetuValueYb(curInsPlan.getImplMonthPlan().getRecord1ValueYb());
+					break;
+				case 1:
+					curInsPlan.getImplMonthPlan().setRecordTougetuValueYb(curInsPlan.getImplMonthPlan().getRecord2ValueYb());
+					break;
+				case 2:
+					curInsPlan.getImplMonthPlan().setRecordTougetuValueYb(curInsPlan.getImplMonthPlan().getRecord3ValueYb());
+					break;
+				case 3:
+					curInsPlan.getImplMonthPlan().setRecordTougetuValueYb(curInsPlan.getImplMonthPlan().getRecord4ValueYb());
+					break;
+				case 4:
+					curInsPlan.getImplMonthPlan().setRecordTougetuValueYb(curInsPlan.getImplMonthPlan().getRecord5ValueYb());
+					break;
+				case 5:
+					curInsPlan.getImplMonthPlan().setRecordTougetuValueYb(curInsPlan.getImplMonthPlan().getRecord6ValueYb());
+					break;
+				default:
+					break;
+				}
+// add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+				// 明細行作成、リストに追加
+				InsMonthPlanForVacResultDetailInsDto detail = new InsMonthPlanForVacResultDetailInsDto(curInsPlan);
+				detailList.add(detail);
+
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+// add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+				// 表示対象施設の計画値を加算する
+				searchPlanTermValueTotal = MathUtil.add(searchPlanTermValueTotal, curInsPlan.getImplMonthPlan().getPlannedTermValue());
+				searchPlanPlanned1ValueYbTotal = MathUtil.add(searchPlanPlanned1ValueYbTotal, curInsPlan.getImplMonthPlan().getPlanned1ValueYb());
+				searchPlanPlanned2ValueYbTotal = MathUtil.add(searchPlanPlanned2ValueYbTotal, curInsPlan.getImplMonthPlan().getPlanned2ValueYb());
+				searchPlanPlanned3ValueYbTotal = MathUtil.add(searchPlanPlanned3ValueYbTotal, curInsPlan.getImplMonthPlan().getPlanned3ValueYb());
+				searchPlanPlanned4ValueYbTotal = MathUtil.add(searchPlanPlanned4ValueYbTotal, curInsPlan.getImplMonthPlan().getPlanned4ValueYb());
+				searchPlanPlanned5ValueYbTotal = MathUtil.add(searchPlanPlanned5ValueYbTotal, curInsPlan.getImplMonthPlan().getPlanned5ValueYb());
+				searchPlanPlanned6ValueYbTotal = MathUtil.add(searchPlanPlanned6ValueYbTotal, curInsPlan.getImplMonthPlan().getPlanned6ValueYb());
+				searchPlanExpected1ValueYbTotal = MathUtil.add(searchPlanExpected1ValueYbTotal, curInsPlan.getImplMonthPlan().getExpected1ValueYb());
+				searchPlanExpected2ValueYbTotal = MathUtil.add(searchPlanExpected2ValueYbTotal, curInsPlan.getImplMonthPlan().getExpected2ValueYb());
+				searchPlanExpected3ValueYbTotal = MathUtil.add(searchPlanExpected3ValueYbTotal, curInsPlan.getImplMonthPlan().getExpected3ValueYb());
+				searchPlanExpected4ValueYbTotal = MathUtil.add(searchPlanExpected4ValueYbTotal, curInsPlan.getImplMonthPlan().getExpected4ValueYb());
+				searchPlanExpected5ValueYbTotal = MathUtil.add(searchPlanExpected5ValueYbTotal, curInsPlan.getImplMonthPlan().getExpected5ValueYb());
+				searchPlanExpected6ValueYbTotal = MathUtil.add(searchPlanExpected6ValueYbTotal, curInsPlan.getImplMonthPlan().getExpected6ValueYb());
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+				searchRecordTotalValueYbTotal = MathUtil.add(searchRecordTotalValueYbTotal, curInsPlan.getImplMonthPlan().getRecordTotalValueYb());
+				searchRecordTougetuValueYbTotal = MathUtil.add(searchRecordTougetuValueYbTotal, curInsPlan.getImplMonthPlan().getRecordTougetuValueYb());
+				searchRecord1ValueYbTotal = MathUtil.add(searchRecord1ValueYbTotal, curInsPlan.getImplMonthPlan().getRecord1ValueYb());
+				searchRecord2ValueYbTotal = MathUtil.add(searchRecord2ValueYbTotal, curInsPlan.getImplMonthPlan().getRecord2ValueYb());
+				searchRecord3ValueYbTotal = MathUtil.add(searchRecord3ValueYbTotal, curInsPlan.getImplMonthPlan().getRecord3ValueYb());
+				searchRecord4ValueYbTotal = MathUtil.add(searchRecord4ValueYbTotal, curInsPlan.getImplMonthPlan().getRecord4ValueYb());
+				searchRecord5ValueYbTotal = MathUtil.add(searchRecord5ValueYbTotal, curInsPlan.getImplMonthPlan().getRecord5ValueYb());
+				searchRecord6ValueYbTotal = MathUtil.add(searchRecord6ValueYbTotal, curInsPlan.getImplMonthPlan().getRecord6ValueYb());
+// add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+				// 前行に設定
+				tmpInsPlan = curInsPlan;
+			}
+
+			// 最終の市区町村DTOを作成、リストに追加
+			InsMonthPlanForVacResultDetailAddrDto detailAddr = new InsMonthPlanForVacResultDetailAddrDto(tmpInsPlan, detailList);
+			addrList.add(detailAddr);
+		}
+
+		// -----------------------------
+		// 集計行作成
+		// -----------------------------
+
+
+		// 担当者別計画取得
+		ManageMrMonthPlan mrMonthPlan;
+		try {
+			InsType insType =null;
+// mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+//			mrMonthPlan = manageMrMonthPlanDao.searchTotalLine(insType, prodCode, jgiNo);
+			mrMonthPlan = manageMrMonthPlanDao.searchTotalLine(insType, prodCode, jgiNo, vacCheck);
+
+			if(vacCheck) {
+				mrMonthPlan.getImplMonthPlan().setRecordTotalValueYb(mrMonthPlan.getImplMonthPlan().getRecordTotalValueB());
+				mrMonthPlan.getImplMonthPlan().setRecord1ValueYb(mrMonthPlan.getImplMonthPlan().getRecord1ValueB());
+				mrMonthPlan.getImplMonthPlan().setRecord2ValueYb(mrMonthPlan.getImplMonthPlan().getRecord2ValueB());
+				mrMonthPlan.getImplMonthPlan().setRecord3ValueYb(mrMonthPlan.getImplMonthPlan().getRecord3ValueB());
+				mrMonthPlan.getImplMonthPlan().setRecord4ValueYb(mrMonthPlan.getImplMonthPlan().getRecord4ValueB());
+				mrMonthPlan.getImplMonthPlan().setRecord5ValueYb(mrMonthPlan.getImplMonthPlan().getRecord5ValueB());
+				mrMonthPlan.getImplMonthPlan().setRecord6ValueYb(mrMonthPlan.getImplMonthPlan().getRecord6ValueB());
+			} else {
+				mrMonthPlan.getImplMonthPlan().setRecordTotalValueYb(mrMonthPlan.getImplMonthPlan().getRecordTotalValueY());
+				mrMonthPlan.getImplMonthPlan().setRecord1ValueYb(mrMonthPlan.getImplMonthPlan().getRecord1ValueY());
+				mrMonthPlan.getImplMonthPlan().setRecord2ValueYb(mrMonthPlan.getImplMonthPlan().getRecord2ValueY());
+				mrMonthPlan.getImplMonthPlan().setRecord3ValueYb(mrMonthPlan.getImplMonthPlan().getRecord3ValueY());
+				mrMonthPlan.getImplMonthPlan().setRecord4ValueYb(mrMonthPlan.getImplMonthPlan().getRecord4ValueY());
+				mrMonthPlan.getImplMonthPlan().setRecord5ValueYb(mrMonthPlan.getImplMonthPlan().getRecord5ValueY());
+				mrMonthPlan.getImplMonthPlan().setRecord6ValueYb(mrMonthPlan.getImplMonthPlan().getRecord6ValueY());
+			}
+
+			switch (tougetuCount){
+			case 0:
+				mrMonthPlan.getImplMonthPlan().setRecordTougetuValueYb(mrMonthPlan.getImplMonthPlan().getRecord1ValueYb());
+				break;
+			case 1:
+				mrMonthPlan.getImplMonthPlan().setRecordTougetuValueYb(mrMonthPlan.getImplMonthPlan().getRecord2ValueYb());
+				break;
+			case 2:
+				mrMonthPlan.getImplMonthPlan().setRecordTougetuValueYb(mrMonthPlan.getImplMonthPlan().getRecord3ValueYb());
+				break;
+			case 3:
+				mrMonthPlan.getImplMonthPlan().setRecordTougetuValueYb(mrMonthPlan.getImplMonthPlan().getRecord4ValueYb());
+				break;
+			case 4:
+				mrMonthPlan.getImplMonthPlan().setRecordTougetuValueYb(mrMonthPlan.getImplMonthPlan().getRecord5ValueYb());
+				break;
+			case 5:
+				mrMonthPlan.getImplMonthPlan().setRecordTougetuValueYb(mrMonthPlan.getImplMonthPlan().getRecord6ValueYb());
+				break;
+			default:
+				break;
+			}
+// mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+		} catch (DataNotFoundException e) {
+			mrMonthPlan = new ManageMrMonthPlan();
+		}
+
+		// 非表示施設積上  ( ＝ 担当全施設積上 － 表示施設積上 )
+		Long hideValueTerm = new Long(0);
+		Long hideValuePlanned1 = new Long(0);
+		Long hideValuePlanned2 = new Long(0);
+		Long hideValuePlanned3 = new Long(0);
+		Long hideValuePlanned4 = new Long(0);
+		Long hideValuePlanned5 = new Long(0);
+		Long hideValuePlanned6 = new Long(0);
+		Long hideValueExpected1 = new Long(0);
+		Long hideValueExpected2 = new Long(0);
+		Long hideValueExpected3 = new Long(0);
+		Long hideValueExpected4 = new Long(0);
+		Long hideValueExpected5 = new Long(0);
+		Long hideValueExpected6 = new Long(0);
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+		Long hideValueRecordTotalValueYb = new Long(0);
+		Long hideValueRecordTougetuValueYb =  new Long(0);
+		Long hideValueRecord1ValueYb = new Long(0);
+		Long hideValueRecord2ValueYb = new Long(0);
+		Long hideValueRecord3ValueYb = new Long(0);
+		Long hideValueRecord4ValueYb = new Long(0);
+		Long hideValueRecord5ValueYb = new Long(0);
+		Long hideValueRecord6ValueYb = new Long(0);
+// add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+
+		// 施設別計画合計取得(担当全施設)
+		ManageInsMonthPlan sumManageInsMonthPlan = null;
+
+		sumManageInsMonthPlan = manageInsMonthPlanDao.searchSumByInsForVac(prodCode, jgiNo, activityType);
+
+		if (sumManageInsMonthPlan != null) {
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+			// 医薬かワクチンかを判定して、使用する項目に設定する
+			if(vacCheck) {
+				sumManageInsMonthPlan.setRecordTotalValueYb(sumManageInsMonthPlan.getRecordTotalValueB());
+				sumManageInsMonthPlan.setRecord1ValueYb(sumManageInsMonthPlan.getRecord1ValueB());
+				sumManageInsMonthPlan.setRecord2ValueYb(sumManageInsMonthPlan.getRecord2ValueB());
+				sumManageInsMonthPlan.setRecord3ValueYb(sumManageInsMonthPlan.getRecord3ValueB());
+				sumManageInsMonthPlan.setRecord4ValueYb(sumManageInsMonthPlan.getRecord4ValueB());
+				sumManageInsMonthPlan.setRecord5ValueYb(sumManageInsMonthPlan.getRecord5ValueB());
+				sumManageInsMonthPlan.setRecord6ValueYb(sumManageInsMonthPlan.getRecord6ValueB());
+			} else {
+				sumManageInsMonthPlan.setRecordTotalValueYb(sumManageInsMonthPlan.getRecordTotalValueY());
+				sumManageInsMonthPlan.setRecord1ValueYb(sumManageInsMonthPlan.getRecord1ValueY());
+				sumManageInsMonthPlan.setRecord2ValueYb(sumManageInsMonthPlan.getRecord2ValueY());
+				sumManageInsMonthPlan.setRecord3ValueYb(sumManageInsMonthPlan.getRecord3ValueY());
+				sumManageInsMonthPlan.setRecord4ValueYb(sumManageInsMonthPlan.getRecord4ValueY());
+				sumManageInsMonthPlan.setRecord5ValueYb(sumManageInsMonthPlan.getRecord5ValueY());
+				sumManageInsMonthPlan.setRecord6ValueYb(sumManageInsMonthPlan.getRecord6ValueY());
+			}
+
+			//当月を判定して対象月から取得
+			switch (tougetuCount){
+			case 0:
+				sumManageInsMonthPlan.setRecordTougetuValueYb(sumManageInsMonthPlan.getRecord1ValueYb());
+				break;
+			case 1:
+				sumManageInsMonthPlan.setRecordTougetuValueYb(sumManageInsMonthPlan.getRecord2ValueYb());
+				break;
+			case 2:
+				sumManageInsMonthPlan.setRecordTougetuValueYb(sumManageInsMonthPlan.getRecord3ValueYb());
+				break;
+			case 3:
+				sumManageInsMonthPlan.setRecordTougetuValueYb(sumManageInsMonthPlan.getRecord4ValueYb());
+				break;
+			case 4:
+				sumManageInsMonthPlan.setRecordTougetuValueYb(sumManageInsMonthPlan.getRecord5ValueYb());
+				break;
+			case 5:
+				sumManageInsMonthPlan.setRecordTougetuValueYb(sumManageInsMonthPlan.getRecord6ValueYb());
+				break;
+			default:
+				break;
+			}
+// add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+			hideValueTerm = MathUtil.subEx(sumManageInsMonthPlan.getSumPlannedTermValue(), searchPlanTermValueTotal);
+			hideValuePlanned1 = MathUtil.subEx(sumManageInsMonthPlan.getSumPlanned1ValueYb(), searchPlanPlanned1ValueYbTotal);
+			hideValuePlanned2 = MathUtil.subEx(sumManageInsMonthPlan.getSumPlanned2ValueYb(), searchPlanPlanned2ValueYbTotal);
+			hideValuePlanned3 = MathUtil.subEx(sumManageInsMonthPlan.getSumPlanned3ValueYb(), searchPlanPlanned3ValueYbTotal);
+			hideValuePlanned4 = MathUtil.subEx(sumManageInsMonthPlan.getSumPlanned4ValueYb(), searchPlanPlanned4ValueYbTotal);
+			hideValuePlanned5 = MathUtil.subEx(sumManageInsMonthPlan.getSumPlanned5ValueYb(), searchPlanPlanned5ValueYbTotal);
+			hideValuePlanned6 = MathUtil.subEx(sumManageInsMonthPlan.getSumPlanned6ValueYb(), searchPlanPlanned6ValueYbTotal);
+			hideValueExpected1 = MathUtil.subEx(sumManageInsMonthPlan.getSumExpected1ValueYb(), searchPlanExpected1ValueYbTotal);
+			hideValueExpected2 = MathUtil.subEx(sumManageInsMonthPlan.getSumExpected2ValueYb(), searchPlanExpected2ValueYbTotal);
+			hideValueExpected3 = MathUtil.subEx(sumManageInsMonthPlan.getSumExpected3ValueYb(), searchPlanExpected3ValueYbTotal);
+			hideValueExpected4 = MathUtil.subEx(sumManageInsMonthPlan.getSumExpected4ValueYb(), searchPlanExpected4ValueYbTotal);
+			hideValueExpected5 = MathUtil.subEx(sumManageInsMonthPlan.getSumExpected5ValueYb(), searchPlanExpected5ValueYbTotal);
+			hideValueExpected6 = MathUtil.subEx(sumManageInsMonthPlan.getSumExpected6ValueYb(), searchPlanExpected6ValueYbTotal);
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+			hideValueRecordTotalValueYb = MathUtil.subEx(sumManageInsMonthPlan.getRecordTotalValueYb(), searchRecordTotalValueYbTotal);
+			hideValueRecordTougetuValueYb =  MathUtil.subEx(sumManageInsMonthPlan.getRecordTougetuValueYb(), searchRecordTougetuValueYbTotal);
+			hideValueRecord1ValueYb = MathUtil.subEx(sumManageInsMonthPlan.getRecord1ValueYb(), searchRecord1ValueYbTotal);
+			hideValueRecord2ValueYb = MathUtil.subEx(sumManageInsMonthPlan.getRecord2ValueYb(), searchRecord2ValueYbTotal);
+			hideValueRecord3ValueYb = MathUtil.subEx(sumManageInsMonthPlan.getRecord3ValueYb(), searchRecord3ValueYbTotal);
+			hideValueRecord4ValueYb = MathUtil.subEx(sumManageInsMonthPlan.getRecord4ValueYb(), searchRecord4ValueYbTotal);
+			hideValueRecord5ValueYb = MathUtil.subEx(sumManageInsMonthPlan.getRecord5ValueYb(), searchRecord5ValueYbTotal);
+			hideValueRecord6ValueYb = MathUtil.subEx(sumManageInsMonthPlan.getRecord6ValueYb(), searchRecord6ValueYbTotal);
+// add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+		}
+
+		// 明細合計行作成
+		InsMonthPlanForVacResultDetailTotalDto detailTotal = new InsMonthPlanForVacResultDetailTotalDto(mrMonthPlan,
+				hideValueTerm,
+				hideValuePlanned1,
+				hideValuePlanned2,
+				hideValuePlanned3,
+				hideValuePlanned4,
+				hideValuePlanned5,
+				hideValuePlanned6,
+				hideValueExpected1,
+				hideValueExpected2,
+				hideValueExpected3,
+				hideValueExpected4,
+				hideValueExpected5,
+				hideValueExpected6,
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+				hideValueRecordTotalValueYb,
+				hideValueRecordTougetuValueYb,
+				hideValueRecord1ValueYb,
+				hideValueRecord2ValueYb,
+				hideValueRecord3ValueYb,
+				hideValueRecord4ValueYb,
+				hideValueRecord5ValueYb,
+				hideValueRecord6ValueYb
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+				);
+
+		// -------------------------------------------
+		// 検索結果作成
+		// -------------------------------------------
+		return new InsMonthPlanForVacResultDto(detailTotal, addrList);
+	}
+
+	/**
+	 * （医）施設別計画検索結果DTOを作成する。
+	 *
+	 * @param prodCode 品目固定コード
+	 * @param jgiNo 従業員番号
+	 * @param insType 対象区分
+	 * @param insPlanList 対象施設計画のリスト
+	 * @return 施設別計画検索結果DTO
+	 * @throws LogicalException
+	 */
+	public InsMonthPlanResultDto createInsMonthPlanResultDto(String prodCode, Integer jgiNo, InsType insType, List<ManageInsMonthPlan> insPlanList, String oyakoKb,String oyakoKb2, String oyakoKbProdCode) throws LogicalException {
+
+		// -----------------------------
+		// 品目情報取得
+		// -----------------------------
+		ManagePlannedProd plannedProd = managePlannedProdDao.search(prodCode);
+
+		// 品目の立案レベルチェック
+		if (!plannedProd.getPlanLevelIns()) {
+			// 計画立案レベル・施設が設定されていない場合はエラー
+			throw new LogicalException(new Conveyance(new MessageKey("DPM1001E", plannedProd.getProdName(), "施設計画")));
+		}
+
+		// -----------------------------
+		// 編集可能な担当者かチェック
+		// -----------------------------
+		// 施設品目担当者の従業員情報取得
+		JgiMst jgiMst;
+		try {
+			jgiMst = jgiMstRealDao.searchReal(jgiNo);
+		} catch (DataNotFoundException e) {
+			throw new LogicalException(new Conveyance(new MessageKey("DPM1004E")));
+		}
+
+		// 設定中のユーザの配下の担当者か
+		boolean mySosMr = true;
+		try {
+// mod Start 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+//			CheckInsNoLogic logic = new CheckInsNoLogic(jgiMstRealDao, insMstRealDao);
+			CheckInsNoLogic logic = new CheckInsNoLogic(jgiMstRealDao, insMstRealDao, dpmInsJgiSosDao);
+// mod End 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+			logic.validateMr(jgiMst);
+		} catch (LogicalException e) {
+			mySosMr = false;
+		}
+
+		// -----------------------------
+		// 明細行作成
+		// -----------------------------
+
+		// 表示対象施設の計画値合計
+		Long searchPlanTermValueTotal = null;
+		Long searchPlanPlanned1ValueYbTotal = null;
+		Long searchPlanPlanned2ValueYbTotal = null;
+		Long searchPlanPlanned3ValueYbTotal = null;
+		Long searchPlanPlanned4ValueYbTotal = null;
+		Long searchPlanPlanned5ValueYbTotal = null;
+		Long searchPlanPlanned6ValueYbTotal = null;
+		Long searchPlanExpected1ValueYbTotal = null;
+		Long searchPlanExpected2ValueYbTotal = null;
+		Long searchPlanExpected3ValueYbTotal = null;
+		Long searchPlanExpected4ValueYbTotal = null;
+		Long searchPlanExpected5ValueYbTotal = null;
+		Long searchPlanExpected6ValueYbTotal = null;
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+		Long searchRecordTotalValueYbTotal = null;
+		Long searchRecordTougetuValueYbTotal = null;
+		Long searchRecord1ValueYbTotal = null;
+		Long searchRecord2ValueYbTotal = null;
+		Long searchRecord3ValueYbTotal = null;
+		Long searchRecord4ValueYbTotal = null;
+		Long searchRecord5ValueYbTotal = null;
+		Long searchRecord6ValueYbTotal = null;
+
+		String vaccineCode = new String();
+		List<DpmCCdMst> searchList = new ArrayList<DpmCCdMst>();
+
+		try {
+			// カテゴリの検索
+			searchList = codeMasterDao.searchCodeByDataKbn(CodeMaster.VAC.getDbValue());
+		} catch (DataNotFoundException e) {
+			final String errMsg = "計画管理汎用マスタに、「" + CodeMaster.VAC.getDbValue() + "」コードが登録されていません。";
+			throw new SystemException(new Conveyance(DATA_NOT_FOUND_ERROR, errMsg));
+		}
+		vaccineCode = searchList.get(0).getDataCd();
+		boolean vacCheck = dpmProdSearchService.searchPlannedProdByProdCode(prodCode).getCategory().equals(vaccineCode);
+		int tougetuCount = TougetuHantei();
+
+// add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+		List<InsMonthPlanResultDetailDto> detailList = new ArrayList<InsMonthPlanResultDetailDto>();
+		for (ManageInsMonthPlan insPlan : insPlanList) {
+
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+			if(vacCheck) {
+				insPlan.getImplMonthPlan().setRecordTotalValueYb(insPlan.getImplMonthPlan().getRecordTotalValueB());
+				insPlan.getImplMonthPlan().setRecord1ValueYb(insPlan.getImplMonthPlan().getRecord1ValueB());
+				insPlan.getImplMonthPlan().setRecord2ValueYb(insPlan.getImplMonthPlan().getRecord2ValueB());
+				insPlan.getImplMonthPlan().setRecord3ValueYb(insPlan.getImplMonthPlan().getRecord3ValueB());
+				insPlan.getImplMonthPlan().setRecord4ValueYb(insPlan.getImplMonthPlan().getRecord4ValueB());
+				insPlan.getImplMonthPlan().setRecord5ValueYb(insPlan.getImplMonthPlan().getRecord5ValueB());
+				insPlan.getImplMonthPlan().setRecord6ValueYb(insPlan.getImplMonthPlan().getRecord6ValueB());
+			} else {
+				insPlan.getImplMonthPlan().setRecordTotalValueYb(insPlan.getImplMonthPlan().getRecordTotalValueY());
+				insPlan.getImplMonthPlan().setRecord1ValueYb(insPlan.getImplMonthPlan().getRecord1ValueY());
+				insPlan.getImplMonthPlan().setRecord2ValueYb(insPlan.getImplMonthPlan().getRecord2ValueY());
+				insPlan.getImplMonthPlan().setRecord3ValueYb(insPlan.getImplMonthPlan().getRecord3ValueY());
+				insPlan.getImplMonthPlan().setRecord4ValueYb(insPlan.getImplMonthPlan().getRecord4ValueY());
+				insPlan.getImplMonthPlan().setRecord5ValueYb(insPlan.getImplMonthPlan().getRecord5ValueY());
+				insPlan.getImplMonthPlan().setRecord6ValueYb(insPlan.getImplMonthPlan().getRecord6ValueY());
+			}
+
+
+			switch (tougetuCount){
+			case 0:
+				insPlan.getImplMonthPlan().setRecordTougetuValueYb(insPlan.getImplMonthPlan().getRecord1ValueYb());
+				break;
+			case 1:
+				insPlan.getImplMonthPlan().setRecordTougetuValueYb(insPlan.getImplMonthPlan().getRecord2ValueYb());
+				break;
+			case 2:
+				insPlan.getImplMonthPlan().setRecordTougetuValueYb(insPlan.getImplMonthPlan().getRecord3ValueYb());
+				break;
+			case 3:
+				insPlan.getImplMonthPlan().setRecordTougetuValueYb(insPlan.getImplMonthPlan().getRecord4ValueYb());
+				break;
+			case 4:
+				insPlan.getImplMonthPlan().setRecordTougetuValueYb(insPlan.getImplMonthPlan().getRecord5ValueYb());
+				break;
+			case 5:
+				insPlan.getImplMonthPlan().setRecordTougetuValueYb(insPlan.getImplMonthPlan().getRecord6ValueYb());
+				break;
+			default:
+				break;
+			}
+// add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+
+			// 明細行作成
+			// 設定中のユーザの配下であれば編集可能
+			InsMonthPlanResultDetailDto detail = new InsMonthPlanResultDetailDto(insPlan, mySosMr);
+			detailList.add(detail);
+
+			// 表示対象施設の計画値を加算する
+			searchPlanTermValueTotal = MathUtil.add(searchPlanTermValueTotal, insPlan.getImplMonthPlan().getPlannedTermValue());
+			searchPlanPlanned1ValueYbTotal = MathUtil.add(searchPlanPlanned1ValueYbTotal, insPlan.getImplMonthPlan().getPlanned1ValueYb());
+			searchPlanPlanned2ValueYbTotal = MathUtil.add(searchPlanPlanned2ValueYbTotal, insPlan.getImplMonthPlan().getPlanned2ValueYb());
+			searchPlanPlanned3ValueYbTotal = MathUtil.add(searchPlanPlanned3ValueYbTotal, insPlan.getImplMonthPlan().getPlanned3ValueYb());
+			searchPlanPlanned4ValueYbTotal = MathUtil.add(searchPlanPlanned4ValueYbTotal, insPlan.getImplMonthPlan().getPlanned4ValueYb());
+			searchPlanPlanned5ValueYbTotal = MathUtil.add(searchPlanPlanned5ValueYbTotal, insPlan.getImplMonthPlan().getPlanned5ValueYb());
+			searchPlanPlanned6ValueYbTotal = MathUtil.add(searchPlanPlanned6ValueYbTotal, insPlan.getImplMonthPlan().getPlanned6ValueYb());
+			searchPlanExpected1ValueYbTotal = MathUtil.add(searchPlanExpected1ValueYbTotal, insPlan.getImplMonthPlan().getExpected1ValueYb());
+			searchPlanExpected2ValueYbTotal = MathUtil.add(searchPlanExpected2ValueYbTotal, insPlan.getImplMonthPlan().getExpected2ValueYb());
+			searchPlanExpected3ValueYbTotal = MathUtil.add(searchPlanExpected3ValueYbTotal, insPlan.getImplMonthPlan().getExpected3ValueYb());
+			searchPlanExpected4ValueYbTotal = MathUtil.add(searchPlanExpected4ValueYbTotal, insPlan.getImplMonthPlan().getExpected4ValueYb());
+			searchPlanExpected5ValueYbTotal = MathUtil.add(searchPlanExpected5ValueYbTotal, insPlan.getImplMonthPlan().getExpected5ValueYb());
+			searchPlanExpected6ValueYbTotal = MathUtil.add(searchPlanExpected6ValueYbTotal, insPlan.getImplMonthPlan().getExpected6ValueYb());
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+			searchRecordTotalValueYbTotal = MathUtil.add(searchRecordTotalValueYbTotal, insPlan.getImplMonthPlan().getRecordTotalValueYb());
+			searchRecordTougetuValueYbTotal =  MathUtil.add(searchRecordTougetuValueYbTotal, insPlan.getImplMonthPlan().getRecordTougetuValueYb());
+			searchRecord1ValueYbTotal = MathUtil.add(searchRecord1ValueYbTotal, insPlan.getImplMonthPlan().getRecord1ValueYb());
+			searchRecord2ValueYbTotal = MathUtil.add(searchRecord2ValueYbTotal, insPlan.getImplMonthPlan().getRecord2ValueYb());
+			searchRecord3ValueYbTotal = MathUtil.add(searchRecord3ValueYbTotal, insPlan.getImplMonthPlan().getRecord3ValueYb());
+			searchRecord4ValueYbTotal = MathUtil.add(searchRecord4ValueYbTotal, insPlan.getImplMonthPlan().getRecord4ValueYb());
+			searchRecord5ValueYbTotal = MathUtil.add(searchRecord5ValueYbTotal, insPlan.getImplMonthPlan().getRecord5ValueYb());
+			searchRecord6ValueYbTotal = MathUtil.add(searchRecord6ValueYbTotal, insPlan.getImplMonthPlan().getRecord6ValueYb());
+// add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+		}
+
+		// 登録可能かチェック(編集可能明細が1件でもあれば登録可能)
+		boolean enableEntry = false;
+		for (InsMonthPlanResultDetailDto detailDto : detailList) {
+			if (detailDto.getEnableEdit()) {
+				enableEntry = true;
+				break;
+			}
+		}
+
+		// -----------------------------
+		// 集計行作成
+		// -----------------------------
+
+		// 担当者別計画取得
+		ManageMrMonthPlan mrMonthPlan;
+		try {
+// mod Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+//			mrMonthPlan = manageMrMonthPlanDao.searchTotalLine(insType, prodCode, jgiNo);
+			mrMonthPlan = manageMrMonthPlanDao.searchTotalLine(insType, prodCode, jgiNo, vacCheck);
+
+			if(vacCheck) {
+				mrMonthPlan.getImplMonthPlan().setRecordTotalValueYb(mrMonthPlan.getImplMonthPlan().getRecordTotalValueB());
+				mrMonthPlan.getImplMonthPlan().setRecord1ValueYb(mrMonthPlan.getImplMonthPlan().getRecord1ValueB());
+				mrMonthPlan.getImplMonthPlan().setRecord2ValueYb(mrMonthPlan.getImplMonthPlan().getRecord2ValueB());
+				mrMonthPlan.getImplMonthPlan().setRecord3ValueYb(mrMonthPlan.getImplMonthPlan().getRecord3ValueB());
+				mrMonthPlan.getImplMonthPlan().setRecord4ValueYb(mrMonthPlan.getImplMonthPlan().getRecord4ValueB());
+				mrMonthPlan.getImplMonthPlan().setRecord5ValueYb(mrMonthPlan.getImplMonthPlan().getRecord5ValueB());
+				mrMonthPlan.getImplMonthPlan().setRecord6ValueYb(mrMonthPlan.getImplMonthPlan().getRecord6ValueB());
+			} else {
+				mrMonthPlan.getImplMonthPlan().setRecordTotalValueYb(mrMonthPlan.getImplMonthPlan().getRecordTotalValueY());
+				mrMonthPlan.getImplMonthPlan().setRecord1ValueYb(mrMonthPlan.getImplMonthPlan().getRecord1ValueY());
+				mrMonthPlan.getImplMonthPlan().setRecord2ValueYb(mrMonthPlan.getImplMonthPlan().getRecord2ValueY());
+				mrMonthPlan.getImplMonthPlan().setRecord3ValueYb(mrMonthPlan.getImplMonthPlan().getRecord3ValueY());
+				mrMonthPlan.getImplMonthPlan().setRecord4ValueYb(mrMonthPlan.getImplMonthPlan().getRecord4ValueY());
+				mrMonthPlan.getImplMonthPlan().setRecord5ValueYb(mrMonthPlan.getImplMonthPlan().getRecord5ValueY());
+				mrMonthPlan.getImplMonthPlan().setRecord6ValueYb(mrMonthPlan.getImplMonthPlan().getRecord6ValueY());
+			}
+
+			switch (tougetuCount){
+			case 0:
+				mrMonthPlan.getImplMonthPlan().setRecordTougetuValueYb(mrMonthPlan.getImplMonthPlan().getRecord1ValueYb());
+				break;
+			case 1:
+				mrMonthPlan.getImplMonthPlan().setRecordTougetuValueYb(mrMonthPlan.getImplMonthPlan().getRecord2ValueYb());
+				break;
+			case 2:
+				mrMonthPlan.getImplMonthPlan().setRecordTougetuValueYb(mrMonthPlan.getImplMonthPlan().getRecord3ValueYb());
+				break;
+			case 3:
+				mrMonthPlan.getImplMonthPlan().setRecordTougetuValueYb(mrMonthPlan.getImplMonthPlan().getRecord4ValueYb());
+				break;
+			case 4:
+				mrMonthPlan.getImplMonthPlan().setRecordTougetuValueYb(mrMonthPlan.getImplMonthPlan().getRecord5ValueYb());
+				break;
+			case 5:
+				mrMonthPlan.getImplMonthPlan().setRecordTougetuValueYb(mrMonthPlan.getImplMonthPlan().getRecord6ValueYb());
+				break;
+			default:
+				break;
+			}
+// mod End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+		} catch (DataNotFoundException e) {
+			mrMonthPlan = new ManageMrMonthPlan();
+		}
+
+		// 施設別計画合計取得(担当全施設)
+		ManageInsMonthPlan sumManageInsMonthPlan;
+		sumManageInsMonthPlan = manageInsMonthPlanDao.searchSumByIns(prodCode, jgiNo, insType, oyakoKb, oyakoKb2, oyakoKbProdCode);
+
+		// 上位立案(担当者計画)に対する品目立案レベル取得
+		boolean upperPlanLevel = plannedProd.getPlanLevelMr();
+
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+		// 医薬かワクチンかを判定して、使用する項目に設定する
+		if(vacCheck) {
+			sumManageInsMonthPlan.setRecordTotalValueYb(sumManageInsMonthPlan.getRecordTotalValueB());
+			sumManageInsMonthPlan.setRecord1ValueYb(sumManageInsMonthPlan.getRecord1ValueB());
+			sumManageInsMonthPlan.setRecord2ValueYb(sumManageInsMonthPlan.getRecord2ValueB());
+			sumManageInsMonthPlan.setRecord3ValueYb(sumManageInsMonthPlan.getRecord3ValueB());
+			sumManageInsMonthPlan.setRecord4ValueYb(sumManageInsMonthPlan.getRecord4ValueB());
+			sumManageInsMonthPlan.setRecord5ValueYb(sumManageInsMonthPlan.getRecord5ValueB());
+			sumManageInsMonthPlan.setRecord6ValueYb(sumManageInsMonthPlan.getRecord6ValueB());
+		} else {
+			sumManageInsMonthPlan.setRecordTotalValueYb(sumManageInsMonthPlan.getRecordTotalValueY());
+			sumManageInsMonthPlan.setRecord1ValueYb(sumManageInsMonthPlan.getRecord1ValueY());
+			sumManageInsMonthPlan.setRecord2ValueYb(sumManageInsMonthPlan.getRecord2ValueY());
+			sumManageInsMonthPlan.setRecord3ValueYb(sumManageInsMonthPlan.getRecord3ValueY());
+			sumManageInsMonthPlan.setRecord4ValueYb(sumManageInsMonthPlan.getRecord4ValueY());
+			sumManageInsMonthPlan.setRecord5ValueYb(sumManageInsMonthPlan.getRecord5ValueY());
+			sumManageInsMonthPlan.setRecord6ValueYb(sumManageInsMonthPlan.getRecord6ValueY());
+		}
+
+		//当月を判定して対象月から取得
+		switch (tougetuCount){
+		case 0:
+			sumManageInsMonthPlan.setRecordTougetuValueYb(sumManageInsMonthPlan.getRecord1ValueYb());
+			break;
+		case 1:
+			sumManageInsMonthPlan.setRecordTougetuValueYb(sumManageInsMonthPlan.getRecord2ValueYb());
+			break;
+		case 2:
+			sumManageInsMonthPlan.setRecordTougetuValueYb(sumManageInsMonthPlan.getRecord3ValueYb());
+			break;
+		case 3:
+			sumManageInsMonthPlan.setRecordTougetuValueYb(sumManageInsMonthPlan.getRecord4ValueYb());
+			break;
+		case 4:
+			sumManageInsMonthPlan.setRecordTougetuValueYb(sumManageInsMonthPlan.getRecord5ValueYb());
+			break;
+		case 5:
+			sumManageInsMonthPlan.setRecordTougetuValueYb(sumManageInsMonthPlan.getRecord6ValueYb());
+			break;
+		default:
+			break;
+		}
+// add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+		// 非表示施設積上  ( ＝ 担当全施設積上 － 表示施設積上 )
+		Long hideValueTerm = MathUtil.subEx(sumManageInsMonthPlan.getSumPlannedTermValue(), searchPlanTermValueTotal);
+		Long hideValuePlanned1 = MathUtil.subEx(sumManageInsMonthPlan.getSumPlanned1ValueYb(), searchPlanPlanned1ValueYbTotal);
+		Long hideValuePlanned2 = MathUtil.subEx(sumManageInsMonthPlan.getSumPlanned2ValueYb(), searchPlanPlanned2ValueYbTotal);
+		Long hideValuePlanned3 = MathUtil.subEx(sumManageInsMonthPlan.getSumPlanned3ValueYb(), searchPlanPlanned3ValueYbTotal);
+		Long hideValuePlanned4 = MathUtil.subEx(sumManageInsMonthPlan.getSumPlanned4ValueYb(), searchPlanPlanned4ValueYbTotal);
+		Long hideValuePlanned5 = MathUtil.subEx(sumManageInsMonthPlan.getSumPlanned5ValueYb(), searchPlanPlanned5ValueYbTotal);
+		Long hideValuePlanned6 = MathUtil.subEx(sumManageInsMonthPlan.getSumPlanned6ValueYb(), searchPlanPlanned6ValueYbTotal);
+		Long hideValueExpected1 = MathUtil.subEx(sumManageInsMonthPlan.getSumExpected1ValueYb(), searchPlanExpected1ValueYbTotal);
+		Long hideValueExpected2 = MathUtil.subEx(sumManageInsMonthPlan.getSumExpected2ValueYb(), searchPlanExpected2ValueYbTotal);
+		Long hideValueExpected3 = MathUtil.subEx(sumManageInsMonthPlan.getSumExpected3ValueYb(), searchPlanExpected3ValueYbTotal);
+		Long hideValueExpected4 = MathUtil.subEx(sumManageInsMonthPlan.getSumExpected4ValueYb(), searchPlanExpected4ValueYbTotal);
+		Long hideValueExpected5 = MathUtil.subEx(sumManageInsMonthPlan.getSumExpected5ValueYb(), searchPlanExpected5ValueYbTotal);
+		Long hideValueExpected6 = MathUtil.subEx(sumManageInsMonthPlan.getSumExpected6ValueYb(), searchPlanExpected6ValueYbTotal);
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+		Long hideValueRecordTotalValueYb = MathUtil.subEx(sumManageInsMonthPlan.getRecordTotalValueYb(), searchRecordTotalValueYbTotal);
+		Long hideValueRecordTougetuValueYb =  MathUtil.subEx(sumManageInsMonthPlan.getRecordTougetuValueYb(), searchRecordTougetuValueYbTotal);
+		Long hideValueRecord1ValueYb = MathUtil.subEx(sumManageInsMonthPlan.getRecord1ValueYb(), searchRecord1ValueYbTotal);
+		Long hideValueRecord2ValueYb = MathUtil.subEx(sumManageInsMonthPlan.getRecord2ValueYb(), searchRecord2ValueYbTotal);
+		Long hideValueRecord3ValueYb = MathUtil.subEx(sumManageInsMonthPlan.getRecord3ValueYb(), searchRecord3ValueYbTotal);
+		Long hideValueRecord4ValueYb = MathUtil.subEx(sumManageInsMonthPlan.getRecord4ValueYb(), searchRecord4ValueYbTotal);
+		Long hideValueRecord5ValueYb = MathUtil.subEx(sumManageInsMonthPlan.getRecord5ValueYb(), searchRecord5ValueYbTotal);
+		Long hideValueRecord6ValueYb = MathUtil.subEx(sumManageInsMonthPlan.getRecord6ValueYb(), searchRecord6ValueYbTotal);
+// add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+		// 明細合計行作成
+		InsMonthPlanResultDetailTotalDto detailTotal = new InsMonthPlanResultDetailTotalDto(mrMonthPlan,
+					hideValueTerm,
+					hideValuePlanned1,
+					hideValuePlanned2,
+					hideValuePlanned3,
+					hideValuePlanned4,
+					hideValuePlanned5,
+					hideValuePlanned6,
+					hideValueExpected1,
+					hideValueExpected2,
+					hideValueExpected3,
+					hideValueExpected4,
+					hideValueExpected5,
+					hideValueExpected6,
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+					hideValueRecordTotalValueYb,
+					hideValueRecordTougetuValueYb,
+					hideValueRecord1ValueYb,
+					hideValueRecord2ValueYb,
+					hideValueRecord3ValueYb,
+					hideValueRecord4ValueYb,
+					hideValueRecord5ValueYb,
+					hideValueRecord6ValueYb,
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+					upperPlanLevel);
+		// -------------------------------------------
+		// 検索結果作成
+		// -------------------------------------------
+		return new InsMonthPlanResultDto(detailTotal, detailList, enableEntry, mySosMr);
+
+	}
+
+	// 施設別品目別計画取得（月別）
+	public InsProdMonthPlanResultDto searchInsProdMonthPlan(InsProdMonthPlanScDto scDto, List<String> jrnsCtgList) throws LogicalException {
+
+		// ----------------------
+		// 引数チェック
+		// ----------------------
+		if (scDto == null) {
+			final String errMsg = "施設別品目別計画検索条件DTOがnull";
+			throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+		}
+		if (scDto.getInsNo() == null) {
+			final String errMsg = "検索対象の施設コードがnull";
+			throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+		}
+		if (scDto.getProdCategory() == null) {
+			final String errMsg = "検索対象のカテゴリがnull";
+			throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+		}
+
+		String vaccineCode = null;
+
+		if (scDto.getVaccineCode() == null) {
+			// ワクチンコードの検索
+			List<DpmCCdMst> searchList = new ArrayList<DpmCCdMst>();
+			try {
+				// カテゴリの検索
+				searchList = codeMasterDao.searchCodeByDataKbn(CodeMaster.VAC.getDbValue());
+			} catch (DataNotFoundException e) {
+				final String errMsg = "計画管理汎用マスタに、「" + CodeMaster.VAC.getDbValue() + "」コードが登録されていません。";
+				throw new SystemException(new Conveyance(DATA_NOT_FOUND_ERROR, errMsg));
+			}
+			vaccineCode = searchList.get(0).getDataCd();
+		}else {
+			vaccineCode = scDto.getVaccineCode();
+		}
+
+		String insNo = scDto.getInsNo();
+		String category = scDto.getProdCategory();
+		boolean allProdFlg = false;
+
+		// -----------------------------
+		// 施設コードチェック
+		// -----------------------------
+
+		// チェック
+// mod Start 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+//		CheckInsNoLogic insChecklogic = new CheckInsNoLogic(jgiMstRealDao, insMstRealDao);
+		CheckInsNoLogic insChecklogic = new CheckInsNoLogic(jgiMstRealDao, insMstRealDao, dpmInsJgiSosDao);
+//　mod End 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+		InsMst insMst = insChecklogic.executeInsProd(insNo, null);
+
+		// 削除フラグ取得
+		boolean isDeletePlan = false;
+		if (insMst.getDelFlg() || insMst.getReqFlg()) {
+			isDeletePlan = true;
+		}
+
+		// -----------------------------
+		// モール施設のチェック
+		// -----------------------------
+		MallLogic mallLogic = new MallLogic();
+		if (mallLogic.isMall(insMst)) {
+			throw new LogicalException(new Conveyance(new MessageKey("DPM1007E")));
+		}
+
+		// -----------------------------
+		// JRNS判定
+		// -----------------------------
+		List<DpmCCdMst> searchList = new ArrayList<DpmCCdMst>();
+		try {
+			// カテゴリの検索
+			searchList = codeMasterDao.searchCodeByDataKbn(CodeMaster.JRNS.getDbValue());
+		} catch (DataNotFoundException e) {
+			final String errMsg = "計画管理汎用マスタに、「" + CodeMaster.JRNS.getDbValue() + "」コードが登録されていません。";
+			throw new SystemException(new Conveyance(DATA_NOT_FOUND_ERROR, errMsg));
+		}
+		// JRNSのカテゴリコード
+		String jrnsCategory = searchList.get(0).getDataCd();
+		// JRNSの品目分類コード
+		String jrnsPcatCd = String.valueOf(searchList.get(0).getDataValue());
+		// カテゴリがJRNSかどうか
+		boolean isJrns = false;
+		if (category.equals(jrnsCategory)) {
+			isJrns = true;
+		}
+
+		// -----------------------------
+		// 計画対象カテゴリ領域取得
+		// -----------------------------
+		PlannedCtg plannedCtg = new PlannedCtg();
+		if (!isJrns) {
+			plannedCtg = plannedCtgDao.search(category);
+		} else {
+			// JRNSの場合は、営業所のカテゴリ領域を使う
+			searchList = new ArrayList<DpmCCdMst>();
+			try {
+				// カテゴリの検索
+				searchList = codeMasterDao.searchCodeByDataKbn(CodeMaster.OFFICE.getDbValue());
+			} catch (DataNotFoundException e) {
+				final String errMsg = "計画管理汎用マスタに、「" + CodeMaster.OFFICE.getDbValue() + "」コードが登録されていません。";
+				throw new SystemException(new Conveyance(DATA_NOT_FOUND_ERROR, errMsg));
+			}
+			// 営業所のカテゴリコード
+			String officeCategory = searchList.get(0).getDataCd();
+			plannedCtg = plannedCtgDao.search(officeCategory);
+		}
+
+		// -----------------------------
+		// 明細行作成
+		// -----------------------------
+		// 施設別計画取得
+		List<ManageInsMonthPlan> insPlanList = manageInsMonthPlanDao.searchListByIns(ManageInsPlanDao.SORT_STRING2, insNo, category, allProdFlg,
+				plannedCtg.getTgtInsKb(), vaccineCode, isJrns, jrnsPcatCd, jrnsCtgList);
+
+		// CVコードの検索
+		searchList = new ArrayList<DpmCCdMst>();
+		try {
+			// カテゴリの検索
+			searchList = codeMasterDao.searchCodeByDataKbn(CodeMaster.CV.getDbValue());
+		} catch (DataNotFoundException e) {
+			final String errMsg = "計画管理汎用マスタに、「" + CodeMaster.CV.getDbValue() + "」コードが登録されていません。";
+			throw new SystemException(new Conveyance(DATA_NOT_FOUND_ERROR, errMsg));
+		}
+
+		String cvCode = searchList.get(0).getDataCd();
+
+		// 別カテゴリの6ヶ月分の支店計画の合計値を取得
+		ManageInsMonthPlan otherPlanSum = new ManageInsMonthPlan();
+
+		if (category.equals(vaccineCode)) {
+			try {
+				otherPlanSum = manageInsMonthPlanDao.searchPlanSum(insNo, cvCode, allProdFlg, plannedCtg.getTgtInsKb(), vaccineCode);
+			} catch (DataNotFoundException e) {
+				// データ０件の場合は何もしない
+			}
+		} else if (category.equals(cvCode)) {
+			try {
+				otherPlanSum = manageInsMonthPlanDao.searchPlanSum(insNo, vaccineCode, allProdFlg, plannedCtg.getTgtInsKb(), vaccineCode);
+			} catch (DataNotFoundException e) {
+				// データ０件の場合は何もしない
+			}
+		}
+
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+		int tougetuCount = TougetuHantei();
+
+		if(category.equals(vaccineCode)) {
+			otherPlanSum.getImplMonthPlan().setRecord1ValueYb(otherPlanSum.getImplMonthPlan().getRecord1ValueB());
+			otherPlanSum.getImplMonthPlan().setRecord2ValueYb(otherPlanSum.getImplMonthPlan().getRecord2ValueB());
+			otherPlanSum.getImplMonthPlan().setRecord3ValueYb(otherPlanSum.getImplMonthPlan().getRecord3ValueB());
+			otherPlanSum.getImplMonthPlan().setRecord4ValueYb(otherPlanSum.getImplMonthPlan().getRecord4ValueB());
+			otherPlanSum.getImplMonthPlan().setRecord5ValueYb(otherPlanSum.getImplMonthPlan().getRecord5ValueB());
+			otherPlanSum.getImplMonthPlan().setRecord6ValueYb(otherPlanSum.getImplMonthPlan().getRecord6ValueB());
+			otherPlanSum.getImplMonthPlan().setRecordTotalValueYb(otherPlanSum.getImplMonthPlan().getRecordTotalValueB());
+		} else {
+			otherPlanSum.getImplMonthPlan().setRecord1ValueYb(otherPlanSum.getImplMonthPlan().getRecord1ValueY());
+			otherPlanSum.getImplMonthPlan().setRecord2ValueYb(otherPlanSum.getImplMonthPlan().getRecord2ValueY());
+			otherPlanSum.getImplMonthPlan().setRecord3ValueYb(otherPlanSum.getImplMonthPlan().getRecord3ValueY());
+			otherPlanSum.getImplMonthPlan().setRecord4ValueYb(otherPlanSum.getImplMonthPlan().getRecord4ValueY());
+			otherPlanSum.getImplMonthPlan().setRecord5ValueYb(otherPlanSum.getImplMonthPlan().getRecord5ValueY());
+			otherPlanSum.getImplMonthPlan().setRecord6ValueYb(otherPlanSum.getImplMonthPlan().getRecord6ValueY());
+			otherPlanSum.getImplMonthPlan().setRecordTotalValueYb(otherPlanSum.getImplMonthPlan().getRecordTotalValueY());
+		}
+
+		switch (tougetuCount) {
+		case 0:
+			otherPlanSum.getImplMonthPlan().setRecordTougetuValueYb(otherPlanSum.getImplMonthPlan().getRecord1ValueYb());
+			break;
+		case 1:
+			otherPlanSum.getImplMonthPlan().setRecordTougetuValueYb(otherPlanSum.getImplMonthPlan().getRecord2ValueYb());
+			break;
+		case 2:
+			otherPlanSum.getImplMonthPlan().setRecordTougetuValueYb(otherPlanSum.getImplMonthPlan().getRecord3ValueYb());
+			break;
+		case 3:
+			otherPlanSum.getImplMonthPlan().setRecordTougetuValueYb(otherPlanSum.getImplMonthPlan().getRecord4ValueYb());
+			break;
+		case 4:
+			otherPlanSum.getImplMonthPlan().setRecordTougetuValueYb(otherPlanSum.getImplMonthPlan().getRecord5ValueYb());
+			break;
+		case 5:
+			otherPlanSum.getImplMonthPlan().setRecordTougetuValueYb(otherPlanSum.getImplMonthPlan().getRecord6ValueYb());
+			break;
+		default:
+			break;
+		}
+// add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+		// 計画集計DTO作成
+		InsProdMonthPlanResultDetailDto otherPlanSumDto = new InsProdMonthPlanResultDetailDto(otherPlanSum, Boolean.FALSE, Boolean.FALSE);
+
+		// 品目分類名
+		String prodCategoryName = prodCategoryDao.searchProdCategoryName(category, isJrns, jrnsPcatCd);
+
+		// 明細行作成
+		List<InsProdMonthPlanResultDetailDto> detailList = new ArrayList<InsProdMonthPlanResultDetailDto>();
+
+		for (ManageInsMonthPlan insPlan : insPlanList) {
+
+			// 設定中のユーザの配下であれば編集可能
+			boolean enableEdit = true;
+			try {
+				insChecklogic.validateMr(insPlan.getJgiMst());
+			} catch (LogicalException e) {
+				enableEdit = false;
+			}
+
+// add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+			//B価かY価を判定し、表示用の項目に設定する
+			if(category.equals(vaccineCode)) {
+				insPlan.getImplMonthPlan().setRecord1ValueYb(insPlan.getImplMonthPlan().getRecord1ValueB());
+				insPlan.getImplMonthPlan().setRecord2ValueYb(insPlan.getImplMonthPlan().getRecord2ValueB());
+				insPlan.getImplMonthPlan().setRecord3ValueYb(insPlan.getImplMonthPlan().getRecord3ValueB());
+				insPlan.getImplMonthPlan().setRecord4ValueYb(insPlan.getImplMonthPlan().getRecord4ValueB());
+				insPlan.getImplMonthPlan().setRecord5ValueYb(insPlan.getImplMonthPlan().getRecord5ValueB());
+				insPlan.getImplMonthPlan().setRecord6ValueYb(insPlan.getImplMonthPlan().getRecord6ValueB());
+				insPlan.getImplMonthPlan().setRecordTotalValueYb(insPlan.getImplMonthPlan().getRecordTotalValueB());
+			} else {
+				insPlan.getImplMonthPlan().setRecord1ValueYb(insPlan.getImplMonthPlan().getRecord1ValueY());
+				insPlan.getImplMonthPlan().setRecord2ValueYb(insPlan.getImplMonthPlan().getRecord2ValueY());
+				insPlan.getImplMonthPlan().setRecord3ValueYb(insPlan.getImplMonthPlan().getRecord3ValueY());
+				insPlan.getImplMonthPlan().setRecord4ValueYb(insPlan.getImplMonthPlan().getRecord4ValueY());
+				insPlan.getImplMonthPlan().setRecord5ValueYb(insPlan.getImplMonthPlan().getRecord5ValueY());
+				insPlan.getImplMonthPlan().setRecord6ValueYb(insPlan.getImplMonthPlan().getRecord6ValueY());
+				insPlan.getImplMonthPlan().setRecordTotalValueYb(insPlan.getImplMonthPlan().getRecordTotalValueY());
+			}
+			switch (tougetuCount) {
+			case 0:
+				insPlan.getImplMonthPlan().setRecordTougetuValueYb(insPlan.getImplMonthPlan().getRecord1ValueYb());
+				break;
+			case 1:
+				insPlan.getImplMonthPlan().setRecordTougetuValueYb(insPlan.getImplMonthPlan().getRecord2ValueYb());
+				break;
+			case 2:
+				insPlan.getImplMonthPlan().setRecordTougetuValueYb(insPlan.getImplMonthPlan().getRecord3ValueYb());
+				break;
+			case 3:
+				insPlan.getImplMonthPlan().setRecordTougetuValueYb(insPlan.getImplMonthPlan().getRecord4ValueYb());
+				break;
+			case 4:
+				insPlan.getImplMonthPlan().setRecordTougetuValueYb(insPlan.getImplMonthPlan().getRecord5ValueYb());
+				break;
+			case 5:
+				insPlan.getImplMonthPlan().setRecordTougetuValueYb(insPlan.getImplMonthPlan().getRecord6ValueYb());
+				break;
+			default:
+				break;
+			}
+// add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+			// 明細行DTO作成
+			InsProdMonthPlanResultDetailDto detail = new InsProdMonthPlanResultDetailDto(insPlan, isDeletePlan, enableEdit);
+			detailList.add(detail);
+		}
+
+		// 登録可能かチェック(編集可能明細が1件でもあれば登録可能)
+		boolean enableEntry = false;
+		for (InsProdMonthPlanResultDetailDto detailDto : detailList) {
+			if (detailDto.getEnableEdit()) {
+				enableEntry = true;
+				break;
+			}
+		}
+
+		// -------------------------------------------
+		// 検索結果作成
+		// -------------------------------------------
+		return new InsProdMonthPlanResultDto(prodCategoryName, otherPlanSumDto, detailList, enableEntry);
+	}
+
+	// 施設別計画ヘッダー情報取得(ワクチン)
+	public InsMonthPlanForVacHeaderDto searchInsMonthPlanHeaderForVac(String insNo) {
+
+		// ----------------------
+		// 引数チェック
+		// ----------------------
+		if (insNo == null) {
+			final String errMsg = "検索対象の施設コードがnull";
+			throw new SystemException(new Conveyance(PARAMETER_ERROR, errMsg));
+		}
+
+		try {
+			// 施設情報のチェック
+// mod Start 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+//			CheckInsNoLogic logic = new CheckInsNoLogic(jgiMstRealDao, insMstRealDao);
+			CheckInsNoLogic logic = new CheckInsNoLogic(jgiMstRealDao, insMstRealDao, dpmInsJgiSosDao);
+// mod End 2022/6/15 R.takamoto INC1796156　施設品目別計画編集画面の担当外エラー対応
+			InsMst insMst = logic.execute(insNo, MrCat.VAC_MR);
+			return new InsMonthPlanForVacHeaderDto(insMst);
+
+		} catch (LogicalException e) {
+
+			return null;
+		}
+	}
+
+	/**
+	 * 明細リストの市区町村が変わったか判断する<br>
+	 * 府県コード、または、市区町村コードが変わった場合は、明細リストの市区町村が変わったとする。
+	 *
+	 * @param tmpInsPlan 前行の明細
+	 * @param curInsPlan 現在の明細
+	 * @return true：明細の市区町村が変わった場合、false：明細の市区町村が変わっていない場合
+	 */
+	private boolean isChange(ManageInsMonthPlan tmpInsPlan, ManageInsMonthPlan curInsPlan) {
+
+		if (tmpInsPlan == null) {
+			return true;
+		}
+		if (tmpInsPlan.getAddrCodePref() != curInsPlan.getAddrCodePref()) {
+			return true;
+		}
+		if (!StringUtils.equals(tmpInsPlan.getAddrCodeCity(), curInsPlan.getAddrCodeCity())) {
+			return true;
+		}
+
+		return false;
+	}
+
+//  add Start 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+	private int TougetuHantei() {
+		// カレンダーから今期の何月目かを設定（falseCountに何月目かを記録（1月目なら0が入る）
+		Cal today = dpmCommonService.searchToday();
+		String calYear = today.getCalYear();
+		String calMonth = today.getCalMonth();
+
+		int calYearInt = Integer.parseInt(calYear);
+		int calMonthInt = Integer.parseInt(calMonth);
+
+		SysManage sysManage = DpUserInfo.getDpUserInfo().getSysManage();
+
+		String sysYear = sysManage.getSysYear();
+		int sysYearInt = Integer.parseInt(sysYear);
+		Term sysTerm = sysManage.getSysTerm();
+
+		int falseCount = 6;
+
+		switch (sysTerm) {
+		case FIRST: // 4,5,6,7,8,9
+			if(!sysYear.equals(calYear)) {
+				break;
+			}
+			falseCount = calMonthInt - 4;
+			break;
+		case SECOND:// 10,11,12,1,2,3
+			Integer.parseInt(sysYear);
+			if(calYearInt == sysYearInt || calYearInt == sysYearInt + 1) {
+				/* do nothing */
+			}else {
+				break;
+			}
+			if (calMonthInt < 10) calMonthInt = calMonthInt + 6;
+			falseCount = calMonthInt - 10;
+			break;
+		default:
+			break;
+		}
+		return falseCount;
+	}
+//  add End 2022/08/25 R.takamoto No.8　計画管理の月別計画に納入実績の値を表示
+
+}

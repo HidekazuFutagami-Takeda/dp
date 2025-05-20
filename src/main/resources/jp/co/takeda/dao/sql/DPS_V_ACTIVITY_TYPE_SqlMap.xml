@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_V_ACTIVITY_TYPE_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.ActivityTypeForVac" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="INTEGER" />
+    <result column="INS_NO" property="insNo" jdbcType="VARCHAR" />
+    <result column="ACTIVITY_TYPE" property="activityType" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.ActivityTypeForVac" >
+    SELECT SEQ_KEY
+          ,INS_NO
+          ,ACTIVITY_TYPE
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_V_ACTIVITY_TYPE
+     WHERE SEQ_KEY = #insNo:VARCHAR#
+  </select>
+
+</sqlMap>

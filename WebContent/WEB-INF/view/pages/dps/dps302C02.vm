@@ -1,0 +1,681 @@
+#set($layout = "dialogueLayout.vm" )
+#set($bodyOnloadMethod  = "dps302C02F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($pageTitle = $text.get("dps302C02","title"))
+#set($resultData = $form.getRequestData("DPS302C02_DATA_R"))
+#set($dataListFileName = "dps302C02x01.vm")
+#set($dataListFileName2 = "dps302C02x02.vm")
+#set($GridObjName = "dps302C02Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($GridObjName2 = "dps302C02Grid2")
+#set($CoverId = "dps302C02CoverId")
+#set($CoverId2 = "dps302C02CoverId2")
+## 立案品目
+#set( $prodName = "&nbsp;")
+#if($resultData.prodName)
+    #set($prodName = $!{resultData.prodName})
+#end
+#set( $prodType = "&nbsp;")
+#if($resultData.prodType)
+    #set($prodType = $!{resultData.prodType})
+#end
+## ヘッダー設定カラム設定
+#set( $headerColumnId = "-1")
+#if($form.bean.insType == "1")
+    #set( $headerColumnId = "1")
+#elseif($form.bean.insType == "2")
+    #set( $headerColumnId = "4")
+#end
+## 担当者別計画立案ステータス
+#set( $statusForMrPlan = "")
+#if($resultData.statusForMrPlan)
+    #set($statusForMrPlan = $!{resultData.statusForMrPlan.getDbValue()})
+#end
+<script language="javascript">
+<!--
+var ${GridObjName};
+var ${GridObjName2};
+var inputColumnIdArr = new Array("15","16");
+var editFlg = false;
+var preInsType =  "$form.bean.insType";
+var refDeliveryScope = "$form.bean.refDeliveryScope";
+
+## 初期表示＋読込処理
+function dps302C02F00() {
+    doInitGrid();
+    if (document.getElementById("dps302C02x01.vm")) {
+        var loadXMLString = document.getElementById("dps302C02x01.vm").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+
+    ## 営業所表示の場合はヘッダー情報を作成し、初期階層を営業所までにセット
+    ## チーム表示の場合、${GridObjName2}は生成しない
+    #if (!$form.bean.isTeamRank)
+
+        ## ヘッダー情報
+        doInitGrid2();
+        if (document.getElementById("dps302C02x02.vm")) {
+            var loadXMLString = document.getElementById("dps302C02x02.vm").value;
+            if (loadXMLString != null && loadXMLString != "") {
+                ${GridObjName2}.loadXMLString(loadXMLString);
+            }else{
+                createDhtmlXGridLodingDelete("${CoverId2}");
+            }
+        }
+        sosApplyExt("$!form.bean.sosCd3", "", "02", false);
+
+    ## チーム表示の場合は初期階層をチームまでにセット（データ情報のみ）
+    #else
+        sosApplyExt("$!form.bean.sosCd4", "", "03", false);
+    #end
+
+    ##計算、表示処理
+    doEditCalc(inputColumnIdArr);
+}
+
+## ヘッダー情報DHTMLXGrid生成
+function doInitGrid2() {
+    ${GridObjName2} = createDhtmlXGridLodingExt("${GridObjName2}", "${CoverId2}");
+    ${GridObjName2}.setHeader("UH,#cspan,#cspan,P,#cspan,#cspan,合計,#cspan,#cspan");
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName2}.attachHeader("エリア計画,チーム別計画(積上),調整金額,エリア計画,チーム別計画(積上),調整金額,エリア計画,チーム別計画(積上),調整金額");
+##    ${GridObjName2}.attachHeader("営業所計画,チーム別計画(積上),調整金額,営業所計画,チーム別計画(積上),調整金額,営業所計画,チーム別計画(積上),調整金額");
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName2}.setInitWidths("90,130,90,90,130,90,90,130,90");
+    ${GridObjName2}.setColAlign("right,right,right,right,right,right,right,right,right");
+    ${GridObjName2}.setColTypes("ron,ron,ron[=c0-c1],ron,ron,ron[=c3-c4],ron[=c0+c3],ron[=c1+c4],ron[=c2+c5]");
+    ${GridObjName2}.enableResizing("false,false,false,false,false,false,false,false,false");
+    ${GridObjName2}.enableTooltips("false,false,false,false,false,false,false,false,false");
+    ${GridObjName2}.enableDistributedParsing(false);
+    ${GridObjName2}.enableAutoHeight(true);
+    ${GridObjName2}.objBox.style.overflowX="hidden";
+    ${GridObjName2}.objBox.style.overflowY="hidden";
+    ${GridObjName2}.enableBlockSelection();
+    ${GridObjName2}.forceLabelSelection(true);
+    ${GridObjName2}.setCSVDelimiter("\t");
+    for(i=0; i < 9; i++){
+        ${GridObjName2}.setNumberFormat("0,000", i);
+    }
+    ${GridObjName2}.init();
+    ${GridObjName2}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        copyBlock(${GridObjName2}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName2}.attachEvent("onBeforeSelect",function(newId,oldId){return;});
+}
+#if($form.getRequestData("DPS302C02_DATA_R"))
+    #set($deliveryResultSummaryDtoList = $form.getRequestData("DPS302C02_DATA_R").getOfficePlanDto().getDeliveryResultSummaryDtoList())
+#end
+
+## データ情報DHTMLXGrid生成
+function doInitGrid() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    var headerStr = ["　,#cspan,立案品目($!prodName),#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan"];
+    var attachHeaderStr1 = ["　,担当者,前々々期<br>実績,前々期<br>実績,前期<br>実績,当期,#cspan,#cspan,翌期試算結果,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,翌期計画,#cspan,#cspan"];
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    var attachHeaderStr2 = ["#rspan,#rspan,#rspan,#rspan,#rspan,計画,実績,遂行率,特定施設<br>個別計画,理論計画①,#cspan,#cspan,理論計画②,#cspan,#cspan,エリア案,決定,前同比"];
+##    var attachHeaderStr2 = ["#rspan,#rspan,#rspan,#rspan,#rspan,計画,実績,遂行率,特定施設<br>個別計画,理論計画①,#cspan,#cspan,理論計画②,#cspan,#cspan,営業所案,決定,前同比"];
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    var attachHeaderStr3 = ["#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,#rspan,増分,計画,前同比,増分,計画,前同比,#rspan,#rspan,#rspan"];
+## mod start 2020/07/01 趙 2020年4月組織変更対応（各種アプリ）
+##    var initWidths = ["100,100,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80"];
+    var initWidths = ["100,140,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80"];
+## mod end   2020/07/01 趙 2020年4月組織変更対応（各種アプリ）
+    var colAlign = ["left,left,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right"];
+    var colTypes = ["ro,ro,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron,ron"];
+    var resizing = ["false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false"];
+    var tooltips = ["false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false"];
+    var addHeaderStr = ",#cspan,#cspan,#cspan,#cspan,#cspan";
+    var addAttachHeaderStr1 = ",前々々期<br>実績,前々期<br>実績,前期<br>実績,当期,#cspan,#cspan";
+    var addAttachHeaderStr2 = ",#rspan,#rspan,#rspan,計画,実績,遂行率";
+    var addAttachHeaderStr3 = ",#rspan,#rspan,#rspan,#rspan,#rspan,#rspan";
+    var addInitWidths = ",80,80,80,80,80,80";
+    var addColAlign = ",right,right,right,right,right,right";
+    var addColTypes = ",ron,ron,ron,ron,ron,ron";
+    var addResizing = ",false,false,false,false,false,false";
+    var addTooltips = ",false,false,false,false,false,false";
+    #if ($deliveryResultSummaryDtoList)
+    #foreach($deliveryResultSummaryDto in $deliveryResultSummaryDtoList)
+        #if ($deliveryResultSummaryDto.getProdSummary())
+        #set ($refProdName = $deliveryResultSummaryDto.getProdSummary().getProdName())
+        #end
+        headerStr.push("," + "$!refProdName" + addHeaderStr);
+        attachHeaderStr1.push(addAttachHeaderStr1);
+        attachHeaderStr2.push(addAttachHeaderStr2);
+        attachHeaderStr3.push(addAttachHeaderStr3);
+        initWidths.push(addInitWidths);
+        colAlign.push(addColAlign);
+        colTypes.push(addColTypes);
+        resizing.push(addResizing);
+        tooltips.push(addTooltips);
+    #end
+    #end
+    ${GridObjName}.setHeader(headerStr.join(""));
+    ${GridObjName}.attachHeader(attachHeaderStr1.join(""));
+    ${GridObjName}.attachHeader(attachHeaderStr2.join(""));
+    ${GridObjName}.attachHeader(attachHeaderStr3.join(""));
+    ${GridObjName}.setInitWidths(initWidths.join(""));
+    ${GridObjName}.setColAlign(colAlign.join(""));
+    ${GridObjName}.setColTypes(colTypes.join(""));
+    ${GridObjName}.enableResizing(resizing.join(""));
+    ${GridObjName}.enableTooltips(tooltips.join(""));
+    ${GridObjName}.enableDistributedParsing(true,50,385);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps302C02', $!gridHeight));
+    ${GridObjName}.objBox.style.overflowX="scroll";
+    ${GridObjName}.objBox.style.overflowY="scroll";
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.setNumberFormat("0,000",2);
+    ${GridObjName}.setNumberFormat("0,000",3);
+    ${GridObjName}.setNumberFormat("0,000",4);
+    ${GridObjName}.setNumberFormat("0,000",5);
+    ${GridObjName}.setNumberFormat("0,000",6);
+    ${GridObjName}.setNumberFormat("00.0",7);
+    ${GridObjName}.setNumberFormat("0,000",8);
+    ${GridObjName}.setNumberFormat("0,000",9);
+    ${GridObjName}.setNumberFormat("0,000",10);
+    ${GridObjName}.setNumberFormat("00.0",11);
+    ${GridObjName}.setNumberFormat("0,000",12);
+    ${GridObjName}.setNumberFormat("0,000",13);
+    ${GridObjName}.setNumberFormat("00.0",14);
+    ${GridObjName}.setNumberFormat("0,000",15);
+    ${GridObjName}.setNumberFormat("0,000",16);
+    ${GridObjName}.setNumberFormat("00.0",17);
+    #if ($deliveryResultSummaryDtoList)
+    #set($idx = 17)
+    #foreach($entry in $deliveryResultSummaryDtoList)
+    #set ($idx = $idx + 1)
+    ${GridObjName}.setNumberFormat("0,000",$idx);
+    #set ($idx = $idx + 1)
+    ${GridObjName}.setNumberFormat("0,000",$idx);
+    #set ($idx = $idx + 1)
+    ${GridObjName}.setNumberFormat("0,000",$idx);
+    #set ($idx = $idx + 1)
+    ${GridObjName}.setNumberFormat("0,000",$idx);
+    #set ($idx = $idx + 1)
+    ${GridObjName}.setNumberFormat("0,000",$idx);
+    #set ($idx = $idx + 1)
+    ${GridObjName}.setNumberFormat("00.0",$idx);
+    #end
+    #end
+    ${GridObjName}.init();
+    ${GridObjName}.splitAt(2);
+    ${GridObjName}.enableEditEvents(true, false, true);
+    ##  --- 編集中に登録ボタンが押された場合のチェッカー
+    window.editValueChecker = new EditingValueChecker(${GridObjName},'$text.get("DPC1036E",[""])' );
+
+    ${GridObjName}.attachEvent("onEditCell",function(stage,rowId,cellInd,newvalue,oldvalue){
+		## --- 編集中に登録ボタンが押された場合のチェック用に値とstageを保持 ---
+		window.editValueChecker.saveState(stage,newvalue);
+        if(stage == 1){
+            editFlg=true;
+            setIme(${GridObjName},rowId,cellInd,"inactive",10);
+        }
+        if(stage == 2){
+            if(newvalue.toString() != oldvalue.toString()){
+                intCheck(${GridObjName},rowId,cellInd,newvalue);
+                minusStyle(${GridObjName},rowId, cellInd);
+                doEditCalc(new Array(cellInd.toString()));
+            }
+        }
+        return true;
+    });
+    ${GridObjName}.attachEvent("onRowSelect",function(rowId,cellInd){
+        ${GridObjName}.editCell();
+    });
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift,inputColumnIdArr);
+        if (keycode == 86 && ctrl) {
+            doEditCalc(inputColumnIdArr);
+            editFlg=true;
+        }
+        return true;
+    });
+}
+
+//--------------------------------------------------------------------------------------------
+
+##編集時の計算処理
+function doEditCalc(columnIdArr){
+
+    ##計画を集計、設定
+    for(colIndex=0; colIndex<columnIdArr.length; colIndex++){
+        setSum(${GridObjName},columnIdArr[colIndex]);
+    }
+
+    ## 積み上げをヘッダーに設定
+    #if($headerColumnId != -1)
+        var pl = 0;
+        for (rowId = 1; rowId <= ${GridObjName}.getRowsNum(); rowId++) {
+            var rowType = ${GridObjName}.getUserData(rowId, 'rowType');
+            if(rowType == "subTotal"){
+                pl = pl + ${GridObjName}.cells(rowId, 16).getValue() - 0;
+            }
+        }
+
+        ## チーム表示の場合、${GridObjName2}は生成されない
+        #if (!$form.bean.isTeamRank)
+            ${GridObjName2}.cells(1, $headerColumnId).setValue(pl);
+        #end
+    #end
+
+    ## 差額計算処理
+    for(colIndex=0; colIndex<columnIdArr.length; colIndex++){
+
+        ## [営業所欄差額]上位計画の決定欄と比較する(異なる列との比較)
+        setSagakuByColumn(${GridObjName},16,15,15);
+
+        ## [決定欄差額]上位計画の決定欄と比較する(同列比較)
+        if(columnIdArr[colIndex] == 16){
+            setSagaku(${GridObjName},columnIdArr[colIndex]);
+        }
+    }
+
+    ## 前同比計算処理
+    setRate2(${GridObjName},17,16,15);
+
+    ## チーム表示の場合、${GridObjName2}は生成されない
+    #if (!$form.bean.isTeamRank)
+    	## ヘッダー表示処理
+        minusStyle(${GridObjName2},1, 0);
+        minusStyle(${GridObjName2},1, 1);
+        sagakuStyle(${GridObjName2},1, 2);
+        minusStyle(${GridObjName2},1, 3);
+        minusStyle(${GridObjName2},1, 4);
+        sagakuStyle(${GridObjName2},1, 5);
+        minusStyle(${GridObjName2},1, 6);
+        minusStyle(${GridObjName2},1, 7);
+        sagakuStyle(${GridObjName2},1, 8);
+    #end
+}
+
+##登録チェック
+function updateValidation() {
+
+    for (rowId = 1; rowId <= ${GridObjName}.getRowsNum(); rowId++) {
+        var rowType = ${GridObjName}.getUserData(rowId,"rowType");
+        if(rowType == null || rowType != "input"){
+            continue;
+        }
+
+        msgHeader = 'チーム【' + ${GridObjName}.cells(rowId, 0).getValue() + '】の';
+
+        ## 営業所案
+        value = ${GridObjName}.cells(rowId, 15).getValue().toString();
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        amountValidation('エリア案',value,10,true,msgHeader);
+##        amountValidation('営業所案',value,10,true,msgHeader);
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+
+        ## 決定
+        value = ${GridObjName}.cells(rowId, 16).getValue().toString();
+        amountValidation('決定',value,10,true,msgHeader);
+    }
+
+    return validation();
+}
+
+##登録、試算時入力チェック
+function estValidation(insType) {
+
+    for (rowId = 1; rowId <= ${GridObjName}.getRowsNum(); rowId++) {
+        var rowType = ${GridObjName}.getUserData(rowId,"rowType");
+        if(rowType == null || rowType != "input"){
+            continue;
+        }
+
+        msgHeader = 'チーム【' + ${GridObjName}.cells(rowId, 0).getValue() + '】の';
+
+        ## 営業所案
+        value = ${GridObjName}.cells(rowId, 15).getValue().toString();
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        amountValidation('エリア案',value,10,true,msgHeader);
+##        amountValidation('営業所案',value,10,true,msgHeader);
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+
+        ## 決定(必須)
+        value = ${GridObjName}.cells(rowId, 16).getValue().toString();
+        var isErr = false;
+        if(insType == "1" || insType == "2"){
+            isErr = addErrorInfo(!isEntered(value), msgHeader + '$text.get("DPC1003E",["決定"])');
+        } else {
+            isErr = addErrorInfo(!isEntered(value), msgHeader + '$text.get("DPS1033E",["UH、P"])');
+        }
+
+        if(!isErr){
+            isErr = amountValidation('決定',value,10,true,msgHeader);
+        }
+
+        if(!isErr){
+            var hiddenUh = ${GridObjName}.getUserData(rowId, 'hiddenUh');
+            addErrorInfo(!isEntered(hiddenUh), msgHeader + '$text.get("DPS1033E",["UH"])');
+            var hiddenP = ${GridObjName}.getUserData(rowId, 'hiddenP');
+            addErrorInfo(!isEntered(hiddenP), msgHeader + '$text.get("DPS1033E",["P"])');
+        }
+    }
+
+    return validation();
+}
+
+## 検索処理
+function dps302C02F05() {
+    ##確認
+    if (editFlg) {
+        if (!confirm('$text.get("DPC999C99.001","dialogue")')) {
+            ## キャンセルの場合、変更前のプルダウンに戻す。
+            document.getElementById("insType").value = preInsType;
+            return false;
+        }
+    }
+    var actionPath = '$link.setAction('dps302C02F05')';
+    document.dps302C02Form.action = actionPath;
+    document.dps302C02Form.submit();
+    dps302C02F10 = blockIt;
+    dps302C02F05 = blockIt;
+    dps302C02F15 = blockIt;
+}
+## 実績参照範囲変更時
+function dps302C02F15() {
+    ##確認
+    if (editFlg) {
+        if (!confirm('$text.get("DPC999C99.001","dialogue")')) {
+            ## キャンセルの場合、変更前のプルダウンに戻す。
+            document.getElementById("refDeliveryScope").value = refDeliveryScope;
+            return false;
+        }
+    }
+    var actionPath = '$link.setAction('dps302C02F15')';
+    document.dps302C02Form.action = actionPath;
+    document.dps302C02Form.submit();
+    dps302C02F10 = blockIt;
+    dps302C02F05 = blockIt;
+    dps302C02F15 = blockIt;
+}
+##登録処理
+function dps302C02F10() {
+
+    ## --- 編集中セル値の登録時チェック ---
+	if(window.editValueChecker.isValid() == false){
+		return;
+	}
+
+    ##入力チェックの前に入力行を確定
+    ${GridObjName}.editStop();
+    ##入力チェック
+    if (!updateValidation(false)) {
+        return;
+    }
+    ## 調整金額チェック
+    if(!executeSagakuCheck()){
+        return;
+    }
+    ##送信データ作成
+    for (i = 1; i <= ${GridObjName}.getRowsNum(); i++) {
+        var userData = ${GridObjName}.getUserData(i, 'updateRowId');
+        if(userData == null || userData == ""){continue;}
+        userData += "," + ${GridObjName}.cells(i,15).getValue();
+        userData += "," + ${GridObjName}.cells(i,16).getValue();
+        ${GridObjName}.setUserData(i, 'updateRowId', userData);
+    }
+    addRowIdList(document.dps302C02Form, ${GridObjName}, 'rowIdList', 'updateRowId');
+
+    ##送信
+    var actionPath = '$link.setAction('dps302C02F10Execute')';
+    document.dps302C02Form.action = actionPath;
+    document.dps302C02Form.submit();
+    dps302C02F05 = blockIt;
+    dps302C02F10 = blockIt;
+    dps302C02F15 = blockIt;
+}
+
+## 過去実績参照ダイアログ
+function openResultDialog() {
+
+    #if ($form.bean.isTeamRank)
+        var url ="$link.setAction('dps913C00F00').addQueryData('prodCategory','1').addQueryData('sosCd3',$!form.bean.getSosCd3()).addQueryData('sosCd4',$!form.bean.getSosCd4()).addQueryData('prodCode',$!form.bean.getProdCode()).addQueryData('page','4')";
+    #else
+        var url ="$link.setAction('dps913C00F00').addQueryData('prodCategory','1').addQueryData('sosCd3',$!form.bean.getSosCd3()).addQueryData('prodCode',$!form.bean.getProdCode()).addQueryData('page','4')";
+    #end
+    openModalWindow(url);
+}
+
+## コピーダイアログを閉じる
+function closeCopyDialog(){
+    tb_remove();
+}
+## 論理計画１を営業所案にコピー
+function copyTheoreticalValue1toOfficeValueY(){
+    if(window.confirm('$text.get("DPS302C02.003","dialogue")')){
+        copyColData(${GridObjName}, 10, 15);
+        closeCopyDialog();
+        doEditCalc(inputColumnIdArr);
+        editFlg = true;
+    }
+}
+
+## 論理計画１を決定にコピー
+function copyTheoreticalValue1toPlannedValueY(){
+    if(window.confirm('$text.get("DPS302C02.004","dialogue")')){
+        copyColData(${GridObjName}, 10, 16);
+        closeCopyDialog();
+        doEditCalc(inputColumnIdArr);
+        editFlg = true;
+    }
+}
+
+## 論理計画２を営業所案にコピー
+function copyTheoreticalValue2toOfficeValueY(){
+    if(window.confirm('$text.get("DPS302C02.005","dialogue")')){
+        copyColData(${GridObjName}, 13, 15);
+        closeCopyDialog();
+        doEditCalc(inputColumnIdArr);
+        editFlg = true;
+    }
+}
+
+## 論理計画２を決定にコピー
+function copyTheoreticalValue2toPlannedValueY(){
+    if(window.confirm('$text.get("DPS302C02.006","dialogue")')){
+        copyColData(${GridObjName}, 13, 16);
+        closeCopyDialog();
+        doEditCalc(inputColumnIdArr);
+        editFlg = true;
+    }
+}
+
+## 営業所案を決定にコピー
+function copyOfficeValueYtoPlannedValueY(){
+    if(window.confirm('$text.get("DPS302C02.007","dialogue")')){
+        copyColData(${GridObjName}, 15, 16);
+        closeCopyDialog();
+        doEditCalc(inputColumnIdArr);
+        editFlg = true;
+    }
+}
+## リンク移動
+function executeLink() {
+    var actionPath = '$link.setAction('dps302C01F00')';
+    document.dps302C02Form.action = actionPath;
+    document.dps302C02Form.submit();
+}
+## ダイアログを閉じる(画面内の閉じるボタン)
+function closeWindow() {
+    if (editFlg) {
+        if (!window.confirm('$text.get("DPC999C99.001","dialogue")')) {
+            return false;
+        }
+    }
+    window.close();
+}
+## ダイアログを閉じる(ウィンドウの閉じるボタン)
+window.onbeforeunload = function(event) {
+    if (editFlg){
+        var closeMsg = "$text.get('DPC999C99.000','dialogue')";
+        event = (event || window.event);
+        var flg = (event.clientX > 0 && event.clientY < 0);
+        if (flg) {
+            event.returnValue = closeMsg;
+        }
+    }
+};
+##リンク移動確認
+function linkClick(){
+    if(editFlg){
+        var answer = window.confirm('$text.get("DPC999C99.001","dialogue")');
+        if(!answer){
+            return false;
+        }
+    }
+    return true;
+}
+
+## 調整金額チェック
+function executeSagakuCheck() {
+    #set( $msgId = "DPS302C02.008")
+    ##UH
+    #if($form.bean.insType == "1")
+    var value = ${GridObjName2}.cells(1,2).getValue().toString();
+    if (value != "") {
+        if (value != "0") {
+            var rowInfo = "対象【UH】";
+            if (!confirm('$text.get("$msgId","dialogue", ["' + rowInfo + '"])')) {
+                return false;
+            }
+        }
+    }
+    ##P
+    #elseif($form.bean.insType == "2")
+    var value = ${GridObjName2}.cells(1,5).getValue().toString();
+    if (value != "") {
+        if (value != "0") {
+            var rowInfo = "対象【P】";
+            if (!confirm('$text.get("$msgId","dialogue", ["' + rowInfo + '"])')) {
+                return false;
+            }
+        }
+    }
+    #end
+    return true;
+}
+//-->
+</script>
+
+<div class="disp" style="padding:0px;margin:5px;">
+<form name="dps302C02Form" method="post">
+
+    ##品目情報
+    <div align="left" style="float: left;width: 70%;">
+    <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+        <tbody class="tableBody">
+            <tr>
+                <td class="header" style="width:70px;">組織</td>
+                <td id="sos">　</td>
+                <td class="header" style="width:80px;">品目</td>
+                <td>$prodName</td>
+                <td class="header" style="width:70px;">製品区分</td>
+                <td>$prodType</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+
+    ##最終更新情報
+    <div class="label" align="right" style="float: left;width: 30%;">
+        #upDateInfo($!{resultData.lastUpdateUser},$!{resultData.lastUpdate})
+        <a href="#" onclick="if(linkClick())executeLink()">試算結果詳細画面へ</a>
+    </div>
+
+    ##メイン情報
+    <div class="label" align="left" style="float: left;width: 100%;">
+        ##ヘッダー情報グリッド表示(営業所の場合のみ)
+        #if (!$form.bean.isTeamRank)
+            #loadingGridDiv2("${GridObjName2}", "${CoverId2}", "height:150px; width: 100%; clear: both;")
+        #end
+        <div style="position:relative">
+        <table style="margin-top:4px; width: 100%;">
+            <tr><td style="text-align:left;">
+                #if ($!security.hasAuthEdit("DPS302C02"))
+                    #if ($form.getRequestData("DATA_EXIST"))
+                        #if($form.bean.insType == "1" || $form.bean.insType == "2")
+                            <input type="button" value="チーム別計画を登録する" style="width:140px;" onclick="dps302C02F10()" />
+                        #else
+                            <input type="button" value="チーム別計画を登録する" style="width:140px;" disabled/>
+                        #end
+                    #else
+                    <input type="button" value="チーム別計画を登録する" style="width:140px;" disabled/>
+                    #end
+                #end
+                    <input type="button" value="閉じる" onclick="closeWindow()" />
+                </td>
+                <td style="text-align:right;">
+                #selectWithFunc("refDeliveryScope", $form.bean.refDeliveryScopes, $form.bean.refDeliveryScope, "dps302C02F15()")　
+                <input type="button" value="過去実績参照" onclick="openResultDialog()" />
+                </td>
+            </tr>
+        </table>
+        ##明細情報グリッド表示
+        <table cellspacing="0" cellpadding="0" style="width:100%; margin-top:5px; margin-bottom:5px;">
+            <tr>
+                <td width="50px">#selectWithFunc ("insType", $form.bean.insTypes, $!form.bean.insType, "dps302C02F05()")</td>
+                <td width="100px">
+                    #if (!$!form.bean.isTeamRank)
+                    #if ($!form.bean.insType)
+                    #if ($!form.bean.insType != "9")
+                    ##営業所の場合
+                    &nbsp;&nbsp;<a href="#TB_inline?height=400&width=300&inlineId=copyDialog&modal=true" class="thickbox">翌期計画にコピー</a>
+                    #end
+                    #end
+                    #end
+                </td>
+                <td class="label" style="text-align:right;vertical-align:bottom;">$consts.tableHeaderY</td>
+            </tr>
+        </table>
+        </div>
+        #loadingGridDiv2("${GridObjName}", "${CoverId}", "width: 100%; clear: both;")
+        <div class="guide">
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        ※エリア案及び決定欄は、10千円単位で入力してください。<br>
+##        ※営業所案及び決定欄は、10千円単位で入力してください。<br>
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        </div>
+    </div>
+
+    <input type="hidden" id="prodCode" name="prodCode" value="$!form.bean.getProdCode()" />
+    <input type="hidden" id="prodName" name="prodName" value="$!{resultData.prodName}" />
+    <input type="hidden" id="isTeamRank" name="isTeamRank" value="$!form.bean.getIsTeamRank()" />
+
+    #token()
+    <input type="hidden" id="sosCd2" name="sosCd2" />
+    <input type="hidden" id="sosCd3" name="sosCd3" value="$!form.bean.getSosCd3()" />
+    <input type="hidden" id="sosCd4" name="sosCd4" value="$!form.bean.getSosCd4()" />
+    <input type="hidden" id="jgiNo" name="jgiNo"  />
+    <input type="hidden" id="initSosCodeValue" name="initSosCodeValue"  value="$!security.defaultSosCd"/>
+</form>
+</div>
+<div id="copyDialog" style="display:none;">
+    <div align="right">
+        <a href="javaScript:closeCopyDialog();">閉じる</a><br />
+    </div>
+    【翌期計画にコピー】<br />
+    #if ($!form.bean.insType != "9")
+    ##営業所の場合
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    <a href="javaScript:copyTheoreticalValue1toOfficeValueY()" >理論計画①をエリア案にコピー</a><br />
+    <a href="javaScript:copyTheoreticalValue1toPlannedValueY()" >理論計画①を決定にコピー</a><br />
+    <a href="javaScript:copyTheoreticalValue2toOfficeValueY()" >理論計画②をエリア案にコピー</a><br />
+    <a href="javaScript:copyTheoreticalValue2toPlannedValueY()" >理論計画②を決定にコピー</a><br />
+    <a href="javaScript:copyOfficeValueYtoPlannedValueY()" >エリア案を決定にコピー</a>
+##    <a href="javaScript:copyTheoreticalValue1toOfficeValueY()" >理論計画①を営業所案にコピー</a><br />
+##    <a href="javaScript:copyTheoreticalValue1toPlannedValueY()" >理論計画①を決定にコピー</a><br />
+##    <a href="javaScript:copyTheoreticalValue2toOfficeValueY()" >理論計画②を営業所案にコピー</a><br />
+##    <a href="javaScript:copyTheoreticalValue2toPlannedValueY()" >理論計画②を決定にコピー</a><br />
+##    <a href="javaScript:copyOfficeValueYtoPlannedValueY()" >営業所案を決定にコピー</a>
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    #end
+</div>

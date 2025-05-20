@@ -1,0 +1,120 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS202C04_DATA_R"))
+    #set( $dataList = $form.getRequestData("DPS202C04_DATA_R"))
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows total_count='$dataList.size()'>
+#foreach($specialInsPlan in $dataList)
+
+    ##(ワ)特定施設個別計画データ変数
+    ##施設コード
+    #set( $insNo = "")
+        #if($specialInsPlan.insNo)
+            #set($insNo = $specialInsPlan.insNo)
+        #end
+    ##施設名
+    #set( $insName = "")
+        #if($specialInsPlan.insName)
+            #set($insName = $specialInsPlan.insName)
+        #end
+    ##重点先/一般先
+    #set( $activityType = "")
+        #if($specialInsPlan.activityType)
+            #if($specialInsPlan.activityType == "JTN")
+                #set($activityType = "重点先")
+            #elseif($specialInsPlan.activityType == "IPPAN")
+                #set($activityType = "一般先")
+            #end
+        #end
+    ##施設分類
+    #set( $insClass = "")
+        #if($specialInsPlan.insClass)
+            #set($insClass = $specialInsPlan.insClass)
+        #end
+    ##担当者No
+    #set( $jgiNo = "")
+        #if($specialInsPlan.jgiNo)
+            #set($jgiNo = $specialInsPlan.jgiNo)
+        #end
+    ##担当者名
+    #set( $jgiName = "")
+        #if($specialInsPlan.jgiName)
+            #set($jgiName = $specialInsPlan.jgiName)
+        #end
+    ##特定施設個別計画立案済
+    #set( $regOn = "")
+        #if($specialInsPlan.isRegOn)
+            #set($regOn = "○")
+        #end
+    ##最終更新者
+    #set( $upJgiName = "")
+        #if($specialInsPlan.upJgiName)
+            #set($upJgiName = $specialInsPlan.upJgiName)
+        #end
+    ##最終更新日時
+    #set( $upDate = "")
+        #if($specialInsPlan.upDate)
+            #set($upDate = $format.toString($specialInsPlan.upDate, "yyyy/MM/dd HH:mm"))
+        #end
+
+    ## 削除施設の場合、背景色グレー・選択不可
+    #set($bgClass = "")
+        #if($specialInsPlan.delFlg)
+            #set($bgClass = "class='delIns'")
+        #end
+    <row id='$velocityCount'>
+    ##ユーザデータ(施設コード・最終更新日時)
+    #if ($specialInsPlan.upDate)
+        <userdata name="selectRowId">$insNo,$jgiNo,$specialInsPlan.upDate.Time</userdata>
+    #else
+        <userdata name="selectRowId">$insNo,$jgiNo,</userdata>
+    #end
+
+    ##選択
+    #if ($!security.hasAuthEdit("DPS202C00"))
+        #if ($specialInsPlan.upDate)
+        <cell $bgClass></cell>
+        #else
+        <cell $bgClass disabled="true"></cell>
+        #end
+    #else
+        <cell $bgClass disabled="true"></cell>
+    #end
+
+    ##施設名
+    <cell $bgClass title="施設コード：$insNo">
+    ## 削除施設の場合、リンクなし
+    #if($specialInsPlan.delFlg)
+    $insName
+    #else
+    <![CDATA[<a href='#' onClick='cs_openEditDialog("$link.setAction('dps202C05F00').addQueryData('insNo',$insNo).addQueryData('jgiNo',$jgiNo)",dps202C04F10);'>$insName</a>]]>
+    #end
+    </cell>
+
+    ##重点先/一般先
+    <cell $bgClass>$activityType</cell>
+
+    ##施設分類
+    <cell $bgClass>$insClass</cell>
+
+    ##担当者
+    <cell $bgClass>$jgiName</cell>
+
+    ##特定施設個別計画立案済
+    #if($specialInsPlan.isRegOn)
+        <cell $bgClass><![CDATA[<span style="font-size: 20px">$regOn</span>]]></cell>
+    #else
+        <cell $bgClass></cell>
+    #end
+
+    ##最終更新者(更新日時)
+    #if ($specialInsPlan.upDate)
+        <cell $bgClass><![CDATA[$upJgiName<br>($upDate)]]></cell>
+    #else
+        <cell $bgClass></cell>
+    #end
+</row>
+#end
+</rows>
+#end

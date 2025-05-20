@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPM_C_VI_SOS_MST_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.SosMst" >
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="BR_CODE" property="brCode" jdbcType="CHAR" />
+    <result column="DIST_SEQ" property="distSeq" jdbcType="CHAR" />
+    <result column="DIST_CODE" property="distCode" jdbcType="CHAR" />
+    <result column="TEAM_CODE" property="teamCode" jdbcType="CHAR" />
+    <result column="BUMON_SEI_NAME" property="bumonSeiName" jdbcType="VARCHAR" />
+    <result column="BUMON_RYAKU_NAME" property="bumonRyakuName" jdbcType="VARCHAR" />
+    <result column="SOS_NAME" property="sosName" jdbcType="VARCHAR" />
+    <result column="UP_SOS_CD" property="upSosCd" jdbcType="VARCHAR" />
+    <result column="BUMON_RANK" property="bumonRank" jdbcType="INTEGER" />
+    <result column="ETC_SOS_FLG" property="etcSosFlg" jdbcType="CHAR" nullValue="0"/>
+    <result column="ONC_SOS_FLG" property="oncSosFlg" jdbcType="CHAR" nullValue="0"/>
+  </resultMap>
+
+<!-- add Start 2022/6/27  Y.Taniguchi バックログNo.15　ワクチンの場合、選択した都道府県に紐づく“特約店（本店）”のみ表示 -->
+  <resultMap id="resultBumonMap" class="jp.co.takeda.model.SosMst" >
+    <result column="SOS_CD" property="addrCodePref" jdbcType="VARCHAR" />
+  </resultMap>
+<!-- add End 2022/6/27  Y.Taniguchi バックログNo.15　ワクチンの場合、選択した都道府県に紐づく“特約店（本店）”のみ表示 -->
+
+  <resultMap id="resultCategoryMap" class="jp.co.takeda.model.SosMstCtg" >
+    <result column="CATEGORY_CD" property="categoryCd" jdbcType="CHAR" />
+    <result column="CATEGORY_NAME" property="categoryName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <!-- 検索 -->
+  <select id="selectReal" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SOS_CD
+          ,BR_CODE
+          ,DIST_SEQ
+          ,DIST_CODE
+          ,TEAM_CODE
+          ,CASE SOS_CD
+             WHEN '01050' THEN '全社'
+             ELSE BUMON_SEI_NAME
+           END AS BUMON_SEI_NAME
+          ,CASE SOS_CD
+             WHEN '01050' THEN '全社'
+             ELSE BUMON_RYAKU_NAME
+           END AS BUMON_RYAKU_NAME
+          ,CASE SOS_CD
+             WHEN '01050' THEN '全社'
+             ELSE SOS_NAME
+           END AS SOS_NAME
+          ,UP_SOS_CD
+          ,BUMON_RANK
+          ,ETC_SOS_FLG
+          ,ONC_SOS_FLG
+      FROM DPM_C_VI_SOS_MST
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="sosCd">
+        SOS_CD = #sosCd:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="brCode">
+        BR_CODE = #brCode:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="distCode">
+        DIST_CODE = #distCode:CHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="bumonRank">
+        BUMON_RANK = #bumonRank:INTEGER#
+      </isNotNull>
+      <isNotNull prepend="AND" property="etcSosFlg">
+        ETC_SOS_FLG = #etcSosFlg:CHAR#
+      </isNotNull>
+    </dynamic>
+  </select>
+
+<!-- add Start 2022/6/27  Y.Taniguchi バックログNo.15　ワクチンの場合、選択した都道府県に紐づく“特約店（本店）”のみ表示 -->
+   <select id="selectBumon" resultMap="resultBumonMap" parameterClass="java.util.Map" >
+    SELECT SOS_CD
+      FROM DPS_C_RYUTSU_TDFKN
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="addrCodePref">
+        TDFKN_CD = #addrCodePref:VARCHAR#
+      </isNotNull>
+    </dynamic>
+  </select>
+<!-- add End 2022/6/27  Y.Taniguchi バックログNo.15　ワクチンの場合、選択した都道府県に紐づく“特約店（本店）”のみ表示 -->
+
+  <select id="selectRealList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SOS_CD
+          ,BR_CODE
+          ,DIST_SEQ
+          ,DIST_CODE
+          ,TEAM_CODE
+          ,CASE SOS_CD
+             WHEN '01050' THEN '全社'
+             ELSE BUMON_SEI_NAME
+           END AS BUMON_SEI_NAME
+          ,CASE SOS_CD
+             WHEN '01050' THEN '全社'
+             ELSE BUMON_RYAKU_NAME
+           END AS BUMON_RYAKU_NAME
+          ,CASE SOS_CD
+             WHEN '01050' THEN '全社'
+             ELSE SOS_NAME
+           END AS SOS_NAME
+          ,UP_SOS_CD
+          ,BUMON_RANK
+          ,ETC_SOS_FLG
+          ,ONC_SOS_FLG
+      FROM DPM_C_VI_SOS_MST SM
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="upSosCd">
+        UP_SOS_CD = #upSosCd:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="shiten">
+        EXISTS (SELECT SOS_CD FROM DPS_S_SY_M_SOS_GRP_M WHERE SOS_CD = SM.SOS_CD AND SOS_GROP = #shiten:VARCHAR#)
+      </isNotNull>
+      <isNotNull prepend="AND" property="seikei_mr">
+        NOT EXISTS (SELECT SOS_CD FROM DPS_S_SY_M_SOS_GRP_M WHERE SOS_CD = SM.SOS_CD AND SOS_GROP = #seikei_mr:VARCHAR#)
+      </isNotNull>
+      <isNotNull prepend="AND" property="tokuyakuten">
+        EXISTS (SELECT SOS_CD FROM DPS_S_SY_M_SOS_GRP_M WHERE SOS_CD = SM.SOS_CD AND SOS_GROP = #tokuyakuten:VARCHAR#)
+      </isNotNull>
+      <isNotNull prepend="AND" property="excludeTokuyakutenList">
+        NOT EXISTS (SELECT SOS_CD FROM DPS_S_SY_M_SOS_GRP_M WHERE SOS_CD = SM.SOS_CD
+        <iterate prepend="AND SOS_GROP IN" open="(" close=")" conjunction="," property="excludeTokuyakutenList">
+          #excludeTokuyakutenList[]#
+        </iterate>
+        )
+      </isNotNull>
+      <isNotNull prepend="AND" property="bumonRank">
+        BUMON_RANK = #bumonRank:INTEGER# + 1
+      </isNotNull>
+    </dynamic>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <select id="selectSosCategoryList" resultMap="resultCategoryMap" parameterClass="java.util.Map" >
+    SELECT SC.CATEGORY AS CATEGORY_CD
+          ,CM.DATA_NAME AS CATEGORY_NAME
+      FROM DPM_C_VI_SOS_CTG SC
+          INNER JOIN DPM_C_CD_MST CM ON CM.DATA_KBN = 'category' AND CM.DATA_CD = SC.CATEGORY
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="sosCd">
+        SOS_CD = #sosCd#
+      </isNotNull>
+    </dynamic>
+    ORDER BY CM.DATA_SEQ
+  </select>
+
+  <select id="selectDpsSosCategoryList" resultMap="resultCategoryMap" parameterClass="java.util.Map" >
+    SELECT SC.CATEGORY AS CATEGORY_CD
+          ,CM.DATA_NAME AS CATEGORY_NAME
+      FROM DPS_C_VI_SOS_CTG SC
+          INNER JOIN DPS_C_CD_MST CM ON CM.DATA_KBN = 'category' AND CM.DATA_CD = SC.CATEGORY
+    <dynamic prepend="WHERE">
+      <isNotNull prepend="AND" property="sosCd">
+        SOS_CD = #sosCd#
+      </isNotNull>
+    </dynamic>
+    ORDER BY CM.DATA_SEQ
+  </select>
+
+</sqlMap>

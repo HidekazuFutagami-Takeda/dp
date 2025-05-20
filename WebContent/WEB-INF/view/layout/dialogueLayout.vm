@@ -1,0 +1,34 @@
+#parse("WEB-INF/view/cmn/xhtml.vm")
+<html>
+#parse("WEB-INF/view/cmn/headerInfoDhtmlx.vm")
+
+<body onload="$!bodyOnloadMethod" onfocus="$!bodyOnfocusMethod">
+
+#set ($_contentsId = "dialogueContents")
+#if($contentsId)
+	#set ($_contentsId = $contentsId)
+#end
+<div id="$_contentsId">
+<div class="clear"></div>
+<div id="messageArea">
+#allMessage()
+</div>
+#if($dataListFileName)
+#set ($gKbn = $dataListFileName.substring(0,3))
+<textarea id="$dataListFileName" style="display: none;">
+#parse("WEB-INF/view/pages/$gKbn/$dataListFileName")
+</textarea>
+#end
+#if($dataListFileName2)
+<textarea id="$dataListFileName2" style="display:none;">
+#parse("WEB-INF/view/pages/$gKbn/$dataListFileName2")
+</textarea>
+#end
+<textarea id="closeWindow" style="display: none;">
+</textarea>
+<div id="dialogue">
+$screen_content
+</div>
+</div>
+</body>
+</html>

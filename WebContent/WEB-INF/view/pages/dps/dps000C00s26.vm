@@ -1,0 +1,90 @@
+## ------------------------------------
+## 業務進捗表(医)[各種登録状況]
+## ------------------------------------
+#set($GridObjName = "dps000C00s26Grid")
+#set($CoverId = "dps000C00s26CoverId")
+#set ($rankString = $progress.getProgressIyakuRank().toString())
+<script language="javascript">
+<!--
+var ${GridObjName};
+## 初期表示＋読込処理
+function dps000C00F26() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+#if ($rankString.equals("SITEN"))
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.setHeader("リージョン,未獲得市場<br>最終更新日,配分除外施設<br>最終更新日,特定施設個別計画<br>最終更新日,担当者別計画<br>最終更新日");
+##    ${GridObjName}.setHeader("支店,未獲得市場<br>最終更新日,配分除外施設<br>最終更新日,特定施設個別計画<br>最終更新日,担当者別計画<br>最終更新日");
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.attachHeader("#rspan,#rspan,#rspan,#rspan,#rspan");
+    ${GridObjName}.setInitWidths("110,150,150,150,150");
+    ${GridObjName}.setColAlign("left,center,center,center,center");
+    ${GridObjName}.setColTypes("ro,ro,ro,ro,ro");
+    ${GridObjName}.enableResizing("false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false");
+#elseif ($rankString.equals("OFFICE"))
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.setHeader("エリア,未獲得市場<br>最終更新日,配分除外施設<br>最終更新日,特定施設個別計画<br>最終更新日,担当者別計画<br>最終更新日");
+##    ${GridObjName}.setHeader("営業所,未獲得市場<br>最終更新日,配分除外施設<br>最終更新日,特定施設個別計画<br>最終更新日,担当者別計画<br>最終更新日");
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.attachHeader("#rspan,#rspan,#rspan,#rspan,#rspan");
+    ${GridObjName}.setInitWidths("110,150,150,150,150");
+    ${GridObjName}.setColAlign("left,center,center,center,center");
+    ${GridObjName}.setColTypes("ro,ro,ro,ro,ro");
+    ${GridObjName}.enableResizing("false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false");
+###elseif ($rankString.equals("TEAM"))
+##    ${GridObjName}.setHeader("チーム,配分除外施設<br>最終更新日");
+##    ${GridObjName}.attachHeader("#rspan,#rspan");
+##    ${GridObjName}.setInitWidths("110,150");
+##    ${GridObjName}.setColAlign("left,center");
+##    ${GridObjName}.setColTypes("ro,ro");
+##    ${GridObjName}.enableResizing("false,false");
+##    ${GridObjName}.enableTooltips("false,false");
+#elseif ($rankString.equals("TANTOU"))
+    ${GridObjName}.setHeader("担当者,配分除外施設<br>最終更新日");
+    ${GridObjName}.attachHeader("#rspan,#rspan");
+    ## mod Start 2021/7/1 H.Kaneko Step4UAT課題224対応
+    ##${GridObjName}.setInitWidths("140,150");
+    ${GridObjName}.setInitWidths("170,150");
+    ## mod End 2021/7/1 H.Kaneko Step4UAT課題224対応
+    ${GridObjName}.setColAlign("left,center");
+    ${GridObjName}.setColTypes("ro,ro");
+    ${GridObjName}.enableResizing("false,false");
+    ${GridObjName}.enableTooltips("false,false");
+#end
+    ${GridObjName}.enableAutoWidth(true);
+    ${GridObjName}.enableAutoHeight(true);
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.objBox.style.overflowY="hidden";
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+
+    ##このvm（業務進捗表(医)[各種登録状況]）の次にロードする表を決定する
+    #set($categoryList = $progress.getDispBusinessProgressCategoryList())
+	#foreach($category in $categoryList)
+	    #if(!$nextLoadFunction)
+	        #set($nextLoadFunction = "dps000C00Fc${category.dbValue}")
+	    #end
+	#end
+    #if(!$nextLoadFunction)
+	    #if ($progress.isWsPlanDispFlg())
+	    	#set($nextLoadFunction = "dps000C00F29")
+	    #else
+        	#set($nextLoadFunction = '""')
+	    #end
+    #end
+    ##この次にロードする表のロードFunctionを第2引数に指定して、この表のロードをコールする
+    ${GridObjName}.load("$link.setAction('dps000C00F26?sFlg=true')", $nextLoadFunction);
+
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.attachEvent("onBeforeSelect",function(newId,oldId){return;});
+}
+//-->
+</script>
+#loadingGridDiv("${GridObjName}", "${CoverId}")

@@ -1,0 +1,269 @@
+## 特約店別計画編集
+#set($pageTitle = $text.get("dps502C01","title"))
+#set($layout = "dialogueLayout.vm" )
+#set($bodyOnloadMethod = "dps502C01F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($GridObjName = "dps502C01Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps502C01CoverId")
+#set($dataListFileName = "dps502C01x01.vm")
+#if($form.getRequestData("DPS502C01_DATA_R"))
+    #set($resultData = $form.getRequestData("DPS502C01_DATA_R"))
+#end
+
+#set ($editMode = false)
+## mod Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+#if($!security.sysManage.transTFlg)
+	#if($form.bean.kaBaseKb == "2")
+		#set ($editMode = true)
+	#end
+#elseif($form.bean.kaBaseKb == "1")
+	#set ($editMode = true)
+#end
+## mod End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+
+<script language="javascript">
+var ${GridObjName};
+var editFlg = false;
+document.getElementById("closeWindow").value = "true";
+## 初期表示
+function dps502C01F00(){
+    ## グリッド初期化
+    doInitGrid();
+    ## グリッドデータ読み込み
+    if (document.getElementById("$dataListFileName")) {
+        var loadXMLString = document.getElementById("$dataListFileName").value;
+        if (loadXMLString != null && loadXMLString != "") {
+           ${GridObjName}.loadXMLString(loadXMLString);
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+    calcCell();
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+	${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName}.setHeader("特約店名,UH,#cspan,#cspan,P,#cspan,#cspan");
+## mod Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+    #if($form.bean.kaBaseKb == "1")
+    ${GridObjName}.attachHeader("#rspan,配分値(Y),施設積上(Y),修正計画(Y),配分値(Y),施設積上(Y),修正計画(Y)");
+    #else
+    ${GridObjName}.attachHeader("#rspan,配分値(S),施設積上(S),修正計画(S),配分値(S),施設積上(S),修正計画(S)");
+    #end
+## mod End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+    ${GridObjName}.setInitWidths("200,100,100,100,100,100,100");
+    ${GridObjName}.setColAlign("left,right,right,right,right,right,right");
+    #if($editMode)
+    ${GridObjName}.setColTypes("ro,ron,ron,edn,ron,ron,edn");
+    #else
+    ${GridObjName}.setColTypes("ro,ron,ron,ron,ron,ron,ron");
+    #end
+    ${GridObjName}.enableResizing("false,false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false");
+    for(i=1;i<=6;i++){
+        ${GridObjName}.setNumberFormat("0,000",i);
+    }
+    ${GridObjName}.enableDistributedParsing(true,50,260);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps502C01', $!gridHeight));
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.init();
+    ${GridObjName}.enableEditEvents(true, false, true);
+
+    ##  --- 編集中に登録ボタンが押された場合のチェッカー
+    window.editValueChecker = new EditingValueChecker(${GridObjName},'$text.get("DPC1036E",[""])' );
+
+    ${GridObjName}.attachEvent("onEditCell",function(stage,rowId,cellInd,newvalue,oldvalue){
+		## --- 編集中に登録ボタンが押された場合のチェック用に値とstageを保持 ---
+		window.editValueChecker.saveState(stage,newvalue);
+
+        if(stage == 1){
+            editFlg=true;
+            setIme(${GridObjName},rowId,cellInd,"inactive",10);
+        }
+        if(stage == 2){
+            if(newvalue.toString() != oldvalue.toString()){
+                intCheck(${GridObjName},rowId,cellInd,newvalue);
+            }
+            calcCell();
+        }
+        return true;
+    });
+    ${GridObjName}.attachEvent("onRowCreated",function(id){
+        var cell = ${GridObjName}.cells(id,0);
+        if (cell.getAttribute("disabled")) cell.setDisabled(true);
+    });
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift, new Array("3","6"));
+##      if (keycode == 86 && ctrl) {
+##          calcCell();
+##          editFlg=true;
+##      }
+        return true;
+    });
+    ${GridObjName}.attachEvent("onRowPaste", function(rowId){
+        calcCell();
+        editFlg=true;
+        return true;
+    });
+}
+## 登録処理
+function dps502C01F05Execute(){
+    ## --- 編集中セル値の登録時チェック ---
+	if(window.editValueChecker.isValid() == false){
+		return;
+	}
+
+    ##入力チェック
+    if (!dps502C01F05Validation()) {
+        return;
+    }
+	##計画立案対象外特約店のチェック
+    if(doesIncludeExceptTytPlan()){
+	    if(!window.confirm('$text.get("DPS502C02.002","dialogue")')){
+	        return false;
+	    }
+    }
+
+    ## 確認
+    if(!window.confirm('$text.get("DPS502C01.001","dialogue")')){
+        return false;
+    }
+    ##送信データ作成
+    for (i = 1; i <= ${GridObjName}.getRowsNum(); i++) {
+        if(${GridObjName}.getUserData(i, "rowType") != "input"){
+            continue;
+        }
+
+        var userData = ${GridObjName}.getUserData(i, 'updateRowId');
+        if(userData == null || userData == ""){continue;}
+        userData += "," + ${GridObjName}.cells(i,3).getValue();
+        userData += "," + ${GridObjName}.cells(i,6).getValue();
+        ${GridObjName}.setUserData(i, 'updateRowId', userData);
+    }
+    addRowIdList(document.dps502C01Form, ${GridObjName}, 'rowIdList', 'updateRowId');
+    ##送信
+    var actionPath = '$link.setAction('dps502C01F05Execute')';
+    document.dps502C01Form.action = actionPath;
+    document.dps502C01Form.submit();
+    dps502C01F05Execute = blockIt;
+}
+
+## 計画立案対象外特約店への計画有無チェック
+function doesIncludeExceptTytPlan(){
+
+	if( cs_planTaiGaiFlgRikCheck(${GridObjName},3) ||
+	    cs_planTaiGaiFlgRikCheck(${GridObjName},6) ){
+	    return true;
+	}
+	return false;
+}
+
+## 登録処理時入力チェック
+function dps502C01F05Validation(){
+    for (rowId = 1; rowId <= ${GridObjName}.getRowsNum(); rowId++) {
+        if(${GridObjName}.getUserData(rowId, "rowType") != "input"){
+            continue;
+        }
+        sosName = ${GridObjName}.cells(rowId, 0).getValue();
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        messageHeader = "エリア【" + sosName + "】の";
+##        messageHeader = "営業所【" + sosName + "】の";
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        if($form.bean.kaBaseKb == "1"){
+            kaBaseKbName = "Y"
+        }else{
+            kaBaseKbName = "T"
+        }
+        ## [半角数値] 特約店別修正計画UH
+        errorMsgUh = '修正計画(' + kaBaseKbName + ')UH';
+        plannedValueUh = ${GridObjName}.cells(rowId, 3).getValue();
+        plannedValueUh += "";
+        amountValidation(errorMsgUh,plannedValueUh,10,true,messageHeader);
+
+        ## [半角数値] 特約店別計画P
+        errorMsgP = '修正計画(' + kaBaseKbName + ')P';
+        plannedValueP = ${GridObjName}.cells(rowId, 6).getValue();
+        plannedValueP += "";
+        amountValidation(errorMsgP,plannedValueP,10,true,messageHeader);
+    }
+    return validation();
+}
+## 計算
+function calcCell(){
+	setSum2(${GridObjName},3);
+	setSum2(${GridObjName},6);
+}
+## 閉じる処理
+function closeWindow() {
+    if ($editMode && editFlg) {
+        if (window.confirm('$text.get("DPC999C99.001","dialogue")')) {
+            try {
+                window.close();
+            } catch (e){}
+        }
+    }
+    else {
+        try {
+            window.close();
+        } catch (e){}
+    }
+}
+//-->
+</script>
+
+<div class="disp" style="padding:0px;margin:5px;">
+<form name="dps502C01Form" method="post">
+<div align="left" style="float: left; width: 100%;">
+<table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr>
+        <td class="gridIndex" style="width:150px;">特約店名</td>
+##      <td style="padding: 0px 5px 0px 5px;">
+        <td style="padding: 0px 5px 0px 5px;" title="特約店C：$!resultData.tmsTytenMstUn.tmsTytenCd">
+            <div>$!resultData.tmsTytenMstUn.tmsTytenMeiKj</div>
+        </td>
+        <td class="gridIndex" style="width:100px;">品目名称</td>
+        <td style="padding: 0px 5px 0px 5px;">$!resultData.plannedProd.prodName</td>
+    </tr>
+</table>
+</div>
+<div style="position:relative;clear:both;">
+<table style="width: 90%; margin-top:5px; margin-bottom:2px;" cellspacing="0" cellpadding="1">
+    <tr>
+        <td>
+	        #if ($editMode)
+	           <input type="button" value="登録する" onClick="dps502C01F05Execute()" style="width: 80px;"  />
+	        #else
+	           <input type="button" value="登録する" onClick="dps502C01F05Execute()" style="width: 80px;"  disabled/>
+	        #end
+            <input type="button" value="閉じる" onClick="closeWindow()" style="width: 80px;"  />
+        </td>
+        <td style="width:10px;"></td>
+        <td class="statusNot legendSize">&nbsp;</td>
+  		<td style="padding-right:10px;"><label>：計画立案対象外特約店</label></td>
+        <td class="label" style="text-align: right; vertical-align: bottom;">
+            #if($form.bean.kaBaseKb == "1")
+            <label>$consts.tableHeaderY</label>
+            #else
+            <label>$consts.tableHeaderS</label>
+            #end
+        </td>
+    </tr>
+</table>
+</div>
+<div align="left" style="float: left;width: 100%;">
+    #loadingGridDiv2("${GridObjName}", "${CoverId}", "width: 90%; clear: both;")
+</div>
+<div class="guide">※修正計画UHおよび修正計画Pは、10千円単位で入力してください。<br></div>
+## hidden項目
+#token()
+<input type="hidden" name="tmsTytenCd" value="$!form.bean.tmsTytenCd" />
+<input type="hidden" name="prodCode" value="$!form.bean.prodCode" />
+<input type="hidden" name="kaBaseKb" value="$!form.bean.kaBaseKb" />
+</form>
+</div>

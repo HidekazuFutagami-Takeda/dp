@@ -1,0 +1,20 @@
+#set( $layout = "nothingLayout.vm" )
+#set( $insMst = $form.getRequestData("DPS911C00F10_DATA_R"))
+#set( $exceptDistIns = $form.getRequestData("DPS911C00F10_EXCEPT_DIST_INS"))
+$!insMst.getInsNo(),$!insMst.getInsName(),$!insMst.getInsType(),$!insMst.getInsClass(),$!insMst.getJgiName(),$!insMst.getShikuchosonMeiKj(),$!insMst.getAddrCodePref(),$!insMst.getAddrCodeCity()
+$!insMst.getInsInfoName(),$!insMst.getDispFontColCd(),$!insMst.getErrFlg(),$!insMst.getAlertFlg
+$!insMst.getDelFlg(),$!exceptDistIns,
+$!insMst.getShokushuName(),
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　担当者出力を汎用的に書き換え
+##$!insMst.getCvmJgiName()
+##$!insMst.getCvmShokushuName()
+##$!insMst.getRsJgiName()
+##$!insMst.getRsShokushuName()
+##$!insMst.getOncJgiName()
+##$!insMst.getOncShokushuName()
+##SYU0003の担当者を表示
+#foreach($tanto in $insMst.getTantoList())
+$!tanto.jgiName
+$!tanto.shokushuName
+#end	
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　担当者出力を汎用的に書き換え

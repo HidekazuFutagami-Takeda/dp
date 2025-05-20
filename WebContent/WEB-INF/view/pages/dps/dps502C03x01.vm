@@ -1,0 +1,133 @@
+#set($layout = "nothingLayout.vm" )
+#if($form.getRequestData("DPS502C03_DATA_R_RESULT_DETAIL"))
+    #set($resultDataList = $form.getRequestData("DPS502C03_DATA_R_RESULT_DETAIL").detailList)
+#end
+#if($resultDataList)
+$!consts.getDhtmlxGridXmlHeader()
+
+#set ($editMode = false)
+#set ($inputB = "")
+#if($form.bean.tytenKisLevel == "06")
+#set ($editMode = true)
+#set ($inputB = "inputB")
+#end
+
+<rows>
+    #set($subTotalId = 1)
+    #set($beforeIsSummary = "")
+    #foreach($resultData in $resultDataList)
+        #if($!resultData.wsPlanForVacSummary.planTaiGaiFlgRik == "1")
+            #set($bgNot = "class='statusNot'")
+            #set ($inputB = "statusNot")
+            #set ($sumShiten = "statusNot")
+        #else
+            #set($bgNot = "")
+            #set ($inputB = "inputB")
+            #set ($sumShiten = "sumShitenToku")
+        #end
+        ## 全社合計行
+        #if($resultData.allSum)
+        	<row id='$velocityCount'>
+                <userdata name="rowType">total</userdata>
+                ## mod Start 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                ##<cell class="sumAreaTokuG" style="border-width:1px 0px 1px 1px;">全社合計</cell>
+                ##<cell class="sumAreaTokuG" style="border-width:1px 1px 1px 0px;"></cell>
+                ##<cell class="sumAreaTokuG"></cell>
+                ##<cell class="sumAreaTokuG" style="#setMinusStyle($!resultData.wsPlanForVacSummary.insStackValue)">$!resultData.wsPlanForVacSummary.insStackValue</cell>
+                ##<cell class="sumAreaTokuG" style="#setMinusStyle($!resultData.wsPlanForVacSummary.plannedValue)">$!resultData.wsPlanForVacSummary.plannedValue</cell>
+                <cell class="sumAreaTokuG" style="border-width:1px 0px 1px 1px; height:15px;">全社合計</cell>
+                <cell class="sumAreaTokuG" style="border-width:1px 1px 1px 0px; height:15px;"></cell>
+                <cell class="sumAreaTokuG" style="height:15px;"></cell>
+                <cell class="sumAreaTokuG" style="#setMinusStyle($!resultData.wsPlanForVacSummary.insStackValue) height:15px;">$!resultData.wsPlanForVacSummary.insStackValue</cell>
+                <cell class="sumAreaTokuG" style="#setMinusStyle($!resultData.wsPlanForVacSummary.plannedValue) height:15px;">$!resultData.wsPlanForVacSummary.plannedValue</cell>
+                ## mod End 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+            </row>
+        ## 組織合計行
+        #elseif($resultData.sosSum)
+            <row id='$velocityCount'>
+                <userdata name="rowType">subTotal</userdata>
+                <userdata name="subTotalId">$subTotalId</userdata>
+                ## mod Start 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                ##<cell $bgNot style="border-width:0px 1px 1px 1px;"></cell>
+                ##<cell class="$sumShiten">合計</cell>
+                ##<cell class="$sumShiten"></cell>
+                ##<cell class="$sumShiten" style="#setMinusStyle($!resultData.wsPlanForVacSummary.insStackValue)">$!resultData.wsPlanForVacSummary.insStackValue</cell>
+                ##<cell class="$sumShiten" style="#setMinusStyle($!resultData.wsPlanForVacSummary.plannedValue)">$!resultData.wsPlanForVacSummary.plannedValue</cell>
+                <cell $bgNot style="border-width:0px 1px 1px 1px; height:15px;"></cell>
+                <cell class="$sumShiten" style="height:15px;">合計</cell>
+                <cell class="$sumShiten" style="height:15px;"></cell>
+                <cell class="$sumShiten" style="#setMinusStyle($!resultData.wsPlanForVacSummary.insStackValue) height:15px;">$!resultData.wsPlanForVacSummary.insStackValue</cell>
+                <cell class="$sumShiten" style="#setMinusStyle($!resultData.wsPlanForVacSummary.plannedValue) height:15px;">$!resultData.wsPlanForVacSummary.plannedValue</cell>
+                ## mod End 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+            </row>
+            #set($subTotalId = $subTotalId + 1)
+        ## 通常行
+        #else
+            #if($resultData.wsPlanForVacSummary.plannedValue)
+                #if($editMode)
+                    #set($typePV="edn")
+                #else
+                    #set($typePV="ron")
+                #end
+            #else
+                #if($editMode)
+                    #set($typePV="ed")
+                #else
+                    #set($typePV="ro")
+                #end
+            #end
+
+            <row id='$velocityCount'>
+        		<userdata name="planTaiGaiFlgRik">$!resultData.wsPlanForVacSummary.planTaiGaiFlgRik</userdata>
+                <userdata name="rowType">input</userdata>
+                <userdata name="subTotalId">$subTotalId</userdata>
+                <userdata name="updateRowId">$!resultData.wsPlanForVacSummary.seqKey,$!resultData.wsPlanForVacSummary.upDate.time,$!resultData.wsPlanForVacSummary.sosCd,$!resultData.wsPlanForVacSummary.plannedValue</userdata>
+                #if($velocityCount == 2 || $beforeIsSummary)
+                ## mod Start 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                ##<cell $bgNot title="特約店C：$!resultData.wsPlanForVacSummary.tmsTytenCd" style="border-width:1px 1px 0px 1px;">$!resultData.wsPlanForVacSummary.tmsTytenMeiKj</cell>
+                <cell $bgNot title="特約店C：$!resultData.wsPlanForVacSummary.tmsTytenCd" style="border-width:1px 1px 0px 1px; height:15px;">$!resultData.wsPlanForVacSummary.tmsTytenMeiKj</cell>
+                ## mod End 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                #else
+                ## mod Start 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                ##<cell $bgNot title="特約店C：$!resultData.wsPlanForVacSummary.tmsTytenCd" style="border-width:0px 1px 0px 1px;"></cell>
+                <cell $bgNot title="特約店C：$!resultData.wsPlanForVacSummary.tmsTytenCd" style="border-width:0px 1px 0px 1px; height:15px;"></cell>
+                ## mod End 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                #end
+                ## mod Start 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                ##<cell $bgNot>$!resultData.wsPlanForVacSummary.prodName</cell>
+                <cell $bgNot style="height:15px;">$!resultData.wsPlanForVacSummary.prodName</cell>
+                ## mod End 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                #if($!form.bean.tytenKisLevel != "06" && $!security.hasAuthEdit("DPS502"))
+                ## mod Start 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                ##<cell $bgNot><![CDATA[<a href="#" onclick="openEditDialog('$!resultData.wsPlanForVacSummary.tmsTytenCd','$!resultData.wsPlanForVacSummary.prodCode','$!form.bean.tytenKisLevel')">編集</a>]]></cell>
+## mod Start 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+                <cell $bgNot style="height:15px;"><![CDATA[<a href="#" onclick="openEditDialog('$!resultData.wsPlanForVacSummary.tmsTytenCd','$!resultData.wsPlanForVacSummary.prodCode','$!form.bean.tytenKisLevel','$!form.bean.kaBaseKb')">編集</a>]]></cell>
+## mod End 2022/7/19  Y.Taniguchi バックログNo.10　仕入特約店をＹベースでの計画修正を画面から行えるようにする
+                ## mod End 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                #else
+                ## mod Start 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                ##<cell $bgNot></cell>
+                <cell $bgNot style="height:15px;"></cell>
+                ## mod End 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                #end
+                ## mod Start 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                ##<cell $bgNot style="#setMinusStyle($!resultData.wsPlanForVacSummary.insStackValue)">$!resultData.wsPlanForVacSummary.insStackValue</cell>
+                <cell $bgNot style="#setMinusStyle($!resultData.wsPlanForVacSummary.insStackValue) height:15px;">$!resultData.wsPlanForVacSummary.insStackValue</cell>
+                ## mod End 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                #if($form.bean.tytenKisLevel == "06"  && $!security.hasAuthEdit("DPS502"))
+                ## mod Start 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                ##<cell type="$typePV" class="$inputB" style="#setMinusStyle($!resultData.wsPlanForVacSummary.plannedValue)">$!resultData.wsPlanForVacSummary.plannedValue</cell>
+                <cell type="$typePV" class="$inputB" style="#setMinusStyle($!resultData.wsPlanForVacSummary.plannedValue) height:15px;">$!resultData.wsPlanForVacSummary.plannedValue</cell>
+                ## mod End 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                #else
+                ## mod Start 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                ##<cell $bgNot style="#setMinusStyle($!resultData.wsPlanForVacSummary.plannedValue)">$!resultData.wsPlanForVacSummary.plannedValue</cell>
+                <cell $bgNot style="#setMinusStyle($!resultData.wsPlanForVacSummary.plannedValue) height:15px;">$!resultData.wsPlanForVacSummary.plannedValue</cell>
+                ## mod End 2021/7/5 H.Kaneko Step4UAT課題特約店関連
+                #end
+            </row>
+        #end
+        #set($beforeIsSummary = $resultData.sosSum)
+    #end
+</rows>
+#end

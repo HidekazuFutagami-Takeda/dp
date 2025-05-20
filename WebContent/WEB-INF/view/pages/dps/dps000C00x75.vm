@@ -1,0 +1,14 @@
+#set( $layout = "nothingLayout.vm" )
+#set($DPS000C00F75Data = $form.getRequestData("DPS000C00F75_DATA_R"))
+#set($btLastUpDate = $DPS000C00F75Data.getBtLastUpDate())
+#if (!$btLastUpDate)
+    #set($ytLastUpDate = "")
+#else
+    #set($btLastUpDate = $!format.toString($btLastUpDate, "yyyy/MM/dd HH:mm"))
+#end
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+    <row id="1">
+        <cell>$!btLastUpDate</cell>
+    </row>
+</rows>

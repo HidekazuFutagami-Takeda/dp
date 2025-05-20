@@ -1,0 +1,161 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS301C00_DATA_R"))
+    #set( $dataList = $form.getRequestData("DPS301C00_DATA_R"))
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#foreach($resultData in $dataList)
+    ##品目名称
+    #set( $prodName = "")
+    #if($resultData.estimationProd.prodName)
+        #set($prodName = $resultData.estimationProd.prodName)
+    #end
+    ##製品区分
+    #set( $prodType = "")
+    #if($resultData.estimationProd.prodType)
+        #set($prodType = $resultData.estimationProd.prodType)
+    #end
+    ##試算ステータス
+    #set( $statusValue = "")
+    #set($selectValue = "0")
+    #if($resultData.estimationProd.mrPlanStatus.dbValue)
+        #set( $statusValue = $resultData.estimationProd.mrPlanStatus.dbValue)
+    #end
+    #set( $statusFontColor = "")
+    #set( $statusName = "")
+    #set( $estimationExecDate = "")
+    #if($statusValue == "")
+        #set($statusName = "")
+        #set( $estimationExecDate = "")
+        #set($selectValue = "1")
+    #elseif($statusValue == "1")
+        #set($statusName = "試算中")
+        #if($resultData.estimationProd.estStartDate)
+            #set($estimationExecDate = $resultData.estimationProd.estStartDate)
+            #set($statusFontColor = "#FF0000")
+        #end
+    #else
+        #set($statusName = "試算済")
+        #if($resultData.estimationProd.estEndDate)
+            #set($estimationExecDate = $resultData.estimationProd.estEndDate)
+        #end
+    #end
+    ##薬効市場
+    #set( $yakkouSijouName = "")
+    #if($resultData.estimationProd.yakkouSijouName)
+        #set($yakkouSijouName = $resultData.estimationProd.yakkouSijouName)
+    #end
+    ##試算基準
+    #set( $base = "")
+    #if($resultData.honbu)
+        #set($base = "本部案")
+    #else
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+        #set($base = "エリア案")
+##        #set($base = "営業所案")
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    #end
+    ##フリー項目最終更新日
+    #set($freeIndexLastUpdate = "")
+    #if($resultData.estimationProd.freeIndexLastUpdate)
+        #set($freeIndexLastUpdate = $resultData.estimationProd.freeIndexLastUpdate)
+    #end
+    ##試算パラメータ最終更新日
+    #set($estParamLastUpdate = "")
+    #if($resultData.estParamLastUpdate)
+        #set($estParamLastUpdate = $resultData.estParamLastUpdate)
+    #end
+    ##比率
+    #set($rate1 = "0")
+    #set($rate2 = "0")
+    #set($rate3 = "0")
+    #set($rate4 = "0")
+    #set($rate5 = "0")
+    #if($resultData.estimationParam.indexMikakutoku)
+        #set($rate1 = $resultData.estimationParam.indexMikakutoku)
+    #end
+    #if($resultData.estimationParam.indexDelivery)
+        #set($rate2 = $resultData.estimationParam.indexDelivery)
+    #end
+    #if($resultData.estimationParam.indexFree1)
+        #set($rate3 = $resultData.estimationParam.indexFree1)
+    #end
+    #if($resultData.estimationParam.indexFree2)
+        #set($rate4 = $resultData.estimationParam.indexFree2)
+    #end
+    #if($resultData.estimationParam.indexFree3)
+        #set($rate5 = $resultData.estimationParam.indexFree3)
+    #end
+    ##試算品目名称
+    #set( $refProdName = "")
+    #if($resultData.baseParam.refProdInfo.prodName)
+        #set($refProdName = $resultData.baseParam.refProdInfo.prodName)
+    #end
+    ##試算品目製品区分
+    #set( $refProdType = "")
+    #if($resultData.baseParam.refProdInfo.prodType)
+        #set($refProdType = $resultData.baseParam.refProdInfo.prodType)
+    #end
+    ##参照期間(FROM)
+    #set($refPeriodFrom = "")
+    #if($resultData.refPeriodFrom)
+        #set($refPeriodFrom = $!{format.toString($!{resultData.refPeriodFrom},"yyyy/MM")})
+    #end
+    ##参照期間(TO)
+    #set($refPeriodTo = "")
+    #if($resultData.refPeriodTo)
+        #set($refPeriodTo = $!{format.toString($!{resultData.refPeriodTo},"yyyy/MM")})
+    #end
+    ##参照品目1
+    #set( $resultRefProdName1 = "")
+    #if($resultData.baseParam.resultRefProdName1)
+        #set($resultRefProdName1 = $resultData.baseParam.resultRefProdName1)
+    #end
+    ##参照品目2
+    #set( $resultRefProdName2 = "")
+    #if($resultData.baseParam.resultRefProdName2)
+        #set($resultRefProdName2 = $resultData.baseParam.resultRefProdName2)
+    #end
+    ##参照品目3
+    #set( $resultRefProdName3 = "")
+    #if($resultData.baseParam.resultRefProdName3)
+        #set($resultRefProdName3 = $resultData.baseParam.resultRefProdName3)
+    #end
+    ##品目固定コード(非表示)
+    #set( $prodCode = "")
+    #if($resultData.estimationProd.prodCode)
+        #set($prodCode = $resultData.estimationProd.prodCode)
+    #end
+    ##組織コード(非表示)
+    #set( $sosCd = "")
+    #if($resultData.estimationProd.sosCd)
+        #set($sosCd = $resultData.estimationProd.sosCd)
+    #end
+    ##担当者別計画立案ステータス最終更新日(非表示)
+    #set( $mrPlanStatusUpdate = "")
+    #if($resultData.mrPlanStatusUpdate)
+        #set($mrPlanStatusUpdate = $!resultData.mrPlanStatusUpdate)
+    #end
+    <row id='$velocityCount'>
+        <cell style="height:35">$!selectValue</cell>
+        <cell style="height:35">$prodName</cell>
+        <cell style="height:35">$prodType</cell>
+        <cell style="height:35"><![CDATA[<font color="$statusFontColor">$statusName</font><br>#writeLastUpDate($estimationExecDate,"")]]></cell>
+        <cell style="height:35">$yakkouSijouName</cell>
+        <cell style="height:35">$base</cell>
+        <cell style="height:35"><![CDATA[<a href="#" onclick="executeLink('$link.setAction('dps301C02F00')','$sosCd','$prodCode')">編集</a><br>#writeLastUpDate($freeIndexLastUpdate,"-")]]></cell>
+        <cell style="height:35"><![CDATA[<a href="#" onclick="executeLink('$link.setAction('dps301C01F00')','$sosCd','$prodCode')">編集</a><br>#writeLastUpDate($estParamLastUpdate,"-")]]></cell>
+        <cell style="height:35">$rate1:$rate2:$rate3:$rate4:$rate5</cell>
+        <cell style="height:35">$refProdName</cell>
+        <cell style="height:35">$refProdType</cell>
+        <cell style="height:35">$refPeriodFrom - $refPeriodTo</cell>
+        <cell style="height:35">$resultRefProdName1</cell>
+        <cell style="height:35">$resultRefProdName2</cell>
+        <cell style="height:35">$resultRefProdName3</cell>
+        ##品目固定コード,品目名称
+        <userdata name="updateRowId">$prodCode,$prodName,$!mrPlanStatusUpdate.Time</userdata>
+    </row>
+#end
+</rows>
+#end

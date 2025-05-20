@@ -1,0 +1,309 @@
+#set($contentsId = "freeSizeContents")
+#set($layout = "dialogueLayout.vm" )
+#set($pageTitle = $text.get("dps910C00","title"))
+## 検索結果取得
+#if ($form.getRequestData("SOS_JGI_LIST_DTO_KEY_R"))
+    #set($data = $form.getRequestData("SOS_JGI_LIST_DTO_KEY_R"))
+    #set($selectList = $data.selectList)
+    ## 選択中の組織
+    #set($curCount = $selectList.size() - 1)
+    #set($curSos = $selectList.get($curCount))
+    #set($sosMstList = $data.sosMstList)
+    #set($jgiMstList = $data.jgiMstList)
+#else
+    #set($data = "")
+    #set($selectList = "")
+    #set($sosMstList = "")
+    #set($jgiMstList = "")
+#end
+## ログイン情報取得
+#set ( $dpUser = $form.bean.dpUser)
+#if ($dpUser)
+    ##set ( $dpUserBumonRank = $!dpUser.bumonRank)
+    #set ( $dpUserSosCd = $!dpUser.sosCd)
+    #set ( $dpUserSosCd2 = $!dpUser.sosCd2)
+    #set ( $dpUserSosCd3 = $!dpUser.sosCd3)
+    #set ( $dpUserSosCd4 = $!dpUser.sosCd4)
+    #set ( $dpUserJgiNo = $!dpUser.jgiNo)
+#end
+## 適用関数名
+#set ($sosApplyFuncName = $form.bean.sosApplyFuncName)
+## 検索パターン区分（01：支店階層、02：特約店部階層）
+#set ($sosSrchPtnType = $form.bean.sosSrchPtnType)
+#set ($SITEN_PTN = "01")
+#set ($TOKUYAKU_PTN = "02")
+## 検索最小階層取得値（01：支店、02：営業所、03：チーム、04：従業員）
+#set ($sosMinSrchValue = $form.bean.sosMinSrchValue)
+## 検索最大階層取得値
+#set ($sosMaxSrchGetValue = $form.bean.sosMaxSrchGetValue)
+#set ($SITEN = "01")
+#set ($EIGYO = "02")
+#set ($TEAM = "03")
+#set ($JGI = "04")
+## 全表示可フラグ
+#set ($sosAllDispFlg = $form.bean.sosAllDispFlg)
+## 整形フラグ
+#set ($includeSeikei = $form.bean.includeSeikei)
+## 組織レベル
+#set ($sosLvl = $form.bean.sosLvl.dbValue)
+
+<script language="javascript" type="text/javascript">
+<!--
+##検索処理
+function dps910C00F00(sosCd) {
+    document.getElementById("sosInitSosCodeValue").value = sosCd;
+    var actionPath = '$link.setAction('dps910C00F00')';
+    document.dps910C00Form.action = actionPath;
+    document.dps910C00Form.submit();
+    return false;
+}
+##呼び出し元に返す
+function dps910C00F00Return(sosCd, jgiNo) {
+	dialogArgs().${sosApplyFuncName}(sosCd, jgiNo, "$sosMaxSrchGetValue");
+    window.close();
+    return false;
+}
+//-->
+</script>
+<form name="dps910C00Form" method="post">
+<input type="hidden" name="sosInitSosCodeValue" id="sosInitSosCodeValue"/>
+<input type="hidden" name="sosApplyFuncName" value="$sosApplyFuncName" />
+<input type="hidden" name="sosSrchPtnType" value="$sosSrchPtnType" />
+<input type="hidden" name="sosMinSrchValue" value="$sosMinSrchValue" />
+<input type="hidden" name="sosMaxSrchGetValue" value="$sosMaxSrchGetValue"/>
+<input type="hidden" name="sosAllDispFlg" value="$sosAllDispFlg"/>
+<input type="hidden" name="includeSeikei" value="$includeSeikei"/>
+<table cellspacing="4" cellpadding="2" align="left" width="600">
+    <tr valign="top">
+        <td colspan="3">
+        <div align="center"><b>従業員選択</b></div>
+        </td>
+    </tr>
+    ##-----------------------------------------
+    ##画面上部のパンくずリスト
+    ##-----------------------------------------
+    <tr>
+        <td colspan="3">
+        <table class="gridLine" width="600">
+            <tr>
+            #set($count = 4 - $selectList.size())
+            #foreach($selectSos in $selectList)
+                #set($rank = $selectSos.bumonRank.dbValue)
+                ## 選択中の組織の場合、リンクなし
+                #if($selectSos.equals($curSos))
+                <td width="140" class="gridIndex"><label>$selectSos.bumonSeiName</label></td>
+                ## 全表示可フラグ
+                #elseif($sosAllDispFlg)
+                <td width="140" class="gridIndex"><a href="#" onclick="dps910C00F00('$selectSos.sosCd');">$selectSos.bumonSeiName</a></td>
+                ## ログインユーザの部門ランク上位の場合、リンクなし
+                #elseif($rank <= $sosLvl)
+                <td width="140" class="gridIndex"><label>$selectSos.bumonSeiName</label></td>
+                ## 支店の場合
+                ## 本部、支店の場合は表示
+                #elseif($rank <= 2)
+                <td width="140" class="gridIndex"><a href="#" onclick="dps910C00F00('$selectSos.sosCd');">$selectSos.bumonSeiName</a></td>
+                ## 営業所の場合
+                #elseif($rank >= 3 && $sosMaxSrchGetValue == $EIGYO)
+                <td width="140" class="gridIndex"><a href="#" onclick="dps910C00F00('$selectSos.sosCd');">$selectSos.bumonSeiName</a></td>
+                ## チームの場合
+                #elseif($rank >= 4 && $sosMaxSrchGetValue == $TEAM)
+                <td width="140" class="gridIndex"><a href="#" onclick="dps910C00F00('$selectSos.sosCd');">$selectSos.bumonSeiName</a></td>
+                ## 従業員の場合
+                #elseif($sosMaxSrchGetValue == $JGI)
+                <td width="140" class="gridIndex"><a href="#" onclick="dps910C00F00('$selectSos.sosCd');">$selectSos.bumonSeiName</a></td>
+                #else
+                <td width="140" class="gridIndex">&nbsp;</td>
+                #end
+            #end
+            #if($count != 0)
+                #foreach($item in [1..$count])
+                <td width="140" class="gridIndex">&nbsp;</td>
+                #end
+            #end
+            </tr>
+        </table>
+        </td>
+    </tr>
+
+    ##-----------------------------------------
+    ##画面左部
+    ##-----------------------------------------
+    <tr valign="top">
+        <td width="290">
+        <div>
+
+        ##-----------------------------------------
+        ##組織選択部
+        ##-----------------------------------------
+        <table width="100%" class="gridLine" style="border-collapse:collapse;">
+            <tr>
+                <td class="gridIndex" width="20"></td>
+                <td nowrap class="gridIndex"><div align="center">組織選択</div></td>
+            </tr>
+            <tr>
+            #foreach($sosMst in $sosMstList)
+                ##---------------------------------------------------------
+                ## パラメータ設定
+                ##---------------------------------------------------------
+                ##------------------
+                ##対象組織のランク
+                ##------------------
+                #set($rank = $sosMst.bumonRank.dbValue)
+
+                ##------------------
+                ##自組織フラグ
+                ##------------------
+                #set($ownSosFlg = false)
+                ##支店の場合
+                #if($rank == 2 && $dpUserSosCd2 == $sosMst.sosCd)
+                    #set($ownSosFlg = true)
+                ##営業所の場合
+                #elseif($rank == 3 && $dpUserSosCd3 == $sosMst.sosCd)
+                    #set($ownSosFlg = true)
+                ##チームの場合
+                #elseif($rank == 4 && $dpUserSosCd4 == $sosMst.sosCd)
+                    #set($ownSosFlg = true)
+                #end
+
+                ##------------------
+                ## 自階層フラグ
+                ##------------------
+                #set($ownRankFlg = false)
+                #if($rank == $sosLvl && !$sosAllDispFlg)
+                    #set($ownRankFlg = true)
+                #end
+
+                ##---------------------------------------------------------
+                ## ボタン表示
+                ##---------------------------------------------------------
+                ## 部門ランクが本部の場合は非表示
+                #if($rank < 2)
+                <td class="gridIndex"></td>
+                ## 対象組織の部門ランクが、利用者の部門ランクより上位の場合
+                #elseif($rank < $sosLvl && !$sosAllDispFlg)
+                    #if($ownSosFlg)
+                    <td class="gridIndex"></td>
+                    #end
+                ## 支店の場合
+                #elseif($rank >= 2 && $sosMinSrchValue == $SITEN)
+                    #if($ownRankFlg)
+                        #if($ownSosFlg)
+                        <td class="gridIndex"><input type="button" name="sos" style="WIDTH: 20px;" onClick="dps910C00F00Return('$sosMst.sosCd','')"></td>
+                        #end
+                    #else
+                    <td class="gridIndex"><input type="button" name="sos" style="WIDTH: 20px;" onClick="dps910C00F00Return('$sosMst.sosCd','')"></td>
+                    #end
+                ## 営業所の場合
+                #elseif($rank >= 3 && $sosMinSrchValue == $EIGYO)
+                    #if($ownRankFlg)
+                        #if($ownSosFlg)
+                        <td class="gridIndex"><input type="button" name="sos" style="WIDTH: 20px;" onClick="dps910C00F00Return('$sosMst.sosCd','')"></td>
+                        #end
+                    #else
+                    <td class="gridIndex"><input type="button" name="sos" style="WIDTH: 20px;" onClick="dps910C00F00Return('$sosMst.sosCd','')"></td>
+                    #end
+                ## チームの場合
+                #elseif($rank >= 4 && $sosMinSrchValue == $TEAM)
+                    #if($ownRankFlg)
+                        #if($ownSosFlg)
+                        <td class="gridIndex"><input type="button" name="sos" style="WIDTH: 20px;" onClick="dps910C00F00Return('$sosMst.sosCd','')"></td>
+                        #end
+                    #else
+                    <td class="gridIndex"><input type="button" name="sos" style="WIDTH: 20px;" onClick="dps910C00F00Return('$sosMst.sosCd','')"></td>
+                    #end
+                ## 従業員の場合
+                #elseif($sosMinSrchValue == $JGI)
+                    #if($ownSosFlg)
+                    <td class="gridIndex">&nbsp;</td>
+                    #elseif(!$sosMaxSrchGetValue == $JGI)
+                    <td class="gridIndex">&nbsp;</td>
+                    #end
+                #else
+                <td class="gridIndex">&nbsp;</td>
+                #end
+
+                ##---------------------------------------------------------
+                ## リンク表示
+                ##---------------------------------------------------------
+                ## 1件目はリンクなし
+                #if($velocityCount==1)
+                <td class="gridLine"><label>$sosMst.bumonSeiName</label></td>
+                ## 選択中の組織の場合、リンクなし
+                #elseif($sosMst.sosCd == $curSos.sosCd)
+                <td class="gridLine"><label>$sosMst.bumonSeiName</label></td>
+                ## ログインユーザの部門ランク上位の場合、自組織のみ表示
+                #elseif($rank <= $sosLvl && !$sosAllDispFlg)
+                    #if($ownSosFlg)
+                    <td class="gridLine"><a href="#" onclick="dps910C00F00('$sosMst.sosCd');">$sosMst.bumonSeiName</a></td>
+                    #end
+                ## 支店の場合は表示
+                #elseif($rank < 2 && $sosMaxSrchGetValue == $SITEN)
+                <td class="gridLine"><a href="#" onclick="dps910C00F00('$sosMst.sosCd');">$sosMst.bumonSeiName</a></td>
+                ## 営業所の場合
+                #elseif($rank < 3 && $sosMaxSrchGetValue == $EIGYO)
+                <td class="gridLine"><a href="#" onclick="dps910C00F00('$sosMst.sosCd');">$sosMst.bumonSeiName</a></td>
+                ## チームの場合
+                #elseif($rank < 4 && $sosMaxSrchGetValue == $TEAM)
+                <td class="gridLine"><a href="#" onclick="dps910C00F00('$sosMst.sosCd');">$sosMst.bumonSeiName</a></td>
+                ## 従業員の場合
+                #elseif($sosMaxSrchGetValue == $JGI)
+                <td class="gridLine"><a href="#" onclick="dps910C00F00('$sosMst.sosCd');">$sosMst.bumonSeiName</a></td>
+                ## 全表示可フラグ
+                #elseif($sosAllDispFlg)
+                <td class="gridLine"><a href="#" onclick="dps910C00F00('$sosMst.sosCd');">$sosMst.bumonSeiName</a></td>
+                #else
+                <td class="gridLine"><label>$sosMst.bumonSeiName</label></td>
+                #end
+            </tr>
+            #end
+        </table>
+        </div>
+        </td>
+        <td>&nbsp;</td>
+        <td width="290">
+        <div>
+
+        ##-----------------------------------------
+        ##従業員選択部
+        ##-----------------------------------------
+        <table width="100%" class="gridLine" style="border-collapse:collapse;">
+            <tr>
+                <td class="gridIndex" width="20">
+                </td>
+                <td nowrap class="gridIndex">
+                <div align="center">従業員選択</div>
+                </td>
+            </tr>
+        ## 検索最大階層が従業員の場合のみ、従業員選択を表示する
+        #if( $sosMaxSrchGetValue == $JGI )
+            #foreach($jgiMst in $jgiMstList)
+            <tr>
+                <td class="gridIndex">
+                <input type="button" name="jgi" style="WIDTH: 20px;" onClick="dps910C00F00Return('$jgiMst.sosCd','$jgiMst.jgiNo')"></div>
+                </td>
+                #if($security.hasIyaku())
+                    <td class="gridLine"><label>${jgiMst.jgiName}（${jgiMst.shokushuName}）</label></td>
+                #else
+                    <td class="gridLine"><label>$jgiMst.jgiName</label></td>
+                #end
+            </tr>
+            #end
+        #end
+        </table>
+        </div>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" colspan="3">
+        <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+            <tr>
+                <td></td>
+                <td width="53%">
+                <div align="left"><input type="button" name="add_item2" value="閉じる" onClick="self.window.close()"></div>
+                </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+</table>
+</form>

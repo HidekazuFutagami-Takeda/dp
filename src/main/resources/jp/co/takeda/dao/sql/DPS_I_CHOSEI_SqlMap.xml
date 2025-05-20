@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_CHOSEI_SqlMap">
+  <parameterMap id="updateChoseiParams" class="map">
+     <parameter property="jobId" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN" />
+     <parameter property="sosCd3" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN" />
+  </parameterMap>
+
+  <!-- 検索/営業所調整 更新日時の最大値 -->
+  <select id="searchMaxUpdate" resultClass="java.util.Date" parameterClass="java.util.Map" >
+    SELECT
+      MAX(CHOSEI.UP_DATE) UP_DATE
+    FROM
+      DPS_I_CHOSEI_OFFICE CHOSEI
+        INNER JOIN DPS_C_PLANNED_PROD PROD ON CHOSEI.PROD_CODE = PROD.PROD_CODE
+    WHERE
+      SOS_CD = #sosCd3:VARCHAR# AND CATEGORY = #category:CHAR#
+  </select>
+
+  <!-- 営業所調整の更新 -->
+  <procedure id="updateChosei" parameterMap="updateChoseiParams" >
+    {call DPS_PROCESS_0092(?, ?)}
+  </procedure>
+</sqlMap>

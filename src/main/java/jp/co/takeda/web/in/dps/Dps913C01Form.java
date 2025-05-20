@@ -1,0 +1,202 @@
+package jp.co.takeda.web.in.dps;
+
+import org.apache.commons.lang.StringUtils;
+
+import jp.co.takeda.a.bean.BoxKey;
+import jp.co.takeda.a.bean.BoxKeyPerClassImpl;
+import jp.co.takeda.dto.DeliveryResultInsListDto;
+import jp.co.takeda.dto.DeliveryResultInsScDto;
+import jp.co.takeda.util.ValidationUtil;
+import jp.co.takeda.web.cmn.action.DiaDpActionForm;
+
+/**
+ * Dps913C01((医)過去実績参照画面(施設特約店別))のフォームクラス
+ *
+ * @author siwamoto
+ */
+public class Dps913C01Form extends DiaDpActionForm {
+
+	/**
+	 * serialVersionUID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * DPS913C01_DATA_R
+	 */
+	public static final BoxKey DPS913C01_DATA_R = new BoxKeyPerClassImpl(Dps913C01Form.class, DeliveryResultInsListDto.class);
+
+	/**
+	 * ページ番号のデフォルト値
+	 */
+	public final static String DEFAULT_PAGE_NO = "4";
+
+	// -------------------------------
+	// field
+	// -------------------------------
+	/**
+	 * 品目固定コード
+	 */
+	private String prodCode;
+
+	/**
+	 * 組織コード(営業所)
+	 */
+	private String sosCd3;
+
+	/**
+	 * カテゴリ
+	 */
+	private String category;
+
+	/**
+	 * カレントページ数
+	 */
+	private String page;
+
+	/**
+	 * 従業員番号
+	 */
+	Integer jgiNo;
+
+	/**
+	 * 施設コード
+	 */
+	String insNo;
+
+	//---------------------
+	// Getter & Setter
+	// --------------------
+	/**
+	 * 品目固定コードを取得する。
+	 *
+	 * @return 品目固定コード
+	 */
+	public String getProdCode() {
+		return prodCode;
+	}
+
+	/**
+	 * 品目固定コードを設定する。
+	 *
+	 * @param prodCode 品目固定コード
+	 */
+	public void setProdCode(String prodCode) {
+		this.prodCode = prodCode;
+	}
+
+	/**
+	 * 組織コード(営業所)を取得する。
+	 *
+	 * @return 組織コード(営業所)
+	 */
+	public String getSosCd3() {
+		return sosCd3;
+	}
+
+	/**
+	 * 組織コード(営業所)を設定する。
+	 *
+	 * @param sosCd3 組織コード(営業所)
+	 */
+	public void setSosCd3(String sosCd3) {
+		this.sosCd3 = sosCd3;
+	}
+
+	/**
+	 * カテゴリを取得する。
+	 *
+	 * @return カテゴリ
+	 */
+	public String getCategory() {
+		return category;
+	}
+
+	/**
+	 * カテゴリを設定する。
+	 *
+	 * @param category 表示品目カテゴリ
+	 */
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	/**
+	 * カレントページ数を取得する。
+	 *
+	 * @return カレントページ数
+	 */
+	public String getPage() {
+		return page;
+	}
+
+	/**
+	 * カレントページ数を設定する。
+	 *
+	 * @param page カレントページ数
+	 */
+	public void setPage(String page) {
+		this.page = page;
+	}
+
+	/**
+	 * 従業員番号を取得する。
+	 *
+	 * @return 従業員番号
+	 */
+	public Integer getJgiNo() {
+		return jgiNo;
+	}
+
+	/**
+	 * 従業員番号を設定する。
+	 *
+	 * @param jgiNo 従業員番号
+	 */
+	public void setJgiNo(Integer jgiNo) {
+		this.jgiNo = jgiNo;
+	}
+
+	/**
+	 * 施設コードを取得する。
+	 *
+	 * @return 施設コード
+	 */
+	public String getInsNo() {
+		return insNo;
+	}
+
+	/**
+	 * 施設コードを設定する。
+	 *
+	 * @param insNo 施設コード
+	 */
+	public void setInsNo(String insNo) {
+		this.insNo = insNo;
+	}
+
+	/**
+	 * ActionForm⇒条件Dto 変換処理
+	 *
+	 * @return 変換された条件Dto Integer jgiNo = 0; String insNo = ""; String category = ""; String prodCode = "";
+	 */
+	public DeliveryResultInsScDto convertDeliveryResultInsScDto() throws Exception {
+		if (StringUtils.isEmpty(this.prodCode)) {
+			this.prodCode = null;
+		}
+		if (StringUtils.isEmpty(this.insNo)) {
+			this.insNo = null;
+		}
+		return new DeliveryResultInsScDto(this.jgiNo, this.prodCode, this.insNo);
+	}
+
+	// ----------------------------------------
+	// INITIALIZE
+	// ----------------------------------------
+	@Override
+	public void formInit() {
+		if (StringUtils.isBlank(this.page) || !ValidationUtil.isInteger(this.page)) {
+			this.page = DEFAULT_PAGE_NO;
+		}
+	}
+}

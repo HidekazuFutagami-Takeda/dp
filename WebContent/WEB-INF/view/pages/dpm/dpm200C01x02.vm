@@ -1,0 +1,43 @@
+## (ワ)施設別家企画編集画面 集計行
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPM200C01_DATA_R_SEARCH_RESULT_TOTAL"))
+    #set( $resultObj = $form.getRequestData("DPM200C01_DATA_R_SEARCH_RESULT_TOTAL"))
+#end
+#if($resultObj)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#set( $rowId = 1 )
+    ## 担当者計画
+    <row id='$rowId'>
+        <cell class="sumTeam" style="border-width:1px 0px 1px 1px;"><![CDATA[担当者計画<br><a href="#" onclick="dpm100C00F05Jgi()">▲担当者別</a>]]></cell>
+        <cell class="sumTeam" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="sumTeam" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="sumTeam" style="border-width:1px 1px 1px 0px;"><![CDATA[<a href="#" onclick="dpm201C00F05('$!resultObj.insNo')">品目別</a>]]></cell>
+        <cell class="sumTeam">$bBaseValue</cell>
+        <userdata name="tyChangeRate">$!resultObj.tyChangeRate</userdata>
+    </row>
+    ## 担当者計画 - 施設計画
+    #set( $rowId = $rowId + 1 )
+    <row id='$rowId'>
+        <cell class="sumTeam" style="border-width:1px 0px 1px 1px;">担当者計画 - 施設計画</cell>
+        <cell class="sumTeam" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="sumTeam" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="sumTeam" style="border-width:1px 1px 1px 0px;"></cell>
+        <cell class="sumTeam">$bDiff</cell>
+        <userdata name="hideValue">$!resultObj.hideValue</userdata>
+    </row>
+    ## 表示施設計
+    #set( $rowId = $rowId + 1 )
+    <row id='$rowId'>
+        <cell class="psumB" style="border-width:1px 0px 1px 1px;">表示施設計</cell>
+        <cell class="psumB" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="psumB" style="border-width:1px 0px 1px 0px;"></cell>
+        <cell class="psumB" style="border-width:1px 1px 1px 0px;"></cell>
+        <cell class="psumB"></cell>
+        <userdata name="rowType">total</userdata>
+        <userdata name="subTotalId">none</userdata>
+        <userdata name="tyChangeRate">$!resultObj.tyChangeRate</userdata>
+    </row>
+    #set( $rowId = $rowId + 1 )
+</rows>
+#end

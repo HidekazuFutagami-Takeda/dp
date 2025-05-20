@@ -1,0 +1,105 @@
+## 補足画面
+#set($contentsId = "freeSizeContents")
+#set($layout = "dialogueLayout.vm" )
+#set($pageTitle = $text.get("dps940C00","title"))
+#set($bodyOnloadMethod = "dps940C00F01()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+
+## mod Start 2022/7/13 R.takamoto ④No.6 一括確定のエラー表示対応
+###set($sosCd = $form.bean.sosCd)
+###set($category = $form.bean.category)
+#set($dataListFileName = "dps940C00x01.vm")
+###set($requestUrlLeft = "dps940C00F01?sFlg=true&sosCd=$!sosCd&category=$!category")
+###set($requestUrl = "$!requestUrlLeft")
+#set($requestUrl = "dps940C00F00")
+###set($dps940C00F01Data = $form.getRequestData("DPS940C00F01_DATA_R"))
+#set($dps940C00F01Data = $form.getRequestData("DPS940C00F01_DATA_R"))
+#set($gamennName = "一括確定エラー情報一覧" )
+###set($bumonRank = $dps940C00F01Data.getSosMst().getBumonRank().getDbValue())
+###set($sosName = $dps940C00F01Data.getSosMst().getBumonSeiName())
+###set($GridObjName = "dps940C00F01Grid")
+#set($GridObjName = "dps940C00F01Grid")
+####set($CoverId = "dps940C00F01CoverId")
+#set($CoverId = "dps940C00F01CoverId")
+
+##if($!bumonRank == 2)
+##	#set($bumonName = "リージョン" )
+###elseif($!bumonRank == 3)
+##	#set($bumonName = "エリア" )
+###end
+
+##<div id="dps940grid-container">
+<div id="dps940grid-container">
+##<div class="title">
+<div class="title">
+
+##<p class="floatL">$bumonName : $sosName</p><input type="button" value="閉じる" style="width:100px;" onclick="window.close();" class="floatR" />
+<p class="floatL">$gamennName</p><input type="button" value="閉じる" style="width:100px;" onclick="window.close();" class="floatR" />
+
+## mod End 2022/7/13 R.takamoto ④No.6 一括確定のエラー表示対応
+
+</div>
+<script language="javascript">
+<!--
+var ${GridObjName};
+## add Start 2022/7/13 R.takamoto ④No.6 一括確定のエラー表示対応
+## 初期表示＋読込処理
+function dps940C00F01() {
+    doInitGrid();
+    if (document.getElementById("dps940C00x01.vm")) {
+        var loadXMLString = document.getElementById("dps940C00x01.vm").value;
+        ${GridObjName}.loadXMLString(loadXMLString);
+    }
+}
+## add End 2022/7/13 R.takamoto ④No.6 一括確定のエラー表示対応
+
+
+## mod Start 2022/7/13 R.takamoto ④No.6 一括確定のエラー表示対応
+## DHTMLXGrid生成
+##function dps940C00F01() {
+function doInitGrid() {
+##    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+##    ${GridObjName}.setHeader("担当者名,施設名/特約店名,詳細");
+    ${GridObjName}.setHeader("リージョン,エリア,担当者,詳細");
+##    ${GridObjName}.setInitWidths("80,150,550");
+    ${GridObjName}.setInitWidths("90,90,120,550");
+##    ${GridObjName}.setColAlign("left,left,left");
+    ${GridObjName}.setColAlign("left,left,left,left");
+##    ${GridObjName}.setColTypes("ro,ro,ro");
+    ${GridObjName}.setColTypes("ro,ro,ro,ro");
+##    ${GridObjName}.enableResizing("false,false,false");
+    ${GridObjName}.enableResizing("false,false,false,false");
+##    ${GridObjName}.enableTooltips("false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false");
+    ${GridObjName}.enableDistributedParsing(true,10,300);
+##    ${GridObjName}.enableAutoHeight(true);
+    ${GridObjName}.enableAutoHeight(true);
+##    ${GridObjName}.enableAutoWidth(true);
+    ${GridObjName}.enableAutoWidth(true);
+##    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.objBox.style.overflowX="scroll";
+##    ${GridObjName}.objBox.style.overflowY="hidden";
+    ${GridObjName}.objBox.style.overflowY="scroll";
+##    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.enableMultiline(true);
+##    ${GridObjName}.setSizes();
+    ${GridObjName}.setSizes();
+##    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.setCSVDelimiter("\t");
+##    ${GridObjName}.init();
+    ${GridObjName}.init();
+##    ${GridObjName}.load("$link.setAction($requestUrl)", "");
+    ${GridObjName}.load("$link.setAction($requestUrl)", "");
+##}
+}
+## mod End 2022/7/13 R.takamoto ④No.6 一括確定のエラー表示対応
+
+//-->
+</script>
+<div class="table">
+#loadingGridDiv("${GridObjName}", "${CoverId}")
+</div>
+</div>
+#token()
+

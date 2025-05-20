@@ -1,0 +1,150 @@
+## ------------------------------------
+## (医)営業所計画-担当者別計画(カテゴリ共通)
+## ------------------------------------
+#set($GridObjName = "dps000C00sc${categoryCode}Grid")
+#set($CoverId = "dps000C00sc${categoryCode}CoverId")
+#set ($rankString = $progress.getProgressIyakuRank().toString())
+<script language="javascript">
+<!--
+##出力ファイル選択画面遷移
+var miniWindow;
+function dps998C00F00(sosCd , category) {
+    if(miniWindow && !win_closed(miniWindow)) {
+        miniWindow.close();
+    }
+    var actionPath = '$link.setAction('dps998C00F00')';
+    actionPath = actionPath.concat('?outputSosCd=').concat(sosCd);
+    actionPath = actionPath.concat('&category=').concat(category);
+    miniWindow = window.open(actionPath, "download", "width=500,height=250");
+    miniWindow.focus();
+    return miniWindow;
+}
+##補足情報画面に遷移
+function dps940C00F00(sosCd, category) {
+    if(miniWindow && !win_closed(miniWindow)) {
+        miniWindow.close();
+    }
+    var actionPath = '$link.setAction('dps940C00F00')';
+    actionPath = actionPath.concat('?sosCd=').concat(sosCd).concat('&category=').concat(category);
+    miniWindow = window.open(actionPath, "supInfo", "width=800,height=250");
+    miniWindow.focus();
+    return miniWindow;
+}
+var ${GridObjName};
+## 初期表示＋読込処理
+function dps000C00Fc${categoryCode}() {
+    ${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+#if ($rankString.equals("SITEN"))
+    ${GridObjName}.setHeader     ("${categoryName},#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan");
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.attachHeader  ("リージョン,担当者別計画,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,施設特約店別計画,#cspan,#cspan");
+##    ${GridObjName}.attachHeader  ("支店,担当者別計画,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,施設特約店別計画,#cspan,#cspan");
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ## mod Start 2021/7/15 H.Kaneko step4UAT課題223対応 「所長・AL」の文言変更→「上長」
+    ##${GridObjName}.attachHeader  ("#rspan,営業所<br>計画,試算状況,,,担当者別<br>計画<br>所長・AL公開,担当者別<br>計画<br>所長・AL修正,担当者別<br>計画<br>所長確定,,配分状況,ＭＲ確定,計画立案<br>対象外");
+    ##${GridObjName}.setInitWidths ("110,65,65,0,0,80,80,80,0,65,65,65");
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.attachHeader  ("#rspan,エリア計画,試算状況,,,担当者別計画<br>上長公開,担当者別計画<br>上長修正,担当者別計画<br>上長確定,,配分状況,ＭＲ確定,計画立案<br>対象外");
+##    ${GridObjName}.attachHeader  ("#rspan,営業所計画,試算状況,,,担当者別計画<br>上長公開,担当者別計画<br>上長修正,担当者別計画<br>上長確定,,配分状況,ＭＲ確定,計画立案<br>対象外");
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.setInitWidths ("110,80,80,0,0,80,80,80,0,105,105,65");
+	## mod End 2021/7/15 H.Kaneko step4UAT課題223対応 「所長・AL」の文言変更→「上長」
+    ${GridObjName}.setColAlign   ("left,center,center,center,center,center,center,center,center,center,center,center");
+    ${GridObjName}.setColTypes   ("ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false,false");
+#elseif ($rankString.equals("OFFICE"))
+    ${GridObjName}.setHeader     ("　,${categoryName},#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan");
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.attachHeader  ("エリア,担当者別計画,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,施設特約店別計画,#cspan,#cspan,エリア－ＭＲ,ＭＲ－施設特約,エリア－施設特約");
+##    ${GridObjName}.attachHeader  ("営業所,担当者別計画,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,施設特約店別計画,#cspan,#cspan,営業－ＭＲ,ＭＲ－施設特約,営業－施設特約");
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ## mod Start 2021/7/15 H.Kaneko step4UAT課題223対応 「所長・AL」の文言変更→「上長」
+    ##${GridObjName}.attachHeader  ("#rspan,営業所<br>計画,試算状況,,,担当者別<br>計画<br>所長・AL公開,担当者別<br>計画<br>所長・AL修正,担当者別<br>計画<br>所長確定,帳票,,配分状況,ＭＲ確定,計画立案<br>対象外,調整金額<br>(UHP合計),調整金額<br>(UHP合計),調整金額<br>(UHP合計)");
+    ##${GridObjName}.setInitWidths ("110,65,65,0,0,80,80,65,35,0,65,65,65,95,95,95");
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.attachHeader  ("#rspan,エリア計画,試算状況,,,担当者別計画<br>上長公開,担当者別計画<br>上長修正,担当者別計画<br>上長確定,帳票,,配分状況,ＭＲ確定,計画立案<br>対象外,調整金額<br>(UHP合計),調整金額<br>(UHP合計),調整金額<br>(UHP合計)");
+##    ${GridObjName}.attachHeader  ("#rspan,営業所計画,試算状況,,,担当者別計画<br>上長公開,担当者別計画<br>上長修正,担当者別計画<br>上長確定,帳票,,配分状況,ＭＲ確定,計画立案<br>対象外,調整金額<br>(UHP合計),調整金額<br>(UHP合計),調整金額<br>(UHP合計)");
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.setInitWidths ("110,80,80,0,0,80,80,80,35,0,65,65,65,95,95,95");
+    ## mod End 2021/7/15 H.Kaneko step4UAT課題223対応 「所長・AL」の文言変更→「上長」
+    ${GridObjName}.setColAlign   ("left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
+    ${GridObjName}.setColTypes   ("ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false");
+###elseif ($rankString.equals("TEAM"))
+##    ${GridObjName}.setHeader("${categoryName},#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan,#cspan")
+##    ${GridObjName}.attachHeader("チーム,担当者別計画,#cspan,#cspan,#cspan,#cspan,施設医師別計画,施設特約店別計画,#cspan,ＭＲ－施設特約")
+##    ${GridObjName}.attachHeader("#rspan,チーム別<br>計画<br>ＴＬ公開,チーム別<br>計画<br>所長確定,担当者別<br>計画<br>ＴＬ公開,担当者別<br>計画<br>ＴＬ修正,担当者別<br>計画<br>所長確定,配分状況,配分状況,ＭＲ確定,調整金額<br>(UHP合計)");
+##    ${GridObjName}.setInitWidths("110,70,70,80,80,70,95,70,70,100");
+##    ${GridObjName}.setColAlign("left,center,center,center,center,center,center,center,center,center");
+##    ${GridObjName}.setColTypes("ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
+##    ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false");
+##    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false,false,false");
+#elseif ($rankString.equals("TANTOU"))
+    ${GridObjName}.setHeader("${categoryName},#cspan,#cspan,#cspan,#cspan,#cspan")
+    ${GridObjName}.attachHeader("担当者,担当者別計画,#cspan,施設特約店別計画,#cspan,ＭＲ－施設特約")
+    ${GridObjName}.attachHeader("#rspan,所長確定,#cspan,配分状況,ＭＲ確定,調整金額<br>(UHP合計)");
+    ## mod Start 2021/7/1 H.Kaneko Step4UAT課題224対応
+    ##${GridObjName}.setInitWidths("140,140,0,140,140,100");
+    ${GridObjName}.setInitWidths("170,140,0,140,140,100");
+    ## mod End 2021/7/1 H.Kaneko Step4UAT課題224対応
+    ${GridObjName}.setColAlign("left,center,center,center,center,center");
+    ${GridObjName}.setColTypes("ro,ro,ro,ro,ro,ro");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false,false");
+#end
+
+	##表のスタイル設定
+	##　なお、表の横幅が画面サイズを超える場合はif分岐で別の指定をする必要があります。
+	##　2018上期対応の「施設医師別計画」欄の非表示により横幅が画面サイズを超えるケースが無くなったため、このvmではif分岐は組み込んでいません。
+	##　必要になった場合は旧MMPカテゴリ用の営業所別表示のコード（dps000C00s27.vmの66行目）を参照して実装してください
+    ${GridObjName}.setStyle("","height:35px;","","");
+    ${GridObjName}.enableMultiline(true);
+    ${GridObjName}.enableAutoWidth(true);
+    ${GridObjName}.enableAutoHeight(true);
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.objBox.style.overflowY="hidden";
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+
+
+	##第2引数（$nextLoadFunction）は、この表のロードが終わった後に呼び出す次の表のロードスクリプトを指定している
+	${GridObjName}.load("$link.setAction("dps000C00F20?sFlg=true&category=${categoryCode}")", $nextLoadFunction);
+
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.attachEvent("onBeforeSelect",function(newId,oldId){return;});
+
+
+	##特定カラムの非表示
+	##　2018上期対応により仕入品以外の全カテゴリ共通で、[チーム別計画][施設医師別計画]が非表示です。
+	##　試算タイプによる分岐も不要となりました。（営⇒チ⇒担が廃止のため）
+	##　
+	##　[チーム別計画][施設医師別計画]、試算タイプ（営⇒チ⇒担）が復活となる場合は、
+	##　過去のカテゴリ別vmのコード(dps000C00s27～31.vm)を参照して適切にif分岐を組み込んで非表示カラムを制御してください。
+##if($rankString.equals("SITEN"))
+##  ${GridObjName}.setColumnHidden(3, true); ##[チーム別計画 TL公開]非表示
+##  ${GridObjName}.setColumnHidden(4, true); ##[チーム別計画 所長確定]非表示
+##  ${GridObjName}.setColumnHidden(8, true); ##[施設医師別計画]非表示
+##elseif ($rankString.equals("OFFICE"))
+##  ${GridObjName}.setColumnHidden(3, true); ##[チーム別計画 TL公開]非表示
+##  ${GridObjName}.setColumnHidden(4, true); ##[チーム別計画 所長確定]非表示
+##  ${GridObjName}.setColumnHidden(9, true); ##[施設医師別計画]非表示
+##elseif ($rankString.equals("TEAM"))
+##  ${GridObjName}.setColumnHidden(6, true); ##[施設医師別計画]非表示
+##elseif ($rankString.equals("TANTOU"))
+##  ${GridObjName}.setColumnHidden(2, true); ##[施設医師別計画]非表示
+##end
+}
+//-->
+</script>
+#loadingGridDiv("${GridObjName}", "${CoverId}")
+<form name="dps000C00F03Form" id="dps000C00F03Form" method="post">
+<input type="hidden" name="tanOutputSosCd" id="tanOutputSosCd" value="" />
+</form>

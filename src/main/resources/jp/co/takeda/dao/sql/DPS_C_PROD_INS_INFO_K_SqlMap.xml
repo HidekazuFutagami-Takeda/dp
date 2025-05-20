@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_C_PROD_INS_INFO_K_SqlMap" >
+
+    <resultMap id="resultMap" class="jp.co.takeda.model.ProdInsInfoKanri" >
+        <result column="PROD_CODE" property="dispFontColCd" jdbcType="CHAR" />
+        <result column="PROD_SEQ" property="dispFontColCd" jdbcType="CHAR" />
+        <result column="INS_INFO_NAME" property="insInfoName" jdbcType="VARCHAR" />
+        <result column="DISP_FONT_COL_CD" property="dispFontColCd" jdbcType="CHAR" />
+        <result column="ERR_KB" property="prodInsInfoErrKbn" jdbcType="CHAR" />
+        <result column="SCRN_DISP_KB" property="prodInsInfoScanDispKbn" jdbcType="CHAR" />
+        <result column="DIST_KB" property="prodInsInfoDistKbn" jdbcType="CHAR" />
+        <result column="IMP_INS_KB" property="prodInsInfoImpInsKbn" jdbcType="CHAR" />
+        <result column="EXEC_PG_ID" property="execPgId" jdbcType="VARCHAR" />
+        <result column="REMARKS" property="remarks" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <!-- 検索 -->
+    <select id="selectByInsNo" resultMap="resultMap" parameterClass="java.util.Map" >
+        SELECT PIK.PROD_CODE
+              ,PIK.PROD_SEQ
+              ,PIK.INS_INFO_NAME
+              ,PIK.DISP_FONT_COL_CD
+              ,PIK.ERR_KB
+              ,PIK.SCRN_DISP_KB
+              ,PIK.DIST_KB
+              ,PIK.IMP_INS_KB
+              ,PIK.EXEC_PG_ID
+              ,PIK.REMARKS
+          FROM DPS_C_PROD_INS_INFO_K PIK
+               INNER JOIN DPS_C_PROD_INS_INFO_M PIM
+            ON PIK.PROD_CODE = PIM.PROD_CODE
+           AND PIK.PROD_SEQ = PIM.PROD_SEQ
+         WHERE PIK.PROD_CODE = #prodCode:CHAR#
+           AND PIM.INS_NO = #insNo:CHAR#
+    </select>
+</sqlMap>

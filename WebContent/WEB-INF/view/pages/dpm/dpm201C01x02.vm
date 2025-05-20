@@ -1,0 +1,16 @@
+#set( $layout = "nothingLayout.vm" )
+#if($form.getRequestData("DPM201C01_DATA_R_HEADER"))
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+    <row id='1'>
+        <cell class="psumB">施設計</cell>
+        <cell class="psumB"></cell>
+        <cell class="psumB"></cell>
+        <cell class="psumB"></cell>
+        <cell class="psumB"></cell>
+        # 計算用ユーザデータ
+        <userdata name="rowType">total</userdata>
+        <userdata name="subTotalId">none</userdata>
+    </row>
+</rows>
+#end

@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_INS_DOC_PLAN_STATUS_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.InsDocPlanStatus" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="STATUS" property="statusForInsDocPlan" jdbcType="CHAR" />
+    <result column="ASYNC_BEF_STATUS" property="asyncBefStatus" jdbcType="CHAR" />
+    <result column="ASYNC_SERVER_KBN" property="appServerKbn" jdbcType="VARCHAR" />
+    <result column="ASYNC_BEF_DIST_START_DATE" property="asyncBefDistStartDate" jdbcType="TIMESTAMP" />
+    <result column="DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+    <result column="DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+    <result column="INS_DOC_OPEN_DATE" property="insDocOpenDate" jdbcType="TIMESTAMP" />
+    <result column="INS_DOC_FIX_DATE" property="insDocFixDate" jdbcType="TIMESTAMP" />
+    <result column="PLANNED_CLEAR_FLG" property="plannedClearFlg" jdbcType="CHAR" />
+    <result column="OPEN_FLG" property="openFlg" jdbcType="CHAR" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="SHOKUSHU_NAME" property="shokushuName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <!-- 担当者一覧用 -->
+  <resultMap id="jgiBaseListMap" class="java.util.HashMap" >
+    <result column="SOS_CD" property="sosCd" jdbcType="CHAR" />
+    <result column="BUMON_SEI_NAME" property="sosName" jdbcType="VARCHAR" />
+    <result property="insDocPlanStatus" resultMap="DPS_I_INS_DOC_PLAN_STATUS_SqlMap.resultMap" />
+    <result column="MR_PLANNED_VALUE_UH" property="mrPlanPlannedValueUh" jdbcType="BIGINT" javaType="java.lang.Long" />
+    <result column="MR_PLANNED_VALUE_P" property="mrPlanPlannedValueP" jdbcType="BIGINT" javaType="java.lang.Long" />
+    <result column="INS_DOC_PLANNED_VALUE_UH" property="insDocPlanPlannedValueUh" jdbcType="BIGINT" javaType="java.lang.Long" />
+    <result column="INS_DOC_PLANNED_VALUE_P" property="insDocPlanPlannedValueP" jdbcType="BIGINT" javaType="java.lang.Long" />
+  </resultMap>
+
+  <!-- 品目一覧用 -->
+  <resultMap id="prodBaseListMap" class="java.util.HashMap" >
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result property="insDocPlanStatSum" resultMap="DPS_I_INS_DOC_PLAN_STATUS_SqlMap.insDocPlanStatSum" />
+    <result column="MR_PLANNED_VALUE_UH" property="mrPlanPlannedValueUh" jdbcType="BIGINT" javaType="java.lang.Long" />
+    <result column="MR_PLANNED_VALUE_P" property="mrPlanPlannedValueP" jdbcType="BIGINT" javaType="java.lang.Long" />
+    <result column="INS_DOC_PLANNED_VALUE_UH" property="insDocPlanPlannedValueUh" jdbcType="BIGINT" javaType="java.lang.Long" />
+    <result column="INS_DOC_PLANNED_VALUE_P" property="insDocPlanPlannedValueP" jdbcType="BIGINT" javaType="java.lang.Long" />
+    <result column="LAST_UP_DATE" property="lastUpDate" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+  </resultMap>
+  <resultMap id="insDocPlanStatSum" class="jp.co.takeda.model.view.InsDocPlanStatSum" >
+    <result column="INS_DOC_PLAN_NONE" property="none" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_DISTING" property="disting" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_DISTED" property="disted" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_OPENED" property="planOpened" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_COMPLETED" property="planCompleted" jdbcType="INTEGER" />
+    <result column="INS_DOC_PLAN_STAT_COUNT" property="totalCount" jdbcType="INTEGER" />
+    <result column="INS_DOC_DIST_START_DATE" property="distStartDate" jdbcType="TIMESTAMP" />
+    <result column="INS_DOC_DIST_END_DATE" property="distEndDate" jdbcType="TIMESTAMP" />
+    <result column="INS_DOC_OPEN_DATE" property="insDocOpenDate" jdbcType="TIMESTAMP" />
+    <result column="INS_DOC_FIX_DATE" property="insDocFixDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <!-- 配分リトライ用 -->
+  <resultMap id="distingListMap" class="java.util.HashMap" >
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+    <result column="SOS_CD3" property="sosCd3" jdbcType="CHAR" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+    <result column="PLANNED_CLEAR_FLG" property="plannedClearFlg" jdbcType="CHAR" javaType="java.lang.Boolean"/>
+    <result column="OPEN_FLG" property="openFlg" jdbcType="CHAR" javaType="java.lang.Boolean"/>
+    <result column="UP_DATE" property="lastUpDate" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+  </resultMap>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT IDPS.SEQ_KEY
+          ,IDPS.JGI_NO
+          ,IDPS.PROD_CODE
+          ,IDPS.STATUS
+          ,IDPS.ASYNC_BEF_STATUS
+          ,IDPS.ASYNC_SERVER_KBN
+          ,IDPS.ASYNC_BEF_DIST_START_DATE
+          ,IDPS.DIST_START_DATE
+          ,IDPS.DIST_END_DATE
+          ,IDPS.INS_DOC_OPEN_DATE
+          ,IDPS.INS_DOC_FIX_DATE
+          ,IDPS.PLANNED_CLEAR_FLG
+          ,IDPS.OPEN_FLG
+          ,IDPS.IS_JGI_NO
+          ,IDPS.IS_JGI_NAME
+          ,IDPS.IS_DATE
+          ,IDPS.UP_JGI_NO
+          ,IDPS.UP_JGI_NAME
+          ,IDPS.UP_DATE
+          ,JM.JGI_NAME
+          ,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+      FROM DPS_I_INS_DOC_PLAN_STATUS IDPS
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IDPS.JGI_NO = JM.JGI_NO
+       AND JM.KENMU_KB = 0
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ
+        ON JJ.JGI_NO = JM.JGI_NO
+       AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT IDPS.SEQ_KEY
+          ,IDPS.JGI_NO
+          ,IDPS.PROD_CODE
+          ,IDPS.STATUS
+          ,IDPS.ASYNC_BEF_STATUS
+          ,IDPS.ASYNC_SERVER_KBN
+          ,IDPS.ASYNC_BEF_DIST_START_DATE
+          ,IDPS.DIST_START_DATE
+          ,IDPS.DIST_END_DATE
+          ,IDPS.INS_DOC_OPEN_DATE
+          ,IDPS.INS_DOC_FIX_DATE
+          ,IDPS.PLANNED_CLEAR_FLG
+          ,IDPS.OPEN_FLG
+          ,IDPS.IS_JGI_NO
+          ,IDPS.IS_JGI_NAME
+          ,IDPS.IS_DATE
+          ,IDPS.UP_JGI_NO
+          ,IDPS.UP_JGI_NAME
+          ,IDPS.UP_DATE
+          ,JM.JGI_NAME
+          ,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+      FROM DPS_I_INS_DOC_PLAN_STATUS IDPS
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IDPS.JGI_NO = JM.JGI_NO
+       AND JM.KENMU_KB = 0
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ
+        ON JJ.JGI_NO = JM.JGI_NO
+       AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+     WHERE IDPS.JGI_NO = #jgiNo:INTEGER#
+       AND PROD_CODE = #prodCode:CHAR#
+  </select>
+
+  <!-- 検索リスト 計画対象品目・従業員情報・組織情報 -->
+  <select id="selectListBySosCd" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT IDPS.SEQ_KEY
+          ,IDPS.JGI_NO
+          ,IDPS.PROD_CODE
+          ,IDPS.STATUS
+          ,IDPS.ASYNC_BEF_STATUS
+          ,IDPS.ASYNC_SERVER_KBN
+          ,IDPS.ASYNC_BEF_DIST_START_DATE
+          ,IDPS.DIST_START_DATE
+          ,IDPS.DIST_END_DATE
+          ,IDPS.INS_DOC_OPEN_DATE
+          ,IDPS.INS_DOC_FIX_DATE
+          ,IDPS.PLANNED_CLEAR_FLG
+          ,IDPS.OPEN_FLG
+          ,IDPS.IS_JGI_NO
+          ,IDPS.IS_JGI_NAME
+          ,IDPS.IS_DATE
+          ,IDPS.UP_JGI_NO
+          ,IDPS.UP_JGI_NAME
+          ,IDPS.UP_DATE
+          ,JM.JGI_NAME
+          ,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+      FROM DPS_I_INS_DOC_PLAN_STATUS IDPS
+           INNER JOIN DPS_C_PLANNED_PROD PR
+        ON IDPS.PROD_CODE = PR.PROD_CODE
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IDPS.JGI_NO = JM.JGI_NO
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ
+        ON JJ.JGI_NO = JM.JGI_NO
+       AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+      WHERE
+        PR.PLAN_LEVEL_INS_DOC = '1'
+      <isNotNull prepend="AND" property="prodCode">
+        PR.PROD_CODE = #prodCode:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd3">
+        JM.SOS_CD3 = #sosCd3:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="AND" property="sosCd4">
+        JM.SOS_CD4 = #sosCd4:VARCHAR#
+      </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 担当者一覧 -->
+  <select id="selectJgiBaseList" resultMap="jgiBaseListMap" parameterClass="java.util.Map" >
+   WITH
+   INSDOC_STATUS AS
+    (
+		SELECT IDS.*
+		  FROM DPS_I_INS_DOC_PLAN_STATUS IDS
+		       INNER JOIN DPS_C_JGI_MST JM ON IDS.JGI_NO = JM.JGI_NO
+		       INNER JOIN DPS_C_PLANNED_PROD PP ON IDS.PROD_CODE = PP.PROD_CODE
+		 WHERE
+		       IDS.PROD_CODE = #prodCode:CHAR#
+		       <isNotNull prepend="AND" property="sosCd3">
+		           JM.SOS_CD3 = #sosCd3:VARCHAR#
+		       </isNotNull>
+		       <isNotNull prepend="AND" property="sosCd4">
+		           JM.SOS_CD4 = #sosCd4:VARCHAR#
+		       </isNotNull>
+    )
+   ,MR_SUM AS
+    (
+		SELECT MP.JGI_NO AS JGI_NO
+		      ,PLANNED_VALUE_UH_Y
+		      ,PLANNED_VALUE_P_Y
+		  FROM DPS_I_MR_PLAN MP
+		       INNER JOIN DPS_C_JGI_MST JM ON MP.JGI_NO = JM.JGI_NO
+		       INNER JOIN DPS_C_PLANNED_PROD PP ON MP.PROD_CODE = PP.PROD_CODE
+		 WHERE
+		       MP.PROD_CODE = #prodCode:CHAR#
+		       <isNotNull prepend="AND" property="sosCd3">
+		           JM.SOS_CD3 = #sosCd3:VARCHAR#
+		       </isNotNull>
+		       <isNotNull prepend="AND" property="sosCd4">
+		           JM.SOS_CD4 = #sosCd4:VARCHAR#
+		       </isNotNull>
+    )
+   ,INSDOC_SUM_UH AS
+    (
+		SELECT IDP.JGI_NO AS JGI_NO
+		      ,SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_Y
+		  FROM DPS_I_INS_DOC_PLAN IDP
+		       INNER JOIN DPS_C_JGI_MST JM ON IDP.JGI_NO = JM.JGI_NO
+		       INNER JOIN DPS_C_PLANNED_PROD PP ON IDP.PROD_CODE = PP.PROD_CODE
+		       INNER JOIN DPS_C_INS_MST INS ON IDP.INS_NO = INS.INS_NO
+		 WHERE INS.HO_INS_TYPE in ('1','2')
+		   AND IDP.PROD_CODE = #prodCode:CHAR#
+	       <isNotNull prepend="AND" property="sosCd3">
+	           JM.SOS_CD3 = #sosCd3:VARCHAR#
+	       </isNotNull>
+	       <isNotNull prepend="AND" property="sosCd4">
+	           JM.SOS_CD4 = #sosCd4:VARCHAR#
+	       </isNotNull>
+		 GROUP BY IDP.JGI_NO
+    )
+   ,INSDOC_SUM_P AS
+    (
+		SELECT IDP.JGI_NO AS JGI_NO
+		      ,SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_Y
+		  FROM DPS_I_INS_DOC_PLAN IDP
+		       INNER JOIN DPS_C_JGI_MST JM ON IDP.JGI_NO = JM.JGI_NO
+		       INNER JOIN DPS_C_PLANNED_PROD PP ON IDP.PROD_CODE = PP.PROD_CODE
+		       INNER JOIN DPS_C_INS_MST INS ON IDP.INS_NO = INS.INS_NO
+		 WHERE INS.HO_INS_TYPE in ('3')
+		   AND IDP.PROD_CODE = #prodCode:CHAR#
+	       <isNotNull prepend="AND" property="sosCd3">
+	           JM.SOS_CD3 = #sosCd3:VARCHAR#
+	       </isNotNull>
+	       <isNotNull prepend="AND" property="sosCd4">
+	           JM.SOS_CD4 = #sosCd4:VARCHAR#
+	       </isNotNull>
+		 GROUP BY IDP.JGI_NO
+    )
+    SELECT NVL2(SM4.SOS_CD,SM4.BR_CODE,SM3.BR_CODE) AS BR_CODE
+          ,NVL2(SM4.SOS_CD,SM4.DIST_SEQ,SM3.DIST_SEQ) AS DIST_SEQ
+          ,NVL2(SM4.SOS_CD,SM4.DIST_CODE,SM3.DIST_CODE) AS DIST_CODE
+          ,NVL2(SM4.SOS_CD,SM4.TEAM_CODE,SM3.TEAM_CODE) AS TEAM_CODE
+          ,NVL2(SM4.SOS_CD,SM4.SOS_CD,SM3.SOS_CD) AS SOS_CD
+          ,NVL2(SM4.SOS_CD,SM4.BUMON_SEI_NAME,SM3.BUMON_SEI_NAME) AS BUMON_SEI_NAME
+          ,JM.JGI_NO
+          ,JM.JGI_NAME
+          ,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+          ,#prodCode:CHAR# AS PROD_CODE
+          ,INSDOC_STATUS.SEQ_KEY
+          ,INSDOC_STATUS.STATUS
+          ,INSDOC_STATUS.ASYNC_BEF_STATUS
+          ,INSDOC_STATUS.ASYNC_SERVER_KBN
+          ,INSDOC_STATUS.ASYNC_BEF_DIST_START_DATE
+          ,INSDOC_STATUS.DIST_START_DATE
+          ,INSDOC_STATUS.DIST_END_DATE
+          ,INSDOC_STATUS.INS_DOC_OPEN_DATE
+          ,INSDOC_STATUS.INS_DOC_FIX_DATE
+          ,INSDOC_STATUS.PLANNED_CLEAR_FLG
+          ,INSDOC_STATUS.OPEN_FLG
+          ,INSDOC_STATUS.IS_JGI_NO
+          ,INSDOC_STATUS.IS_JGI_NAME
+          ,INSDOC_STATUS.IS_DATE
+          ,INSDOC_STATUS.UP_JGI_NO
+          ,INSDOC_STATUS.UP_JGI_NAME
+          ,INSDOC_STATUS.UP_DATE
+          ,MR_SUM.PLANNED_VALUE_UH_Y      AS MR_PLANNED_VALUE_UH
+          ,MR_SUM.PLANNED_VALUE_P_Y       AS MR_PLANNED_VALUE_P
+          ,INSDOC_SUM_UH.PLANNED_VALUE_Y  AS INS_DOC_PLANNED_VALUE_UH
+          ,INSDOC_SUM_P.PLANNED_VALUE_Y   AS INS_DOC_PLANNED_VALUE_P
+      FROM DPS_C_VI_JGI_MST JM
+           INNER JOIN DPS_C_SOS_MST SM3 ON JM.SOS_CD3 = SM3.SOS_CD
+           LEFT OUTER JOIN DPS_C_SOS_MST SM4 ON JM.SOS_CD4 = SM4.SOS_CD
+           LEFT OUTER JOIN INSDOC_STATUS  ON JM.JGI_NO = INSDOC_STATUS.JGI_NO
+           LEFT OUTER JOIN MR_SUM        ON JM.JGI_NO = MR_SUM.JGI_NO
+           LEFT OUTER JOIN INSDOC_SUM_UH ON JM.JGI_NO = INSDOC_SUM_UH.JGI_NO
+           LEFT OUTER JOIN INSDOC_SUM_P  ON JM.JGI_NO = INSDOC_SUM_P.JGI_NO
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ ON JJ.JGI_NO = JM.JGI_NO
+       AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+     WHERE
+       <isNotNull property="jgiKbList">
+           <iterate prepend="JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               #jgiKbList[].dbValue#
+           </iterate>
+       </isNotNull>
+       <isNotNull prepend="AND" property="jokenSetList">
+           EXISTS (SELECT JO.JGI_NO
+           FROM DPS_C_JGI_JOKEN JO
+           WHERE JO.JGI_NO = JM.JGI_NO
+           <isNotNull property="jokenSetList">
+               <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                   #jokenSetList[].dbValue#
+               </iterate>
+           </isNotNull>
+           )
+       </isNotNull>
+       <isNotNull prepend="AND" property="sosCd3">
+           JM.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="sosCd4">
+           JM.SOS_CD4 = #sosCd4:VARCHAR#
+       </isNotNull>
+     ORDER BY BR_CODE, DIST_SEQ, DIST_CODE, TEAM_CODE, SHOKUSEI_CD, SHOKUSHU_CD, JGI_NO
+  </select>
+
+  <!-- 品目一覧 -->
+  <select id="selectProdBaseList" resultMap="prodBaseListMap" parameterClass="java.util.Map" >
+   WITH
+   INSDOC_STATUS AS
+    (
+		SELECT PP.PROD_CODE
+		      ,COUNT(CASE WHEN IDPS.STATUS IS NULL THEN 1 ELSE NULL END) AS INS_DOC_PLAN_NONE
+		      ,COUNT(CASE WHEN IDPS.STATUS >= '1' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_DISTING
+		      ,COUNT(CASE WHEN IDPS.STATUS >= '2' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_DISTED
+		      ,COUNT(CASE WHEN IDPS.STATUS >= '3' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_OPENED
+		      ,COUNT(CASE WHEN IDPS.STATUS >= '4' THEN 1 ELSE NULL END) AS INS_DOC_PLAN_COMPLETED
+		      ,COUNT(JM.JGI_NO) AS INS_DOC_PLAN_STAT_COUNT
+		      ,MAX(IDPS.DIST_START_DATE) AS INS_DOC_DIST_START_DATE
+		      ,MAX(IDPS.DIST_END_DATE) AS INS_DOC_DIST_END_DATE
+		      ,MAX(IDPS.INS_DOC_OPEN_DATE) AS INS_DOC_OPEN_DATE
+		      ,MAX(IDPS.INS_DOC_FIX_DATE) AS INS_DOC_FIX_DATE
+		      ,MAX(IDPS.UP_DATE) AS LAST_UP_DATE
+		 FROM DPS_C_VI_JGI_MST JM
+		      LEFT OUTER JOIN DPS_C_PLANNED_PROD PP
+		          <isNotNull property="sosCd3" >
+		          ON JM.SOS_CD3 = #sosCd3:VARCHAR#
+		          </isNotNull>
+		          <isNotNull property="sosCd4" >
+		          ON JM.SOS_CD4 = #sosCd4:VARCHAR#
+		          </isNotNull>
+		          <isNotNull property="jgiNo" >
+		          ON JM.JGI_NO = #jgiNo:INTEGER#
+		          </isNotNull>
+                  <isNotNull property="jgiKbList">
+                      <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+                          #jgiKbList[].dbValue#
+                      </iterate>
+                  </isNotNull>
+                  <isNotNull prepend="AND" property="jokenSetList">
+                  EXISTS (SELECT JO.JGI_NO
+                  FROM DPS_C_JGI_JOKEN JO
+                  WHERE JO.JGI_NO = JM.JGI_NO
+                  <isNotNull property="jokenSetList">
+                      <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                      #jokenSetList[].dbValue#
+                      </iterate>
+                  </isNotNull>
+                  )
+                  </isNotNull>
+		      LEFT OUTER JOIN DPS_I_INS_DOC_PLAN_STATUS IDPS ON IDPS.JGI_NO = JM.JGI_NO
+		          AND IDPS.PROD_CODE = PP.PROD_CODE
+		WHERE PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+		  AND PP.SALES = #sales:CHAR#
+		  AND PP.CATEGORY = #category:CHAR#
+		  AND PP.PLAN_LEVEL_INS_DOC = '1'
+		GROUP BY PP.PROD_CODE
+    )
+   ,MR_SUM AS
+    (
+		SELECT PP.PROD_CODE
+		      ,SUM(PLANNED_VALUE_UH_Y) AS PLANNED_VALUE_UH_Y
+		      ,SUM(PLANNED_VALUE_P_Y) AS PLANNED_VALUE_P_Y
+		  FROM DPS_I_MR_PLAN MP
+		       INNER JOIN DPS_C_JGI_MST JM ON MP.JGI_NO = JM.JGI_NO
+		       INNER JOIN DPS_C_PLANNED_PROD PP ON MP.PROD_CODE = PP.PROD_CODE
+		 WHERE PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+		   AND PP.SALES = #sales:CHAR#
+		   AND PP.CATEGORY = #category:CHAR#
+		   AND PP.PLAN_LEVEL_INS_DOC = '1'
+		   <isNotNull prepend="AND" property="sosCd3">
+		   JM.SOS_CD3 = #sosCd3:VARCHAR#
+		   </isNotNull>
+		   <isNotNull prepend="AND" property="sosCd4">
+		   JM.SOS_CD4 = #sosCd4:VARCHAR#
+		   </isNotNull>
+		   <isNotNull prepend="AND" property="jgiNo" >
+		   JM.JGI_NO = #jgiNo:INTEGER#
+		   </isNotNull>
+		GROUP BY PP.PROD_CODE
+    )
+   ,INSDOC_SUM_UH AS
+    (
+		SELECT PP.PROD_CODE
+		      ,SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_Y
+		  FROM DPS_I_INS_DOC_PLAN IDP
+		       INNER JOIN DPS_C_JGI_MST JM ON IDP.JGI_NO = JM.JGI_NO
+		       INNER JOIN DPS_C_PLANNED_PROD PP ON IDP.PROD_CODE = PP.PROD_CODE
+		       INNER JOIN DPS_C_INS_MST INS ON IDP.INS_NO = INS.INS_NO
+		 WHERE INS.HO_INS_TYPE in ('1','2')
+		   AND PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+		   AND PP.SALES = #sales:CHAR#
+		   AND PP.CATEGORY = #category:CHAR#
+		   AND PP.PLAN_LEVEL_INS_DOC = '1'
+		   <isNotNull prepend="AND" property="sosCd3">
+		   JM.SOS_CD3 = #sosCd3:VARCHAR#
+		   </isNotNull>
+		   <isNotNull prepend="AND" property="sosCd4">
+		   JM.SOS_CD4 = #sosCd4:VARCHAR#
+		   </isNotNull>
+		   <isNotNull prepend="AND" property="jgiNo" >
+		   JM.JGI_NO = #jgiNo:INTEGER#
+		   </isNotNull>
+		GROUP BY PP.PROD_CODE
+    )
+   ,INSDOC_SUM_P AS
+    (
+		SELECT PP.PROD_CODE
+		      ,SUM(PLANNED_VALUE_Y) AS PLANNED_VALUE_Y
+		  FROM DPS_I_INS_DOC_PLAN IDP
+		       INNER JOIN DPS_C_JGI_MST JM ON IDP.JGI_NO = JM.JGI_NO
+		       INNER JOIN DPS_C_PLANNED_PROD PP ON IDP.PROD_CODE = PP.PROD_CODE
+		       INNER JOIN DPS_C_INS_MST INS ON IDP.INS_NO = INS.INS_NO
+		 WHERE INS.HO_INS_TYPE in ('3')
+		   AND PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+		   AND PP.SALES = #sales:CHAR#
+		   AND PP.CATEGORY = #category:CHAR#
+		   AND PP.PLAN_LEVEL_INS_DOC = '1'
+		   <isNotNull prepend="AND" property="sosCd3">
+		   JM.SOS_CD3 = #sosCd3:VARCHAR#
+		   </isNotNull>
+		   <isNotNull prepend="AND" property="sosCd4">
+		   JM.SOS_CD4 = #sosCd4:VARCHAR#
+		   </isNotNull>
+		   <isNotNull prepend="AND" property="jgiNo" >
+		   JM.JGI_NO = #jgiNo:INTEGER#
+		   </isNotNull>
+		GROUP BY PP.PROD_CODE
+    )
+    SELECT PP.PROD_CODE
+          ,PP.PROD_NAME
+          ,INSDOC_STATUS.INS_DOC_PLAN_NONE
+          ,INSDOC_STATUS.INS_DOC_PLAN_DISTING
+          ,INSDOC_STATUS.INS_DOC_PLAN_DISTED
+          ,INSDOC_STATUS.INS_DOC_PLAN_OPENED
+          ,INSDOC_STATUS.INS_DOC_PLAN_COMPLETED
+          ,INSDOC_STATUS.INS_DOC_PLAN_STAT_COUNT
+          ,INSDOC_STATUS.INS_DOC_DIST_START_DATE
+          ,INSDOC_STATUS.INS_DOC_DIST_END_DATE
+          ,INSDOC_STATUS.INS_DOC_OPEN_DATE
+          ,INSDOC_STATUS.INS_DOC_FIX_DATE
+	      ,INSDOC_STATUS.LAST_UP_DATE
+          ,MR_SUM.PLANNED_VALUE_UH_Y      AS MR_PLANNED_VALUE_UH
+          ,MR_SUM.PLANNED_VALUE_P_Y       AS MR_PLANNED_VALUE_P
+          ,INSDOC_SUM_UH.PLANNED_VALUE_Y  AS INS_DOC_PLANNED_VALUE_UH
+          ,INSDOC_SUM_P.PLANNED_VALUE_Y   AS INS_DOC_PLANNED_VALUE_P
+      FROM DPS_C_PLANNED_PROD PP
+    <isNotNull property="mrCat">
+           INNER JOIN DPS_C_MR_PROD_FIELD PF ON PP.PROD_CODE = PF.PROD_CODE AND PF.MR_CAT = #mrCat:VARCHAR#
+    </isNotNull>
+           LEFT OUTER JOIN INSDOC_STATUS ON PP.PROD_CODE = INSDOC_STATUS.PROD_CODE
+           LEFT OUTER JOIN MR_SUM        ON PP.PROD_CODE = MR_SUM.PROD_CODE
+           LEFT OUTER JOIN INSDOC_SUM_UH ON PP.PROD_CODE = INSDOC_SUM_UH.PROD_CODE
+           LEFT OUTER JOIN INSDOC_SUM_P  ON PP.PROD_CODE = INSDOC_SUM_P.PROD_CODE
+	 WHERE PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+	   AND PP.SALES = #sales:CHAR#
+	   AND PP.CATEGORY = #category:CHAR#
+	   AND PP.PLAN_LEVEL_INS_DOC = '1'
+     ORDER BY PP.GROUP_CODE, PP.STAT_PROD_CODE, PP.PROD_CODE
+  </select>
+
+  <!-- 最終更新日取得 -->
+  <select id="getLastUpDate" resultClass="java.sql.Timestamp" parameterClass="java.util.Map" >
+    SELECT MAX(UP_DATE)
+      FROM DPS_I_INS_DOC_PLAN_STATUS IDPS
+           INNER JOIN DPS_C_JGI_MST JM
+        ON IDPS.JGI_NO = JM.JGI_NO
+    <dynamic prepend="WHERE">
+    <isNotNull prepend="AND" property="prodCode">
+      IDPS.PROD_CODE = #prodCode:VARCHAR#
+    </isNotNull>
+    <isNotNull prepend="AND" property="sosCd3">
+      JM.SOS_CD3 = #sosCd3:VARCHAR#
+    </isNotNull>
+    <isNotNull prepend="AND" property="sosCd4">
+      JM.SOS_CD4 = #sosCd4:VARCHAR#
+    </isNotNull>
+    <isNotNull prepend="AND" property="jgiNo">
+      JM.JGI_NO = #jgiNo:INTEGER#
+    </isNotNull>
+    </dynamic>
+  </select>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.InsDocPlanStatus" >
+    UPDATE DPS_I_INS_DOC_PLAN_STATUS
+       SET STATUS = #statusForInsDocPlan:CHAR#
+          ,ASYNC_BEF_STATUS = #asyncBefStatus:CHAR#
+          ,ASYNC_SERVER_KBN = #appServerKbn:VARCHAR#
+          ,ASYNC_BEF_DIST_START_DATE = #asyncBefDistStartDate:TIMESTAMP#
+          ,DIST_START_DATE = #distStartDate:TIMESTAMP#
+          ,DIST_END_DATE = #distEndDate:TIMESTAMP#
+          ,INS_DOC_OPEN_DATE = #insDocOpenDate:TIMESTAMP#
+          ,INS_DOC_FIX_DATE = #insDocFixDate:TIMESTAMP#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 配分中ステータス更新 -->
+  <insert id="haibunStart" parameterClass="java.util.Map" >
+	MERGE INTO DPS_I_INS_DOC_PLAN_STATUS ST USING (
+		SELECT
+			PP.PROD_CODE,
+			JM.JGI_NO
+		FROM DPS_C_PLANNED_PROD PP INNER JOIN DPS_C_VI_JGI_MST JM ON PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+		WHERE
+			    PP.SALES = #sales:CHAR#
+			AND PP.CATEGORY = #category:CHAR#
+			AND PP.PLAN_LEVEL_INS_DOC = '1'
+           <isNotNull property="jgiKbList">
+               <iterate prepend="AND JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+                   #jgiKbList[].dbValue#
+               </iterate>
+           </isNotNull>
+           <isNotNull prepend="AND" property="jokenSetList">
+                EXISTS (SELECT JO.JGI_NO
+                FROM DPS_C_JGI_JOKEN JO
+                WHERE JO.JGI_NO = JM.JGI_NO
+                <isNotNull property="jokenSetList">
+                    <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                    #jokenSetList[].dbValue#
+                    </iterate>
+                </isNotNull>
+            )
+            </isNotNull>
+			<isNotNull prepend="AND" property="sosCd3">
+			  JM.SOS_CD3 = #sosCd3:VARCHAR#
+			</isNotNull>
+			<isNotNull prepend="AND" property="jgiNo">
+			  JM.JGI_NO = #jgiNo:INTEGER#
+			</isNotNull>
+	) TARGET ON (
+			ST.PROD_CODE = TARGET.PROD_CODE
+		AND ST.JGI_NO = TARGET.JGI_NO
+	)
+	WHEN MATCHED THEN UPDATE SET
+		 STATUS = #statusForInsDocPlan:CHAR#
+		,ASYNC_BEF_STATUS = STATUS
+		,ASYNC_SERVER_KBN = #appServerKbn:VARCHAR#
+		,ASYNC_BEF_DIST_START_DATE = DIST_START_DATE
+		,DIST_START_DATE = #distStartDate:TIMESTAMP#
+		,DIST_END_DATE = NULL
+		,PLANNED_CLEAR_FLG = #plannedClearFlg:CHAR#
+		,OPEN_FLG = #openFlg:CHAR#
+		,UP_JGI_NO = #upJgiNo:INTEGER#
+		,UP_JGI_NAME = #upJgiName:VARCHAR#
+		,UP_DATE = SYSTIMESTAMP
+	WHEN NOT MATCHED THEN INSERT (
+		 SEQ_KEY
+		,JGI_NO
+		,PROD_CODE
+		,STATUS
+		,ASYNC_BEF_STATUS
+		,ASYNC_SERVER_KBN
+		,ASYNC_BEF_DIST_START_DATE
+		,DIST_START_DATE
+		,DIST_END_DATE
+		,INS_DOC_OPEN_DATE
+		,INS_DOC_FIX_DATE
+		,PLANNED_CLEAR_FLG
+		,OPEN_FLG
+		,IS_JGI_NO
+		,IS_JGI_NAME
+		,IS_DATE
+		,UP_JGI_NO
+		,UP_JGI_NAME
+		,UP_DATE
+	) VALUES (
+		 ORADPX01.SEQ_DPS_I_INS_DOC_PLAN_STATUS.NEXTVAL
+		,TARGET.JGI_NO
+		,TARGET.PROD_CODE
+		,#statusForInsDocPlan:CHAR#
+		,NULL
+		,#appServerKbn:VARCHAR#
+		,NULL
+		,#distStartDate:TIMESTAMP#
+		,NULL
+		,NULL
+		,NULL
+		,#plannedClearFlg:CHAR#
+		,#openFlg:CHAR#
+		,#isJgiNo:INTEGER#
+		,#isJgiName:VARCHAR#
+		,SYSTIMESTAMP
+		,#upJgiNo:INTEGER#
+		,#upJgiName:VARCHAR#
+		,SYSTIMESTAMP
+	)
+  </insert>
+
+  <!-- 配分完了ステータス更新 -->
+  <update id="haibunEnd" parameterClass="java.util.Map" >
+	UPDATE DPS_I_INS_DOC_PLAN_STATUS SET
+		<isNotNull property="statusForInsDocPlan">
+		 STATUS = #statusForInsDocPlan:CHAR#
+		</isNotNull>
+		<isNull property="statusForInsDocPlan">
+		 STATUS = CASE WHEN ASYNC_BEF_STATUS IS NULL THEN '2' ELSE ASYNC_BEF_STATUS END
+		</isNull>
+		,DIST_END_DATE = #distEndDate:TIMESTAMP#
+		<isNotNull property="insDocOpenDate">
+		,INS_DOC_OPEN_DATE = #insDocOpenDate:TIMESTAMP#
+		</isNotNull>
+		<isNotNull property="insDocFixDate">
+		,INS_DOC_FIX_DATE = #insDocFixDate:TIMESTAMP#
+		</isNotNull>
+		,UP_JGI_NO = #upJgiNo:INTEGER#
+		,UP_JGI_NAME = #upJgiName:VARCHAR#
+		,UP_DATE = SYSTIMESTAMP
+	WHERE JGI_NO = #jgiNo:INTEGER#
+  </update>
+
+  <!-- 配分ステータス戻し（削除） -->
+  <delete id="haibunRecoverDelete" parameterClass="java.util.Map" >
+	DELETE FROM DPS_I_INS_DOC_PLAN_STATUS
+	WHERE JGI_NO = #jgiNo:INTEGER#
+	  AND ASYNC_BEF_STATUS IS NULL
+  </delete>
+
+  <!-- 配分ステータス戻し（更新） -->
+  <update id="haibunRecoverUpdate" parameterClass="java.util.Map" >
+	UPDATE DPS_I_INS_DOC_PLAN_STATUS SET
+		 STATUS = ASYNC_BEF_STATUS
+		,DIST_START_DATE = ASYNC_BEF_DIST_START_DATE
+		,DIST_END_DATE = ASYNC_BEF_DIST_START_DATE
+		,UP_JGI_NO = #upJgiNo:INTEGER#
+		,UP_JGI_NAME = #upJgiName:VARCHAR#
+		,UP_DATE = SYSTIMESTAMP
+	WHERE JGI_NO = #jgiNo:INTEGER#
+	  AND ASYNC_BEF_STATUS IS NOT NULL
+  </update>
+
+  <!-- 検索リスト 配分リトライ対象従業員一覧 -->
+  <select id="selectDistingListByServerKbn" resultMap="distingListMap" parameterClass="java.util.Map" >
+	WITH TARGET AS (
+	    SELECT IDPS.JGI_NO
+             ,UP_JGI_NO
+	          ,MAX(IDPS.PLANNED_CLEAR_FLG) AS PLANNED_CLEAR_FLG
+	          ,MAX(IDPS.OPEN_FLG) AS OPEN_FLG
+	          ,MAX(IDPS.UP_DATE) AS UP_DATE
+	      FROM DPS_I_INS_DOC_PLAN_STATUS IDPS
+	     WHERE IDPS.ASYNC_SERVER_KBN = #appServerKbn:VARCHAR#
+	       AND IDPS.STATUS = #statusForInsDocPlan:CHAR#
+	     GROUP BY IDPS.UP_JGI_NO, IDPS.JGI_NO
+	)
+	SELECT
+	    TARGET.UP_JGI_NO,
+	    JM.SOS_CD3,
+		TARGET.JGI_NO,
+		TARGET.PLANNED_CLEAR_FLG,
+		TARGET.OPEN_FLG,
+		TARGET.UP_DATE
+	FROM TARGET
+	INNER JOIN DPS_C_JGI_MST JM ON TARGET.JGI_NO = JM.JGI_NO
+	INNER JOIN DPS_C_SOS_MST SM ON JM.SOS_CD = SM.SOS_CD
+	ORDER BY TARGET.UP_JGI_NO ,BR_CODE, DIST_SEQ, DIST_CODE, TEAM_CODE, SHOKUSEI_CD, SHOKUSHU_CD, JM.JGI_NO
+  </select>
+
+</sqlMap>

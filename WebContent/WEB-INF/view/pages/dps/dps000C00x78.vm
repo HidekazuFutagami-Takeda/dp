@@ -1,0 +1,27 @@
+#set($layout = "nothingLayout.vm" )
+#set($dps000C00F78Data = $form.getRequestData("DPS000C00F78_DATA_R"))
+$!consts.getDhtmlxGridXmlHeader()
+#set($bgEnd = "class='statusEnd statusSize'")
+#set($bgIng = "class='statusIng statusSize'")
+#set($bgNot = "class='statusNot statusSize'")
+#set($data = $dps000C00F78Data.wsPlanStatusForVac)
+#set($style = $!progress.getStyle())
+
+##スライド状況
+#set($codeAndValueWsPlanSlideStatus = $progress.progressWsPlanSlideStatusForVac($!data))
+#set($wsPlanSlideStatus = $codeAndValueWsPlanSlideStatus.value)
+#if($!codeAndValueWsPlanSlideStatus.code.equals("NOT"))
+    #set($wsPlanSlideClass = $bgNot)
+#elseif($!codeAndValueWsPlanSlideStatus.code.equals("ING"))
+    #set($wsPlanSlideClass = $bgIng)
+    #set($wsPlanSlideStatus = $wsPlanSlideStatus)
+#elseif($!codeAndValueWsPlanSlideStatus.code.equals("END"))
+    #set($wsPlanSlideClass = $bgEnd)
+    #set($wsPlanSlideStatus = $wsPlanSlideStatus + "<br>" + $!format.toString($!data.slideStartDate, 'MM/dd HH:mm'))
+#end
+<rows>
+    <row id="1">
+        <cell>全エリア</cell>
+        <cell $!wsPlanSlideClass $!style><![CDATA[$!wsPlanSlideStatus]]></cell>
+    </row>
+</rows>

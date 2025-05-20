@@ -1,0 +1,94 @@
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS203C01_DATA_R"))
+    #set( $dataList = $form.getRequestData("DPS203C01_DATA_R"))
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#set($oldSosName = "" )
+#set($decimalFormat = $form.bean.getDefaultRateFormat())
+#foreach($mikakutokuSijou in $dataList)
+    ##未獲得市場データ変数(NULLの場合は空白を表示)
+    ##チーム
+    #set( $sosName = "")
+        #if($mikakutokuSijou.sosName)
+            #set($sosName = $mikakutokuSijou.sosName)
+        #end
+    ##担当者
+    #set( $jgiName = "")
+        #if($mikakutokuSijou.jgiName)
+            #set($jgiName = $mikakutokuSijou.jgiName + "（" + $mikakutokuSijou.shokushuName + "）")
+        #end
+    ##対象
+    #set( $insType = "")
+        #if($mikakutokuSijou.insType)
+            #set($insType = $mikakutokuSijou.insType)
+        #end
+    ##施設コード
+    #set( $insNo = "")
+        #if($mikakutokuSijou.insNo)
+            #set($insNo = $mikakutokuSijou.insNo)
+        #end
+    ##施設名
+    #set( $insName = "")
+        #if($mikakutokuSijou.insName)
+            #set($insName = $mikakutokuSijou.insName)
+        #else
+            #set($insName = "担当者集約")
+        #end
+    ##薬効市場
+    #set( $yakkouSijouZentai = "")
+        #if($mikakutokuSijou.yakkouSijouZentai)
+            #set($yakkouSijouZentai = $mikakutokuSijou.yakkouSijouZentai)
+        #end
+    ##タケダ品
+    #set( $yakkouSijouTakeda = "")
+        #if($mikakutokuSijou.yakkouSijouTakeda)
+            #set($yakkouSijouTakeda = $mikakutokuSijou.yakkouSijouTakeda)
+        #end
+    ##未獲得市場
+    #set( $yakkouSijouMikakutoku = "")
+        #if($mikakutokuSijou.yakkouSijouMikakutoku)
+            #set($yakkouSijouMikakutoku = $mikakutokuSijou.yakkouSijouMikakutoku)
+        #end
+    ##構成(%)
+    #set( $yakkouSijouRatio = "")
+        #if($mikakutokuSijou.yakkouSijouRatio)
+            #set($yakkouSijouRatio = $!format.doubleToString($mikakutokuSijou.yakkouSijouRatio, $decimalFormat))
+        #end
+    ##増減金額
+    #set( $modifyAmount = "")
+    #set($modifyType = "ed")
+        #if($mikakutokuSijou.modifyAmount)
+            #set($modifyAmount = $mikakutokuSijou.modifyAmount)
+            #set($modifyType = "edn")
+        #end
+    ##営業所案 未獲得市場
+    #set( $distPlanMikakutoku = "")
+        #if($mikakutokuSijou.distPlanMikakutoku)
+            #set($distPlanMikakutoku = $mikakutokuSijou.distPlanMikakutoku)
+        #end
+    <row id='$velocityCount'>
+    #if($oldSosName == $sosName)
+        <cell style="border-width:0px 1px 0px 1px;"></cell>
+    #else
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$sosName</cell>
+    #end
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$jgiName</cell>
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$insType</cell>
+        <cell title="施設コード：$insNo" style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$insName</cell>
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouZentai</cell>
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouTakeda</cell>
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouMikakutoku</cell>
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$yakkouSijouRatio</cell>
+        <cell class="inputB" type="$!modifyType" style="border-width:1px 1px 0px 1px;border-top-color:#808080;">$modifyAmount</cell>
+        <cell style="border-width:1px 1px 0px 1px;border-top-color:#808080;"></cell>
+        ##シーケンスキー・最終更新日時・データ取得時の未獲得市場・データ取得時の増税金額 を保持 ＋ 登録ボタン押下後に更新後の増税金額を追加
+        <userdata name="updateRowId">$mikakutokuSijou.mikakutokuSijou.seqKey,$mikakutokuSijou.mikakutokuSijou.upDate.Time,$mikakutokuSijou.mikakutokuSijou.yakkouSijouMikakutoku,$modifyAmount</userdata>
+    </row>
+
+    ##現ループの組織名称を保持
+    #set($oldSosName = $sosName)
+#end
+</rows>
+#end

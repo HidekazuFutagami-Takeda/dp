@@ -1,0 +1,37 @@
+## 積上結果表示ダイアログ(積上前) 明細行
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPM101C01_DATA_R_SEARCH_RESULT"))
+    #set( $dataList = $form.getRequestData("DPM101C01_DATA_R_SEARCH_RESULT").detailList)
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#set( $rowId = 1 )
+#foreach($resultObj in $dataList)
+    <row id='$rowId'>
+        <cell>1</cell>
+        <cell>$!resultObj.prodName</cell>
+        <cell>$!resultObj.yBaseValueUHBefore</cell>
+        <cell>$!resultObj.yBaseValuePBefore</cell>
+        <cell>$!resultObj.yBaseValueZBefore</cell>
+        <cell></cell>
+        #if($rowId == "1")
+            <cell><![CDATA[<img src="$link.getContextPath()/cmn/images/arrow.gif" />]]></cell>
+        #else
+            <cell></cell>
+        #end
+        <cell>$!resultObj.yBaseValueUHAfter</cell>
+        <cell>$!resultObj.yBaseValuePAfter</cell>
+        <cell>$!resultObj.yBaseValueZAfter</cell>
+        <cell></cell>
+        ## 計算用ユーザデータ
+        <userdata name="rowType">input</userdata>
+        <userdata name="subTotalId">1</userdata>
+        ## 更新用ユーザデータ
+        ## 品目コード・シーケンスキー・最終更新日時・積上前の計画値・積上後の計画値
+        <userdata name="updateRowId">$!resultObj.prodCode,$!resultObj.seqKeyUH,$!resultObj.upDateUH.Time,$!resultObj.yBaseValueUHBefore,$!resultObj.seqKeyP,$!resultObj.upDateP.Time,$!resultObj.yBaseValuePBefore,$!resultObj.seqKeyZ,$!resultObj.upDateZ.Time,$!resultObj.yBaseValueZBefore,$!resultObj.yBaseValueUHAfter,$!resultObj.yBaseValuePAfter,$!resultObj.yBaseValueZAfter</userdata>
+    </row>
+    #set( $rowId = $rowId + 1 )
+#end
+</rows>
+#end

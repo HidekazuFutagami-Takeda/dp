@@ -1,0 +1,267 @@
+#set($layout = "dialogueLayout.vm" )
+#set($pageTitle = $text.get("dps203C01","title"))
+#set($bodyOnloadMethod = "dps203C01F00()")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dps203C01x01.vm")
+#set($searchFuncName = $form.bean.searchFuncName)
+#set($GridObjName = "dps203C01Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps203C01CoverId")
+<script language="javascript">
+<!--
+var editFlg = false;
+document.getElementById("closeWindow").value = "true";
+var ${GridObjName};
+## 初期表示＋読込処理
+function dps203C01F00() {
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　sosApply()を先頭に移動(初期選択組織のunderSosCntをdoInitGrid()で利用するため)
+    ## 営業所まで表示
+    sosApply("$!security.defaultSosCd", "$!security.defaultJgiNo", "02");
+
+    doInitGrid();
+    if (document.getElementById("dps203C01x01.vm")) {
+        var loadXMLString = document.getElementById("dps203C01x01.vm").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}.loadXMLString(loadXMLString);
+            ## 計算処理
+            doCalcAll(${GridObjName});
+        }else{
+            createDhtmlXGridLodingDelete("${CoverId}");
+        }
+    }
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　sosApply()を先頭に移動(初期選択組織のunderSosCntをdoInitGrid()で利用するため)
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+## add start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによってヘッダーの文言変更「チーム」⇔「エリア」
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    var headerSosTitle = "エリア";
+##    var headerSosTitle = "営業所・エリア";
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ##下位組織が存在する場合は、「チーム」とする　※この画面は営業所を指定して遷移する画面のため、dps203C00で行っている営業所チェックは不要
+	if(document.getElementById('underSosCnt').value != "0"){
+       	headerSosTitle = "チーム";
+	}
+## add end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによってヘッダーの文言変更「チーム」⇔「エリア」
+	${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによってヘッダーの文言変更「チーム」⇔「エリア」
+##  ${GridObjName}.setHeader("チーム,担当者,対象,施設名,薬効市場,#cspan,#cspan,#cspan,増減金額,エリア案");
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+    ${GridObjName}.setHeader(headerSosTitle + ",担当者,対象,施設名,薬効市場,#cspan,#cspan,#cspan,増減金額,エリア案");
+##    ${GridObjName}.setHeader(headerSosTitle + ",担当者,対象,施設名,薬効市場,#cspan,#cspan,#cspan,増減金額,営業所案");
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　underSosCntによってヘッダーの文言変更「チーム」⇔「エリア」
+    ${GridObjName}.attachHeader("#rspan,#rspan,#rspan,#rspan,市場計,タケダ品,未獲得市場,構成(%),#rspan,未獲得市場");
+## mod start 2020/07/01 趙 2020年4月組織変更対応（各種アプリ）
+##    ${GridObjName}.setInitWidths("120,110,40,122,90,90,90,65,90,90");
+    ${GridObjName}.setInitWidths("120,140,40,122,90,90,90,65,90,90");
+## mod end   2020/07/01 趙 2020年4月組織変更対応（各種アプリ）
+    ${GridObjName}.setColAlign("center,center,center,left,right,right,right,right,right,right");
+    ${GridObjName}.setColTypes("ro,ro,ro,ro,ron,ron,ron,ro,edn,ron");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,true,false,false,false,false,false,false");
+    ${GridObjName}.enableDistributedParsing(true,50,300);
+    ${GridObjName}.enableMultiline(false);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps203C01', $!gridHeight));
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.objBox.style.overflowY="scroll";
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.setNumberFormat("0,000",4);
+    ${GridObjName}.setNumberFormat("0,000",5);
+    ${GridObjName}.setNumberFormat("0,000",6);
+    ${GridObjName}.setNumberFormat("0,000",8);
+    ${GridObjName}.setNumberFormat("0,000",9);
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.enableEditEvents(true, false, true);
+
+    ##  --- 編集中に登録ボタンが押された場合のチェッカー
+    window.editValueChecker = new EditingValueChecker(${GridObjName},'$text.get("DPC1036E",[""])' );
+
+    ${GridObjName}.attachEvent("onEditCell",function(stage,rowId,cellInd,newvalue,oldvalue){
+
+		## --- 編集中に登録ボタンが押された場合のチェック用に値とstageを保持 ---
+		window.editValueChecker.saveState(stage,newvalue);
+
+    	if(stage == 1){
+            setIme(${GridObjName},rowId,cellInd,"inactive",10);
+        }
+        if(stage == 2){
+            if(newvalue.toString() != oldvalue.toString()){
+                intCheck(${GridObjName},rowId,cellInd,newvalue);
+                doCalc(${GridObjName}, rowId);
+                editFlg = true;
+            }
+        }
+        return true;
+    });
+    ${GridObjName}.attachEvent("onRowSelect",function(rowId,cellInd){
+        ${GridObjName}.editCell();
+    });
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift,new Array("8"));
+##      if (keycode == 86 && ctrl) {
+##          doCalcAll(${GridObjName});
+##          editFlg = true;
+##      }
+        return true;
+    });
+    ${GridObjName}.attachEvent("onRowPaste", function(rowId){
+        doCalc(${GridObjName},rowId);
+        editFlg=true;
+    });
+}
+
+## 計算処理
+function doCalcAll(grid) {
+    for (rowId = 1; rowId <= grid.getRowsNum(); rowId++) {
+        doCalc(grid, rowId);
+    }
+}
+
+## 計算処理
+function doCalc(grid, rowId) {
+    var sumValue = 0; // 未獲得市場
+    var value1 = grid.cells(rowId,6).getValue();
+    var value2 = grid.cells(rowId,8).getValue();
+    if(value1 != null && value1.toString() != ""){
+        sumValue = sumValue + convertToInteger(grid,rowId,6);
+    }
+    if(value2 != null && value2.toString() != ""){
+        sumValue = sumValue + convertToInteger(grid,rowId,8);
+    }
+    grid.cells(rowId,9).setValue(sumValue);
+    ## マイナス色の設定
+    minusStyle(grid, rowId, 8, value1);
+    minusStyle(grid, rowId, 9, sumValue);
+}
+
+## 登録処理
+function dps203C01F05() {
+    if (dps203C01F05Validation()) {
+        ## 確認ダイアログ
+        if (!confirm('$text.get("DPS203C01.001","dialogue")')) {
+            return;
+        }
+        var form = document.dps203C01Form;
+        ## ユーザデータに編集後の増減金額を追加
+        var rowNum = ${GridObjName}.getRowsNum();
+        for (i = 1; i <= rowNum; i++) {
+            var userData = ${GridObjName}.getUserData(i, 'updateRowId');
+            var modifyAmount = ${GridObjName}.cells(i,8).getValue();
+            modifyAmount = modifyAmount.toString().replace(",","");
+            userData += "," + modifyAmount;
+            ${GridObjName}.setUserData(i, 'updateRowId', userData);
+        }
+        addRowIdList(form, ${GridObjName}, 'rowIdList', 'updateRowId');
+        var actionPath = '$link.setAction('dps203C01F05Execute')';
+        form.action = actionPath;
+        form.submit();
+        dps203C01F05 = blockIt;
+    }
+}
+## 画面入力チェック
+function dps203C01F05Validation() {
+    var rowNum = ${GridObjName}.getRowsNum();
+    var oldSosName = "";
+    for (i = 1; i <= rowNum; i++) {
+        ## メッセージ準備
+        var sosName = ${GridObjName}.cells(i,0).getValue();
+        if (sosName == "") {
+            sosName = oldSosName;
+        }
+        oldSosName = sosName;
+        var jgiName = ${GridObjName}.cells(i,1).getValue();
+        var insType = ${GridObjName}.cells(i,2).getValue();
+        var insName = ${GridObjName}.cells(i,3).getValue();
+        var rowInfo = "対象【"   + insType + "】";
+        rowInfo    += "チーム【" + sosName + "】";
+        rowInfo    += "担当者【" + jgiName + "】";
+        rowInfo    += "施設【"   + insName + "】の";
+        var errorMsg = "";
+        ## エラーチェック開始
+        var existError = false;
+        ## [増減金額]
+        var checkValue = ${GridObjName}.cells(i, 8).getValue().toString();
+        if (!existError) {
+            amountValidationNotTailCheck("増減金額", checkValue, 10, false, rowInfo);
+        }
+        ## [未獲得市場]
+        if (!existError) {
+            ## 再計算後、チェックを行う
+        	doCalc(${GridObjName},i);
+            checkValue = convertToInteger(${GridObjName},i,9);
+        	amountValidationNotTailCheckNotInput("未獲得市場", checkValue, 10, false, rowInfo);
+        }
+        ## [未獲得市場の値と修正金額の和が0以上]
+        if (!existError) {
+            errorMsg = rowInfo + '$text.get("DPS1007E")';
+            existError = addErrorInfo(!isPlus(checkValue), errorMsg);
+        }
+    }
+    return validation();
+}
+## ダイアログを閉じる
+function closeWindow() {
+    if (editFlg) {
+        if (window.confirm('$text.get("DPC999C99.001","dialogue")')) {
+            window.close();
+        }
+    }
+    else {
+        window.close();
+    }
+}
+//-->
+</script>
+<div class="disp">
+<form name="dps203C01Form" method="post">
+<table class="gridLine" cellspacing="0" cellpadding="1">
+    <tr class="gridLine">
+        <td class="gridIndex" style="width:150px;">組織</td>
+        <td style="width:270px;" style="padding-left:5px;border-bottom:1px solid #c2d5dc;"><nobr><label id="sos">　</label></nobr></td>
+        <td class="gridIndex" style="width:150px;">薬効市場</td>
+        #foreach($codeAndValue in $service.getYakkouSijouList(false,null))
+        #if($codeAndValue.code == $!form.bean.yakkouSijouCode)
+        <td style="padding-left:5px;width:150px;">$codeAndValue.value</td>
+        #end
+        #end
+    </tr>
+</table>
+<table cellspacing="0" cellpadding="1" width="100%">
+    <tr>
+        <td>
+        <table cellspacing="0" cellpadding="0"><tr>
+        #if ($!security.hasAuthEdit("DPS203"))
+            #if ($!form.bean.existSearchDataFlag)
+            <td style="padding:6px 0px 6px 5px;"><input type="button" value="登録する" style="width:80px;" onclick="dps203C01F05()" /></td>
+            #else
+            <td style="padding:6px 0px 6px 5px;"><input type="button" value="登録する" style="width:80px;" onclick="dps203C01F05()" disabled /></td>
+            #end
+        #end
+        <td style="padding:6px 0px 6px 5px;"><input type="button" value="閉じる" style="width:80px;" onclick="closeWindow()" /></td>
+        </tr></table>
+        <td class="label" align="right" style="text-align:right;vertical-align:bottom;">$consts.tableHeaderY</td>
+    </tr>
+</table>
+#loadingGridDiv2("${GridObjName}", "${CoverId}", "")
+## mod Start 2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+<div class="guide">※増減金額は半角数字形式(-入力可)で、エリア案未獲得市場が0以上となるように入力してください。</div>
+##<div class="guide">※増減金額は半角数字形式(-入力可)で、営業所案未獲得市場が0以上となるように入力してください。</div>
+## mod End   2022/5/16 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+#token()
+<input type="hidden" id="sosCd2" name="sosCd2" />
+<input type="hidden" id="sosCd3" name="sosCd3"  />
+<input type="hidden" id="sosCd4" name="sosCd4"  />
+<input type="hidden" id="jgiNo" name="jgiNo"  />
+<input type="hidden" id="yakkouSijouCode" name="yakkouSijouCode" value="$!form.bean.yakkouSijouCode" />
+<input type="hidden" id="searchFuncName" name="searchFuncName" value="$!form.bean.searchFuncName" />
+<input type="hidden" id="initSosCodeValue" name="initSosCodeValue"  value="$!security.defaultSosCd"/>
+## add start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+<input type="hidden" id="underSosCnt" name="underSosCnt"  />
+## add end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）
+</form>
+</div>

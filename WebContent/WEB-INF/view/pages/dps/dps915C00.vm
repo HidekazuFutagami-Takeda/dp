@@ -1,0 +1,67 @@
+#set($contentsId = "freeSizeContents")
+#set($layout = "dialogueLayout.vm" )
+#set($pageTitle = $text.get("dps915C00","title"))
+
+## 検索結果取得
+#set($jgiMstList = $form.getRequestData("SOS_JGI_LIST_DTO_KEY_R"))
+
+## 適用関数名
+#set ($sosApplyFuncName = $form.bean.sosApplyFuncName)
+
+<script language="javascript" type="text/javascript">
+<!--
+##呼び出し元に返す
+function dps915C00F00Return(sosCd, jgiNo) {
+	dialogArgs().${sosApplyFuncName}(sosCd, jgiNo);
+    window.close();
+    return false;
+}
+//-->
+</script>
+<form name="dps915C00Form" method="post">
+<input type="hidden" name="sosApplyFuncName" value="$sosApplyFuncName" />
+<table cellspacing="4" cellpadding="2" align="center" width="100%">
+    <tr valign="top">
+        <td>
+        <div align="center"><b>TL選択ポップアップ</b></div>
+        </td>
+    </tr>
+    <tr valign="top">
+        <td width="100%">
+        <div>
+        <table width="100%" class="gridLine" style="border-collapse:collapse;">
+            <tr>
+                <td class="gridIndex" width="20">
+                </td>
+                <td nowrap class="gridIndex">
+                <div align="center">従業員選択</div>
+                </td>
+            </tr>
+			#if ($jgiMstList && $jgiMstList.size() > 0)
+            #foreach($jgiMst in $jgiMstList)
+            <tr>
+                <td class="gridIndex">
+                <input type="button" name="jgi" style="WIDTH: 20px;" onClick="dps915C00F00Return('$jgiMst.sosCd','$jgiMst.jgiNo')"></div>
+                </td>
+                <td class="gridLine"><label>${jgiMst.jgiName}（$!{jgiMst.shokushuName}）</label></td>
+            </tr>
+            #end
+			#end
+        </table>
+        </div>
+        </td>
+    </tr>
+    <tr>
+        <td valign="top" colspan="3">
+        <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+            <tr>
+                <td></td>
+                <td width="15%">
+                <div align="center"><input type="button" name="add_item2" value="閉じる" onClick="self.window.close()"></div>
+                </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+</table>
+</form>

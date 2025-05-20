@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_INS_DOC_PLAN_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.InsDocPlan" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INS_NO" property="insNo" jdbcType="CHAR" />
+    <result column="MAIN_INS_NO" property="mainInsNo" jdbcType="CHAR" />
+    <result column="DOC_NO" property="docNo" jdbcType="VARCHAR" />
+    <result column="EXCEPT_DIST_INS_FLG" property="exceptDistInsFlg" jdbcType="CHAR" />
+    <result column="DEL_INS_FLG" property="delInsFlg" jdbcType="CHAR" />
+    <result column="NON_PATIENT_CNT" property="nonPatientCnt" jdbcType="INTEGER" />
+    <result column="TOT_PATIENT_CNT" property="totPatientCnt" jdbcType="INTEGER" />
+    <result column="TKD_PATIENT_CNT" property="tkdPatientCnt" jdbcType="INTEGER" />
+    <result column="CURRENT_PERIOD" property="currentPeriod" jdbcType="BIGINT" />
+    <result column="ADVANCE_PERIOD" property="advancePeriod" jdbcType="BIGINT" />
+    <result column="THEORETICAL_INC_VALUE_Y" property="theoreticalIncValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_INC_VALUE_Y" property="plannedIncValueY" jdbcType="BIGINT" />
+    <result column="THEORETICAL_VALUE_Y" property="theoreticalValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_Y" property="plannedValueY" jdbcType="BIGINT" />
+    <result column="PLANNED_VALUE_T" property="plannedValueT" jdbcType="BIGINT" />
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP"/>
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP"/>
+  </resultMap>
+
+  <!-- ヘッダー情報用 -->
+  <resultMap id="insDocHeader" class="java.util.HashMap" >
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="PROD_NAME" property="prodName" jdbcType="VARCHAR" />
+    <result column="IS_COMPLETED" property="isStatusMrCompleted" jdbcType="CHAR" javaType="java.lang.Boolean"/>
+    <result column="MR_PLANNED_VALUE_UH" property="mrPlanPlannedValueUh" jdbcType="BIGINT" javaType="java.lang.Long" />
+    <result column="MR_PLANNED_VALUE_P" property="mrPlanPlannedValueP" jdbcType="BIGINT" javaType="java.lang.Long" />
+    <result column="INS_DOC_PLANNED_VALUE_UH" property="insDocPlanPlannedValueUh" jdbcType="BIGINT" javaType="java.lang.Long" />
+    <result column="INS_DOC_PLANNED_VALUE_P" property="insDocPlanPlannedValueP" jdbcType="BIGINT" javaType="java.lang.Long" />
+    <result column="LAST_UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="LAST_UP_DATE" property="upDate" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+  </resultMap>
+
+  <!-- 計画編集用 -->
+  <resultMap id="insDocListMap" class="java.util.HashMap" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INS_NO" property="insNo" jdbcType="CHAR" />
+    <result column="MAIN_INS_NO" property="mainInsNo" jdbcType="CHAR" />
+    <result column="RELN_INS_NO" property="relnInsNo" jdbcType="CHAR" />
+    <result column="RELN_INS_CODE" property="relnInsCode" jdbcType="CHAR" />
+    <result column="INS_ABBR_NAME" property="insName" jdbcType="VARCHAR" />
+    <result column="HO_INS_TYPE" property="hoInsType" jdbcType="CHAR" />
+    <result column="INS_CLASS" property="insClass" jdbcType="CHAR" javaType="InsClass"/>
+    <result column="OLD_INSR_FLG" property="oldInsrFlg" jdbcType="CHAR" javaType="OldInsrFlg"/>
+    <result column="INS_MR_NO" property="insMrNo" jdbcType="INTEGER" />
+    <result column="DOC_NO" property="docNo" jdbcType="CHAR" />
+    <result column="DOC_KANJ" property="docKanj" jdbcType="VARCHAR" />
+    <result column="POST_KANJ_NAME" property="postKanjName" jdbcType="VARCHAR" />
+    <result column="DEPT_KANJ_NAME" property="deptKanjName" jdbcType="VARCHAR" />
+    <result column="DOC_MR_NO" property="docMrNo" jdbcType="INTEGER" />
+    <result column="DOC_MR_KANJ_NAME" property="docMrKanjName" jdbcType="VARCHAR" />
+    <result column="DOC_MR_SHOKUSHU_NAME" property="docMrShokushuName" jdbcType="VARCHAR" />
+    <result column="NON_PATIENT_CNT" property="nonPatientCnt" jdbcType="INTEGER" javaType="java.lang.Long" />
+    <result column="TOT_PATIENT_CNT" property="totPatientCnt" jdbcType="INTEGER" javaType="java.lang.Long" />
+    <result column="TKD_PATIENT_CNT" property="tkdPatientCnt" jdbcType="INTEGER" javaType="java.lang.Long" />
+    <result column="CURRENT_PERIOD" property="currentPeriod" jdbcType="BIGINT" javaType="java.lang.Long" />
+    <result column="ADVANCE_PERIOD" property="advancePeriod" jdbcType="BIGINT" javaType="java.lang.Long" />
+    <result column="THEORETICAL_INC_VALUE_Y" property="theoreticalIncValueY" jdbcType="BIGINT" javaType="java.lang.Long" />
+    <result column="PLANNED_INC_VALUE_Y" property="plannedIncValueY" jdbcType="BIGINT" javaType="java.lang.Long" />
+    <result column="THEORETICAL_VALUE_Y" property="theoreticalValueY" jdbcType="BIGINT" javaType="java.lang.Long"  />
+    <result column="PLANNED_VALUE_Y" property="plannedValueY" jdbcType="BIGINT" javaType="java.lang.Long"  />
+    <result column="PLANNED_VALUE_T" property="plannedValueT" jdbcType="BIGINT" javaType="java.lang.Long"  />
+    <result column="EXCEPT_DIST_INS_FLG" property="exceptDistInsFlg" jdbcType="CHAR" javaType="java.lang.Boolean"/>
+    <result column="DEL_INS_FLG" property="delInsFlg" jdbcType="CHAR" javaType="java.lang.Boolean"/>
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP"  javaType="java.util.Date" />
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP"  javaType="java.util.Date" />
+    <result column="INS_INFO_NAME" property="insInfoName" jdbcType="VARCHAR" />
+    <result column="DISP_FONT_COL_CD" property="dispFontColCd" jdbcType="CHAR" />
+    <result column="ERR_KB" property="errKb" jdbcType="CHAR" javaType="ProdInsInfoErrKbn"/>
+    <result column="SCRN_DISP_KB" property="scrnDispKb" jdbcType="CHAR" javaType="ProdInsInfoScanDispKbn"/>
+    <result column="DOC_MOVED_FLG" property="docMovedFlg" jdbcType="CHAR" javaType="java.lang.Boolean"/>
+    <result column="DEL_DOC_FLG" property="delDocFlg" jdbcType="CHAR" javaType="java.lang.Boolean"/>
+  </resultMap>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="jp.co.takeda.model.InsDocPlan" >
+    SELECT SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,INS_NO
+          ,MAIN_INS_NO
+          ,DOC_NO
+          ,EXCEPT_DIST_INS_FLG
+          ,DEL_INS_FLG
+          ,NON_PATIENT_CNT
+          ,TOT_PATIENT_CNT
+          ,TKD_PATIENT_CNT
+          ,CURRENT_PERIOD
+          ,ADVANCE_PERIOD
+          ,THEORETICAL_INC_VALUE_Y
+          ,PLANNED_INC_VALUE_Y
+          ,THEORETICAL_VALUE_Y
+          ,PLANNED_VALUE_Y
+          ,PLANNED_VALUE_T
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_INS_DOC_PLAN
+     WHERE JGI_NO = #jgiNo:INTEGER#
+       AND PROD_CODE = #prodCode:CHAR#
+       AND INS_NO = #insNo:CHAR#
+       AND DOC_NO = #docNo:CHAR#
+  </select>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,INS_NO
+          ,MAIN_INS_NO
+          ,DOC_NO
+          ,EXCEPT_DIST_INS_FLG
+          ,DEL_INS_FLG
+          ,NON_PATIENT_CNT
+          ,TOT_PATIENT_CNT
+          ,TKD_PATIENT_CNT
+          ,CURRENT_PERIOD
+          ,ADVANCE_PERIOD
+          ,THEORETICAL_INC_VALUE_Y
+          ,PLANNED_INC_VALUE_Y
+          ,THEORETICAL_VALUE_Y
+          ,PLANNED_VALUE_Y
+          ,PLANNED_VALUE_T
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+      FROM DPS_I_INS_DOC_PLAN
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- ヘッダー情報取得 -->
+  <select id="selectHeader" resultMap="insDocHeader" parameterClass="java.util.Map" >
+   WITH INSDOC_STATUS AS
+    (
+		SELECT IDS.JGI_NO
+		      ,IDS.STATUS
+		  FROM DPS_I_INS_DOC_PLAN_STATUS IDS
+		 WHERE
+		       IDS.PROD_CODE = #prodCode:CHAR#
+		   AND IDS.JGI_NO = #jgiNo:INTEGER#
+    )
+   ,MR_SUM AS
+    (
+		SELECT MP.JGI_NO
+		      ,MP.PLANNED_VALUE_UH_Y
+		      ,MP.PLANNED_VALUE_P_Y
+		  FROM DPS_I_MR_PLAN MP
+		 WHERE
+		       MP.PROD_CODE = #prodCode:CHAR#
+		   AND MP.JGI_NO = #jgiNo:INTEGER#
+    )
+   ,INSDOC_SUM_UH AS
+    (
+		SELECT IDP.JGI_NO
+		      ,SUM(IDP.PLANNED_VALUE_Y) AS PLANNED_VALUE_Y
+		  FROM DPS_I_INS_DOC_PLAN IDP
+		       INNER JOIN DPS_C_INS_MST_ALL INS ON IDP.INS_NO = INS.INS_NO
+		 WHERE INS.HO_INS_TYPE in ('1','2')
+		   AND IDP.PROD_CODE = #prodCode:CHAR#
+		   AND IDP.JGI_NO = #jgiNo:INTEGER#
+		 GROUP BY IDP.JGI_NO
+    )
+   ,INSDOC_SUM_P AS
+    (
+		SELECT IDP.JGI_NO
+		      ,SUM(IDP.PLANNED_VALUE_Y) AS PLANNED_VALUE_Y
+		  FROM DPS_I_INS_DOC_PLAN IDP
+		       INNER JOIN DPS_C_INS_MST_ALL INS ON IDP.INS_NO = INS.INS_NO
+		 WHERE INS.HO_INS_TYPE in ('3')
+		   AND IDP.PROD_CODE = #prodCode:CHAR#
+		   AND IDP.JGI_NO = #jgiNo:INTEGER#
+		 GROUP BY IDP.JGI_NO
+    )
+   ,INSDOC_LAST_UPDATE AS
+    (SELECT * FROM
+	     (SELECT IDP.JGI_NO
+	            ,IDP.UP_DATE AS LAST_UP_DATE
+	            ,IDP.UP_JGI_NAME AS LAST_UP_JGI_NAME
+	        FROM DPS_I_INS_DOC_PLAN IDP
+	             INNER JOIN DPS_C_INS_MST_ALL INS ON IDP.INS_NO = INS.INS_NO
+	       WHERE
+		         IDP.PROD_CODE = #prodCode:CHAR#
+		     AND IDP.JGI_NO = #jgiNo:INTEGER#
+			<isNotNull property="hoInsTypeList">
+			    <iterate prepend="AND INS.HO_INS_TYPE IN" open="(" close=")" conjunction=","  property="hoInsTypeList">
+			        #hoInsTypeList[].dbValue#
+			    </iterate>
+			</isNotNull>
+	       ORDER BY IDP.UP_DATE DESC
+	     ) WHERE ROWNUM = 1
+    )
+    SELECT JM.JGI_NO
+          ,PP.PROD_CODE
+          ,PP.PROD_NAME
+          ,CASE WHEN INSDOC_STATUS.STATUS = #completeStatus:CHAR# THEN 1 ELSE 0 END AS IS_COMPLETED
+          ,MR_SUM.PLANNED_VALUE_UH_Y      AS MR_PLANNED_VALUE_UH
+          ,MR_SUM.PLANNED_VALUE_P_Y       AS MR_PLANNED_VALUE_P
+          ,INSDOC_SUM_UH.PLANNED_VALUE_Y  AS INS_DOC_PLANNED_VALUE_UH
+          ,INSDOC_SUM_P.PLANNED_VALUE_Y   AS INS_DOC_PLANNED_VALUE_P
+          ,INSDOC_LAST_UPDATE.LAST_UP_DATE
+          ,INSDOC_LAST_UPDATE.LAST_UP_JGI_NAME
+    FROM DPS_C_JGI_MST JM
+	      INNER JOIN DPS_C_PLANNED_PROD PP ON JM.JGI_NO = #jgiNo:INTEGER#  AND PP.PROD_CODE = #prodCode:CHAR#
+        LEFT OUTER JOIN INSDOC_STATUS    ON JM.JGI_NO = INSDOC_STATUS.JGI_NO
+        LEFT OUTER JOIN MR_SUM           ON JM.JGI_NO = MR_SUM.JGI_NO
+        LEFT OUTER JOIN INSDOC_SUM_UH    ON JM.JGI_NO = INSDOC_SUM_UH.JGI_NO
+        LEFT OUTER JOIN INSDOC_SUM_P     ON JM.JGI_NO = INSDOC_SUM_P.JGI_NO
+        LEFT OUTER JOIN INSDOC_LAST_UPDATE ON JM.JGI_NO = INSDOC_LAST_UPDATE.JGI_NO
+  </select>
+
+  <!-- 施設医師別計画 一覧 -->
+  <select id="selectList" resultMap="insDocListMap" parameterClass="java.util.Map" >
+	WITH
+	<!-- 担当施設全医師 -->
+	MY_INS_DOC AS (
+	  SELECT
+	    INS_DOC.DOC_NO,
+	    MR_INS_PROD.INS_NO
+	  FROM
+	    DPS_C_MR_INS_PROD_ALL MR_INS_PROD
+	    INNER JOIN DPS_C_INS_MST_ALL INS ON MR_INS_PROD.INS_NO = INS.INS_NO
+	    LEFT OUTER JOIN DPS_C_INS_DOC INS_DOC ON MR_INS_PROD.INS_NO = INS_DOC.INS_NO
+	    LEFT OUTER JOIN DPS_C_DOC DOC ON INS_DOC.DOC_NO = DOC.DOC_NO
+	  WHERE
+	    MR_INS_PROD.MR_NO = #jgiNo:INTEGER#
+	    AND MR_INS_PROD.PROD_CODE = #prodCode:CHAR#
+	    AND MR_INS_PROD.MAIN_MR = '0'
+        AND NVL(DOC.DOC_TYPE, '1') = '1'
+		<isNotNull property="hoInsTypeList">
+		    <iterate prepend="AND INS.HO_INS_TYPE IN" open="(" close=")" conjunction=","  property="hoInsTypeList">
+		        #hoInsTypeList[].dbValue#
+		    </iterate>
+		</isNotNull>
+	),
+	<!-- 担当施設全医師（対象外施設除外） -->
+	ALL_ID AS (
+	  SELECT
+	    NVL(MY_INS_DOC.DOC_NO,'DDDDDD') AS DOC_NO,
+	    MY_INS_DOC.INS_NO,
+	    NVL(INS.MAIN_INS_NO,INS.INS_NO) AS MAIN_INS_NO
+	  FROM
+	    MY_INS_DOC
+	    INNER JOIN DPS_C_INS_MST_ALL INS ON MY_INS_DOC.INS_NO = INS.INS_NO
+	  WHERE
+        MY_INS_DOC.DOC_NO IS NOT NULL
+        OR (INS.INS_CLASS = '01')
+	    OR (INS.INS_CLASS = '02' AND INS.OLD_INSR_FLG <![CDATA[ <> ]]> '1')
+	    OR (INS.INS_CLASS = '06' AND INS.OLD_INSR_FLG <![CDATA[ <> ]]> '3')
+	),
+	<!-- 医師別計画 -->
+	PLANNED_ID AS (
+	  SELECT IDP.*
+	  FROM
+	    DPS_I_INS_DOC_PLAN IDP
+	    INNER JOIN DPS_C_INS_MST_ALL INS ON IDP.INS_NO = INS.INS_NO
+	  WHERE
+	    IDP.JGI_NO = #jgiNo:INTEGER#
+	    AND IDP.PROD_CODE = #prodCode:CHAR#
+		<isNotNull property="hoInsTypeList">
+		    <iterate prepend="AND INS.HO_INS_TYPE IN" open="(" close=")" conjunction=","  property="hoInsTypeList">
+		        #hoInsTypeList[].dbValue#
+		    </iterate>
+		</isNotNull>
+	),
+	<!-- 表示対象計画 -->
+	DISP_PLAN AS (
+	  SELECT
+	    NVL2(PLANNED_ID.SEQ_KEY, PLANNED_ID.INS_NO, ALL_ID.INS_NO) AS INS_NO,
+	    NVL2(PLANNED_ID.SEQ_KEY, PLANNED_ID.DOC_NO ,ALL_ID.DOC_NO) AS DOC_NO,
+	    NVL2(PLANNED_ID.SEQ_KEY,PLANNED_ID.MAIN_INS_NO,ALL_ID.MAIN_INS_NO) AS MAIN_INS_NO,
+	    PLANNED_ID.SEQ_KEY,
+		#jgiNo:INTEGER# AS JGI_NO,
+		#prodCode:CHAR# AS PROD_CODE,
+	    PLANNED_ID.NON_PATIENT_CNT,
+	    PLANNED_ID.TOT_PATIENT_CNT,
+	    PLANNED_ID.TKD_PATIENT_CNT,
+	    PLANNED_ID.CURRENT_PERIOD,
+	    PLANNED_ID.ADVANCE_PERIOD,
+	    PLANNED_ID.THEORETICAL_INC_VALUE_Y,
+	    PLANNED_ID.PLANNED_INC_VALUE_Y,
+	    PLANNED_ID.THEORETICAL_VALUE_Y,
+	    PLANNED_ID.PLANNED_VALUE_Y,
+		PLANNED_ID.PLANNED_VALUE_T,
+		PLANNED_ID.IS_JGI_NO,
+		PLANNED_ID.IS_JGI_NAME,
+		PLANNED_ID.IS_DATE,
+	    PLANNED_ID.UP_JGI_NO,
+	    PLANNED_ID.UP_JGI_NAME,
+	    PLANNED_ID.UP_DATE
+	  FROM
+	    PLANNED_ID
+	    FULL OUTER JOIN ALL_ID ON PLANNED_ID.INS_NO = ALL_ID.INS_NO AND PLANNED_ID.DOC_NO = ALL_ID.DOC_NO
+     <dynamic prepend="WHERE">
+		<isEqual property="planDispType" compareValue="0" prepend="AND">
+		    PLANNED_ID.PLANNED_VALUE_Y IS NOT NULL
+		</isEqual>
+     </dynamic>
+	)
+	SELECT
+		DISP_PLAN.SEQ_KEY,
+	    DISP_PLAN.JGI_NO,
+	    DISP_PLAN.PROD_CODE,
+		DISP_PLAN.INS_NO,
+		DISP_PLAN.MAIN_INS_NO,
+		INS.RELN_INS_NO,
+		INS.RELN_INS_CODE,
+		INS.INS_ABBR_NAME,
+		INS.HO_INS_TYPE,
+		INS.INS_CLASS,
+		INS.OLD_INSR_FLG,
+		CASE WHEN EXC_INS.INS_NO IS NULL THEN '0' ELSE '1' END AS EXCEPT_DIST_INS_FLG,
+		CASE WHEN INS.DEL_FLG = 0 AND INS.REQ_FLG = 0 THEN '0' ELSE '1' END AS DEL_INS_FLG,
+		#jgiNo:INTEGER# AS INS_MR_NO,
+		DISP_PLAN.DOC_NO,
+		DOC.DOC_KANJ,
+		DOC_DEPT.KANJ_NAME AS DEPT_KANJ_NAME,
+		DOC_POST.KANJ_NAME AS POST_KANJ_NAME,
+		MR_INS_DOC_TRT.MR_NO AS DOC_MR_NO,
+		DOC_JGI.JGI_NAME AS DOC_MR_KANJ_NAME,
+		NVL2(JJ.JGI_NO,'TL',DOC_JGI.SHOKUSHU_NAME) AS DOC_MR_SHOKUSHU_NAME,
+		DISP_PLAN.NON_PATIENT_CNT,
+		DISP_PLAN.TOT_PATIENT_CNT,
+		DISP_PLAN.TKD_PATIENT_CNT,
+		DISP_PLAN.CURRENT_PERIOD,
+		DISP_PLAN.ADVANCE_PERIOD,
+		DISP_PLAN.THEORETICAL_INC_VALUE_Y,
+		DISP_PLAN.PLANNED_INC_VALUE_Y,
+		DISP_PLAN.THEORETICAL_VALUE_Y,
+		DISP_PLAN.PLANNED_VALUE_Y,
+		DISP_PLAN.PLANNED_VALUE_T,
+		DISP_PLAN.IS_JGI_NO,
+		DISP_PLAN.IS_JGI_NAME,
+		DISP_PLAN.IS_DATE,
+		DISP_PLAN.UP_JGI_NO,
+		DISP_PLAN.UP_JGI_NAME,
+		DISP_PLAN.UP_DATE,
+	    CASE WHEN (MR_INS_DOC_TRT.MR_NO IS NULL AND DISP_PLAN.DOC_NO <![CDATA[ <> ]]> 'DDDDDD' ) THEN '1' ELSE '0' END AS DOC_MOVED_FLG,
+		DOC.DEL_FLG AS DEL_DOC_FLG,
+		MIP.INS_INFO_NAME,
+		MIP.DISP_FONT_COL_CD,
+		MIP.ERR_KB,
+		MIP.SCRN_DISP_KB
+	FROM
+	  DISP_PLAN
+	  INNER JOIN DPS_C_INS_MST_ALL INS ON DISP_PLAN.INS_NO = INS.INS_NO
+	  INNER JOIN DPS_C_DOC DOC ON DISP_PLAN.DOC_NO = DOC.DOC_NO
+	  LEFT OUTER JOIN DPS_C_INS_DOC INS_DOC ON DISP_PLAN.INS_NO = INS_DOC.INS_NO AND DISP_PLAN.DOC_NO = INS_DOC.DOC_NO
+	  LEFT OUTER JOIN DPS_C_MR_INS_PROD_ALL MIP ON DISP_PLAN.INS_NO = MIP.INS_NO AND DISP_PLAN.PROD_CODE = MIP.PROD_CODE AND MIP.MAIN_MR = '0'
+	  LEFT OUTER JOIN DPS_C_MR_INS_DOC_TRT_ALL MR_INS_DOC_TRT ON DISP_PLAN.INS_NO = MR_INS_DOC_TRT.INS_NO AND DISP_PLAN.DOC_NO = MR_INS_DOC_TRT.DOC_NO AND MR_INS_DOC_TRT.TRT_CD = MIP.TRT_CD
+	  LEFT OUTER JOIN
+	  	(	SELECT JGI_NO, JGI_NAME, SHOKUSEI_CD, SHOKUSHU_CD, SHOKUSHU_NAME FROM DPS_C_JGI_MST
+	  		UNION ALL
+	  		SELECT JGI_NO, JGI_NAME, SHOKUSEI_CD, SHOKUSHU_CD, SHOKUSHU_NAME FROM DPS_C_SUB_MR_MST
+	  	) DOC_JGI ON MR_INS_DOC_TRT.MR_NO = DOC_JGI.JGI_NO
+	  LEFT OUTER JOIN DPS_C_DEPT DOC_DEPT ON INS_DOC.DEPT_CODE = DOC_DEPT.DEPT_CODE
+	  LEFT OUTER JOIN DPS_C_POST DOC_POST ON INS_DOC.TITLE_CODE = DOC_POST.TITLE_CODE
+	  LEFT OUTER JOIN DPS_I_EXCEPT_DIST_INS EXC_INS ON DISP_PLAN.INS_NO = EXC_INS.INS_NO AND ( EXC_INS.PROD_CODE = #prodCode:CHAR# OR EXC_INS.PROD_CODE IS NULL)
+	  LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ ON JJ.JGI_NO = DOC_JGI.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+	ORDER BY
+	  INS.HO_INS_TYPE,
+	  INS.RELN_INS_NO,
+	  INS.RELN_INS_CODE,
+	  DOC_DEPT.DEPT_CODE,
+	  DOC_POST.TITLE_CODE,
+	  DOC.DOC_NO
+	</select>
+
+
+  <!-- 登録 -->
+  <insert id="insert" parameterClass="jp.co.takeda.model.InsDocPlan" >
+    INSERT INTO DPS_I_INS_DOC_PLAN
+          (SEQ_KEY
+          ,JGI_NO
+          ,PROD_CODE
+          ,INS_NO
+          ,MAIN_INS_NO
+          ,DOC_NO
+          ,EXCEPT_DIST_INS_FLG
+          ,DEL_INS_FLG
+          ,NON_PATIENT_CNT
+          ,TOT_PATIENT_CNT
+          ,TKD_PATIENT_CNT
+          ,CURRENT_PERIOD
+          ,ADVANCE_PERIOD
+          ,THEORETICAL_INC_VALUE_Y
+          ,PLANNED_INC_VALUE_Y
+          ,THEORETICAL_VALUE_Y
+          ,PLANNED_VALUE_Y
+          ,PLANNED_VALUE_T
+          ,IS_JGI_NO
+          ,IS_JGI_NAME
+          ,IS_DATE
+          ,UP_JGI_NO
+          ,UP_JGI_NAME
+          ,UP_DATE
+    ) VALUES (ORADPX01.SEQ_DPS_I_INS_DOC_PLAN.NEXTVAL
+          ,#jgiNo:INTEGER#
+          ,#prodCode:CHAR#
+          ,#insNo:CHAR#
+          ,#mainInsNo:CHAR#
+          ,#docNo:VARCHAR#
+          ,#exceptDistInsFlg:CHAR#
+          ,#delInsFlg:CHAR#
+          ,#nonPatientCnt:INTEGER#
+          ,#totPatientCnt:INTEGER#
+          ,#tkdPatientCnt:INTEGER#
+          ,#currentPeriod:BIGINT#
+          ,#advancePeriod:BIGINT#
+          ,#theoreticalIncValueY:BIGINT#
+          ,#plannedIncValueY:BIGINT#
+          ,#theoreticalValueY:BIGINT#
+          ,#plannedValueY:BIGINT#
+          ,#plannedValueT:BIGINT#
+          ,#isJgiNo:INTEGER#
+          ,#isJgiName:VARCHAR#
+          ,SYSTIMESTAMP
+          ,#upJgiNo:INTEGER#
+          ,#upJgiName:VARCHAR#
+          ,SYSTIMESTAMP)
+  </insert>
+
+  <!-- 更新 -->
+  <update id="update" parameterClass="jp.co.takeda.model.InsDocPlan" >
+    UPDATE DPS_I_INS_DOC_PLAN
+       SET PLANNED_INC_VALUE_Y = #plannedIncValueY:BIGINT#
+          ,PLANNED_VALUE_Y  = #plannedValueY:BIGINT#
+          ,UP_JGI_NO = #upJgiNo:INTEGER#
+          ,UP_JGI_NAME = #upJgiName:VARCHAR#
+          ,UP_DATE = SYSTIMESTAMP
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </update>
+
+  <!-- 削除 -->
+  <delete id="delete" parameterClass="java.util.Map" >
+    DELETE FROM DPS_I_INS_DOC_PLAN
+     WHERE SEQ_KEY = #seqKey:BIGINT#
+       AND TO_CHAR(UP_DATE,'YYYY/MM/DD HH24:MI:SS.FF3') = TO_CHAR(#upDate:TIMESTAMP#,'YYYY/MM/DD HH24:MI:SS.FF3')
+  </delete>
+
+</sqlMap>

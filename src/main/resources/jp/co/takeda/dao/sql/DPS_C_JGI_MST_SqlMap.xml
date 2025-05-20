@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_C_JGI_MST_SqlMap" >
+
+  <resultMap id="resultMap" class="jp.co.takeda.model.JgiMst" >
+    <result column="JGI_NO" property="jgiNo" jdbcType="INTEGER" />
+    <result column="JGI_NAME" property="jgiName" jdbcType="VARCHAR" />
+    <result column="SOS_CD2" property="sosCd2" jdbcType="VARCHAR" />
+    <result column="SOS_CD3" property="sosCd3" jdbcType="VARCHAR" />
+    <result column="SOS_CD4" property="sosCd4" jdbcType="VARCHAR" />
+    <result column="SHOKUSEI_CD" property="shokuseiCd" jdbcType="VARCHAR" />
+    <result column="SHOKUSHU_CD" property="shokushuCd" jdbcType="VARCHAR" />
+    <result column="SOS_CD" property="sosCd" jdbcType="VARCHAR" />
+    <result column="JGI_KB" property="jgiKb" jdbcType="VARCHAR" />
+    <result column="SHOKUSHU_NAME" property="shokushuName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <!-- 検索 -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT JM.JGI_NO
+          ,JM.JGI_NAME
+          ,JM.SOS_CD2
+          ,JM.SOS_CD3
+          ,JM.SOS_CD4
+          ,JM.SHOKUSEI_CD
+          ,JM.SHOKUSHU_CD
+          ,JM.SOS_CD
+          ,JM.JGI_KB
+          ,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+      FROM DPS_C_JGI_MST JM
+      LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ ON JJ.JGI_NO = JM.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+     WHERE JM.JGI_NO = #jgiNo:INTEGER#
+       AND JM.KENMU_KB = 0
+  </select>
+
+  <select id="selectBySosCd" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT JM.JGI_NO
+          ,JM.JGI_NAME
+          ,JM.SOS_CD2
+          ,JM.SOS_CD3
+          ,JM.SOS_CD4
+          ,JM.SHOKUSEI_CD
+          ,JM.SHOKUSHU_CD
+          ,JM.SOS_CD
+          ,JM.JGI_KB
+          ,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+      FROM
+           DPS_C_VI_JGI_MST JM
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ
+        ON JJ.JGI_NO = JM.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+     WHERE
+       <isNotNull property="jgiKbList">
+           <iterate prepend="JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               #jgiKbList[].dbValue#
+           </iterate>
+       </isNotNull>
+       AND KENMU_KB = 0
+       <isNotEmpty prepend="AND" property="sosCd">
+           JM.SOS_CD = #sosCd:VARCHAR#
+       </isNotEmpty>
+       <isNotEmpty prepend="AND" property="sosCd1">
+           JM.SOS_CD1 = #sosCd1:VARCHAR#
+       </isNotEmpty>
+       <isNotEmpty prepend="AND" property="sosCd2">
+           JM.SOS_CD2 = #sosCd2:VARCHAR#
+       </isNotEmpty>
+       <isNotEmpty prepend="AND" property="sosCd3">
+           JM.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotEmpty>
+       <isNotEmpty prepend="AND" property="sosCd4">
+           JM.SOS_CD4 = #sosCd4:VARCHAR#
+       </isNotEmpty>
+       <isNotNull prepend="AND" property="sosLvl">
+           EXISTS (SELECT JO.JGI_NO
+                     FROM DPS_S_SY_M_JGI_JOKEN JO
+                     INNER JOIN DPS_C_JKN_GRP JG ON JG.JOKEN_SET_CD = JO.JOKEN_SET_CD
+                     WHERE JO.JGI_NO = JM.JGI_NO
+                     AND JG.SOS_LVL = #sosLvl.dbValue#
+                  )
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+<!-- add Start 2022/7/13 H.Futagami 2022年4月組織変更対応 検索条件にカテゴリ追加（結合条件：職種コード） -->
+  <select id="selectBySosCdCategory" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT JM.JGI_NO
+          ,JM.JGI_NAME
+          ,JM.SOS_CD2
+          ,JM.SOS_CD3
+          ,JM.SOS_CD4
+          ,JM.SHOKUSEI_CD
+          ,JM.SHOKUSHU_CD
+          ,JM.SOS_CD
+          ,JM.JGI_KB
+          ,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+      FROM
+           DPS_C_VI_JGI_MST JM
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ
+        ON JJ.JGI_NO = JM.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+     WHERE
+       <isNotNull property="jgiKbList">
+           <iterate prepend="JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               #jgiKbList[].dbValue#
+           </iterate>
+       </isNotNull>
+       AND KENMU_KB = 0
+       <isNotEmpty prepend="AND" property="sosCd">
+           JM.SOS_CD = #sosCd:VARCHAR#
+       </isNotEmpty>
+       <isNotEmpty prepend="AND" property="sosCd1">
+           JM.SOS_CD1 = #sosCd1:VARCHAR#
+       </isNotEmpty>
+       <isNotEmpty prepend="AND" property="sosCd2">
+           JM.SOS_CD2 = #sosCd2:VARCHAR#
+       </isNotEmpty>
+       <isNotEmpty prepend="AND" property="sosCd3">
+           JM.SOS_CD3 = #sosCd3:VARCHAR#
+       </isNotEmpty>
+       <isNotEmpty prepend="AND" property="sosCd4">
+           JM.SOS_CD4 = #sosCd4:VARCHAR#
+       </isNotEmpty>
+      　<isNotNull prepend="AND" property="category">
+       EXISTS (SELECT 'X'
+       FROM DPS_C_PLANNED_CTG CTG
+           ,DPS_C_SY_COM_LNK_TRT_SHOKUSHU SHOKUSHU
+       WHERE CTG.CATEGORY = #category:CHAR#
+       AND CTG.TRT_CD = SHOKUSHU.TRT_CD
+       AND SYSDATE BETWEEN SHOKUSHU.TEKIYO_START_DATE AND SHOKUSHU.TEKIYO_END_DATE
+       AND SHOKUSHU.SHOKUSHU_CD = JM.SHOKUSHU_CD
+       )
+       </isNotNull>
+       <isNotNull prepend="AND" property="sosLvl">
+           EXISTS (SELECT JO.JGI_NO
+<!-- mod Start 2023/12/27 H.futagami dps DPS_S_SY_M_JGI_JOKEN⇒DPS_C_JGI_JOKENに変更） -->
+<!--                 FROM DPS_S_SY_M_JGI_JOKEN JO -->
+                     FROM DPS_C_JGI_JOKEN JO
+<!-- mod End 2023/12/27 H.futagami dps DPS_S_SY_M_JGI_JOKEN⇒DPS_C_JGI_JOKENに変更） -->
+                     INNER JOIN DPS_C_JKN_GRP JG ON JG.JOKEN_SET_CD = JO.JOKEN_SET_CD
+                     WHERE JO.JGI_NO = JM.JGI_NO
+                     AND JG.SOS_LVL = #sosLvl.dbValue#
+                  )
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+<!-- add End 2022/7/13 H.Futagami 2022年4月組織変更対応 検索条件にカテゴリ追加（結合条件：職種コード） -->
+
+  <select id="selectByJokenSet" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT JM.JGI_NO
+          ,JM.JGI_NAME
+          ,JM.SOS_CD2
+          ,JM.SOS_CD3
+          ,JM.SOS_CD4
+          ,JM.SHOKUSEI_CD
+          ,JM.SHOKUSHU_CD
+          ,JM.SOS_CD
+          ,JM.JGI_KB
+          ,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+      FROM
+           DPS_S_SY_M_JGI_MST JM
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ
+        ON JJ.JGI_NO = JM.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+     WHERE
+       <isNotNull property="jgiKbList">
+           <iterate prepend="JM.JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               #jgiKbList[].dbValue#
+           </iterate>
+       </isNotNull>
+       AND KENMU_KB = 0
+       <isNotEmpty prepend="AND" property="sosCd">
+           JM.SOS_CD = #sosCd:VARCHAR#
+       </isNotEmpty>
+       <!-- 条件セット直接参照 -->
+       <isNotNull prepend="AND" property="jokenSetList">
+           EXISTS (SELECT JO.JGI_NO
+                     FROM DPS_S_SY_M_JGI_JOKEN JO
+                     WHERE JO.JGI_NO = JM.JGI_NO
+                   <isNotNull property="jokenSetList">
+                       <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                           #jokenSetList[].dbValue#
+                       </iterate>
+                   </isNotNull>
+                  )
+       </isNotNull>
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <select id="selectReal" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT JM.JGI_NO
+          ,JM.JGI_NAME
+          ,JM.SOS_CD2
+          ,JM.SOS_CD3
+          ,JM.SOS_CD4
+          ,JM.SHOKUSEI_CD
+          ,JM.SHOKUSHU_CD
+          ,JM.SOS_CD
+          ,JM.JGI_KB
+          ,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+      FROM DPS_S_SY_M_JGI_MST JM
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ
+        ON JJ.JGI_NO = JM.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+     WHERE JM.JGI_NO = #jgiNo:INTEGER#
+       AND JM.KENMU_KB = 0
+  </select>
+
+  <select id="selectByJgiKb" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT JM.JGI_NO
+          ,JM.JGI_NAME
+          ,JM.SOS_CD2
+          ,JM.SOS_CD3
+          ,JM.SOS_CD4
+          ,JM.SHOKUSEI_CD
+          ,JM.SHOKUSHU_CD
+          ,JM.SOS_CD
+          ,JM.JGI_KB
+          ,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+      FROM DPS_S_SY_M_JGI_MST JM
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ
+        ON JJ.JGI_NO = JM.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+     WHERE JM.JGI_NO = #jgiNo:INTEGER#
+       AND JM.KENMU_KB = 0
+       <isNotNull property="jgiKbList">
+           <iterate prepend="AND JGI_KB IN" open="(" close=")" conjunction=","  property="jgiKbList">
+               #jgiKbList[].dbValue#
+           </iterate>
+       </isNotNull>
+  </select>
+
+  <select id="selectAltJgi" resultClass="java.util.HashMap" parameterClass="java.util.Map" >
+    SELECT DISTINCT
+           SM.BR_CODE
+          ,SM.DIST_SEQ
+          ,SM.DIST_CODE
+          ,SM.TEAM_CODE
+          ,JM.SHOKUSEI_CD
+          ,JM.SHOKUSHU_CD
+          ,JA.ACT_JGI_NO JGI_NO
+          ,JM.JGI_NAME JGI_NAME
+      FROM DPS_S_SY_M_JGI_MST JM
+          ,DPS_S_SY_ACW_JGI_ACT JA
+          ,DPS_S_SY_M_JGI_JOKEN JJ
+          ,DPS_C_SOS_MST SM
+     WHERE JA.JGI_NO = #jgiNo:INTEGER#
+       AND JA.START_DATE <![CDATA[ <= ]]> TO_CHAR(SYSDATE,'YYYYMMDD')
+       AND NVL(TO_CHAR(JA.END_DATE), '99999999') >= TO_CHAR(SYSDATE,'YYYYMMDD')
+       AND JA.ACT_JGI_NO = JM.JGI_NO
+       AND JM.KENMU_KB = 0
+       AND JM.JGI_KB = '5'
+       AND JA.ACT_JGI_NO = JJ.JGI_NO
+       AND JJ.JOKEN_SET_CD
+       <iterate prepend="IN" open="(" close=")" conjunction=","  property="jokenSetList">
+           #jokenSetList[].dbValue#
+       </iterate>
+       AND JM.SOS_CD = SM.SOS_CD
+    <isPropertyAvailable property="sortString">
+      $sortString$
+    </isPropertyAvailable>
+  </select>
+
+  <!-- 副担当検索 -->
+  <select id="selectSubJgi" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT SMM.JGI_NO
+          ,SMM.JGI_NAME
+          ,SMM.SOS_CD2
+          ,SMM.SOS_CD3
+          ,SMM.SOS_CD4
+          ,SMM.SHOKUSEI_CD
+          ,SMM.SHOKUSHU_CD
+          ,SMM.SOS_CD
+          ,SMM.JGI_KB
+          ,NVL2(JJ.JGI_NO,'TL',SMM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+      FROM DPS_C_SUB_MR_MST SMM
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ
+        ON JJ.JGI_NO = SMM.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+     WHERE SMM.JGI_NO = #jgiNo:INTEGER#
+       AND SMM.KENMU_KB = 0
+  </select>
+
+  <!-- 指定従業員と同組織内条件セット検索 -->
+  <select id="selectByJokenSetInSosCd" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT JM.JGI_NO
+          ,JM.JGI_NAME
+          ,JM.SOS_CD2
+          ,JM.SOS_CD3
+          ,JM.SOS_CD4
+          ,JM.SHOKUSEI_CD
+          ,JM.SHOKUSHU_CD
+          ,JM.SOS_CD
+          ,JM.JGI_KB
+          ,NVL2(JJ.JGI_NO,'TL',JM.SHOKUSHU_NAME) AS SHOKUSHU_NAME
+      FROM
+           DPS_C_VI_JGI_MST JM
+           INNER JOIN DPS_C_SOS_MST SM
+        ON JM.SOS_CD = SM.SOS_CD
+           LEFT OUTER JOIN DPS_C_VI_JGI_MST TGTJM
+        ON TGTJM.SOS_CD = JM.SOS_CD
+           LEFT OUTER JOIN DPS_C_JGI_JOKEN JJ
+        ON JJ.JGI_NO = JM.JGI_NO AND JJ.JOKEN_SET_CD = #TLJokenSet:VARCHAR#
+     WHERE
+       JM.KENMU_KB = 0
+       and TGTJM.JGI_NO = #jgiNo:INTEGER#
+       AND EXISTS (SELECT JO.JGI_NO
+                   FROM DPS_C_JGI_JOKEN JO
+                   WHERE JO.JGI_NO = JM.JGI_NO
+                   <isNotNull property="jokenSetList">
+                       <iterate prepend="AND JOKEN_SET_CD IN" open="(" close=")" conjunction=","  property="jokenSetList">
+                           #jokenSetList[].dbValue#
+                       </iterate>
+                   </isNotNull>
+                  )
+       OR
+       JM.JGI_NO = TGTJM.JGI_NO AND JM.JGI_NO = #jgiNo:INTEGER#
+       ORDER BY JM.SHOKUSEI_CD DESC, JM.SHOKUSHU_CD DESC
+  </select>
+
+  <!-- 従業員一覧検索 -->
+  <select id="selectJgiList" resultMap="resultMap" parameterClass="java.util.Map" >
+    SELECT JM.JGI_NO
+          ,JM.JGI_NAME
+          ,JM.SOS_CD2
+          ,JM.SOS_CD3
+          ,JM.SOS_CD4
+          ,JM.SHOKUSEI_CD
+          ,JM.SHOKUSHU_CD
+          ,JM.SOS_CD
+          ,JM.JGI_KB
+          ,NULL AS SHOKUSHU_NAME
+    FROM DPS_C_JGI_MST JM
+    WHERE JM.SOS_CD =#sosCd:VARCHAR#
+  </select>
+</sqlMap>

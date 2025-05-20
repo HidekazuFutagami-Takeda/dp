@@ -1,0 +1,589 @@
+##dps201_01.vm （医）配分除外施設登録画面
+#set($layout = "dialogueLayout.vm" )
+#set($pageTitle = $text.get("dps201C01","title"))
+#set($bodyOnloadMethod = "dps201C01F00();dps201C01F002();")
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($dataListFileName = "dps201C01x01.vm")
+#set($GridObjName = "dps201C01Grid")
+#set($gridHeight = $text.get("${GridObjName}","grid"))
+#set($CoverId = "dps201C01CoverId")
+#set($grid = ${GridObjName} + "2")
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　組織マスタ.OncSosFlgでのカテゴリー判定を、組織マスタ.category、subCategoryを参照に変更
+###if($form.getRequestData("DPS201C01_ONC_SOS_FLG"))
+##    #set( $oncSosFlg = $form.getRequestData("DPS201C01_ONC_SOS_FLG"))
+###end
+#if($form.getRequestData("DPS201C01_SOS_MST"))
+    #set( $sosMst = $form.getRequestData("DPS201C01_SOS_MST"))
+#end
+## mod end   2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　組織マスタ.OncSosFlgでのカテゴリー判定を、組織マスタ.category、subCategoryを参照に変更
+<script language="javascript">
+<!--
+document.getElementById("closeWindow").value = "true";
+var editFlg = false;
+var ${GridObjName};
+var ${GridObjName}2;
+## 初期表示＋読込処理
+function dps201C01F00() {
+    doInitGrid();
+    if (document.getElementById("dps201C01x01.vm")) {
+        var loadXMLString = document.getElementById("dps201C01x01.vm").value;
+    }
+    #if($form.bean.addInsList)
+        dispInsList();
+    #end
+}
+function dps201C01F002() {
+    doInitGrid2();
+    if (document.getElementById("dps201C01x01.vm")) {
+        var loadXMLString = document.getElementById("dps201C01x01.vm").value;
+        if (loadXMLString != null && loadXMLString != "") {
+            ${GridObjName}2.loadXMLString(loadXMLString);
+            #if($form.bean.prodFlg && $form.bean.prodFlg.equals("1"))
+                DispProdList();
+            #end
+        }
+    }
+}
+## DHTMLXGrid生成
+function doInitGrid() {
+    ${GridObjName} = createDhtmlXGrid("${GridObjName}");
+    ##${GridObjName} = createDhtmlXGridLodingExt("${GridObjName}", "${CoverId}");
+    ## 担当者を表示しない
+    ##${GridObjName}.setHeader("選択,試算,配分,施設コード,施設名,対象,施設分類,担当者");
+    ${GridObjName}.setHeader("選択,試算,配分,施設コード,施設名,対象,施設分類");
+    ##${GridObjName}.setInitWidths("50,50,50,100,300,100,120,540");
+    ${GridObjName}.setInitWidths("50,50,50,100,300,100,120");
+    ##${GridObjName}.setColAlign("center,center,center,left,center,center,left");
+    ${GridObjName}.setColAlign("center,center,center,left,center,center");
+    ##${GridObjName}.setColTypes("ch,ch,ch,ro,ro,ro,ro,ro");
+    ${GridObjName}.setColTypes("ch,ch,ch,ro,ro,ro,ro");
+    ##${GridObjName}.enableResizing("false,false,false,false,false,false,false,false");
+    ##${GridObjName}.enableTooltips("false,false,false,false,false,false,false,false");
+    ${GridObjName}.enableResizing("false,false,false,false,false,false,false");
+    ${GridObjName}.enableTooltips("false,false,false,false,false,false,false");
+    ${GridObjName}.enableDistributedParsing(true,10,300);
+    ${GridObjName}.enableMultiline(false);
+    ${GridObjName}.enableAutoHeight(true, getGridHeight('dps201C01', $!gridHeight));
+    ${GridObjName}.enableAutoWidth(false);
+    ${GridObjName}.objBox.style.overflowX="hidden";
+    ${GridObjName}.objBox.style.overflowY="scroll";
+    ${GridObjName}.setSizes();
+    ${GridObjName}.init();
+    ${GridObjName}.enableBlockSelection();
+    ${GridObjName}.forceLabelSelection(true);
+    ${GridObjName}.setCSVDelimiter("\t");
+    ${GridObjName}.attachEvent("onXLE",function(){
+    });
+    ${GridObjName}.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName},keycode))){return false;}
+        copyBlock(${GridObjName}, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}.attachEvent("onRowCreated",function(id){
+        var cell = ${GridObjName}.cells(id,0);
+        ##cell.setValue(1);
+        if (cell.getAttribute("disabled")) cell.setDisabled(true);
+    });
+}
+
+## DHTMLXGrid生成(配分除外品目一覧)
+function doInitGrid2() {
+    ${GridObjName}2 = createDhtmlXGrid("${GridObjName}2");
+    ${GridObjName}2.setHeader("試算,配分,カテゴリ,品目名称");
+    ${GridObjName}2.setInitWidths("50,50,290,600");
+    ${GridObjName}2.setColAlign("center,center,left,left");
+    ${GridObjName}2.setColTypes("ch,ch,ro,ro");
+    ${GridObjName}2.enableResizing("false,false,false,false");
+    ${GridObjName}2.enableTooltips("false,false,false,false");
+    ${GridObjName}2.enableDistributedParsing(true,true,10,300);
+    ${GridObjName}2.enableMultiline(false);
+    ${GridObjName}2.enableAutoHeight(true, $!gridHeight + 160);
+    ${GridObjName}2.enableAutoWidth(false);
+    ##${GridObjName}2.objBox.style.overflowX="hidden";
+    ##${GridObjName}2.objBox.style.overflowY="scroll";
+    ${GridObjName}2.setSizes();
+    ${GridObjName}2.init();
+    ${GridObjName}2.enableBlockSelection();
+    ${GridObjName}2.forceLabelSelection(true);
+    ${GridObjName}2.setCSVDelimiter("\t");
+    ${GridObjName}2.attachEvent("onKeyPress",function(keycode,ctrl,shift){
+        if(!(currentCellMove(${GridObjName}2,keycode))){return false;}
+        copyBlock(${GridObjName}2, keycode, ctrl, shift);
+        return true;
+    });
+    ${GridObjName}2.attachEvent("onRowCreated",function(id){
+        var cell = ${GridObjName}2.cells(id,0);
+        if (cell.getAttribute("disabled")) cell.setDisabled(true);
+    });
+    ${GridObjName}2.attachEvent("onCheck",editOn);
+}
+
+## 追加施設再表示
+function dispInsList() {
+    #set($cnt = 0)
+    var insNoList = new Array()
+    #foreach($addIns in $form.bean.addInsList)
+        insNoList[$cnt] = "$addIns";
+        #set($cnt = $cnt + 1)
+    #end
+    dps201C01InsApply(insNoList);
+    #set($cnt = 0)
+    var selectRowIdList = new Array()
+    #foreach($selectIns in $form.bean.selectRowIdList)
+        selectRowIdList[$cnt] = "$selectIns";
+        #set($cnt = $cnt + 1)
+    #end
+    for(var i=0;i<insNoList.length;i++){
+        var value = 0;
+        for(var j=0;j<selectRowIdList.length;j++){
+        	if(selectRowIdList[j] == insNoList[i]){
+                value = 1;
+                break;
+        	}
+        }
+        ${GridObjName}.cells2(i,0).setValue(value);
+        ${GridObjName}.cells2(i,1).setValue(value);
+    }
+}
+
+## 施設追加画面呼出
+function dps911C00F00() {
+    var windowname = "grandchildwindow"
+    var func = "dps201C01InsApply";
+    var insPtn = "02";
+    var ptn = "01";
+    var min = "02";
+    var max = "04";
+    var insType = "";
+    var sosCd = "$!form.bean.initSosCodeValue";
+    var jgiNo = "$!form.bean.jgiNo";
+    var prodCode = "";
+    var category = "$!form.bean.searchCategory";
+    var url ='$link.setAction('dps911C00F00')' + '?insApplyFuncName=' + func + '&insSelectPtnType=' + insPtn + '&sosSrchPtnType=' + ptn + '&sosMinSrchValue=' + min + '&sosMaxSrchGetValue=' + max + '&paramInsType=' + insType + '&sosInitSosCodeValue=' + sosCd + '&paramJgiNo=' + jgiNo + '&paramProdCode=' + prodCode + '&sosSearchNonFlg=true&paramJtnFlg=false&disableDelInsSelect=false&includeSeikei=false' +'&category=' + category;
+    var args = new Array();
+    openModalWindowW3(url, windowname, func, args);
+}
+function dps201C01InsApply(insNoList) {
+    if(!(insNoList == "")) {
+        var insNameStr = "";
+        for(i=0; i<insNoList.length; i++){
+            temp = insNoList[i].split(",");
+            args = temp[0];
+            args2 = temp[1];
+            var insApplyFlg = true;
+            var insName = "";
+            ${GridObjName}.forEachRow(function(id){
+                ## 施設コード
+                ##if(${GridObjName}.cells(id,1).getValue() == args){
+                if(${GridObjName}.cells(id,3).getValue() == args){
+                    insApplyFlg  = false;
+                    ## 施設名
+                    ##insName = ${GridObjName}.cells(id,2).getValue();
+                    insName = ${GridObjName}.cells(id,4).getValue();
+                }
+            });
+            if(insApplyFlg){
+                var rowNums = ${GridObjName}.getRowsNum();
+                text = getData(args,args2);
+                newid = ${GridObjName}.getRowsNum() + 1;
+                ${GridObjName}.addRow(newid,text,newid - 1);
+                ${GridObjName}.setUserData(newid,"selectRowId",args + "," + args2);
+            }else{
+            	insNameStr = insNameStr + "\n【" + insName + "】";
+            }
+        }
+        ##指定方法による表示
+        if(document.getElementById("prodFlg").checked){
+            ##試算・配分除外品目
+            DispProdList();
+            editOn();
+        }else{
+            ##試算・配分除外施設
+            ClearProdList();
+            editOn();
+        }
+        if(insNameStr != ""){
+        	return "選択した施設" + insNameStr + "\nはすでに存在します" ;
+        }else{
+            return true;
+        }
+    }
+}
+##施設データ取得
+function getData(insNo,jgiNo) {
+    var prodCode = "";
+    var category = "$!form.bean.searchCategory";
+    var url ="$link.setAction('dps911C00F10?sFlg=true')" + "&insNo=" + insNo + "&jgiNo=" + jgiNo + "&paramProdCode=" + prodCode+ '&category=' + category;
+    var text = getPage(url);
+    var dataText = text.split(/\r\n/);
+    var resultArray = dataText[0].split(",");
+    delete resultArray[5];
+    ## 担当者を表示しないため、コメント削除
+    ###if( $!security.hasIyaku() )
+    ##  var shokushuName    = dataText[3];
+    ##  ##dataText[4]以降に”従業員名⇒職種名⇒従業員名⇒職種名⇒・・・・”の順で担当者情報が格納されている。※dsp911C00d01.vm参照
+    ##  ##dataText[4]から最後の要素(空白)までを表示すべき担当者情報としてループで処理する
+    ##  var dispJgiName = "";
+    ##  for(var i = 4; i < dataText.length; i++){
+    ##      ##if(typeof dataText[i] !== 'undefined') {
+    ##      if(dataText[i] != '') {
+    ##          if(dispJgiName.length > 0) {
+    ##              dispJgiName = dispJgiName + "、";
+    ##          }
+    ##  	      dispJgiName = dispJgiName + dataText[i] + "（" + dataText[++i] + "）";
+    ##      }
+    ##  }
+    ##  resultArray[4] = dispJgiName;
+    ###end
+    ##試算・配分のチェック項目の列があるので、",,"を追加。項目セットでずれるため。
+    ##チェックありにするため、"1,1,"とする。なしにするには",,"
+    var result = "1,1,1,"  + resultArray.join(",");
+    return result;
+}
+
+## 削除処理（dhtmlxGrid）
+function dps201C01InsDel() {
+    var dialogueflag = confirm('$text.get("DPS201C01.001","dialogue")');
+    if (dialogueflag) {
+        var checkedRows = ${GridObjName}.getCheckedRows(0);
+        if (checkedRows != "") {
+            var rowIdList = checkedRows.split(",");
+            for ( var i = 0; i < rowIdList.length; i++) {
+                ${GridObjName}.deleteRow(rowIdList[i]);
+            }
+            document.getElementById("messageArea").innerHTML = "<ul type='disc' class='infoMessage'><li>" + rowIdList.length + "件を削除しました。</li></ul>"
+        }else{
+            errorMsg = '$text.get("DPC1006E",["施設"])';
+            addErrorInfo(true, errorMsg);
+            return validation();
+        }
+    }
+}
+
+## 登録処理
+function dps201C01F05Execute() {
+	var form = document.dps201C01Form;
+    var flag = addCheckRowIdList(form, ${GridObjName}, 'selectRowIdList', 'selectRowId', 0);
+    if (!flag) {
+        errorMsg = '$text.get("DPC1006E",["試算・配分除外施設"])';
+        addErrorInfo(!flag, errorMsg);
+        return validation();
+    }
+##    if (document.getElementById("prodFlg").checked){
+##        flag2 = addCheckRowIdList(form, $grid, 'prodCode', 'prodCode', 0);
+##        if (!flag2) {
+##            errorMsg = '$text.get("DPC1005E",["指定方法が試算・配分除外品目","品目の選択"])';
+##            addErrorInfo(!flag2, errorMsg);
+##            return validation();
+##        }
+##    }
+    var dialogueflag = confirm('$text.get("DPS201C01.003","dialogue")');
+    if (dialogueflag) {
+        if (document.getElementById("prodFlg").checked){
+            ## 試算・配分除外品目が選択された
+            var element = document.createElement('input');
+            element.type  = 'hidden';
+            element.name  = "prodFlg";
+            element.value = 1;
+            form.appendChild(element);
+
+            ##TODO:shi
+            ## 試算除外フラグが選択された品目
+            var checkedRows = ${GridObjName}2.getCheckedRows(0);
+            if(!isEntered(checkedRows))  {
+                var element = document.createElement('input');
+                element.type  = 'hidden';
+                element.name  = 'estimationProdCode';
+                element.value = '';
+                form.appendChild(element);
+            } else {
+                flag2 = addCheckRowIdList(form, $grid, 'estimationProdCode', 'prodCode', 0);
+            }
+            ## 配分除外フラグが選択された品目
+            var checkedRows = ${GridObjName}2.getCheckedRows(1);
+            if(!isEntered(checkedRows))  {
+                var element = document.createElement('input');
+                element.type  = 'hidden';
+                element.name  = 'exceptProdCode';
+                element.value = '';
+                form.appendChild(element);
+            } else {
+                flag2 = addCheckRowIdList(form, $grid, 'exceptProdCode', 'prodCode', 1);
+            }
+
+        }else{
+            ## 試算・配分除外施設が選択された
+            var element = document.createElement('input');
+            element.type  = 'hidden';
+            element.name  = "prodFlg";
+            element.value = 0;
+            form.appendChild(element);
+
+            ## 試算除外フラグが選択された施設
+            var checkedRows = ${GridObjName}.getCheckedRows(1);
+            if(!isEntered(checkedRows))  {
+                var element = document.createElement('input');
+                element.type  = 'hidden';
+                element.name  = 'estimationInsCode';
+                element.value = '';
+                form.appendChild(element);
+            } else {
+                var flag = addCheckRowIdList(form, ${GridObjName}, 'estimationInsCode', 'selectRowId', 1);
+            }
+            ## 配分除外フラグが選択された施設
+            var checkedRows = ${GridObjName}.getCheckedRows(2);
+            if(!isEntered(checkedRows))  {
+                var element = document.createElement('input');
+                element.type  = 'hidden';
+                element.name  = 'exceptInsCode';
+                element.value = '';
+                form.appendChild(element);
+            } else {
+                var flag = addCheckRowIdList(form, ${GridObjName}, 'exceptInsCode', 'selectRowId', 2);
+            }
+
+        }
+
+
+        ${GridObjName}.forEachRow(function(id){
+            var element = document.createElement('input');
+            element.type  = 'hidden';
+            element.name  = "addInsList";
+            element.value =  ${GridObjName}.getUserData(id,"selectRowId");
+            form.appendChild(element);
+        });
+
+
+
+        var actionPath = '$link.setAction('dps201C01F05Excecute')';
+        document.dps201C01Form.action = actionPath;
+        document.dps201C01Form.submit();
+        dps201C01F05Execute = blockIt;
+    }
+}
+
+## 範囲指定コピー
+function onKeyPressed(code, ctrl, shift) {
+    return copyBlock(${GridObjName}, code, ctrl, shift);
+}
+
+## 配分除外品目表示
+function DispProdList() {
+    document.getElementById("$grid").style.display = '';
+    ${GridObjName}.forEachRow(function(id){
+        ##施設一覧の試算と配分の項目を操作可にする
+        ${GridObjName}.cells(id,1).setDisabled(true);
+        ${GridObjName}.cells(id,2).setDisabled(true);
+    });
+    document.getElementById("prodbuttons").style.display = '';
+}
+
+## 配分除外品目非表示＋選択クリア
+function ClearProdList() {
+    document.getElementById("$grid").style.display = 'none';
+    ${GridObjName}.forEachRow(function(id){
+        ##施設一覧の試算と配分の項目を操作不可にする
+        ${GridObjName}.cells(id,1).setDisabled(false);
+        ${GridObjName}.cells(id,2).setDisabled(false);
+    });
+    document.getElementById("prodbuttons").style.display = 'none';
+}
+function editOn(){
+    editFlg = true;
+}
+
+## 試算・配分除外品目チェック対象
+## 選択区分チェックボックスにて指定した区分に対して、カテゴリーごとにONの状態にする
+function ChkProdsTarget(category) {
+    if((document.getElementById("prodchkbox1").checked) && (document.getElementById("prodchkbox2").checked)){
+        prodcategoryCheckboxChange($grid,0,category);
+        prodcategoryCheckboxChange($grid,1,category);
+        editOn();
+    }else if(document.getElementById("prodchkbox1").checked){
+        prodcategoryCheckboxChange($grid,0,category);
+        editOn();
+    }else if(document.getElementById("prodchkbox2").checked){
+        prodcategoryCheckboxChange($grid,1,category);
+        editOn();
+    }
+}
+function ChkProdsAllTarget() {
+    if((document.getElementById("prodchkbox1").checked) && (document.getElementById("prodchkbox2").checked)){
+        allCheckboxChange($grid,0,true);
+        allCheckboxChange($grid,1,true);
+        editOn();
+    }else if(document.getElementById("prodchkbox1").checked){
+        allCheckboxChange($grid,0,true);
+        editOn();
+    }else if(document.getElementById("prodchkbox2").checked){
+        allCheckboxChange($grid,1,true);
+        editOn();
+    }
+}
+##閉じるボタン
+function closeButton(){
+    if(editFlg){
+        var answer = window.confirm('$text.get("DPC999C99.001","dialogue")');
+        if(!answer){
+            return;
+        }
+    }
+    window.close();
+}
+
+//-->
+</script>
+<table class="gridLine disp" cellspacing="0" cellpadding="0"  style="float:left;">
+    <tr>
+        <td class="gridIndex" width="150">指定方法</td>
+        #if($form.bean.prodFlg && $form.bean.prodFlg.equals("1"))
+             #set($checked2 = " checked")
+        #else
+             #set($checked1 = " checked")
+        #end
+        <td  width="130"><input type="radio" name="radio" onclick="ClearProdList();editOn();" $!checked1>試算・配分除外施設</td>
+        <td  width="130"><input type="radio" name="radio" id="prodFlg" onclick="DispProdList();editOn();" $!checked2>試算・配分除外品目</td>
+    </tr>
+</table>
+##<div class="guide" style="margin-top:3px">　※配分除外施設として登録した場合は、全品目が配分除外となります。</div>
+<div class="guide" style="margin-top:3px">　※試算・配分除外施設として登録した場合は、全品目が選択区分に応じた除外となります。</div>
+<div align="left" style="float: left;width: 100%; padding-top:2px; padding-bottom:4px;">
+    #if ($!security.hasAuthEdit("DPS201"))
+    <input type="button" value="登録する" onclick="dps201C01F05Execute()">
+    #end
+    <input type="button" value="閉じる" onclick="closeButton()">
+</div>
+##<hr>
+<br>
+<br>
+<div style="width: 100%; clear: both;">
+    <form name="dps201C01InsApplyForm" method="post">
+        <input type="button" value="施設を追加する" onclick="dps911C00F00();editOn();">
+        <input type="button" value="施設を削除する" onclick="dps201C01InsDel();editOn();">
+    </form>
+    <form name="dps201C01Form" method="post">
+        <input type="hidden" id="sosCd2" name="sosCd2" value="$!form.bean.sosCd2" />
+        <input type="hidden" id="sosCd3" name="sosCd3" value="$!form.bean.sosCd3" />
+        <input type="hidden" id="sosCd4" name="sosCd4" value="$!form.bean.sosCd4" />
+        <input type="hidden" id="jgiNo" name="jgiNo" value="$!form.bean.jgiNo" />
+        <input type="hidden" id="initSosCodeValue" name="initSosCodeValue"  value="$!form.bean.initSosCodeValue" />
+        #token()
+    </form>
+</div>
+<div id="${GridObjName}" style="width: 99.5%; clear: both;"></div>
+<br>
+<div id="prodbuttons" style="width: 100%; clear: both; display: none">
+## mod start 2018/05/21 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）　組織マスタ.OncSosFlgでのカテゴリー判定を、組織マスタ.category、subCategoryを参照に変更
+##    #if(!$oncSosFlg)
+##    <input type="button" value="JPBU(STARS)を選択する" onclick="categoryCheckboxChange($grid,0,1);editOn();">
+##    <input type="button" value="仕入品（一般・麻薬）を選択する" onclick="categoryCheckboxChange($grid,0,2);editOn();">
+##    #else
+##    <input type="button" value="すべての品目を選択する" onclick="allCheckboxChange($grid,0,true);editOn();">
+##    #end
+
+##    ##カテゴリーが１つの場合（CategoryかSubCategoryいずれかが未指定）、品目全選択のボタン１つを表示する
+##    #if(!$!sosMst.getSosCategory() || $!sosMst.getSosCategory.equals("0") || !$!sosMst.getSosSubCategory() || $!sosMst.getSosSubCategory().equals("0"))
+##        ##<input type="button" value="すべての品目を選択する" onclick="allCheckboxChange($grid,0,true);editOn();">
+##        <input type="button" value="試算" onclick="allCheckboxChange($grid,0,true);editOn();">
+##        <input type="button" value="配分" onclick="allCheckboxChange($grid,1,true);editOn();">
+##
+##    ##カテゴリーが複数の場合（CategoryとSubCategory両方指定）は、それぞれのカテゴリーごとの全品目選択ボタンを別々に表示する
+##    #else
+##        #if($!sosMst.getSosCategory() && !$!sosMst.getSosCategory().equals("0"))
+##            <input type="button" value="$!service.getProdCategoryName($!sosMst.getSosCategory())を選択する" onclick="categoryCheckboxChange($grid,0,$!sosMst.getSosCategory());editOn();">
+##        #end
+##        #if($!sosMst.getSosSubCategory() && !$!sosMst.getSosSubCategory().equals("0"))
+##            <input type="button" value="$!service.getProdCategoryName($!sosMst.getSosSubCategory())を選択する" onclick="categoryCheckboxChange($grid,0,$!sosMst.getSosSubCategory());editOn();">
+##        #end
+##    #end
+
+##<input type="button" value="試算" onclick="allCheckboxChange($grid,0,true);editOn();">
+##<input type="button" value="配分" onclick="allCheckboxChange($grid,1,true);editOn();">
+<hr>
+## mod Start 2021/7/14 H.Kaneko Step4UAT課題対応 ボタン位置移動
+##<table class="gridLine disp" cellspacing="0" cellpadding="0" style="clear: both; ">
+<table class="gridLine disp" cellspacing="0" cellpadding="0" style="clear: both; display:inline-block;">
+## mod End 2021/7/14 H.Kaneko Step4UAT課題対応 ボタン位置移動
+    <tr>
+        <td class="gridIndex" width="100">選択区分</td>
+        <td width="150">
+        	## mod Start 2021/7/14 H.Kaneko Step4UAT課題 デフォルトチェック外す、チェックボックス位置調整
+           ##<input type="checkbox" id="prodchkbox1" checked>試算　　
+           ##<input type="checkbox" id="prodchkbox2" checked>配分
+           <label><input type="checkbox" id="prodchkbox1" style="vertical-align:middle;">試算</label>　　
+           <input type="checkbox" id="prodchkbox2" style="vertical-align:middle;">配分
+           ## mod End 2021/7/14 H.Kaneko Step4UAT課題 デフォルトチェック外す　　
+        </td>
+    </tr>
+</table>
+    ## add Start 2021/7/14 H.Kaneko Step4UAT課題対応 ボタン位置移動
+<table cellspacing="0" cellpadding="0" style="padding: 2px; clear: both; display:inline-block;">
+	<tr><td style="vertical-align: middle; text-align: center;">
+
+## mod Start 2022/6/22 R.takamoto 2-1:②2022年4月組織変更に合わせたカテゴリにする
+##		#foreach($!category in $!form.bean.category)
+##	        ##営業所組織の場合
+##	        #if($!category.equals('01'))
+##	            <input type="button" value="営業所を選択する"   onclick="ChkProdsTarget($!category);">
+##	        #elseif($!category.equals('02'))
+##	            <input type="button" value="仕入を選択する" onclick="ChkProdsTarget($!category);">
+##	        ##ワクチン組織の場合
+##	        #elseif($!category.equals('05'))
+##	            <input type="button" value="CVを選択する" onclick="ChkProdsTarget($!category);">
+##	        #elseif($!category.equals('04'))
+##	            <input type="button" value="ワクチンを選択する" onclick="ChkProdsTarget($!category);">
+##	        ##他組織の場合
+##	        #else
+##	            <input type="button" value="すべての品目を選択する" onclick="ChkProdsAllTarget()">
+##	        #end
+##    	#end
+
+		##カテゴリが1件か2件以上かを判断する
+		#foreach($!category in $!form.bean.category)
+			#if($velocityCount > 1 )
+				#set($buttonCategoryPluralFlg = true)
+			#end
+		#end
+		##カテゴリが１つなら、すべての品目と表示し、複数あるなら各カテゴリのボタンを作成する
+		#if($buttonCategoryPluralFlg)
+			#foreach($!category in $!form.bean.category)
+				<input type="button" value="$service.getCategoryName($category)を選択する" onclick="ChkProdsTarget($!category);">
+			#end
+		#else
+			<input type="button" value="すべての品目を選択する" onclick="ChkProdsAllTarget()">
+		#end
+ ## mod End 2022/6/22 R.takamoto  2-1:②2022年4月組織変更に合わせたカテゴリにする
+
+ 	</td></tr>
+</table>
+    ## add End 2021/7/14 H.Kaneko Step4UAT課題対応 ボタン位置移動
+
+	## del Start 2021/7/14 H.Kaneko Step4UAT課題対応 ボタン位置移動
+   ###foreach($!category in $!form.bean.category)
+        ####営業所組織の場合
+        ###if($!category.equals('01'))
+            ##<input type="button" value="営業所を選択する"   onclick="ChkProdsTarget($!category);">
+        ###elseif($!category.equals('02'))
+            ##<input type="button" value="仕入を選択する" onclick="ChkProdsTarget($!category);">
+        ####ワクチン組織の場合
+        ###elseif($!category.equals('05'))
+            ##<input type="button" value="CVを選択する" onclick="ChkProdsTarget($!category);">
+        ###elseif($!category.equals('04'))
+            ##<input type="button" value="ワクチンを選択する" onclick="ChkProdsTarget($!category);">
+        ####他組織の場合
+        ###else
+            ##<input type="button" value="すべての品目を選択する" onclick="ChkProdsAllTarget()">
+        ###end
+    ###end
+    ## del End 2021/7/14 H.Kaneko Step4UAT課題対応 ボタン位置移動
+
+	## add Start 2021/7/14 H.Kaneko Step4UAT課題対応 ボタン位置移動
+    <div>
+    ## add End  2021/7/14 H.Kaneko Step4UAT課題対応 ボタン位置移動
+    ##<input type="button" value="選択を解除する" onclick="allCheckboxChange($grid,1,false);editOn();">
+    <input type="button" value="選択を解除する" onclick="allCheckboxChange($grid,0,false);allCheckboxChange($grid,1,false);editOn();">
+    ## add Start 2021/7/14 H.Kaneko Step4UAT課題対応 ボタン位置移動
+    </div>
+    ## add End  2021/7/14 H.Kaneko Step4UAT課題対応 ボタン位置移動
+</div>
+<div id="${GridObjName}2" style="width: 99.5%; clear: both; display: none"></div>

@@ -1,0 +1,57 @@
+## -------------------------------
+## 担当者まで特定した場合
+## -------------------------------
+#set( $layout = "nothingLayout.vm" )
+#if ( $form.getRequestData("DPS302C00_DATA_R_SEARCH_RESULT"))
+    #set( $dto = $form.getRequestData("DPS302C00_DATA_R_SEARCH_RESULT"))
+    #set( $dataList = $form.getRequestData("DPS302C00_DATA_R_SEARCH_RESULT").resultList)
+#end
+#if($dataList)
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#foreach($resultObj in $dataList)
+    ## 計画対象品目データ変数(NULLの場合は空白を表示)
+    ## 品目コード
+    #set( $prodCode = "")
+        #if($resultObj.prodCode)
+            #set( $prodCode = $resultObj.prodCode)
+        #end
+    ## 品目名
+    #set( $prodName = "")
+        #if($resultObj.prodName)
+            #set( $prodName = $resultObj.prodName)
+        #end
+    ## 担当者別計画 確定
+    #set( $mrPlanFixColor = "")
+    #set( $mrPlanFixStr   = "")
+        #if( $resultObj.IsStatusMrPlanInputFinished || $resultObj.IsStatusMrPlanCompleted )
+            #if( $resultObj.IsStatusMrPlanInputFinished )
+                #set( $mrPlanFixColor = "#FFF555" )
+                #set( $mrPlanFixStr   = "" )
+            #else
+                #set( $mrPlanFixColor = "#CCFFFF" )
+                #set( $mrPlanFixStr   = "確定#writeLastUpDate($resultObj.mrPlanFixDate,'-')")
+            #end
+        #else
+            #set( $mrPlanFixColor = "#F5F5F5" )
+            #set( $mrPlanFixStr   = "" )
+        #end
+    ## 担当者別計画 UH
+    #set( $uhMrPlanAmount = "　")
+        #if( $resultObj.UhMrPlanAmount )
+            #set( $uhMrPlanAmount = $resultObj.UhMrPlanAmount )
+        #end
+    ## 担当者別計画 P
+    #set( $pMrPlanAmount = "　")
+        #if( $resultObj.PMrPlanAmount )
+            #set( $pMrPlanAmount = $resultObj.PMrPlanAmount )
+        #end
+    <row id='$velocityCount'>
+        <cell style="height:35;">$prodName</cell>
+        <cell style="height:35;background-color:$mrPlanFixColor"><![CDATA[$mrPlanFixStr]]></cell>
+        <cell style="height:35;">$uhMrPlanAmount</cell>
+        <cell style="height:35;">$pMrPlanAmount</cell>
+    </row>
+#end
+</rows>
+#end

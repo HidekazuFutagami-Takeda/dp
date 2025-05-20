@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+ "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+
+    <form-beans>
+        <form-bean name="Dps000C00Form" type="jp.co.takeda.web.in.dps.Dps000C00Form" />
+    </form-beans>
+
+<action-mappings type="jp.co.takeda.web.cmn.action.DpActionMapping">
+<!-- ***********************************************************************
+
+	トップ画面
+
+ ***********************************************************************  -->
+
+<!-- (医)初期表示 -->
+<action path="/dps000C00F00"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F00" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+</action>
+
+<!-- (医)お知らせ出力 -->
+<action path="/dps000C00F01Output"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="true">
+    <set-property property="actionMethod" value="dps000C00F01Output" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="validationMethod" value="dps000C00F01Validation" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+</action>
+
+<!-- (医・ワ)お知らせ削除 -->
+<action path="/dps000C00F02Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F02Execute" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+</action>
+
+<!-- 担当者別品目別計画一覧出力 -->
+<action path="/dps000C00F03Output"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F03Output" />
+    <set-property property="generateToken" value="false" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+</action>
+
+
+<!-- 一括確定 -->
+<action path="/dps000C00F03Execute"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F03Execute" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+</action>
+
+<!-- (医)切替ボタン -->
+<action path="/dps000C00F10"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F10" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+</action>
+
+<!-- (医)T/Y変換指定率および薬価改定率 -->
+<action path="/dps000C00F25"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F25" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00x25.vm" />
+    <forward name="asyncError" path="/WEB-INF/view/cmn/asyncError.vm" />
+</action>
+
+<!-- (医)各種登録状況 -->
+<action path="/dps000C00F26"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F26" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00x26.vm" />
+    <forward name="asyncError" path="/WEB-INF/view/cmn/asyncError.vm" />
+</action>
+
+<!-- mod start 2018/05/14 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）カテゴリ別のActionMethod,vmは共通のものに統一（仕入品は除く） -->
+<!-- (医)営業所計画－施設特約店別計画(MMP品) -->
+<!-- <action path="/dps000C00F27" -->
+<!--  type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form" -->
+<!--  scope="request" -->
+<!--  validate="false"> -->
+<!--     <set-property property="actionMethod" value="dps000C00F27" /> -->
+<!--     <set-property property="generateToken" value="false" /> -->
+<!--     <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00x27.vm" /> -->
+<!--     <forward name="asyncError" path="/WEB-INF/view/cmn/asyncError.vm" /> -->
+<!-- </action> -->
+
+<!-- (医)営業所計画－施設特約店別計画(ONC品) -->
+<!-- <action path="/dps000C00F30" -->
+<!--  type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form" -->
+<!--  scope="request" -->
+<!--  validate="false"> -->
+<!--     <set-property property="actionMethod" value="dps000C00F30" /> -->
+<!--     <set-property property="generateToken" value="false" /> -->
+<!--     <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00x30.vm" /> -->
+<!--     <forward name="asyncError" path="/WEB-INF/view/cmn/asyncError.vm" /> -->
+<!-- </action> -->
+
+<!-- add start   2018/05/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援） -->
+<!-- (医)営業所計画－施設特約店別計画(SPBU品) -->
+<!-- <action path="/dps000C00F31" -->
+<!--  type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form" -->
+<!--  scope="request" -->
+<!--  validate="false"> -->
+<!--     <set-property property="actionMethod" value="dps000C00F31" /> -->
+<!--     <set-property property="generateToken" value="false" /> -->
+<!--     <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00x31.vm" /> -->
+<!--     <forward name="asyncError" path="/WEB-INF/view/cmn/asyncError.vm" /> -->
+<!-- </action> -->
+<!-- add end   2018/05/14 M.Wada J18-0002_【DPX】2018年4月組織変更対応（計画支援） -->
+
+<!-- (医)営業所計画－施設特約店別計画(カテゴリ共通) -->
+<action path="/dps000C00F20"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F20" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00x20.vm" />
+    <forward name="asyncError" path="/WEB-INF/view/cmn/asyncError.vm" />
+</action>
+
+<!-- (医)営業所計画－施設特約店別計画(仕入品(一般・麻薬)) -->
+<action path="/dps000C00F28"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F28" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00x28.vm" />
+    <forward name="asyncError" path="/WEB-INF/view/cmn/asyncError.vm" />
+</action>
+<!-- mod end   2018/05/14 S.Hayashi J18-0002_2018年4月組織変更対応（計画支援）カテゴリ別のActionMethod,vmは共通のものに統一（仕入品は除く） -->
+
+<!-- (医)特約店別計画 -->
+<action path="/dps000C00F29"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F29" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00x29.vm" />
+    <forward name="asyncError" path="/WEB-INF/view/cmn/asyncError.vm" />
+</action>
+
+<!-- (ワ)初期表示 -->
+<action path="/dps000C00F50"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F50" />
+    <set-property property="generateToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+</action>
+
+<!-- (ワ)お知らせ出力 -->
+<action path="/dps000C00F51Output"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="true">
+    <set-property property="actionMethod" value="dps000C00F51Output" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="validationMethod" value="dps000C00F51Validation" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+</action>
+
+<!-- (ワ)施設計画市区郡町村別集計結果出力 -->
+<action path="/dps000C00F52Output"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F52Output" />
+    <set-property property="generateToken" value="false" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+</action>
+
+<!-- (ワ)切替ボタン -->
+<action path="/dps000C00F60"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F60" />
+    <set-property property="generateToken" value="false" />
+    <set-property property="checkToken" value="true" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps000C00.vm" />
+</action>
+
+<!-- (ワ)ＴＢ変換指定率 -->
+<action path="/dps000C00F75"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F75" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00x75.vm" />
+    <forward name="asyncError" path="/WEB-INF/view/cmn/asyncError.vm" />
+</action>
+
+<!-- (ワ)各種登録状況 -->
+<action path="/dps000C00F76"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F76" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00x76.vm" />
+    <forward name="asyncError" path="/WEB-INF/view/cmn/asyncError.vm" />
+</action>
+
+<!-- (ワ)施設特約店別計画 -->
+<action path="/dps000C00F77"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F77" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00x77.vm" />
+    <forward name="asyncError" path="/WEB-INF/view/cmn/asyncError.vm" />
+</action>
+
+<!-- (ワ)特約店別計画 -->
+<action path="/dps000C00F78"
+ type="jp.co.takeda.web.ctrl.dps.Dps000C00Action" name="Dps000C00Form"
+ scope="request"
+ validate="false">
+    <set-property property="actionMethod" value="dps000C00F78" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps000C00x78.vm" />
+    <forward name="asyncError" path="/WEB-INF/view/cmn/asyncError.vm" />
+</action>
+
+</action-mappings>
+</struts-config>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:tx="http://www.springframework.org/schema/tx"
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:util="http://www.springframework.org/schema/util"
+xmlns:jee="http://www.springframework.org/schema/jee"
+xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/tx
+http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-2.5.xsd
+http://www.springframework.org/schema/util
+http://www.springframework.org/schema/util/spring-util-2.5.xsd
+http://www.springframework.org/schema/jee
+http://www.springframework.org/schema/jee/spring-jee-2.5.xsd">
+
+<!-- Scan Injection target -->
+<context:annotation-config />
+<context:component-scan scoped-proxy="targetClass" base-package="jp.co.takeda.dao" />
+<context:component-scan scoped-proxy="targetClass" base-package="jp.co.takeda.service" />
+<context:component-scan scoped-proxy="targetClass" base-package="jp.co.takeda.task" />
+<context:component-scan scoped-proxy="targetClass" base-package="jp.co.takeda.web.ctrl.dps" />
+<context:component-scan scoped-proxy="targetClass" base-package="jp.co.takeda.web.ctrl.dpm" />
+<context:component-scan scoped-proxy="targetClass" base-package="jp.co.takeda.web.cmn.delegate" />
+
+<!-- PlaceholderConfigurer -->
+<bean id="confPostProcessor" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location" value="/WEB-INF/conf/spring/spring_configure.properties" />
+</bean>
+
+<!-- MessageSource -->
+<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basename">
+        <value>message</value>
+    </property>
+</bean>
+
+<!-- Env Entry -->
+<jee:jndi-lookup id="operatorUserId1" jndi-name="dp/operatorUserId1" />
+<jee:jndi-lookup id="operatorUserId2" jndi-name="dp/operatorUserId2" />
+<jee:jndi-lookup id="releaseNumber" jndi-name="dp/releaseNumber" />
+
+<!-- JNDI DataSource -->
+<jee:jndi-lookup id="dataSource" jndi-name="jdbc/ORADPX01DS"/>
+
+<!-- Oracle Lob Handler -->
+<bean id="oracleLobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler" />
+
+<!-- SqlMapClient -->
+<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+    <property name="configLocation">
+        <value>/WEB-INF/conf/ibatis/sqlMap-config.xml</value>
+    </property>
+    <property name="dataSource" ref="dataSource" />
+    <property name="lobHandler" ref="oracleLobHandler" />
+</bean>
+
+<!-- DataAccess -->
+<bean id="dataAccess" class="jp.co.takeda.a.dao.DataAccessImpl">
+    <property name="sqlMapClient" ref="sqlMapClient" />
+    <property name="dataSource" ref="dataSource" />
+</bean>
+
+<!-- TransactionManager -->
+<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="dataSource" />
+</bean>
+
+<!-- TransactionIntercepter and AnotationManagement -->
+<tx:annotation-driven transaction-manager="transactionManager" />
+
+<!-- Box -->
+<bean id="sessionBox" class="jp.co.takeda.a.bean.Box" scope="session" />
+<bean id="requestBox" class="jp.co.takeda.a.bean.Box" scope="request" />
+
+<!-- ExceptionHandler -->
+<bean id="exceptionHandler" class="jp.co.takeda.web.cmn.bean.DpExceptionHandler" />
+
+<!-- ExceptionDispacher -->
+<bean id="exceptionDispatcher" class="jp.co.takeda.bean.DpExceptionDispatcher">
+    <property name="exceptionHandler" ref="exceptionHandler" />
+</bean>
+
+<!-- DispatchManager -->
+<bean id="dispatchManager" class="jp.co.takeda.web.cmn.bean.DpDispatchManager">
+    <property name="redirectPath" value="${redirectPath}" />
+</bean>
+
+<!-- Delegate Manager -->
+<bean id="delegateManager" class="jp.co.takeda.web.cmn.action.DpDelegateManager">
+    <property name="delegateActionList">
+        <list>
+            <ref bean="parseDelegate" />
+            <ref bean="${certificateDelegate.name}" />
+            <ref bean="loggingDelegate" />
+            <ref bean="serviceControlDelegate" />
+            <ref bean="authenticateDelegate" />
+        </list>
+    </property>
+</bean>
+
+<!-- LoggingInfo -->
+<bean id="loggingInfo" class="jp.co.takeda.bean.DpLoggingInfo">
+    <property name="logMaxBackupIndex" value="${logMaxBackupIndex}" />
+    <property name="logFilePath" value="${logFilePath}" />
+</bean>
+
+<!-- Log Restore Job -->
+<bean name="logRestoreJobProxy" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+    <property name="targetObject" ref="logRestoreJob" />
+    <property name="targetMethod" value="execute" />
+</bean>
+
+<!-- TempFile Delete Job -->
+<bean name="tempFileDeleteJobProxy" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+    <property name="targetObject" ref="tempFileDeleteJob" />
+    <property name="targetMethod" value="execute" />
+</bean>
+
+<!-- Log Restore Job Trigger -->
+<bean id="logRestoreJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+    <property name="jobDetail" ref="logRestoreJobProxy" />
+    <property name="cronExpression" value="0 0 2 * * ?" />
+</bean>
+
+<!-- TempFile Delete Job Trigger -->
+<bean id="tempFileDeleteJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+    <property name="jobDetail" ref="tempFileDeleteJobProxy" />
+    <property name="cronExpression" value="0 0 3 * * ?" />
+</bean>
+
+<!-- Log Restore Trigger -->
+<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    <property name="quartzProperties">
+        <props>
+            <prop key="org.quartz.threadPool.threadCount">2</prop>
+        </props>
+    </property>
+    <property name="triggers">
+        <list>
+            <ref bean="logRestoreJobTrigger" />
+            <ref bean="tempFileDeleteJobTrigger" />
+        </list>
+    </property>
+</bean>
+
+<!-- TaskExecutor -->
+<bean id="taskExecutor" class="jp.co.takeda.task.TaskExecutor">
+    <property name="corePoolSize" value="10" />
+    <property name="maxPoolSize" value="10" />
+    <property name="keepAliveSeconds" value="60" />
+    <property name="allowCoreThreadTimeOut" value="false" />
+    <property name="waitForTasksToCompleteOnShutdown" value="true" />
+    <property name="awaitTermination" value="600" />
+    <property name="queueCapacity" value="1000" />
+</bean>
+
+<bean id="focusMrPlanUrl" class="java.lang.String">
+	<constructor-arg value="${focusMrPlan.url}"/>
+</bean>
+<bean id="targetPlanPatientUrl" class="java.lang.String">
+	<constructor-arg value="${targetPlanPatient.url}"/>
+</bean>
+<bean id="homeAndNaviPath" class="java.lang.String">
+	<constructor-arg value="${homeAndNaviPath}"/>
+</bean>
+<bean id="downloadFileTempDir" class="java.lang.String">
+	<constructor-arg value="${downloadFileTempDir}"/>
+</bean>
+<bean id="accessTokenParser" class="jp.co.takeda.web.cmn.sso.AccessTokenParser">
+	<!-- <constructor-arg index="0" value="/opt/apache-tomcat-7.0.106/webapps/server.crt"/> -->
+	<constructor-arg index="0" value="/opt/apache-tomcat-9.0.31/webapps/server.crt"/>
+<!-- 	<constructor-arg index="0" value="C:\\work\\keyfile\\server.crt"/> -->
+	<constructor-arg index="1" value="60"/>
+	<constructor-arg index="2" value="CTSTAKEDA"/>
+</bean>
+</beans>

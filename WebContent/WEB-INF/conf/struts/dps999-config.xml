@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+ "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+
+    <form-beans>
+        <form-bean name="Dps999C00Form" type="jp.co.takeda.web.in.dps.Dps999C00Form" />
+    </form-beans>
+
+<action-mappings type="jp.co.takeda.web.cmn.action.DpActionMapping">
+
+<!-- ***********************************************************************
+
+	(医)関係会社別施設特約店別一覧
+
+ ***********************************************************************  -->
+
+<!-- 帳票呼び出し -->
+<action path="/dps999C00F00"
+		type="jp.co.takeda.web.ctrl.dps.Dps999C00Action"
+		name="Dps999C00Form"
+		scope="request"
+		validate="false">
+    <set-property property="actionMethod" value="dps999C00F00" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps999C00.vm" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+<!-- 帳票作成 -->
+<action path="/dps999C00F00Output"
+		type="jp.co.takeda.web.ctrl.dps.Dps999C00Action"
+		name="Dps999C00Form"
+		scope="request"
+		validate="false">
+    <set-property property="actionMethod" value="dps999C00F00Output" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps999C01.vm" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+<!-- 帳票出力 -->
+<action path="/dps999C00F00Download"
+		type="jp.co.takeda.web.ctrl.dps.Dps999C00Action"
+		name="Dps999C00Form"
+		scope="request"
+		validate="false">
+    <set-property property="actionMethod" value="dps999C00F00Download" />
+    <set-property property="generateToken" value="false" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+<!-- ***********************************************************************
+
+    ①担当者別品目別計画一覧
+
+ ***********************************************************************  -->
+ <!-- 帳票呼び出し -->
+<action path="/dps999C00F01"
+		type="jp.co.takeda.web.ctrl.dps.Dps999C00Action"
+		name="Dps999C00Form"
+		scope="request"
+		validate="false">
+    <set-property property="actionMethod" value="dps999C00F01" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps999C00.vm" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+<!-- 帳票作成 -->
+<action path="/dps999C00F01Output"
+		type="jp.co.takeda.web.ctrl.dps.Dps999C00Action"
+		name="Dps999C00Form"
+		scope="request"
+		validate="false">
+    <set-property property="actionMethod" value="dps999C00F01Output" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps999C01.vm" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+<!-- 帳票出力 -->
+<action path="/dps999C00F01Download"
+		type="jp.co.takeda.web.ctrl.dps.Dps999C00Action"
+		name="Dps999C00Form"
+		scope="request"
+		validate="false">
+    <set-property property="actionMethod" value="dps999C00F01Download" />
+    <set-property property="generateToken" value="false" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+<!-- ***********************************************************************
+
+    ②品目別担当者別計画検討表
+
+ ***********************************************************************  -->
+ <!-- 帳票呼び出し -->
+<action path="/dps999C00F02"
+		type="jp.co.takeda.web.ctrl.dps.Dps999C00Action"
+		name="Dps999C00Form"
+		scope="request"
+		validate="false">
+    <set-property property="actionMethod" value="dps999C00F02" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps999C00.vm" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+<!-- 帳票作成 -->
+<action path="/dps999C00F02Output"
+		type="jp.co.takeda.web.ctrl.dps.Dps999C00Action"
+		name="Dps999C00Form"
+		scope="request"
+		validate="false">
+    <set-property property="actionMethod" value="dps999C00F02Output" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps999C01.vm" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+<!-- 帳票出力 -->
+<action path="/dps999C00F02Download"
+		type="jp.co.takeda.web.ctrl.dps.Dps999C00Action"
+		name="Dps999C00Form"
+		scope="request"
+		validate="false">
+    <set-property property="actionMethod" value="dps999C00F02Download" />
+    <set-property property="generateToken" value="false" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+<!-- ***********************************************************************
+
+    ③担当者別品目別計画検討表
+
+ ***********************************************************************  -->
+ <!-- 帳票呼び出し -->
+<action path="/dps999C00F03"
+		type="jp.co.takeda.web.ctrl.dps.Dps999C00Action"
+		name="Dps999C00Form"
+		scope="request"
+		validate="false">
+    <set-property property="actionMethod" value="dps999C00F03" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps999C00.vm" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+<!-- 帳票作成 -->
+<action path="/dps999C00F03Output"
+		type="jp.co.takeda.web.ctrl.dps.Dps999C00Action"
+		name="Dps999C00Form"
+		scope="request"
+		validate="false">
+    <set-property property="actionMethod" value="dps999C00F03Output" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps999C01.vm" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+<!-- 帳票出力 -->
+<action path="/dps999C00F03Download"
+		type="jp.co.takeda.web.ctrl.dps.Dps999C00Action"
+		name="Dps999C00Form"
+		scope="request"
+		validate="false">
+    <set-property property="actionMethod" value="dps999C00F03Download" />
+    <set-property property="generateToken" value="false" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+<!-- ***********************************************************************
+
+    ④チーム担当者計画検討表
+
+ ***********************************************************************  -->
+ <!-- 帳票呼び出し -->
+<action path="/dps999C00F04"
+		type="jp.co.takeda.web.ctrl.dps.Dps999C00Action"
+		name="Dps999C00Form"
+		scope="request"
+		validate="false">
+    <set-property property="actionMethod" value="dps999C00F04" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps999C00.vm" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+<!-- 帳票作成 -->
+<action path="/dps999C00F04Output"
+		type="jp.co.takeda.web.ctrl.dps.Dps999C00Action"
+		name="Dps999C00Form"
+		scope="request"
+		validate="false">
+    <set-property property="actionMethod" value="dps999C00F04Output" />
+    <set-property property="generateToken" value="false" />
+    <forward name="success" path="/WEB-INF/view/pages/dps/dps999C01.vm" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+<!-- 帳票出力 -->
+<action path="/dps999C00F04Download"
+		type="jp.co.takeda.web.ctrl.dps.Dps999C00Action"
+		name="Dps999C00Form"
+		scope="request"
+		validate="false">
+    <set-property property="actionMethod" value="dps999C00F04Download" />
+    <set-property property="generateToken" value="false" />
+    <forward name="error" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+    <forward name="failure" path="/WEB-INF/view/pages/dps/dps999C02.vm" />
+</action>
+
+</action-mappings>
+</struts-config>

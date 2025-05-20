@@ -1,0 +1,370 @@
+#set($layout = "nothingLayout.vm")
+#if ( $form.getRequestData("DPM000C00F25_DATA_R"))
+    #set($gData = $form.getRequestData("DPM000C00F25_DATA_R"))
+#end
+$!consts.getDhtmlxGridXmlHeader()
+<rows>
+#set ($rowId = 1)
+#if($!gData)
+    ##---------------------
+    ##全社
+    ##---------------------
+    #if($!gData.getZensha())
+    #set($zensha = $gData.getZensha())
+    <row id="$rowId">
+        #set ($rowId = $rowId + 1)
+        #if($zensha.getSosChoseiSummary())
+            #set($sosChoseiSummary = $zensha.getSosChoseiSummary())
+        #end
+        #if ($zensha.isDataSearchFlg())
+            <cell>全社</cell>
+            <cell><![CDATA[<a href="#" onclick="executeLinkSos('$sosChoseiSummary.getSosCd()', '1')">リージョン別</a>]]></cell>
+            <cell><![CDATA[<a href="#" onclick="executeLinkPrd('$sosChoseiSummary.getSosCd()', '1', '')">品目別</a>]]></cell>
+            ## 月別
+            <cell><![CDATA[<a href="#" onclick="executeLinkSosMonthly('$sosChoseiSummary.getSosCd()', '1')">リージョン別</a>]]></cell>
+            <cell><![CDATA[<a href="#" onclick="executeLinkPrdMonthly('$sosChoseiSummary.getSosCd()', '1', '')">品目別</a>]]></cell>
+            <cell>#if($sosChoseiSummary.mmpHaikaChoseiFlg)あり#elseなし#end</cell>
+            <cell>#if($sosChoseiSummary.shiireHaikaChoseiFlg)あり#elseなし#end</cell>
+            ## ワクチン 配下組織
+            <cell>#if($sosChoseiSummary.vaccineHaikaChoseiFlg)あり#elseなし#end</cell>
+
+            # 営業 調整
+            <cell>
+                  #if($sosChoseiSummary.mmpChoseiFlg)
+                      #if($security.hasRefAuthEigyo)
+                        <![CDATA[<a href="#" onclick="executeLinkPrd('$sosChoseiSummary.getSosCd()', '1', '$sosChoseiSummary.getMmpChoseiCatePickedUp()')">あり</a>]]>
+                      #else
+                         あり
+                      #end
+                  #else
+                      なし
+                  #end
+            </cell>
+            # 仕分 調整
+            <cell>
+                  #if($sosChoseiSummary.shiireChoseiFlg)
+                      #if($security.hasRefAuthSiire)
+                         <![CDATA[<a href="#" onclick="executeLinkPrd('$sosChoseiSummary.getSosCd()', '1', '$sosChoseiSummary.getShiireChoseiCatePickedUp()')">あり</a>]]>
+                      #else
+                         あり
+                      #end
+                  #else
+                      なし
+                  #end
+            </cell>
+            ## ワクチン 調整
+            <cell>
+                 #if($sosChoseiSummary.vaccineChoseiFlg)
+                      #if($security.hasRefAuthVaccine)
+                         <![CDATA[<a href="#" onclick="executeLinkPrd('$sosChoseiSummary.getSosCd()', '1', '$sosChoseiSummary.getVaccineChoseiCatePickedUp()')">あり</a>]]>
+                      #else
+                         あり
+                      #end
+                  #else
+                      なし
+                  #end
+            </cell>
+
+        #else
+            <cell>全社</cell>
+            <cell>－</cell>
+            <cell>－</cell>
+            <cell>－</cell>
+            <cell>－</cell>
+            <cell>－</cell>
+            <cell>－</cell>
+            <cell>－</cell>
+            <cell>－</cell>
+            <cell>－</cell>
+            <cell>－</cell>
+        #end
+    </row>
+    #end
+    ##---------------------
+    ##支店以下
+    ##---------------------
+    #if($!gData.getSitenList())
+        #set($sitenList = $gData.getSitenList())
+        #set($officeListMap = $gData.getOfficeListMap())
+        #set($teamListMap = $gData.getTeamListMap())
+        #set($sos4MrListMap = $gData.getSos4MrListMap())
+        #set($sos3MrListMap = $gData.getSos3MrListMap())
+        #foreach($siten in $sitenList)
+            ##---------------------
+            ##支店
+            ##---------------------
+            <row id="$rowId">
+            #set($rowId = $rowId + 1)
+            #set($indend = $sosiki.getInded($siten.getIndendSize()))
+            #set($sitenData = $siten.getSosChoseiSummary())
+            #if ($siten.isLinkFlg())
+                <cell><![CDATA[${indend}<a href="#" onclick="dpm000C00F05('$sitenData.getSosCd()', '2')">$siten.getName()</a>]]></cell>
+            #else
+                <cell>${indend}${siten.getName()}</cell>
+            #end
+            #if ($siten.isDataSearchFlg())
+                <cell><![CDATA[<a href="#" onclick="executeLinkSos('$sitenData.getSosCd()', '2')">エリア別</a>]]></cell>
+                <cell><![CDATA[<a href="#" onclick="executeLinkPrd('$sitenData.getSosCd()', '2', '')">品目別</a>]]></cell>
+                ## 月別
+                <cell><![CDATA[<a href="#" onclick="executeLinkSosMonthly('$sitenData.getSosCd()', '2')">エリア別</a>]]></cell>
+                <cell><![CDATA[<a href="#" onclick="executeLinkPrdMonthly('$sitenData.getSosCd()', '2', '')">品目別</a>]]></cell>
+
+                <cell>#if($sitenData.mmpHaikaChoseiFlg)あり#elseなし#end</cell>
+                <cell>#if($sitenData.shiireHaikaChoseiFlg)あり#elseなし#end</cell>
+
+                <cell>#if($sitenData.vaccineHaikaChoseiFlg)あり#elseなし#end</cell>
+
+                <cell>
+                    #if($sitenData.mmpChoseiFlg)
+                        #if($security.hasRefAuthEigyo)
+                            <![CDATA[<a href="#" onclick="executeLinkPrd('$sitenData.getSosCd()', '2', '$sitenData.getMmpChoseiCatePickedUp()')">あり</a>]]>
+                        #else
+                            あり
+                        #end
+                    #else
+                        なし
+                    #end
+                </cell>
+                <cell>
+                    #if($sitenData.shiireChoseiFlg)
+                        #if($security.hasRefAuthSiire)
+                            <![CDATA[<a href="#" onclick="executeLinkPrd('$sitenData.getSosCd()', '2', '$sitenData.getShiireChoseiCatePickedUp()')">あり</a>]]>
+                        #else
+                            あり
+                        #end
+                    #else
+                        なし
+                    #end
+                </cell>
+
+                <cell>
+                    #if($sitenData.vaccineChoseiFlg)
+                        #if($security.hasRefAuthVaccine)
+                        <![CDATA[<a href="#" onclick="executeLinkPrd('$sitenData.getSosCd()', '2', '$sitenData.getVaccineChoseiCatePickedUp()')">あり</a>]]>
+                        #else
+                           あり
+                        #end
+
+                    #else
+                        なし
+                    #end
+                </cell>
+
+            #else
+                <cell>－</cell>
+                <cell>－</cell>
+                <cell>－</cell>
+                <cell>－</cell>
+                <cell>－</cell>
+                <cell>－</cell>
+                <cell>－</cell>
+                <cell>－</cell>
+                <cell>－</cell>
+                <cell>－</cell>
+            #end
+            </row>
+            ##---------------------
+            ##営業所
+            ##---------------------
+            #if($officeListMap && $officeListMap.get($sitenData.getSosCd()))
+                #foreach($office in $officeListMap.get($sitenData.getSosCd()))
+                    <row id="$rowId">
+                    #set($rowId = $rowId + 1)
+                    #set($indend = $sosiki.getInded($office.getIndendSize()))
+                    #set($officeData = $office.getSosChoseiSummary())
+                    #if ($office.isLinkFlg())
+                        <cell><![CDATA[${indend}<a href="#" onclick="dpm000C00F05('$officeData.getSosCd()', '3')">$office.getName()</a>]]></cell>
+                    #else
+                        <cell>${indend}${office.getName()}</cell>
+                    #end
+                    #if ($office.isDataSearchFlg())
+                        <cell><![CDATA[<a href="#" onclick="executeLinkSos('$officeData.getSosCd()', '3')">担当者別</a>]]></cell>
+                        <cell><![CDATA[<a href="#" onclick="executeLinkPrd('$officeData.getSosCd()', '3', '')">品目別</a>]]></cell>
+                        ## 月別
+                        <cell><![CDATA[<a href="#" onclick="executeLinkSosMonthly('$officeData.getSosCd()', '3')">担当者別</a>]]></cell>
+                        <cell><![CDATA[<a href="#" onclick="executeLinkPrdMonthly('$officeData.getSosCd()', '3', '')">品目別</a>]]></cell>
+                        <cell>#if($officeData.mmpHaikaChoseiFlg)あり#elseなし#end</cell>
+                        <cell>#if($officeData.shiireHaikaChoseiFlg)あり#elseなし#end</cell>
+
+                        <cell>#if($officeData.vaccineHaikaChoseiFlg)あり#elseなし#end</cell>
+
+                        <cell>
+                             #if($officeData.mmpChoseiFlg)
+                                 #if($security.hasRefAuthEigyo)
+                                    <![CDATA[<a href="#" onclick="executeLinkPrd('$officeData.getSosCd()', '3', '$officeData.getMmpChoseiCatePickedUp()')">あり</a>]]>
+                                 #else
+                                    あり
+                                 #end
+                             #else
+                                 なし
+                             #end
+                        </cell>
+                        <cell>
+                             #if($officeData.shiireChoseiFlg)
+                                 #if($security.hasRefAuthSiire)
+                                    <![CDATA[<a href="#" onclick="executeLinkPrd('$officeData.getSosCd()', '3', '$officeData.getShiireChoseiCatePickedUp()')">あり</a>]]>
+                                 #else
+                                    あり
+                                 #end
+                             #else
+                                 なし
+                             #end
+                        </cell>
+                        <cell>
+                             #if($officeData.vaccineChoseiFlg)
+                                 #if($security.hasRefAuthVaccine)
+                                    <![CDATA[<a href="#" onclick="executeLinkPrd('$officeData.getSosCd()', '3', '$officeData.getVaccineChoseiCatePickedUp()')">あり</a>]]>
+                                 #else
+                                    あり
+                                 #end
+                             #else
+                                 なし
+                             #end
+                        </cell>
+                    #else
+                        <cell>－</cell>
+                        <cell>－</cell>
+                        <cell>－</cell>
+                        <cell>－</cell>
+                        <cell>－</cell>
+                        <cell>－</cell>
+                        <cell>－</cell>
+                        <cell>－</cell>
+                        <cell>－</cell>
+                        <cell>－</cell>
+                    #end
+                    </row>
+                    ##---------------------
+                    ##チーム
+                    ##---------------------
+##                    #if($teamListMap && $teamListMap.get($officeData.getSosCd()))
+##                        #foreach($team in $teamListMap.get($officeData.getSosCd()))
+##                            <row id="$rowId">
+##                            #set($rowId = $rowId + 1)
+##                            #set($indend = $sosiki.getInded($team.getIndendSize()))
+##                            #set($teamData = $team.getSosChoseiSummary())
+##                            #if ($team.isLinkFlg())
+##                                <cell><![CDATA[${indend}<a href="#" onclick="dpm000C00F05('$teamData.getSosCd()', '4')">$team.getName()</a>]]></cell>
+##                            #else
+##                                <cell>${indend}${team.getName()}</cell>
+##                            #end
+##                            #if ($team.isDataSearchFlg())
+##                                <cell><![CDATA[<a href="#" onclick="executeLinkSos('$teamData.getSosCd()', '4')">担当者別</a>]]></cell>
+##                                <cell><![CDATA[<a href="#" onclick="executeLinkPrd('$teamData.getSosCd()', '4', '')">品目別</a>]]></cell>
+##                                <cell>#if($teamData.mmpHaikaChoseiFlg)あり#elseなし#end</cell>
+##                                <cell>#if($teamData.shiireHaikaChoseiFlg)あり#elseなし#end</cell>
+##                                <cell>#if($teamData.mmpChoseiFlg)<![CDATA[<a href="#" onclick="executeLinkPrd('$teamData.getSosCd()', '4', '1')">あり</a>]]>#elseなし#end</cell>
+##                                <cell>#if($teamData.shiireChoseiFlg)<![CDATA[<a href="#" onclick="executeLinkPrd('$teamData.getSosCd()', '4', '2')">あり</a>]]>#elseなし#end</cell>
+##                            #else
+##                                <cell>－</cell>
+##                                <cell>－</cell>
+##                                <cell>－</cell>
+##                                <cell>－</cell>
+##                                <cell>－</cell>
+##                                <cell>－</cell>
+##                            #end
+##                            </row>
+##                            ##---------------------
+##                            ##担当者（チーム所属）
+##                            ##---------------------
+##                            #if($sos4MrListMap && $sos4MrListMap.get($teamData.getSosCd()))
+##                                #foreach($mr in $sos4MrListMap.get($teamData.getSosCd()))
+##                                    <row id="$rowId">
+##                                    #set($rowId = $rowId + 1)
+##                                    #set($indend = $sosiki.getInded($mr.getIndendSize()))
+##                                    #set($mrData = $mr.getSosChoseiSummary())
+##                                    <cell>${indend}${mr.getName()}</cell>
+##                                    #if ($office.isDataSearchFlg())
+##                                        <cell><![CDATA[<a href="#" onclick="executeLinkInsJgi('$mrData.getJgiNo()')">施設別</a>]]></cell>
+##                                        <cell><![CDATA[<a href="#" onclick="executeLinkPrdJgi('$mrData.getJgiNo()', '')">品目別</a>]]></cell>
+##                                        <cell>－</cell>
+##                                        <cell>－</cell>
+##                                        <cell>#if($mrData.mmpChoseiFlg)<![CDATA[<a href="#" onclick="executeLinkPrdJgi('$mrData.getJgiNo()', '1')">あり</a>]]>#elseなし#end</cell>
+##                                        <cell>#if($mrData.shiireChoseiFlg)<![CDATA[<a href="#" onclick="executeLinkPrdJgi('$mrData.getJgiNo()', '2')">あり</a>]]>#elseなし#end</cell>
+##                                    #else
+##                                        <cell>－</cell>
+##                                        <cell>－</cell>
+##                                        <cell>－</cell>
+##                                        <cell>－</cell>
+##                                        <cell>－</cell>
+##                                        <cell>－</cell>
+##                                    #end
+##                                    </row>
+##                                #end
+##                            #end
+##                        #end
+##                    #end
+                    ##---------------------
+                    ##担当者（営業所所属）
+                    ##---------------------
+                    #if($sos3MrListMap && $sos3MrListMap.get($officeData.getSosCd()))
+                        #foreach($mr in $sos3MrListMap.get($officeData.getSosCd()))
+                            <row id="$rowId">
+                            #set($rowId = $rowId + 1)
+                            #set($indend = $sosiki.getInded($mr.getIndendSize()))
+                            #set($mrData = $mr.getSosChoseiSummary())
+                            <cell>${indend}${mr.getName()}</cell>
+                            #if ($office.isDataSearchFlg())
+                                <cell><![CDATA[<a href="#" onclick="executeLinkInsJgi('$mrData.getJgiNo()')">施設別</a>]]></cell>
+                                <cell><![CDATA[<a href="#" onclick="executeLinkPrdJgi('$mrData.getJgiNo()', '')">品目別</a>]]></cell>
+                                <cell><![CDATA[<a href="#" onclick="executeLinkInsJgiMonthly('$mrData.getJgiNo()')">施設別</a>]]></cell>
+                                <cell><![CDATA[<a href="#" onclick="executeLinkPrdJgiMonthly('$mrData.getJgiNo()', '')">品目別</a>]]></cell>
+                                <cell>－</cell>
+                                <cell>－</cell>
+                                <cell>－</cell>
+                                <cell>
+                                   #if($mrData.mmpChoseiFlg)
+                                        #if($security.hasRefAuthEigyo)
+                                            <![CDATA[<a href="#" onclick="executeLinkPrdJgi('$mrData.getJgiNo()', '$mrData.getMmpChoseiCatePickedUp()')">あり</a>]]>
+                                        #else
+                                            あり
+                                        #end
+                                    #else
+                                        なし
+                                    #end
+                                </cell>
+
+                                <cell>
+                                    #if($mrData.shiireChoseiFlg)
+                                        #if($security.hasRefAuthSiire)
+                                            <![CDATA[<a href="#" onclick="executeLinkPrdJgi('$mrData.getJgiNo()', '$mrData.getShiireChoseiCatePickedUp()')">あり</a>]]>
+                                        #else
+                                            あり
+                                        #end
+                                    #else
+                                        なし
+                                    #end
+                                </cell>
+                                <cell>
+                                    #if($mrData.vaccineChoseiFlg)
+                                        #if($security.hasRefAuthVaccine)
+                                            <![CDATA[<a href="#" onclick="executeLinkPrdJgi('$mrData.getJgiNo()', '$mrData.getVaccineChoseiCatePickedUp()')">あり</a>]]>
+                                        #else
+                                           あり
+                                        #end
+                                    #else
+                                        なし
+                                    #end
+                                </cell>
+                            #else
+                                <cell>－</cell>
+                                <cell>－</cell>
+                                <cell>－</cell>
+                                <cell>－</cell>
+                                <cell>－</cell>
+                                <cell>－</cell>
+                                <cell>－</cell>
+                                <cell>－</cell>
+                                <cell>－</cell>
+                                <cell>－</cell>
+                            #end
+                            </row>
+                        #end
+                    #end
+
+                #end
+            #end
+        #end
+    #end
+#end
+</rows>

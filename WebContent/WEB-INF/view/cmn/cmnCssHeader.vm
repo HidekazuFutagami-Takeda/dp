@@ -1,0 +1,2 @@
+<link rel="stylesheet" type="text/css" href="$link.getContextPath()/cmn/css/main.css?rn=$!service.getReleaseNumber()" media="all" id="mainstyle"/>
+<link rel="stylesheet" type="text/css" href="$link.getContextPath()/cmn/css/thickbox.css" media="all" />

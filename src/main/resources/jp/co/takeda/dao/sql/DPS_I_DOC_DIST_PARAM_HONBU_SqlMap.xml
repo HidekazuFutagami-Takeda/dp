@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DPS_I_DOC_DIST_PARAM_HONBU_SqlMap" >
+
+  <resultMap id="resultMap" class="java.util.HashMap" >
+    <result column="SEQ_KEY" property="seqKey" jdbcType="BIGINT" />
+    <result column="PROD_CODE" property="prodCode" jdbcType="CHAR" />
+    <result column="INS_TYPE" property="insType" jdbcType="CHAR" javaType="jp.co.takeda.model.div.InsType"/>
+    <result column="LOSS_RATE" property="lossRate" jdbcType="INTEGER" />
+    <result column="INDEX_MIKAKUTOKU" property="indexMikakutoku" jdbcType="INTEGER" />
+    <result column="INDEX_DELIVERY" property="indexDelivery" jdbcType="INTEGER" />
+    <result column="REF_PROD_CODE" property="refProdCode" jdbcType="CHAR" />
+    <result column="REF_PROD_TYPE" property="refProdType" jdbcType="VARCHAR" />
+    <result column="REF_FROM" property="refFrom" jdbcType="CHAR" javaType="jp.co.takeda.model.div.RefPeriod"/>
+    <result column="REF_TO" property="refTo" jdbcType="CHAR" javaType="jp.co.takeda.model.div.RefPeriod"/>
+    <result column="IS_JGI_NO" property="isJgiNo" jdbcType="INTEGER" />
+    <result column="IS_JGI_NAME" property="isJgiName" jdbcType="VARCHAR" />
+    <result column="IS_DATE" property="isDate" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+    <result column="UP_JGI_NO" property="upJgiNo" jdbcType="INTEGER" />
+    <result column="UP_JGI_NAME" property="upJgiName" jdbcType="VARCHAR" />
+    <result column="UP_DATE" property="upDate" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+  </resultMap>
+
+  <!-- 検索シーケンスキー -->
+  <select id="select" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH REF_PROD AS (<include refid="COMMON_SqlMap.refProd"/>)
+    SELECT DDPH.SEQ_KEY
+          ,DDPH.PROD_CODE
+          ,DDPH.INS_TYPE
+          ,DDPH.LOSS_RATE
+          ,DDPH.INDEX_MIKAKUTOKU
+          ,DDPH.INDEX_DELIVERY
+          ,DDPH.REF_PROD_CODE
+          ,REF_PP.PROD_NAME AS REF_PROD_NAME
+          ,REF_PP.PROD_TYPE AS REF_PROD_TYPE
+          ,DDPH.REF_FROM
+          ,DDPH.REF_TO
+          ,DDPH.IS_JGI_NO
+          ,DDPH.IS_JGI_NAME
+          ,DDPH.IS_DATE
+          ,DDPH.UP_JGI_NO
+          ,DDPH.UP_JGI_NAME
+          ,DDPH.UP_DATE
+      FROM DPS_I_DOC_DIST_PARAM_HONBU DDPH
+           LEFT OUTER JOIN REF_PROD REF_PP ON DDPH.REF_PROD_CODE = REF_PP.PROD_CODE
+     WHERE DDPH.SEQ_KEY = #seqKey:BIGINT#
+  </select>
+
+  <!-- 検索ユニークキー -->
+  <select id="selectUk" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH REF_PROD AS (<include refid="COMMON_SqlMap.refProd"/>)
+    SELECT DDPH.SEQ_KEY
+          ,DDPH.PROD_CODE
+          ,DDPH.INS_TYPE
+          ,DDPH.LOSS_RATE
+          ,DDPH.INDEX_MIKAKUTOKU
+          ,DDPH.INDEX_DELIVERY
+          ,DDPH.REF_PROD_CODE
+          ,REF_PP.PROD_NAME AS REF_PROD_NAME
+          ,REF_PP.PROD_TYPE AS REF_PROD_TYPE
+          ,DDPH.REF_FROM
+          ,DDPH.REF_TO
+          ,DDPH.IS_JGI_NO
+          ,DDPH.IS_JGI_NAME
+          ,DDPH.IS_DATE
+          ,DDPH.UP_JGI_NO
+          ,DDPH.UP_JGI_NAME
+          ,DDPH.UP_DATE
+      FROM DPS_I_DOC_DIST_PARAM_HONBU DDPH
+           LEFT OUTER JOIN REF_PROD REF_PP ON DDPH.REF_PROD_CODE = REF_PP.PROD_CODE
+     WHERE DDPH.PROD_CODE = #prodCode:CHAR#
+       AND DDPH.INS_TYPE = #insType:CHAR#
+  </select>
+
+  <!-- 検索リスト -->
+  <select id="selectList" resultMap="resultMap" parameterClass="java.util.Map" >
+    WITH REF_PROD AS (<include refid="COMMON_SqlMap.refProd"/>)
+    SELECT DDPH.SEQ_KEY
+          ,DDPH.PROD_CODE
+          ,DDPH.INS_TYPE
+          ,DDPH.LOSS_RATE
+          ,DDPH.INDEX_MIKAKUTOKU
+          ,DDPH.INDEX_DELIVERY
+          ,DDPH.REF_PROD_CODE
+          ,REF_PP.PROD_NAME AS REF_PROD_NAME
+          ,REF_PP.PROD_TYPE AS REF_PROD_TYPE
+          ,DDPH.REF_FROM
+          ,DDPH.REF_TO
+          ,DDPH.IS_JGI_NO
+          ,DDPH.IS_JGI_NAME
+          ,DDPH.IS_DATE
+          ,DDPH.UP_JGI_NO
+          ,DDPH.UP_JGI_NAME
+          ,DDPH.UP_DATE
+          ,PP.GROUP_CODE
+          ,PP.STAT_PROD_CODE
+      FROM DPS_I_DOC_DIST_PARAM_HONBU DDPH
+           INNER JOIN DPS_C_PLANNED_PROD PP ON DDPH.PROD_CODE = PP.PROD_CODE
+           LEFT OUTER JOIN REF_PROD REF_PP  ON DDPH.REF_PROD_CODE = REF_PP.PROD_CODE
+      WHERE
+           PP.SALES = #sales:CHAR#
+       AND PP.PLAN_TARGET_FLG = #planTargetFlg:CHAR#
+       AND PP.PLAN_LEVEL_INS_DOC = '1'
+       <isNotNull prepend="AND" property="prodCode">
+           DDPH.PROD_CODE = #prodCode:CHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="insType">
+           DDPH.INS_TYPE = #insType:CHAR#
+       </isNotNull>
+       <isNotNull prepend="AND" property="category">
+           PP.CATEGORY = #category:CHAR#
+       </isNotNull>
+       <isPropertyAvailable property="sortString">
+           $sortString$
+       </isPropertyAvailable>
+  </select>
+
+</sqlMap>

@@ -1,0 +1,840 @@
+#set( $layout = "nothingLayout.vm" )
+#set( $dataList = $form.getRequestData("DPS401C05_DATA_R"))
+#set( $gridList = $dataList.getInsWsPlanForVacUpDateResultDto())
+#if($dataList)
+#set( $category = $dataList.getCategory())
+$!consts.getDhtmlxGridXmlHeader()
+#set($decimalFormat = $form.bean.getDefaultRateFormat())
+<rows>
+##重点先合計
+#if($gridList && $gridList.get(2))
+    #set($oldResultData = $gridList.get(2))
+    #if($oldResultData.getDistValueB())
+        #set( $typed = "ron" )
+    #else
+        #set( $typed = "ro" )
+    #end
+    #if($oldResultData.getPlannedValueB())
+        #set( $typey = "edn" )
+    #else
+        #set( $typey = "ed" )
+    #end
+#end
+<row id='1'>
+    <userdata name="mrange">$!mrange</userdata>
+    <userdata name="sumRowFlg">true</userdata>
+    <cell style='border-right-style:none;' class='textL'>重点先合計</cell>
+    <cell style='border-right-style:none;border-left-style:none;'></cell>
+    <cell style='border-right-style:none;border-left-style:none;'></cell>
+    <cell style='border-left-style:none;'></cell>
+    <cell>$!oldResultData.getDistValueB()</cell>
+    ## add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+    <cell type="ron"></cell>
+    ## add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+    <cell type="ron">$!oldResultData.getPlannedValueB()</cell>
+    #if($!gridList.get(2).getInsWsPlanMonNnu())
+        #foreach($monNnuValue in $gridList.get(2).getInsWsPlanMonNnu())
+            <cell #setMinusStyleTag($!monNnuValue.getPreFarAdvancePeriod())>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+            <cell #setMinusStyleTag($!monNnuValue.getFarAdvancePeriod())>$!monNnuValue.getFarAdvancePeriod()</cell>
+            <cell #setMinusStyleTag($!monNnuValue.getAdvancePeriod())>$!monNnuValue.getAdvancePeriod()</cell>
+            <cell #setMinusStyleTag($!monNnuValue.getCurrentPlanValue())>$!monNnuValue.getCurrentPlanValue()</cell>
+            <cell #setMinusStyleTag($!monNnuValue.getCurrentPeriod())>$!monNnuValue.getCurrentPeriod()</cell>
+            <cell #setMinusStyleTag($!monNnuValue.getCurrentRate())>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+        #end
+    #end
+</row>
+
+##一般先合計
+#if($gridList && $gridList.get(1))
+    #set($oldResultData = $gridList.get(1))
+    #if($oldResultData.getDistValueB())
+        #set( $typed = "ron" )
+    #else
+        #set( $typed = "ro" )
+    #end
+    #if($oldResultData.getPlannedValueB())
+        #set( $typey = "edn" )
+    #else
+        #set( $typey = "ed" )
+    #end
+#end
+<row id='2'>
+    <userdata name="mrange">$!mrange</userdata>
+    <userdata name="sumRowFlg">true</userdata>
+    <cell style='border-right-style:none;' class='textL'>一般先合計</cell>
+    <cell style='border-right-style:none;border-left-style:none;'></cell>
+    <cell style='border-right-style:none;border-left-style:none;'></cell>
+    <cell style='border-left-style:none;'></cell>
+    <cell>$!oldResultData.getDistValueB()</cell>
+    ## add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+    <cell type="ron"></cell>
+    ## add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+    <cell type="ron">$!oldResultData.getPlannedValueB()</cell>
+    #if($!gridList.get(1).getInsWsPlanMonNnu())
+        #foreach($monNnuValue in $gridList.get(1).getInsWsPlanMonNnu())
+            <cell #setMinusStyleTag($!monNnuValue.getPreFarAdvancePeriod())>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+            <cell #setMinusStyleTag($!monNnuValue.getFarAdvancePeriod())>$!monNnuValue.getFarAdvancePeriod()</cell>
+            <cell #setMinusStyleTag($!monNnuValue.getAdvancePeriod())>$!monNnuValue.getAdvancePeriod()</cell>
+            <cell #setMinusStyleTag($!monNnuValue.getCurrentPlanValue())>$!monNnuValue.getCurrentPlanValue()</cell>
+            <cell #setMinusStyleTag($!monNnuValue.getCurrentPeriod())>$!monNnuValue.getCurrentPeriod()</cell>
+            <cell #setMinusStyleTag($!monNnuValue.getCurrentRate())>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+        #end
+    #end
+</row>
+
+##合計
+#if($gridList && $gridList.get(0))
+    #set($oldResultData = $gridList.get(0))
+    #if($oldResultData.getDistValueB())
+        #set( $typed = "ron" )
+    #else
+        #set( $typed = "ro" )
+    #end
+    #if($oldResultData.getPlannedValueB())
+        #set( $typey = "edn" )
+    #else
+        #set( $typey = "ed" )
+    #end
+#end
+<row id='3'>
+    <userdata name="mrange">$!mrange</userdata>
+    <userdata name="sumRowFlg">true</userdata>
+    <cell style='border-right-style:none;' class='textL'>合計</cell>
+    <cell style='border-right-style:none;border-left-style:none;'></cell>
+    <cell style='border-right-style:none;border-left-style:none;'></cell>
+    <cell style='border-left-style:none;'></cell>
+    <cell>$!oldResultData.getDistValueB()</cell>
+    ## add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+    <cell type="ron"></cell>
+    ## add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+    <cell type="ron">$!oldResultData.getPlannedValueB()</cell>
+    #if($pageData)
+        #foreach($monNnuValue in $pageData)
+            <cell #setMinusStyleTag($!monNnuValue.getPreFarAdvancePeriod())>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+            <cell #setMinusStyleTag($!monNnuValue.getFarAdvancePeriod())>$!monNnuValue.getFarAdvancePeriod()</cell>
+            <cell #setMinusStyleTag($!monNnuValue.getAdvancePeriod())>$!monNnuValue.getAdvancePeriod()</cell>
+            <cell #setMinusStyleTag($!monNnuValue.getCurrentPlanValue())>$!monNnuValue.getCurrentPlanValue()</cell>
+            <cell #setMinusStyleTag($!monNnuValue.getCurrentPeriod())>$!monNnuValue.getCurrentPeriod()</cell>
+            <cell #setMinusStyleTag($!monNnuValue.getCurrentRate())>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+        #end
+    #end
+</row>
+
+##集計行表示判断用変数
+##set( $isFirst = true )
+##RowId用カウンタ
+#set( $cnt = 4 )
+##各集計行集計範囲
+#set( $srange = "" )
+#set( $hrange = "" )
+#set( $mrange = "" )
+##各集計行
+#set( $srowids = "" )
+#set( $hrowids = "" )
+#set( $mrowids = "" )
+##追加ボタンId
+#set( $bid = 1 )
+##市区郡系Id
+#set( $hid = 1 )
+##フラグ・スタイル
+#set($firstFlg = true)
+#set($firstFlg2 = true)
+#set($lastFlg = false)
+#foreach($resultData in $gridList)
+  ##borderの設定初期化
+  #set( $cellBorder = "white" )
+  #set( $s = "" )
+  ## 一般先更新日
+  #if($velocityCount > 4)
+    ##集計行
+    ##集計行フラグ
+    #set( $sisetuflg = $oldResultData.getInsSumFlg() )
+    #set( $sikuJtnFlg = $oldResultData.getSikuJtnFlg() )
+    #set( $sikuIppanFlg= $oldResultData.getSikuIppanFlg() )
+    #set( $sikuSumFlg = $oldResultData.getSikuSumFlg() )
+    #set( $q = '"' )
+    #set( $sipFlg = "false" )
+    #set( $edFlg = "false" )
+    #set( $diFlg = "false" )
+    #if($firstFlg)
+       #set( $InsName = $!oldResultData.getInsName() )
+       #if(!($dataList.getIsStatusMrCompleted()) && !$form.bean.wsEndFlg && ($!security.hasAuthEdit("DPS401C02")))
+##          #set( $addButton = "<![CDATA[<input type='button' value='追加' onClick='inspos = $bid;openModalWindowW(${q}${link.setAction('dps912C00F00')}?tmsSelectMode=$tmsselect.getGrayAndDisableButtonMode()&tytenApplyFuncName=dps401C05TytenApply&sosCd=$!form.bean.sosCd3${q})' />]]>" )
+           #set( $addButton = "<![CDATA[<input type='button' value='追加' onClick='inspos = $bid;openModalWindowW(${q}${link.setAction('dps912C04F00')}?tmsSelectMode=$tmsselect.getGrayAndDisableButtonMode()&tytenApplyFuncName=dps401C05TytenApply&sosCd=$!form.bean.sosCd3&jgiNo=$!form.bean.jgiNo&insType=$!form.bean.insType${q});editOn();' />]]>" )
+       #else
+           #set( $addButton = "" )
+       #end
+    #else
+       #set( $InsName = "" )
+       #set( $InsClass = "" )
+       #set( $addButton = "" )
+    #end
+    #if($firstFlg2)
+        #set( $ShikuchosonMeiKj = $!oldResultData.getShikuchosonMeiKj() )
+    #else
+        #set( $ShikuchosonMeiKj = "" )
+    #end
+    #if ($oldResultData && $oldResultData.getInsNo().equals($resultData.getInsNo()))
+        #if($firstFlg)
+            #set($s = "s0")
+        #else
+            #set($s = "s1")
+        #end
+        #set($firstFlg = false)
+    #else
+        #set($s = "s2")
+        ##最終行フラグ(施設合計なしの場合)
+        #if(!($oldResultData.getInsSumFlg()))
+            #set($lastFlg = true)
+        #end
+        #set($firstFlg = true)
+    #end
+    #if($oldResultData.getDistValueB())
+       #set( $typed = "ron" )
+    #else
+       #set( $typed = "ro" )
+    #end
+    #if($oldResultData.getPlannedValueB())
+       #set( $typey = "edn" )
+    #else
+       #set( $typey = "ed" )
+    #end
+    #set( $inputBgClass = " class='inputB'" )
+    #if($oldResultData.getTmsTytenCd() || $sikuIppanFlg)
+       #set( $sumRowFlg = "false" )
+    #else
+       #set( $type = "ro" )
+       #set( $inputBgClass = "" )
+       #set( $sumRowFlg = "true" )
+    #end
+    #set($bgClass = "")
+    ## 削除施設の場合
+    #if($oldResultData.getDelInsFlg())
+       ## 背景色グレー
+       #set( $bgClass = " class='delIns'" )
+       #set( $delFlg = "true" )
+       ## border色指定
+       #set( $cellBorder = "#E1E1E1" )
+    ## 配分除外の場合
+    #elseif($oldResultData.getExceptDistInsFlg())
+       ## 背景色黄色
+       #set( $bgClass = " class='exceptDist'" )
+       #set( $edFlg = "true" )
+       ## border色指定
+       #set( $cellBorder = "#B39400" )
+    ## 特定施設個別計画の場合
+    #elseif($oldResultData.getSpecialInsPlanFlg())
+       ## 背景色水色
+       #set( $bgClass = " class='specialInsPlan'" )
+       #set( $sipFlg = "true" )
+       ## 色指定
+       #set( $cellBorder = "#CCFFFF" )
+    #end
+
+    ##特約店行のセル設定
+    #set($bgClassTms = "")
+    ## 削除施設の場合
+    #if($oldResultData.getDelInsFlg())
+       ## 背景色グレー
+       #set( $bgClassTms = " class='delIns'" )
+       #set( $delFlg = "true" )
+       ## border色指定
+       #set( $cellBorder = "#E1E1E1" )
+    ## 配分除外の場合
+    #elseif($oldResultData.getExceptDistInsFlg())
+       ## 背景色黄色
+       #set( $bgClassTms = " class='exceptDist'" )
+       #set( $edFlg = "true" )
+       ## border色指定
+       #set( $cellBorder = "#B39400" )
+    ## 特定施設個別計画の場合
+    #elseif($oldResultData.getSpecialInsPlanFlg())
+       ## 背景色水色
+       #set( $bgClassTms = " class='specialInsPlan'" )
+       #set( $sipFlg = "true" )
+       ## 色指定
+       #set( $cellBorder = "#CCFFFF" )
+    ## 計画立案対象外フラグ(来期用)がTRUEの場合
+    #elseif($oldResultData.getPlanTaiGaiFlgRik())
+       ## 背景色グレー
+       #set( $bgClassTms = " class='planTaiGaiFlgRik'" )
+       ## 色指定
+       #set( $cellBorder = "#E1E1E1" )
+    #end
+
+    ## 一般計の場合
+    #set( $sikuInputFlg = false)
+    #if($sikuIppanFlg && ($oldResultData.getDistValueB() && $oldResultData.getDistValueB() != 0))
+       #if($oldResultData.getPlannedValueB())
+          #set( $typey = "edn" )
+       #else
+          #set( $typey = "ed" )
+       #end
+       #set( $inputBgClass = " class='inputB'" )
+       #set( $sikuInputFlg = true)
+    #elseif($sikuIppanFlg)
+       #set( $typey = "ron" )
+       #set( $inputBgClass = $bgClass )
+    #end
+    ## 登録不可の場合、計画値の編集、追加ボタン非表示
+    #if($!security.hasAuthEdit("DPS401C02") && !($dataList.getIsStatusMrCompleted()) && !$form.bean.wsEndFlg)
+    #else
+       #set( $typey = "ron" )
+       ##特約店行のセル設定
+       #if($bgClassTms == "")
+          #set( $inputBgClass = $bgClass )
+       #else
+          #set( $inputBgClass = $bgClassTms )
+       #end
+       #set( $addButton = "" )
+    #end
+    #set($pageData = $oldResultData.getInsWsPlanMonNnu())
+    ##borderのスタイル設定
+    #set( $s0 = " style='border-bottom-color:${cellBorder};'")
+    #set( $s1 = " style='border-top-color:${cellBorder};border-bottom-color:${cellBorder};'")
+    #set( $s2 = " style='border-top-color:${cellBorder};'")
+    #set( $s3 = " style='border-top-color:${cellBorder};'")
+    #set( $s4 = " style='border-top-color:${cellBorder};border-left-color:${cellBorder};'")
+    #if( $s == "s0" )
+        #set( $s = $s0 )
+    #elseif( $s == "s1" )
+        #set( $s = $s1 )
+    #elseif( $s == "s2" )
+        #set( $s = $s2 )
+    #elseif( $s == "s3" )
+        #set( $s = $s3 )
+    #elseif( $s == "s4" )
+        #set( $s = $s4 )
+    #end
+    #if((!($sisetuflg) && !($hinmokuflg) && !($sikuJtnFlg) && !($sikuIppanFlg) && !($sikuSumFlg)))
+    <row id='$cnt'>
+       ##メッセージ見出し用
+       <userdata name="insName">$!oldResultData.getInsName()</userdata>
+       <userdata name="tmsTytenName">$!oldResultData.getTmsTytenName()</userdata>
+       ##グリッド操作用
+       <userdata name="addrCode">$!oldResultData.getAddrCodePref()$!oldResultData.getAddrCodeCity()</userdata>
+       <userdata name="insNoA">$!oldResultData.getInsNo()</userdata>
+       <userdata name="tmsTytenCd">$!oldResultData.getTmsTytenCd()</userdata>
+       <userdata name="sumRowFlg">$sumRowFlg</userdata>
+       <userdata name="rowType">input</userdata>
+       ##送信データ
+       <userdata name="selectRowId">$!oldResultData.getSeqKey(),$!oldResultData.getPlannedUpDate().Time,$!oldResultData.getInsNo(),$!oldResultData.getTmsTytenCd(),$sipFlg,$edFlg,$diFlg</userdata>
+       ##計算、追加用特約店追加ボタンインデックス
+       <userdata name="bid">$bid</userdata>
+       <userdata name="hid">$hid</userdata>
+       ##削除（予定）施設フラグ
+       <userdata name="delInsFlg">$oldResultData.getDelInsFlg()</userdata>
+       ##計画立案対象外フラグ（来期用）
+       <userdata name="planTaiGaiFlgRik">$oldResultData.getPlanTaiGaiFlgRik()</userdata>
+       ##配分除外施設フラグ
+       <userdata name="exceptDistInsFlg">$oldResultData.getExceptDistInsFlg()</userdata>
+       #if($lastFlg)
+       <userdata name="srange">,$cnt</userdata>
+       #end
+       <cell$bgClass$s>$!ShikuchosonMeiKj</cell>
+       <cell$bgClass$s>$!InsName</cell>
+       <cell$bgClassTms>#if( $oldResultData.getPlanTaiGaiFlgRik() )$tmsselect.getPlanTaiGaiLabel()#end$!oldResultData.getTmsTytenName()</cell>
+       <cell$bgClassTms$s>$!addButton</cell>
+       <cell$bgClassTms type='$typed'>$!oldResultData.getDistValueB()</cell>
+       ## mod Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+       ## <cell$inputBgClass type='$typey'>$!oldResultData.getPlannedValueB()</cell>
+       <cell$inputBgClass type='$typey'>$!oldResultData.getModifyValueB()</cell>
+       <cell$bgClassTms type='$typed'>$!oldResultData.getPlannedValueB()</cell>
+       ## mod End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+       #if($pageData)
+       #foreach($monNnuValue in $pageData)
+           <cell$bgClassTms #setMinusStyleTag($!monNnuValue.getPreFarAdvancePeriod()) type='#setColType( $!monNnuValue.getPreFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+           <cell$bgClassTms #setMinusStyleTag($!monNnuValue.getFarAdvancePeriod()) type='#setColType( $!monNnuValue.getFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getFarAdvancePeriod()</cell>
+           <cell$bgClassTms #setMinusStyleTag($!monNnuValue.getAdvancePeriod()) type='#setColType( $!monNnuValue.getAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getAdvancePeriod()</cell>
+           <cell$bgClassTms #setMinusStyleTag($!monNnuValue.getCurrentPlanValue()) type='#setColType( $!monNnuValue.getCurrentPlanValue(), "ro" ,"ron")'>$!monNnuValue.getCurrentPlanValue()</cell>
+           <cell$bgClassTms #setMinusStyleTag($!monNnuValue.getCurrentPeriod()) type='#setColType( $!monNnuValue.getCurrentPeriod(), "ro" ,"ron")'>$!monNnuValue.getCurrentPeriod()</cell>
+           <cell$bgClassTms #setMinusStyleTag($!monNnuValue.getCurrentRate()) type='#setColType( $!monNnuValue.getCurrentRate(), "ro" ,"ron")'>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+       #end
+       #end
+       ##if($lastFlg)
+           ##set( $srange = "" )
+           ##set( $bid = $bid + 1 )
+           ##set( $hrange = $hrange + "," + $cnt )
+           ##set($lastFlg = false)
+       ##else
+           #set( $srange = $srange + "," + $cnt)
+       ##end
+       #set( $cnt = $cnt + 1 )
+    </row>
+    ##比較用施設コード、品目コード更新
+    #set( $oldInsNo = $oldResultData.getInsNo() )
+    #set( $oldProdCode = $oldResultData.getProdCode() )
+    ##set( $isFirst = false )
+    #set( $firstFlg2 = false )
+    #end
+    ##施設合計
+    #if($sisetuflg)
+    <row id='$cnt'>
+    <userdata name="jtnFlg">true</userdata>
+    <userdata name="srange">$srange</userdata>
+    <userdata name="hid">$hid</userdata>
+    <userdata name="sumRowFlg">true</userdata>
+        <cell$bgClass style="border-top-style:none;border-bottom-style:none;"></cell>
+        <cell$bgClass$s3></cell>
+        <cell$bgClass style="border-right-style:none;">施設合計</cell>
+        <cell$bgClass$s4></cell>
+        <cell$bgClass>$!oldResultData.getDistValueB()</cell>
+        ## add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+        <cell$bgClass type="ron"></cell>
+        ## add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+        <cell$bgClass type="ron">$!oldResultData.getPlannedValueB()</cell>
+        #if($pageData)
+        #foreach($monNnuValue in $pageData)
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getPreFarAdvancePeriod()) type='#setColType( $!monNnuValue.getPreFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getFarAdvancePeriod()) type='#setColType( $!monNnuValue.getFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getAdvancePeriod()) type='#setColType( $!monNnuValue.getAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPlanValue()) type='#setColType( $!monNnuValue.getCurrentPlanValue(), "ro" ,"ron")'>$!monNnuValue.getCurrentPlanValue()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPeriod()) type='#setColType( $!monNnuValue.getCurrentPeriod(), "ro" ,"ron")'>$!monNnuValue.getCurrentPeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentRate()) type='#setColType( $!monNnuValue.getCurrentRate(), "ro" ,"ron")'>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+        #end
+        #end
+        #set( $srange = "" )
+        #set( $bid = $bid + 1 )
+        #set( $hrange = $hrange + "," + $cnt )
+        #set( $cnt = $cnt + 1 )
+     </row>
+     #end
+    ##重点先計
+    #if($sikuJtnFlg)
+    <row id='$cnt'>
+        <userdata name="sumRowFlg">true</userdata>
+        <userdata name="addrCode">$!oldResultData.getAddrCodePref()$!oldResultData.getAddrCodeCity()</userdata>
+        <userdata name="insNoA">$!oldResultData.getInsNo()</userdata>
+        <userdata name="hid">$hid</userdata>
+        #if($hrange && $hrange == "" && $sikuJtnFlg)
+            <cell$bgClass style="border-top-style:none;border-bottom-style:none;">$!oldResultData.getShikuchosonMeiKj()</cell>
+        #else
+            <cell$bgClass style="border-top-style:none;border-bottom-style:none;"></cell>
+        #end
+        <cell$bgClass style="border-right-style:none;border-left-style:none;">市区郡重点先計</cell>
+        <cell$bgClass style="border-right-style:none;"></cell>
+        <cell$bgClass$s4></cell>
+        <cell$bgClass>$!oldResultData.getDistValueB()</cell>
+        ## add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+        <cell$bgClass type="ron"></cell>
+        ## add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+        <cell$bgClass type="ron">$!oldResultData.getPlannedValueB()</cell>
+        #if($pageData)
+        #foreach($monNnuValue in $pageData)
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getPreFarAdvancePeriod()) type='#setColType( $!monNnuValue.getPreFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getFarAdvancePeriod()) type='#setColType( $!monNnuValue.getFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getAdvancePeriod()) type='#setColType( $!monNnuValue.getAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPlanValue()) type='#setColType( $!monNnuValue.getCurrentPlanValue(), "ro" ,"ron")'>$!monNnuValue.getCurrentPlanValue()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPeriod()) type='#setColType( $!monNnuValue.getCurrentPeriod(), "ro" ,"ron")'>$!monNnuValue.getCurrentPeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentRate()) type='#setColType( $!monNnuValue.getCurrentRate(), "ro" ,"ron")'>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+        #end
+        #end
+        #set( $firstFlg2 = false )
+        #set( $cnt = $cnt + 1 )
+     </row>
+     #end
+    ##一般先合計
+    #if($sikuIppanFlg)
+    <row id='$cnt'>
+    <userdata name="shikuchosonMeiKj">$!oldResultData.getShikuchosonMeiKj()</userdata>
+    <userdata name="insName">市区郡一般先計</userdata>
+    <userdata name="tmsTytenName"></userdata>
+    <userdata name="sumRowFlg">false</userdata>
+    <userdata name="ippanFlg">true</userdata>
+    <userdata name="hid">$hid</userdata>
+    #if($sikuInputFlg)<userdata name="rowType">input</userdata>#end
+        #set($ippanUpDate = $!oldResultData.getPlannedUpDate().Time)
+        <cell$bgClass style="border-top-style:none;border-bottom-style:none;"></cell>
+        <cell$bgClass style="border-right-style:none;border-left-style:none;">市区郡一般先計</cell>
+        <cell$bgClass style="border-right-style:none;"></cell>
+        <cell$bgClass$s4></cell>
+       <cell$bgClass>$!oldResultData.getDistValueB()</cell>
+       ## mod Start 2023/8/08 H.Futagami 不具合対応No.04　施設特約店別計画：「市区郡一般先計」入力制御修正 
+       ## ## add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+       ## <cell$inputBgClass type="$typey"></cell>
+       ## ## add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+       ## <cell$inputBgClass type="$typey">$!oldResultData.getPlannedValueB()</cell>
+       <cell$inputBgClass type='$typey'>$!oldResultData.getModifyValueB()</cell>
+       <cell$bgClass type="ron">$!oldResultData.getPlannedValueB()</cell>
+       ## mod End 2023/8/08 H.Futagami 不具合対応No.04　施設特約店別計画：「市区郡一般先計」入力制御修正
+        #if($pageData)
+        #foreach($monNnuValue in $pageData)
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getPreFarAdvancePeriod()) type='#setColType( $!monNnuValue.getPreFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getFarAdvancePeriod()) type='#setColType( $!monNnuValue.getFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getAdvancePeriod()) type='#setColType( $!monNnuValue.getAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPlanValue()) type='#setColType( $!monNnuValue.getCurrentPlanValue(), "ro" ,"ron")'>$!monNnuValue.getCurrentPlanValue()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPeriod()) type='#setColType( $!monNnuValue.getCurrentPeriod(), "ro" ,"ron")'>$!monNnuValue.getCurrentPeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentRate()) type='#setColType( $!monNnuValue.getCurrentRate(), "ro" ,"ron")'>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+        #end
+        #end
+        #set( $cnt = $cnt + 1 )
+     </row>
+     #end
+    ##市区郡計
+    #if($sikuSumFlg)
+    <row id='$cnt'>
+    <userdata name="selectAddrId">$!oldResultData.getAddrCodePref(),$!oldResultData.getAddrCodeCity(),$!ippanUpDate</userdata>
+    #set($ippanUpDate = "")
+    <userdata name="hrange">$!hrange</userdata>
+    <userdata name="hid">$hid</userdata>
+    <userdata name="sumRowFlg">true</userdata>
+        <cell$bgClass style="border-top-style:none;"></cell>
+        <cell$bgClass style="border-right-style:none;border-left-style:none;">市区郡計</cell>
+        <cell$bgClass style="border-right-style:none;"></cell>
+        <cell$bgClass$s4></cell>
+        <cell$bgClass>$!oldResultData.getDistValueB()</cell>
+        ## add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+        <cell$bgClass type="ron"></cell>
+        ## add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+        <cell$bgClass type="ron">$!oldResultData.getPlannedValueB()</cell>
+        #if($pageData)
+        #foreach($monNnuValue in $pageData)
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getPreFarAdvancePeriod()) type='#setColType( $!monNnuValue.getPreFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getFarAdvancePeriod()) type='#setColType( $!monNnuValue.getFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getAdvancePeriod()) type='#setColType( $!monNnuValue.getAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPlanValue()) type='#setColType( $!monNnuValue.getCurrentPlanValue(), "ro" ,"ron")'>$!monNnuValue.getCurrentPlanValue()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPeriod()) type='#setColType( $!monNnuValue.getCurrentPeriod(), "ro" ,"ron")'>$!monNnuValue.getCurrentPeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentRate()) type='#setColType( $!monNnuValue.getCurrentRate(), "ro" ,"ron")'>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+        #end
+        #end
+        #if($hrange && $hrange != "")
+            #set( $srowids =  $srowids + $hrange )
+            #set( $hrange = "" )
+        #end
+        #set( $hid = $hid + 1 )
+        #set( $mrange = $mrange + "," + $cnt )
+        #set( $cnt = $cnt + 1 )
+        #set( $firstFlg2 = true )
+     </row>
+     #end
+  #end
+    #set($oldResultData = $resultData)
+#end
+##最終行
+#if($gridList.size() > 3)
+    ##borderの設定初期化
+    #set( $cellBorder = "white" )
+    #set( $s = "" )
+    ##集計行
+    ##集計行フラグ
+    #set( $sisetuflg = $oldResultData.getInsSumFlg() )
+    #set( $sikuJtnFlg = $oldResultData.getSikuJtnFlg() )
+    #set( $sikuIppanFlg= $oldResultData.getSikuIppanFlg() )
+    #set( $sikuSumFlg = $oldResultData.getSikuSumFlg() )
+    #set( $q = '"' )
+    #set( $sipFlg = "false" )
+    #set( $edFlg = "false" )
+    #set( $diFlg = "false" )
+    #if($firstFlg)
+       #set( $InsName = $!oldResultData.getInsName() )
+       #if(!($dataList.getIsStatusMrCompleted()) && !$form.bean.wsEndFlg && ($!security.hasAuthEdit("DPS401C02")))
+           #set( $addButton = "<![CDATA[<input type='button' value='追加' onClick='inspos = $bid;openModalWindowW(${q}${link.setAction('dps912C00F00')}?tmsSelectMode=$tmsselect.getGrayAndDisableButtonMode()&tytenApplyFuncName=dps401C05TytenApply&sosCd=$!form.bean.sosCd3${q})' />]]>" )
+       #else
+           #set( $addButton = "" )
+       #end
+    #else
+       #set( $InsName = "" )
+       #set( $InsClass = "" )
+       #set( $addButton = "" )
+    #end
+    #if($firstFlg2)
+        #set( $ShikuchosonMeiKj = $!oldResultData.getShikuchosonMeiKj() )
+    #else
+        #set( $ShikuchosonMeiKj = "" )
+    #end
+    #if ($oldResultData && $oldResultData.getInsNo().equals($resultData.getInsNo()))
+        #if($firstFlg)
+            #set($s = "s0")
+        #else
+            #set($s = "s1")
+        #end
+        #set($firstFlg = false)
+    #else
+        #set($s = "s2")
+        ##最終行フラグ(施設合計なしの場合)
+        #if(!($oldResultData.getInsSumFlg()))
+            #set($lastFlg = true)
+        #end
+        #set($firstFlg = true)
+    #end
+    #if($oldResultData.getDistValueB())
+       #set( $typed = "ron" )
+    #else
+       #set( $typed = "ro" )
+    #end
+    #if($oldResultData.getPlannedValueB())
+       #set( $typey = "edn" )
+    #else
+       #set( $typey = "ed" )
+    #end
+    #set( $inputBgClass = " class='inputB'" )
+    #if($oldResultData.getTmsTytenCd())
+       #set( $sumRowFlg = "false" )
+    #else
+       #set( $type = "ro" )
+       #set( $inputBgClass = "" )
+       #set( $sumRowFlg = "true" )
+    #end
+    ## 特定施設個別計画の場合
+    #set($bgClass = "")
+    #if($oldResultData.getSpecialInsPlanFlg())
+       ## 背景色水色
+       #set( $bgClass = " class='specialInsPlan'" )
+       #set( $sipFlg = "true" )
+       ## border色指定
+       #set( $cellBorder = "#CCFFFF" )
+    #end
+    ## 配分除外の場合
+    #if($oldResultData.getExceptDistInsFlg())
+       ## 背景色黄色
+       #set( $bgClass = " class='exceptDist'" )
+       #set( $edFlg = "true" )
+       ## border色指定
+       #set( $cellBorder = "#B39400" )
+    #end
+    ## 削除施設の場合
+    #if($oldResultData.getDelInsFlg())
+       ## 背景色グレー
+       #set( $bgClass = " class='delIns'" )
+       ## 入力項目なし
+       #set( $inputBgClass = " class='delIns'" )
+       #set( $typey = "ro" )
+       ## 特約店追加ボタンなし
+       #set( $addButton = "" )
+       #set( $diFlg = "true" )
+       ## border色指定
+       #set( $cellBorder = "#E1E1E1" )
+    #end
+    ## 一般計の場合
+    #if($sikuIppanFlg && ($oldResultData.getDistValueB() && $oldResultData.getDistValueB() != 0))
+       #set( $typey = "edn" )
+       #set( $inputBgClass = " class='inputB'" )
+    #elseif($sikuIppanFlg)
+       #set( $typey = "ron" )
+       #set( $inputBgClass = $bgClass )
+    #end
+    ## 登録不可の場合、計画値の編集、追加ボタン非表示
+    #if($!security.hasAuthEdit("DPS401C02") && !($dataList.getIsStatusMrCompleted()) && !$form.bean.wsEndFlg)
+    #else
+       #set( $typey = "ron" )
+       #set( $inputBgClass = $bgClass )
+       #set( $addButton = "" )
+    #end
+    #set($pageData = $oldResultData.getInsWsPlanMonNnu())
+    ##borderのスタイル設定
+    #set( $s0 = " style='border-bottom-color:${cellBorder};'")
+    #set( $s1 = " style='border-top-color:${cellBorder};border-bottom-color:${cellBorder};'")
+    #set( $s2 = " style='border-top-color:${cellBorder};'")
+    #set( $s3 = " style='border-top-color:${cellBorder};'")
+    #set( $s4 = " style='border-top-color:${cellBorder};border-left-color:${cellBorder};'")
+    #if( $s == "s0" )
+        #set( $s = $s0 )
+    #elseif( $s == "s1" )
+        #set( $s = $s1 )
+    #elseif( $s == "s2" )
+        #set( $s = $s2 )
+    #elseif( $s == "s3" )
+        #set( $s = $s3 )
+    #elseif( $s == "s4" )
+        #set( $s = $s4 )
+    #end
+    #if((!($sisetuflg) && !($hinmokuflg) && !($sikuJtnFlg) && !($sikuIppanFlg) && !($sikuSumFlg)))
+    <row id='$cnt'>
+       ##メッセージ見出し用
+       <userdata name="insName">$!oldResultData.getInsName()</userdata>
+       <userdata name="tmsTytenName">$!oldResultData.getTmsTytenName()</userdata>
+       ##グリッド操作用
+       <userdata name="addrCode">$!oldResultData.getAddrCodePref()$!oldResultData.getAddrCodeCity</userdata>
+       <userdata name="insNoA">$!oldResultData.getInsNo()</userdata>
+       <userdata name="tmsTytenCd">$!oldResultData.getTmsTytenCd()</userdata>
+       <userdata name="sumRowFlg">$sumRowFlg</userdata>
+       <userdata name="rowType">input</userdata>
+       ##送信データ
+       <userdata name="selectRowId">$!oldResultData.getSeqKey(),$!oldResultData.getPlannedUpDate().Time,$!oldResultData.getInsNo(),$!oldResultData.getTmsTytenCd(),$sipFlg,$edFlg,$diFlg</userdata>
+       ##計算、追加用特約店追加ボタンインデックス
+       <userdata name="bid">$bid</userdata>
+       <userdata name="hid">$hid</userdata>
+       ##計画立案対象外フラグ（来期用）
+       <userdata name="planTaiGaiFlgRik">$!oldResultData.getPlanTaiGaiFlgRik()</userdata>
+       #if($lastFlg)
+       <userdata name="srange">,$cnt</userdata>
+       #end
+       <cell$bgClass$s>$!ShikuchosonMeiKj</cell>
+       <cell$bgClass$s>$!InsName</cell>
+       <cell$bgClass>#if( $oldResultData.getPlanTaiGaiFlgRik() )$!dataList.getPlanTaigaiLabel()#end$!oldResultData.getTmsTytenName()</cell>
+       <cell$bgClass$s>$!addButton</cell>
+       <cell$bgClass type='$typed'>$!oldResultData.getDistValueB()</cell>
+       ## mod Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+       ## <cell$inputBgClass type='$typey'>$!oldResultData.getPlannedValueB()</cell>
+       <cell$inputBgClass type='$typey'>$!oldResultData.getModifyValueB()</cell>
+       <cell$bgClass type='$typed'>$!oldResultData.getPlannedValueB()</cell>
+       ## mod End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+       #if($pageData)
+       #foreach($monNnuValue in $pageData)
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getPreFarAdvancePeriod()) type='#setColType( $!monNnuValue.getPreFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getFarAdvancePeriod()) type='#setColType( $!monNnuValue.getFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getAdvancePeriod()) type='#setColType( $!monNnuValue.getAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPlanValue()) type='#setColType( $!monNnuValue.getCurrentPlanValue(), "ro" ,"ron")'>$!monNnuValue.getCurrentPlanValue()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPeriod()) type='#setColType( $!monNnuValue.getCurrentPeriod(), "ro" ,"ron")'>$!monNnuValue.getCurrentPeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentRate()) type='#setColType( $!monNnuValue.getCurrentRate(), "ro" ,"ron")'>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+       #end
+       #end
+       ##if($lastFlg)
+           ##set( $srange = "" )
+           ##set( $bid = $bid + 1 )
+           ##set( $hrange = $hrange + "," + $cnt )
+           ##set($lastFlg = false)
+       ##else
+           #set( $srange = $srange + "," + $cnt)
+       ##end
+       #set( $cnt = $cnt + 1 )
+    </row>
+    ##比較用施設コード、品目コード更新
+    #set( $oldInsNo = $oldResultData.getInsNo() )
+    #set( $oldProdCode = $oldResultData.getProdCode() )
+    ##set( $isFirst = false )
+    #set( $firstFlg2 = false )
+    #end
+    ##施設合計
+    #if($sisetuflg)
+    <row id='$cnt'>
+    <userdata name="srange">$srange</userdata>
+    <userdata name="sumRowFlg">true</userdata>
+    <userdata name="jtnFlg">true</userdata>
+        <cell$bgClass style="border-top-style:none;border-bottom-style:none;"></cell>
+        <cell$bgClass$s3></cell>
+        <cell$bgClass style="border-right-style:none;">施設合計</cell>
+        <cell$bgClass$s4></cell>
+        <cell$bgClass>$!oldResultData.getDistValueB()</cell>
+        ## add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+        <cell$bgClass type="ron"></cell>
+        ## add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+        <cell$bgClass type="ron">$!oldResultData.getPlannedValueB()</cell>
+        #if($pageData)
+        #foreach($monNnuValue in $pageData)
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getPreFarAdvancePeriod()) type='#setColType( $!monNnuValue.getPreFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getFarAdvancePeriod()) type='#setColType( $!monNnuValue.getFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getAdvancePeriod()) type='#setColType( $!monNnuValue.getAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPlanValue()) type='#setColType( $!monNnuValue.getCurrentPlanValue(), "ro" ,"ron")'>$!monNnuValue.getCurrentPlanValue()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPeriod()) type='#setColType( $!monNnuValue.getCurrentPeriod(), "ro" ,"ron")'>$!monNnuValue.getCurrentPeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentRate()) type='#setColType( $!monNnuValue.getCurrentRate(), "ro" ,"ron")'>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+        #end
+        #end
+        #set( $srange = "" )
+        #set( $bid = $bid + 1 )
+        #set( $hrange = $hrange + "," + $cnt )
+        #set( $cnt = $cnt + 1 )
+     </row>
+     #end
+    ##重点先計
+    #if($sikuJtnFlg)
+    <row id='$cnt'>
+        <userdata name="sumRowFlg">true</userdata>
+        <userdata name="addrCode">$!oldResultData.getAddrCodePref()$!oldResultData.getAddrCodeCity()</userdata>
+        <userdata name="insNoA">$!oldResultData.getInsNo()</userdata>
+        #if($hrange && $hrange == "" && $sikuJtnFlg)
+            <cell$bgClass style="border-top-style:none;border-bottom-style:none;">$!oldResultData.getShikuchosonMeiKj()</cell>
+        #else
+            <cell$bgClass style="border-top-style:none;border-bottom-style:none;"></cell>
+        #end
+        <cell$bgClass style="border-right-style:none;border-left-style:none;">市区郡重点先計</cell>
+        <cell$bgClass style="border-right-style:none;"></cell>
+        <cell$bgClass$s4></cell>
+        <cell$bgClass>$!oldResultData.getDistValueB()</cell>
+        ## add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+        <cell$bgClass type="ron"></cell>
+        ## add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+        <cell$bgClass type="ron">$!oldResultData.getPlannedValueB()</cell>
+        #if($pageData)
+        #foreach($monNnuValue in $pageData)
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getPreFarAdvancePeriod()) type='#setColType( $!monNnuValue.getPreFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getFarAdvancePeriod()) type='#setColType( $!monNnuValue.getFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getAdvancePeriod()) type='#setColType( $!monNnuValue.getAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPlanValue()) type='#setColType( $!monNnuValue.getCurrentPlanValue(), "ro" ,"ron")'>$!monNnuValue.getCurrentPlanValue()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPeriod()) type='#setColType( $!monNnuValue.getCurrentPeriod(), "ro" ,"ron")'>$!monNnuValue.getCurrentPeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentRate()) type='#setColType( $!monNnuValue.getCurrentRate(), "ro" ,"ron")'>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+        #end
+        #end
+        #set( $firstFlg2 = false )
+        #set( $cnt = $cnt + 1 )
+     </row>
+     #end
+    ##一般先合計
+    #if($sikuIppanFlg)
+    <row id='$cnt'>
+    <userdata name="shikuchosonMeiKj">$!oldResultData.getShikuchosonMeiKj()</userdata>
+    <userdata name="insName">市区郡一般先計</userdata>
+    <userdata name="tmsTytenName"></userdata>
+    <userdata name="sumRowFlg">false</userdata>
+    <userdata name="ippanFlg">true</userdata>
+    <userdata name="hid">$hid</userdata>
+    #set($ippanUpDate = $!oldResultData.getPlannedUpDate().Time)
+        <cell$bgClass style="border-top-style:none;border-bottom-style:none;"></cell>
+        <cell$bgClass style="border-right-style:none;border-left-style:none;">市区郡一般先計</cell>
+        <cell$bgClass style="border-right-style:none;"></cell>
+        <cell$bgClass$s4></cell>
+       <cell$bgClass>$!oldResultData.getDistValueB()</cell>
+       ## mod Start 2023/8/08 H.Futagami 不具合対応No.04　施設特約店別計画：「市区郡一般先計」入力制御修正
+       ## ## add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+       ## <cell$inputBgClass  type="ron"></cell>
+       ## ## add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+       ## <cell$inputBgClass  type="ron">$!oldResultData.getPlannedValueB()</cell>
+       <cell$inputBgClass type='$typey'>$!oldResultData.getModifyValueB()</cell>
+       <cell$bgClass type='$typed'>$!oldResultData.getPlannedValueB()</cell>
+       ## mod End 2023/8/08 H.Futagami 不具合対応No.04　施設特約店別計画：「市区郡一般先計」入力制御修正
+        #if($pageData)
+        #foreach($monNnuValue in $pageData)
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getPreFarAdvancePeriod()) type='#setColType( $!monNnuValue.getPreFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getFarAdvancePeriod()) type='#setColType( $!monNnuValue.getFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getAdvancePeriod()) type='#setColType( $!monNnuValue.getAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPlanValue()) type='#setColType( $!monNnuValue.getCurrentPlanValue(), "ro" ,"ron")'>$!monNnuValue.getCurrentPlanValue()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPeriod()) type='#setColType( $!monNnuValue.getCurrentPeriod(), "ro" ,"ron")'>$!monNnuValue.getCurrentPeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentRate()) type='#setColType( $!monNnuValue.getCurrentRate(), "ro" ,"ron")'>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+        #end
+        #end
+        #set( $cnt = $cnt + 1 )
+     </row>
+     #end
+    ##市区郡計
+    #if($sikuSumFlg)
+    <row id='$cnt'>
+    <userdata name="selectAddrId">$!oldResultData.getAddrCodePref(),$!oldResultData.getAddrCodeCity(),$!ippanUpDate</userdata>
+    <userdata name="hrange">$!hrange</userdata>
+    <userdata name="sumRowFlg">true</userdata>
+        <cell$bgClass style="border-top-style:none;"></cell>
+        <cell$bgClass style="border-right-style:none;border-left-style:none;">市区郡計</cell>
+        <cell$bgClass style="border-right-style:none;"></cell>
+        <cell$bgClass$s4></cell>
+        <cell$bgClass>$!oldResultData.getDistValueB()</cell>
+        ## add Start 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+        <cell$bgClass type="ron"></cell>
+        ## add End 2022/6/28 H.Futagami バックログNo.20　施設特約店別計画編集でワクチンの一覧項目を医薬に合わせる
+        <cell$bgClass type="ron">$!oldResultData.getPlannedValueB()</cell>
+        #if($pageData)
+        #foreach($monNnuValue in $pageData)
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getPreFarAdvancePeriod()) type='#setColType( $!monNnuValue.getPreFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getPreFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getFarAdvancePeriod()) type='#setColType( $!monNnuValue.getFarAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getFarAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getAdvancePeriod()) type='#setColType( $!monNnuValue.getAdvancePeriod(), "ro" ,"ron")'>$!monNnuValue.getAdvancePeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPlanValue()) type='#setColType( $!monNnuValue.getCurrentPlanValue(), "ro" ,"ron")'>$!monNnuValue.getCurrentPlanValue()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentPeriod()) type='#setColType( $!monNnuValue.getCurrentPeriod(), "ro" ,"ron")'>$!monNnuValue.getCurrentPeriod()</cell>
+           <cell$bgClass #setMinusStyleTag($!monNnuValue.getCurrentRate()) type='#setColType( $!monNnuValue.getCurrentRate(), "ro" ,"ron")'>$!format.doubleToString($!monNnuValue.getCurrentRate(), $decimalFormat)</cell>
+        #end
+        #end
+        #if($hrange && $hrange != "")
+            #set( $srowids =  $srowids + $hrange )
+            #set( $hrange = "" )
+        #end
+        #set( $hid = $hid + 1 )
+        #set( $mrange = $mrange + "," + $cnt )
+        #set( $cnt = $cnt + 1 )
+        #set( $firstFlg2 = true )
+     </row>
+     #end
+#end
+##集計行
+#set( $hrowids =  $hrowids + $mrange )
+<userdata name="srowids">$srowids</userdata>
+<userdata name="hrowids">$hrowids</userdata>
+<userdata name="mrowids">,1</userdata>
+</rows>
+#end

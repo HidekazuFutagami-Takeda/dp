@@ -1,0 +1,387 @@
+#set( $layout = "defaultLayout_JQ.vm" )
+#set($q = '"')
+#set($pageTitle = $text.get("dps600C01","title"))
+#set($bodyOnfocusMethod = "return dialogWin.checkModal()")
+#set($resultData =$form.getRequestData("Dps600C01_DATA_R_SEARCH_RESULT"))
+
+##参照権限
+#set($canEdit = false)
+#if($!security.hasAuthEdit("DPS600"))
+    #set($canEdit = true)
+#end
+
+##参照期間リスト
+#set( $refPeriodList = $service.getRefPeriodList(false))
+
+##品目名称
+#set($prodName = "　")
+#if($resultData.prodMap.prodName)
+    #set($prodName = $resultData.prodMap.prodName)
+#end
+
+##製品区分
+#set($prodType = "　")
+#if($resultData.prodMap.prodType)
+    #set($prodType = $resultData.prodMap.prodType)
+#end
+
+##本部案フラグ(TRUE=本部案のみ,FALSE=営業所案あり)
+#set($isHonbu = true)
+#if($resultData.officeUHMap.seqKey || $resultData.officePMap.seqKey)
+    #set( $isHonbu = false)
+#end
+
+## -----------------------------
+## addReadyScript
+## ダブルクオート(")を表示させたい場合は${q}を使用すること
+## -----------------------------
+#set($addReadyScript = "
+	## 初期表示＋読込処理
+    sosApplyExt('$!form.bean.sosCd3', '', '02', false);
+")
+
+## -----------------------------
+## addHeaderScript
+## ダブルクオート(")を表示させたい場合は${q}を使用すること
+## -----------------------------
+#set($addHeaderScript = "
+
+	## リンク移動
+	function executeLink() {
+	    var actionPath = '$link.setAction('dps600C00F00')';
+	    document.dps600C01Form.action = actionPath;
+	    document.dps600C01Form.submit();
+	}
+")
+
+## -----------------------------
+## HTML
+## -----------------------------
+#tabbar("sienSisetuTokuyaku", "dps600C00F00")
+<div id="tabBox" style="height: 620px;">
+<form name="dps600C01Form" method="post">
+
+##品目情報
+<div align="left" style="float: left; width: 75%;">
+<table class="gridTableLine" style="width: 100%" cellspacing="0" cellpadding="0">
+    <tbody class="tableBody">
+        <tr>
+            <td class="header" style="width: 70px;">組織</td>
+            <td id="sos" colspan="7" >　</td>
+        </tr>
+        <tr>
+            <td class="header" style="width: 70px;">カテゴリ</td>
+            <td>
+                #if($resultData.prodMap.category)
+                	#set( $categoryList = $service.getCategoryList(false,false))
+                    #getValueFromCode($categoryList,$resultData.prodMap.category)
+                #else
+                    　
+                #end
+            </td>
+            <td class="header" style="width: 70px;">品目名称</td>
+            <td>$prodName</td>
+            <td class="header" style="width: 70px;">製品区分</td>
+            <td>$prodType</td>
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            <td class="header" style="width: 120px;">本部案/エリア案</td>
+##            <td class="header" style="width: 120px;">本部案/営業所案</td>
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+            <td>
+                #if($isHonbu)
+                    本部案
+                #else
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+                    エリア案
+##                    営業所案
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+                #end
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+
+##最終更新情報
+<div class="label" align="right" style="float: left; width: 25%;">
+    #if($isHonbu)
+        #upDateInfo($!{resultData.honbuUHMap.upJgiName},$!{resultData.honbuUHMap.upDate})
+    #else
+        #upDateInfo($!{resultData.officeUHMap.upJgiName},$!{resultData.officeUHMap.upDate})
+    #end
+    <a href="#" onclick="executeLink()">一覧へ戻る</a>
+</div>
+
+##メイン情報
+<table width="100%" height="300px">
+    <tr>
+        <td style="padding: 0px 15px 0px 15px; width: 50%;">
+        <div class="midTitle">施設医師別 配分基準（本部案)</div>
+        </td>
+        <td style="padding: 0px 15px 0px 15px; width: 50%;">
+        <div class="midTitle">施設医師別 配分基準（営業所案）</div>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 100%;">UH</td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+        <td style="padding: 10px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 100%;">UH</td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td width ="50%" style="padding:0px 20px 0px 20px;vertical-align: top;">
+        <div class="titleLine">比率</div>
+        <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+            <thead class="tableHeader">
+                <tr>
+                    <td width ="130px">　</td>
+                    <td>項目名</td>
+                    <td>比率</td>
+                </tr>
+            </thead>
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" width ="130px">比率1</td>
+                    <td style="text-align: center">未獲得市場</td>
+                    <td style="text-align: right;">$!resultData.honbuUHMap.indexMikakutoku</td>
+                </tr>
+                <tr>
+                    <td class="header" width ="130px">比率2</td>
+                    <td style="text-align: center">過去実績</td>
+                    <td style="text-align: right;">$!resultData.honbuUHMap.indexDelivery</td>
+                </tr>
+            <tbody>
+        </table>
+        </td>
+        <td width ="50%" style="padding:0px 20px 0px 20px;vertical-align: top;">
+        <div class="titleLine">比率</div>
+        <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+            <thead class="tableHeader">
+                <tr>
+                    <td width ="130px">　</td>
+                    <td>項目名</td>
+                    <td>比率</td>
+                </tr>
+            </thead>
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" width ="130px">比率1</td>
+                    <td style="text-align: center">未獲得市場</td>
+                    <td style="text-align: right;">$!resultData.officeUHMap.indexMikakutoku</td>
+                </tr>
+                <tr>
+                    <td class="header" width ="130px">比率2</td>
+                    <td style="text-align: center">過去実績</td>
+                    <td style="text-align: right;">$!resultData.officeUHMap.indexDelivery</td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 0px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <div class="titleLine">配分品目データ</div>
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 130px;">実績参照期間</td>
+                    <td style="text-align: left">
+                        #if($resultData.honbuUHMap.refFrom)
+                            #getValueFromCode($refPeriodList,$resultData.honbuUHMap.refFrom)
+                        #end
+                        　 - 　
+                        #if($resultData.honbuUHMap.refTo)
+                            #getValueFromCode($refPeriodList,$resultData.honbuUHMap.refTo)
+                        #end
+                    </td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;">有効率</td>
+                    <td style="text-align: left">
+                    #if($resultData.honbuUHMap.lossRate)
+                        $resultData.honbuUHMap.lossRate　％
+                    #end
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+        <td style="padding: 0px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <div class="titleLine">配分品目データ</div>
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                    <td class="header" style="width: 130px;">実績参照期間</td>
+                    <td style="text-align: left">
+                        #if($resultData.officeUHMap.refFrom)
+                            #getValueFromCode($refPeriodList,$resultData.officeUHMap.refFrom)
+                        #end
+                        　 - 　
+                        #if($resultData.officeUHMap.refTo)
+                            #getValueFromCode($refPeriodList,$resultData.officeUHMap.refTo)
+                        #end
+                    </td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;">有効率</td>
+                    <td style="text-align: left">
+                    #if($resultData.officeUHMap.lossRate)
+                        $resultData.officeUHMap.lossRate　％
+                    #end
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 100%;">P</td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+        <td style="padding: 10px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 100%;">P</td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td width ="50%" style="padding:0px 20px 0px 20px;vertical-align: top;">
+        <div class="titleLine">比率</div>
+        <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+            <thead class="tableHeader">
+                <tr>
+                    <td width ="130px">　</td>
+                    <td>項目名</td>
+                    <td>比率</td>
+                </tr>
+            </thead>
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" width ="130px">比率1</td>
+                    <td style="text-align: center">未獲得市場</td>
+                    <td style="text-align: right;">$resultData.honbuPMap.indexMikakutoku</td>
+                </tr>
+                <tr>
+                    <td class="header" width ="130px">比率2</td>
+                    <td style="text-align: center">過去実績</td>
+                    <td style="text-align: right;">$resultData.honbuPMap.indexDelivery</td>
+                </tr>
+            <tbody>
+        </table>
+        </td>
+        <td width ="50%" style="padding:0px 20px 0px 20px;vertical-align: top;">
+        <div class="titleLine">比率</div>
+        <table class="gridTableLine" cellspacing="0" cellpadding="0" width ="100%">
+            <thead class="tableHeader">
+                <tr>
+                    <td width ="130px">　</td>
+                    <td>項目名</td>
+                    <td>比率</td>
+                </tr>
+            </thead>
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" width ="130px">比率1</td>
+                    <td style="text-align: center">未獲得市場</td>
+                    <td style="text-align: right;">$resultData.officePMap.indexMikakutoku</td>
+                </tr>
+                <tr>
+                    <td class="header" width ="130px">比率2</td>
+                    <td style="text-align: center">過去実績</td>
+                    <td style="text-align: right;">$resultData.officePMap.indexDelivery</td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 0px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <div class="titleLine">配分品目データ</div>
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 130px;">実績参照期間</td>
+                    <td style="text-align: left">
+                        #if($resultData.honbuPMap.refFrom)
+                            #getValueFromCode($refPeriodList,$resultData.honbuPMap.refFrom)
+                        #end
+                        　 - 　
+                        #if($resultData.honbuPMap.refTo)
+                            #getValueFromCode($refPeriodList,$resultData.honbuPMap.refTo)
+                        #end
+                    </td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;">有効率</td>
+                    <td style="text-align: left">
+                    #if($resultData.honbuPMap.lossRate)
+                        $resultData.honbuPMap.lossRate　％
+                    #end
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+        <td style="padding: 0px 20px 0px 20px; vertical-align: top; width: 50%;">
+        <div class="titleLine">配分品目データ</div>
+        <table class="gridTableLine" style="width: 100%;" cellspacing="0" cellpadding="0">
+            <tbody class="tableBody">
+                <tr>
+                    <td class="header" style="width: 130px;">実績参照期間</td>
+                    <td style="text-align: left">
+                        #if($resultData.officePMap.refFrom)
+                            #getValueFromCode($refPeriodList,$resultData.officePMap.refFrom)
+                        #end
+                        　 - 　
+                        #if($resultData.officePMap.refTo)
+                            #getValueFromCode($refPeriodList,$resultData.officePMap.refTo)
+                        #end
+                    </td>
+                </tr>
+                <tr>
+                    <td class="header" style="width: 130px;">有効率</td>
+                    <td style="text-align: left">
+                    #if($resultData.officePMap.lossRate)
+                        $resultData.officePMap.lossRate　％
+                    #end
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+    </tr>
+</table>
+</div>
+
+## Hidden項目
+<input type="hidden" id="sosCd2" name="sosCd2" />
+<input type="hidden" id="sosCd3" name="sosCd3" value="$!form.bean.getSosCd3()" />
+<input type="hidden" id="sosCd4" name="sosCd4"  />
+<input type="hidden" id="jgiNo" name="jgiNo"  />
+<input type="hidden" id="initSosCodeValue" name="initSosCodeValue" value="$!security.defaultSosCd"/>
+
+</form>
+</div>

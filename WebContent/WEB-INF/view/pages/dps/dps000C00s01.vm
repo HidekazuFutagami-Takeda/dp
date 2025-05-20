@@ -1,0 +1,46 @@
+#if ($!security.hasVaccine())
+#set ($dps000ApplyName = "dps000C00F60")
+#set ($actionPath = $link.setAction("dps000C00F60"))
+#else
+#set ($dps000ApplyName = "dps000C00F10")
+#set ($actionPath = $link.setAction("dps000C00F10"))
+#end
+<script language="javascript">
+<!--
+## 代行ユーザ切替ボタンクリック
+function ${dps000ApplyName}() {
+    var actionPath = '$actionPath';
+    ${dps000ApplyName}Form.action = actionPath;
+    document.${dps000ApplyName}Form.submit();
+    ${dps000ApplyName} = blockIt;
+    return false;
+}
+//-->
+</script>
+<div id="editErea">
+<div class="titleBg">
+<p>編集対象</p>
+</div>
+<div id="editContents">
+<form name="${dps000ApplyName}Form" id="${dps000ApplyName}Form" method="post">
+## 組織名称
+#if(!$!security.defaultSosName.equals(""))
+    #set ($dSosName = $!security.defaultSosName)
+    #if ($dSosName)
+        #set ($dSosName = $dSosName.replaceAll("医営",""))
+    #end
+    $!dSosName<br>
+#end
+## 従業員名称
+#if(!$!security.defaultJgiName.equals(""))
+    $!security.defaultJgiName<br>
+#end
+#set($altUserList = $!security.getAltUserList())
+#if($altUserList)
+#select("applyJgiNo", $altUserList, $form.bean.applyJgiNo)
+<input type="button" name="applyUserButton" value="切替" onclick="return ${dps000ApplyName}();" />
+#token()
+#end
+</form>
+</div>
+</div>

@@ -1,0 +1,337 @@
+## -------------------------------
+## 指数入力・再試算実行部分
+## -------------------------------
+<script language="javascript">
+<!--
+## 「再試算処理を実行」処理
+function dps302C01F10Execute() {
+
+    ##入力チェック
+    if (!executeValidation()) {
+        return;
+    }
+    ##登録事前チェック
+    if (!checkResult()) {
+      return;
+    }
+    ##確認
+    if (!confirm('$text.get("DPS302C01.001","dialogue")')) {
+        return;
+    }
+    ##送信
+    execute('$link.setAction("dps302C01F10Execute")');
+}
+## 「本部案の指数で再試算」処理
+function dps302C01F11Execute() {
+    ##入力チェック なし
+    ##確認
+    if (!confirm('$text.get("DPS302C01.002","dialogue")')) {
+        return;
+    }
+    ##送信
+    execute('$link.setAction("dps302C01F11Execute")');
+}
+## 「再試算処理を実行」処理時入力チェック
+function executeValidation() {
+    ## 入力フォーム
+    form = document.dps302C01Form;
+    ## エラー情報追加フラグ
+    var isAdded = false;
+## add start 2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+    ## [条件付必須] 留保率
+    value = form.indexRyhRtsu.value;
+    errorMsg = '$text.get("DPC1005E",["再試算処理を実行","留保率"])';
+    isAdded = addErrorInfo(!isEntered(value), errorMsg);
+    ## [数値] 留保率
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["留保率","半角数値"])';
+        isAdded = addErrorInfo(!isDecimal(value), errorMsg)
+    }
+    ## [整数] 留保率
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1016E",["留保率","整数以外"])';
+        isAdded = addErrorInfo(!isInteger(value), errorMsg)
+    }
+    ## [0未満] 留保率
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1008E",["留保率","0"])';
+        isAdded = addErrorInfo(!isPlus(value), errorMsg)
+    }
+    ## [100以上] 留保率
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1009E",["留保率","100"])';
+        isAdded = addErrorInfo(!isIntegerInRange(value, 0, 100), errorMsg)
+    }
+
+    ## エラー情報追加フラグリセット
+    isAdded = false;
+## add end   2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+    ## [条件付必須] 未獲得市場
+    value = form.indexMikakutoku.value;
+    errorMsg = '$text.get("DPC1005E",["再試算処理を実行","未獲得市場試算指数"])';
+    isAdded = addErrorInfo(!isEntered(value), errorMsg);
+    ## [数値] 未獲得市場
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["未獲得市場試算指数","半角数値"])';
+        isAdded = addErrorInfo(!isDecimal(value), errorMsg)
+    }
+    ## [整数] 未獲得市場
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1016E",["未獲得市場試算指数","整数以外"])';
+        isAdded = addErrorInfo(!isInteger(value), errorMsg)
+    }
+    ## [0未満] 未獲得市場
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1008E",["未獲得市場試算指数","0"])';
+        isAdded = addErrorInfo(!isPlus(value), errorMsg)
+    }
+    ## [100以上] 未獲得市場
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1009E",["未獲得市場試算指数","100"])';
+        isAdded = addErrorInfo(!isIntegerInRange(value, 0, 100), errorMsg)
+    }
+    ## エラー情報追加フラグリセット
+    isAdded = false;
+    ## [条件付必須] 納入実績
+    value = form.indexDelivery.value;
+    errorMsg = '$text.get("DPC1005E",["再試算処理を実行","納入実績試算指数"])';
+    isAdded = addErrorInfo(!isEntered(value), errorMsg);
+    ## [数値] 納入実績
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["納入実績試算指数","半角数値"])';
+        isAdded = addErrorInfo(!isDecimal(value), errorMsg)
+    }
+    ## [整数] 納入実績
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1016E",["納入実績試算指数","整数以外"])';
+        isAdded = addErrorInfo(!isInteger(value), errorMsg)
+    }
+    ## [0未満] 納入実績
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1008E",["納入実績試算指数","0"])';
+        isAdded = addErrorInfo(!isPlus(value), errorMsg)
+    }
+    ## [100以上] 納入実績
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1009E",["納入実績試算指数","100"])';
+        isAdded = addErrorInfo(!isIntegerInRange(value, 0, 100), errorMsg)
+    }
+    ## エラー情報追加フラグリセット
+    isAdded = false;
+    ## [条件付必須] フリー項目1
+    value = form.indexFree1.value;
+    errorMsg = '$text.get("DPC1005E",["再試算処理を実行","$indexFreeName1"])';
+    isAdded = addErrorInfo(!isEntered(value), errorMsg);
+    ## [数値] フリー項目1
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["$indexFreeName1","半角数値"])';
+        isAdded = addErrorInfo(!isDecimal(value), errorMsg)
+    }
+    ## [整数] フリー項目1
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1016E",["$indexFreeName1","整数以外"])';
+        isAdded = addErrorInfo(!isInteger(value), errorMsg)
+    }
+    ## [0未満] フリー項目1
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1008E",["$indexFreeName1","0"])';
+        isAdded = addErrorInfo(!isPlus(value), errorMsg)
+    }
+    ## [100以上] フリー項目1
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1009E",["$indexFreeName1","100"])';
+        isAdded = addErrorInfo(!isIntegerInRange(value, 0, 100), errorMsg)
+    }
+    ## エラー情報追加フラグリセット
+    isAdded = false;
+    ## [条件付必須] フリー項目2
+    value = form.indexFree2.value;
+    errorMsg = '$text.get("DPC1005E",["再試算処理を実行","$indexFreeName2"])';
+    isAdded = addErrorInfo(!isEntered(value), errorMsg);
+    ## [数値] フリー項目2
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["$indexFreeName2","半角数値"])';
+        isAdded = addErrorInfo(!isDecimal(value), errorMsg)
+    }
+    ## [整数] フリー項目2
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1016E",["$indexFreeName2","整数以外"])';
+        isAdded = addErrorInfo(!isInteger(value), errorMsg)
+    }
+    ## [0未満] フリー項目2
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1008E",["$indexFreeName2","0"])';
+        isAdded = addErrorInfo(!isPlus(value), errorMsg)
+    }
+    ## [100以上] フリー項目2
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1009E",["$indexFreeName2","100"])';
+        isAdded = addErrorInfo(!isIntegerInRange(value, 0, 100), errorMsg)
+    }
+    ## エラー情報追加フラグリセット
+    isAdded = false;
+
+    ## [条件付必須] フリー項目3
+    value = form.indexFree3.value;
+    errorMsg = '$text.get("DPC1005E",["再試算処理を実行","$indexFreeName3"])';
+    isAdded = addErrorInfo(!isEntered(value), errorMsg);
+    ## [数値] フリー項目3
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1004E",["$indexFreeName3","半角数値"])';
+        isAdded = addErrorInfo(!isDecimal(value), errorMsg)
+    }
+    ## [整数] フリー項目3
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1016E",["$indexFreeName3","整数以外"])';
+        isAdded = addErrorInfo(!isInteger(value), errorMsg)
+    }
+    ## [0未満] フリー項目3
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1008E",["$indexFreeName3","0"])';
+        isAdded = addErrorInfo(!isPlus(value), errorMsg)
+    }
+    ## [100以上] フリー項目3
+    if(!isAdded){
+        errorMsg = '$text.get("DPC1009E",["$indexFreeName3","100"])';
+        isAdded = addErrorInfo(!isIntegerInRange(value, 0, 100), errorMsg)
+    }
+
+    ## 試算指数の合計が100でない場合
+    if(!isAdded) {
+        var total = 0;
+        if (form.indexMikakutoku.value) {
+            total += parseInt(form.indexMikakutoku.value);
+        }
+        if (form.indexDelivery.value) {
+            total += parseInt(form.indexDelivery.value);
+        }
+        if (form.indexFree1.value) {
+            total += parseInt(form.indexFree1.value);
+        }
+        if (form.indexFree2.value) {
+            total += parseInt(form.indexFree2.value);
+        }
+        if (form.indexFree3.value) {
+            total += parseInt(form.indexFree3.value);
+        }
+        if (total != 100) {
+            errorMsg = '$text.get("DPS1001E",["試算指数","100"])';
+            addErrorInfo(true, errorMsg);
+        }
+    }
+    return validation();
+}
+##「再試算処理を実行」処理時事前チェック
+function checkResult(){
+
+    ## 入力フォーム
+    var form = document.dps302C01Form;
+    var sosCd3 = '$form.bean.sosCd3';
+    var prodCode = '$form.bean.prodCode';
+## add start 2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+    var indexRyhRtsu = form.indexRyhRtsu.value;
+## add end   2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+    var indexMikakutoku = form.indexMikakutoku.value;
+    var indexFree1 = form.indexFree1.value;
+    var indexFree2 = form.indexFree2.value;
+    var indexFree3 = form.indexFree3.value;
+    var indexFreeName1 = encodeURI('$indexFreeName1');
+    var indexFreeName2 = encodeURI('$indexFreeName2');
+    var indexFreeName3 = encodeURI('$indexFreeName3');
+
+    ##GET送信
+    var url ="$link.setAction('dps302C01F12Execute')";
+    url = url.concat("?sFlg=true");
+    url = url.concat("&sosCd3=").concat(sosCd3);
+    url = url.concat("&prodCode=").concat(prodCode);
+## add start 2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+    url = url.concat("&indexRyhRtsu=").concat(indexRyhRtsu);
+## add end   2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+    url = url.concat("&indexMikakutoku=").concat(indexMikakutoku);
+    url = url.concat("&indexFree1=").concat(indexFree1);
+    url = url.concat("&indexFree2=").concat(indexFree2);
+    url = url.concat("&indexFree3=").concat(indexFree3);
+    url = url.concat("&indexFreeName1=").concat(indexFreeName1);
+    url = url.concat("&indexFreeName2=").concat(indexFreeName2);
+    url = url.concat("&indexFreeName3=").concat(indexFreeName3);
+    ##結果からメッセージ作成
+    try {
+        var text = getPage(url);
+        var obj = JSON.parse(text);
+        var messageList = obj.messageList;
+        var arr = messageList.split(",");
+        for( var i=0; i<arr.length; i++ ){
+            if(arr[i] == ""){continue;}
+            addErrorMessage(arr[i]);
+        }
+    } catch(e) {
+    }
+    return validation();
+}
+## グリッドヘッダの指数書き換え処理
+function changeGridText(distId, sourceId) {
+    var changeValue = document.getElementById(sourceId).value;
+    changeValue = changeValue + "%";
+    document.getElementById(distId).innerText = changeValue;
+}
+//-->
+</script>
+
+<table cellspacing="0" cellpadding="0" style="width:100%; margin-top:3px; margin-bottom:1px;">
+    <tr>
+        <td>
+        <table class="gridTableLine" cellspacing="0" cellpadding="3">
+            <thead class="tableHeader">
+                <tr>
+                    <td style="width: 100px;">試算指数</td>
+## add start 2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+                    <td style="width: 100px;">留保率</td>
+## add end   2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+                    <td style="width: 100px;">未獲得市場指数</td>
+                    <td style="width: 100px;">納入実績指数</td>
+                    <td style="width: 100px;">$indexFreeName1</td>
+                    <td style="width: 100px;">$indexFreeName2</td>
+                    <td style="width: 100px;">$indexFreeName3</td>
+                </tr>
+            </thead>
+            <tbody class="tableBody">
+                <tr>
+                    <td style="text-align:center;">$paramSos</td>
+## add start 2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+                    <td style="text-align:center;">
+                        <input type="text" id="txtIndexRyhRtsu" name="indexRyhRtsu" value="$!form.bean.indexRyhRtsu" onkeyup="" size="10" maxlength="3" class="inputB ime_not textR" style="padding-right:1px;"/>
+                    </td>
+## add end   2016/07/11 S.Hayashi B16-0087_試算ロジック変更対応（留保率）
+                    <td style="text-align:center;">
+                        <input type="text" id="txtIndexMikakutoku" name="indexMikakutoku" value="$!form.bean.indexMikakutoku" onkeyup="changeGridText('gIndexMikakutoku', 'txtIndexMikakutoku')" size="10" maxlength="3" class="inputB ime_not textR" style="padding-right:1px;"/>
+                    </td>
+                    <td style="text-align:center;">
+                        <input type="text" id="txtIndexDelivery" name="indexDelivery" value="$!form.bean.indexDelivery" onkeyup="changeGridText('gIndexDelivery', 'txtIndexDelivery')" size="10" maxlength="3" class="inputB ime_not textR" style="padding-right:1px;"/>
+                    </td>
+                    <td style="text-align:center;">
+                        <input type="text" id="txtIndexFree1" name="indexFree1" value="$!form.bean.indexFree1" onkeyup="changeGridText('gIndexFree1', 'txtIndexFree1')" size="10" maxlength="3" class="inputB ime_not textR" style="padding-right:1px;"/>
+                    </td>
+                    <td style="text-align:center;">
+                        <input type="text" id="txtIndexFree2" name="indexFree2" value="$!form.bean.indexFree2" onkeyup="changeGridText('gIndexFree2', 'txtIndexFree2')" size="10" maxlength="3" class="inputB ime_not textR" style="padding-right:1px;"/>
+                    </td>
+                    <td style="text-align:center;">
+                        <input type="text" id="txtIndexFree3" name="indexFree3" value="$!form.bean.indexFree3" onkeyup="changeGridText('gIndexFree3', 'txtIndexFree3')" size="10" maxlength="3" class="inputB ime_not textR" style="padding-right:1px;"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+    </tr>
+</table>
+<input type="hidden" name="indexFreeName1" value="$indexFreeName1" />
+<input type="hidden" name="indexFreeName2" value="$indexFreeName2" />
+<input type="hidden" name="indexFreeName3" value="$indexFreeName3" />
+<div class="guide">
+※試算指数は、0以上の整数で、未獲得市場指数～フリー項目③は合計が100になるように入力してください。(UH、P共通の設定)<br>
+## mod Start 2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+※【エリア計画より再試算(エリア案)】ボタンをクリックすると、入力した試算指数に基づき、担当者別の理論計画を試算します。<br>
+※【エリア計画より再試算(本部案)】ボタンをクリックすると、試算パラメータを本部案に戻して、担当者別の理論計画を試算します。
+##※【営業所計画より再試算(営業所案)】ボタンをクリックすると、入力した試算指数に基づき、担当者別の理論計画を試算します。<br>
+##※【営業所計画より再試算(本部案)】ボタンをクリックすると、試算パラメータを本部案に戻して、担当者別の理論計画を試算します。
+## mod End   2022/5/20 R.Yoshida 2022年4月組織変更対応（支店→リージョン、営業所→エリア）
+</div>
